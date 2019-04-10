@@ -1,0 +1,140 @@
+#' Translate terms
+#'
+#' @param terms [\code{character(.)}]\cr terms to be translated.
+#' @param index [\code{data.frame(1)}]\cr table that contains translations.
+#' @param fuzzy_terms [\code{vector(.)}]\cr target terms with which a fuzzy
+#'   match should be carried out.
+#' @param fuzzy_dist [\code{integerish(1)}]\cr the maximum distance for
+#'   fuzzy-matching.
+#' @param verbose [\code{logical(1)}]\cr be verbose about what is happening
+#'   (default \code{TRUE}).
+#' @details This is basically a sophisticated matching algorithm, that adds new
+#'   entries to the respective index, if no match was found.
+#' @importFrom checkmate assertCharacter assertDataFrame assertNames
+#'   testCharacter
+#' @importFrom tibble as_tibble
+#' @importFrom dplyr filter pull bind_rows
+#' @importFrom readr read_csv write_csv
+#' @importFrom rlang enexpr
+#' @importFrom utils edit View adist file.edit
+#' @export
+
+translateTerms <- function(terms, index = NULL, fuzzy_terms = NULL, fuzzy_dist = 5,
+                           verbose = TRUE){
+
+  # check validity of arguments
+  assertCharacter(x = terms, any.missing = FALSE)
+  assertCharacter(x = index, len = 1, any.missing = FALSE)
+  args <- enexpr(index)
+  index <- read_csv(paste0(getOption(x = "dmt_path"), "/", index, ".csv"), col_types = "ccc")
+  assertNames(x = colnames(index), must.include = c("origin", "target"))
+  assertCharacter(x = fuzzy_terms, any.missing = FALSE, null.ok = TRUE)
+  assertIntegerish(x = fuzzy_dist, any.missing = FALSE)
+
+  # create a table with terms that will be used for fuzzy matching.
+  theFuzzyTerms <- index %>%
+    filter(notes == "original") %>%
+    pull(target)
+  if(!is.null(fuzzy_terms)){
+    if(length(theFuzzyTerms) == 0){
+      theFuzzyTerms <- fuzzy_terms
+    } else{
+      theFuzzyTerms <- c(theFuzzyTerms, tempFuzz)
+    }
+  }
+  if(length(theFuzzyTerms) == 0){
+    if(verbose){
+      message("  ! found no values to fuzzy match with.")
+    }
+  }
+
+  tempOut <- NULL
+  newEntries <- FALSE
+  if(verbose){
+    message("    translating from '", args, ".csv' ...")
+  }
+  if(length(terms) > 15){
+    pb <- txtProgressBar(min = 0, max = length(terms), style = 3, char=">", width=getOption("width")-14)
+  }
+
+  # go through all terms and process them
+  for(i in seq_along(terms)){
+    # get a row of 'index' where there might be an instance of the term
+    temp <- index %>%
+      filter(tolower(origin) %in% tolower(terms[i]))
+
+    if(dim(temp)[1] < 1){
+
+      # if a set of fuzzy terms is available, try to match with those
+      if(length(theFuzzyTerms) != 0){
+        # all terms are put to lower case, which makes matching them easier,
+        # this preserves apostrophes
+        distances <- adist(tolower(terms[i]), tolower(theFuzzyTerms))
+        distances_sum <- cumsum(table(distances))
+        thresh_dist <- as.numeric(names(distances_sum[distances_sum < fuzzy_dist]))
+        # take care of terms with a too high edit distance
+        if(length(thresh_dist) == 0){
+          thresh_dist <- 99
+        }
+        theFuzz <- unlist(lapply(thresh_dist, function(x){
+          theFuzzyTerms[which(distances %in% x)]
+        }))
+
+        # in case a edit distance of 0 has been found, this term is perfectly
+        # matched and doesn't need to be further treated
+        if(thresh_dist[1] == 0){
+          app <- c(terms[i], theFuzz[1], paste0("translateTerms() on ", Sys.Date()))
+        } else{
+          newEntries <- TRUE
+          app <- c(terms[i], "missing", paste0(theFuzz, collapse = " | "))
+        }
+      } else{
+        newEntries <- TRUE
+        app <- c(terms[i], "missing", paste0("check out ", args, ".csv"))
+      }
+
+      names(app) <- colnames(index)
+      tempOut <- bind_rows(tempOut, app)
+    } else{
+      tempOut <- bind_rows(tempOut, temp)
+    }
+    if(length(terms) > 15){
+      setTxtProgressBar(pb, i)
+    }
+  }
+  if(length(terms) > 15){
+    close(pb)
+  }
+
+  if(newEntries){
+
+    # define paths for translating
+    basePath <- paste0(getOption("dmt_path"))
+    translating <- paste0(basePath, "/translating.csv")
+
+    toTranslate <- tempOut %>%
+      filter(target == "missing")
+    write_csv(x = toTranslate, path = translating)
+    if(Sys.info()[['sysname']] == "Linux"){
+      file.edit(translating)
+    }
+    done <- readline("\nplease replace the missing values, save the file and press any key to continue.\n")
+
+    newOut <- read_csv(file = translating,
+                       col_types = getColTypes(index))
+    newOut$notes <- ifelse(newOut$target != "missing", paste0("translateTerms() on ", Sys.Date()), NA_character_)
+    newOut$target <- ifelse(newOut$target == "missing", NA_character_, newOut$target)
+
+    file.remove(translating)
+    updateIndex(index = newOut, name = args)
+
+    out <- full_join(tempOut, newOut) %>%
+      filter(target != "missing") %>%
+      select(origin, target)
+  } else{
+    out <- tempOut
+  }
+
+  return(out)
+}
+
