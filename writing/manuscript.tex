@@ -1,0 +1,311 @@
+\documentclass[12pt,]{article}
+\usepackage{lmodern}
+\usepackage{setspace}
+\setstretch{1.15}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+\else % if luatex or xelatex
+  \ifxetex
+    \usepackage{mathspec}
+  \else
+    \usepackage{fontspec}
+  \fi
+  \defaultfontfeatures{Ligatures=TeX,Scale=MatchLowercase}
+\fi
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+% use microtype if available
+\IfFileExists{microtype.sty}{%
+\usepackage{microtype}
+\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\usepackage[margin=1in]{geometry}
+\usepackage{hyperref}
+\hypersetup{unicode=true,
+            pdftitle={censusTools - Standardising census statistics},
+            pdfauthor={Steffen Ehrmann, Ralf Seppelt, Navin Ramakutty, Carsten Meyer},
+            pdfborder={0 0 0},
+            breaklinks=true}
+\urlstyle{same}  % don't use monospace font for urls
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\newenvironment{Shaded}{}{}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{#1}}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.49,0.56,0.16}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.53,0.00,0.00}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.56,0.13,0.00}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.73,0.13,0.13}{\textit{#1}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.02,0.16,0.49}{#1}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.40,0.40,0.40}{#1}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.74,0.48,0.00}{#1}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.73,0.40,0.53}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.10,0.09,0.49}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{#1}}}}
+\usepackage{longtable,booktabs}
+\usepackage{graphicx,grffile}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+\IfFileExists{parskip.sty}{%
+\usepackage{parskip}
+}{% else
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+}
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{5}
+% Redefines (sub)paragraphs to behave more like sections
+\ifx\paragraph\undefined\else
+\let\oldparagraph\paragraph
+\renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+\let\oldsubparagraph\subparagraph
+\renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+
+%%% Use protect on footnotes to avoid problems with footnotes in titles
+\let\rmarkdownfootnote\footnote%
+\def\footnote{\protect\rmarkdownfootnote}
+
+%%% Change title format to be more compact
+\usepackage{titling}
+
+% Create subtitle command for use in maketitle
+\providecommand{\subtitle}[1]{
+  \posttitle{
+    \begin{center}\large#1\end{center}
+    }
+}
+
+\setlength{\droptitle}{-2em}
+
+  \title{censusTools - Standardising census statistics}
+    \pretitle{\vspace{\droptitle}\centering\huge}
+  \posttitle{\par}
+    \author{Steffen Ehrmann, Ralf Seppelt, Navin Ramakutty, Carsten Meyer}
+    \preauthor{\centering\large\emph}
+  \postauthor{\par}
+      \predate{\centering\large\emph}
+  \postdate{\par}
+    \date{2019-04-11}
+
+
+\begin{document}
+\maketitle
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(censusTools)}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{introduction}{%
+\section{Introduction}\label{introduction}}
+
+Definition of Census data: ``A census is the procedure of systematically acquiring and recording information about the members of a given population.'' (\href{https://en.wikipedia.org/wiki/Census}{wiki})
+
+The \href{https://unstats.un.org/unsd/demographic/sources/census/docs/P\&R_Rev2.pdf}{United Nations} defines the essential features of population and housing censuses as ``\textbf{individual enumeration}, universality within a \textbf{defined territory}, simultaneity and defined periodicity'', and recommends that population censuses be taken at least every 10 years.
+
+\emph{-\textgreater{} Typically, census data are counted per a specific spatial unit.} In other words, a census can have various properties, one of which is the location at which the recorded variables are true.
+
+Territory outlines may change with time. \emph{More on how this becomes problematic}
+
+With the advancement of GIS knowhow, many census stats are provided together with the spatial information based on which they have been derived.
+When census data are aggregated for a particular territorial unit, even if they are originally recorded in the form of point records, the spatial extent of that unit needs to be available.
+However, often those spatial information are not taken from a standardised set of spatial geometries, such as the GADM dataset {[}REF{]}, but are derived or manually created from (outdated) local maps.
+Various sources of error make the spatial data deviate from a possible standard.
+Those could be choice of the wrong or no particular coordinate reference system, systematic errors when manually copying paper maps with digitising tools (\emph{SE: I guess it makes sense to go a bit more into detail here, but I have not the greatest knowledge, as that was before my time\ldots{}}) or deviations that emerge when vectorising and processing raster maps (either raster-outline as boundary of the spatial unit, or a deviating boundary when the raster-boundary is smoothed with some unknown smoothing function).
+
+This poses a very general source of inconsistency, when including or excluding certain (point) sources of information due to deviating spatial extent or when census data are inately related to the area or topological information of the territorial unit.
+
+\emph{A bit bla about what ``key variables'' are and in general about the data types that might be recorded in census data}
+
+\emph{SE: Which term should we use for the geometries? There is so far `territorial unit', `administrative unit', `geometry' `spatial information' and derivations thereof.}
+
+\hypertarget{the-challenge}{%
+\subsection{The challenge}\label{the-challenge}}
+
+Census data and geometries must be associated to each other, possibly on a global scale and so that they are compatible across distinct efforts.
+
+This entails:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Any effort must be \emph{fully transparent and reproducible}.
+\item
+  Administrative/territorial units must be matched \emph{across different languages}.
+\item
+  Likewise, particular key variables (species, commodities, basically any categories) might have different values in different languages or cenuses and they must also be matched.
+\item
+  To make variables comparable across different efforts, there must be a standard for naming variables (\emph{SE: I would thus suggest in this paper that naming shall follow the Darwin Core, this would take the burden of defining such a naming standard off of our shoulders and would also assert that future compatibility is managed by the Darwin Core rules}).
+\end{enumerate}
+
+A generalised framework for managing census data that would be related to spatial information, irrespective of the covered variables, was devised and shall be presented in this paper.
+
+\hypertarget{known-tools-and-pipelines-based-on-r}{%
+\section{Known tools and pipelines (based on R)}\label{known-tools-and-pipelines-based-on-r}}
+
+Full list: \url{https://crantastic.org/search?utf8=\%E2\%9C\%93\&q=census}
+
+Implement mapping in shiny: \url{https://shiny.rstudio.com/tutorial/written-tutorial/lesson5/}
+
+An example workflow: \url{https://medium.com/@miles.mcbain/combining-australian-census-data-with-the-same-sex-marriage-postal-survey-in-r-39d9b2082249}
+
+\href{https://rconsortium.github.io/censusguide/}{A Guide to Working with US Census Data in R}, \href{https://rconsortium.github.io/censusguide/r-packages-all.html}{R-packages}
+
+\hypertarget{packages}{%
+\subsection{Packages}\label{packages}}
+
+\emph{perhaps include some statistics about how many packages there are}
+
+\emph{explain briefly what the key packages are used for and how this relates to \texttt{censusTools}}
+
+tidycensus: \url{https://walkerke.github.io/tidycensus/}, \url{https://juliasilge.com/blog/using-tidycensus/}
+
+censusapi: \url{https://github.com/hrecht/censusapi}, \url{https://cran.r-project.org/web/packages/censusapi/vignettes/getting-started.html}
+
+\href{https://journal.r-project.org/archive/2016/RJ-2016-043/RJ-2016-043.pdf}{tigris: An R Package to Access and Work with Geographic Data from the US Census Bureau}
+
+\hypertarget{what-this-r-package-provides}{%
+\section{What this R-package provides}\label{what-this-r-package-provides}}
+
+In a nutshell:
+
+\begin{itemize}
+\tightlist
+\item
+  Builds a unique ID that relates census and spatial information.
+\item
+  Standardises both census and spatial information so that they are compatible across large swaths of data sources.
+\item
+  Standardises ontologies of variable names and values.
+\end{itemize}
+
+\hypertarget{territory-id}{%
+\subsection{Territory ID}\label{territory-id}}
+
+This is an ID per territorial unit which is unique per unit captures at the same time the hierarchical information.
+Territories, especially administrative units, are often subsets of larger administrative units and eventually of nations.
+At each administrative level, territorial units are enumerated along their sequence (\emph{starting from one through their count}) with a three-digit ID, restarting within each parent (\emph{I guess this needs some refinement}).
+The nestedness is represented by a sequence of those three digit IDs, where larger units are placed before units nested therein, such as \texttt{070\textquotesingle{}017\textquotesingle{}008} (which is, when sorting administrative units alphabetically, the community of Tammelin in Tartu, Estonia).
+This code is extended with more sets of unit-IDs, when working on the fourth/fifth/\ldots{} administrative level.
+The number of unit-IDs indicates thus the administrative level of the territorial unit.
+
+\hypertarget{standardised-census-data}{%
+\subsection{Standardised Census data}\label{standardised-census-data}}
+
+Census stats are stored in tables, where the data source(s), territorial and temporal information and the recorded variables are present:
+
+\begin{longtable}[]{@{}llllll@{}}
+\toprule
+ID & censusSourceID & geometrySourceID & territoryID & timestep & variable(s)\tabularnewline
+\midrule
+\endhead
+1 & & & & &\tabularnewline
+2 & & & & &\tabularnewline
+\ldots{} & & & & &\tabularnewline
+\bottomrule
+\end{longtable}
+
+\texttt{censusSourceID} and \texttt{geometrySourceID} are important for data provenance.
+Often similar or the same data are provided by different dataseries providers.
+
+\texttt{territoryID} relates territorial units to census stats.
+
+\texttt{timestep} would be a column that denotes the time for which the census has been recorded. It's temporal resolution should be adapted accordingly.
+
+\texttt{variable(s)} can be any number of columns, each of which would contain either keys (typically categorical variables such as ``commodities'' or ``species'') or values (typically some sort of quantity of the key, such as ``production'' and ``yield'' or ``abundance'').
+
+\hypertarget{standardised-spatial-data}{%
+\subsection{Standardised spatial data}\label{standardised-spatial-data}}
+
+\hypertarget{standardised-ontologies}{%
+\subsection{Standardised ontologies}\label{standardised-ontologies}}
+
+The key variables must all hold values that are part of the smallest common set.
+\emph{note: there is a difference between `variable names' and `values of key variables'. Yet, both need to be translated/unified. In the former case this would be following the Darwin Core standard, in the latter case this would be case-specific, but ideally still following some (external) standard. for LUCKINet this would be the FAO naming-standard}.
+Terms are gathered in a list, where they are related to a set of generalised terms.
+For instance, commodities may either be labelled by their species, by the fao-ID or by a nation/language specific term.
+Hence, both, semantic synonyms and terms in other languages are translated to a common set of terms (\emph{SE: I have a more elgant word for that on the tip of my tounge, but can't come up with it right now}).
+
+\begin{longtable}[]{@{}lll@{}}
+\toprule
+origin & target & notes\tabularnewline
+\midrule
+\endhead
+toTranslate & translated & translateTerms() on 2019-02-28\tabularnewline
+anotherOne & itsTranslation & translateTerms() on 2019-02-28\tabularnewline
+\ldots{} & \ldots{} &\tabularnewline
+& term1 & target\tabularnewline
+& term2 & target\tabularnewline
+& term3 & target\tabularnewline
+\bottomrule
+\end{longtable}
+
+This table is split into two parts. The upper part contains all original terms, as they appear in different census datasets (\texttt{origin}), their unified translations (\texttt{target}) and \texttt{notes} on when and how (here, by the function \texttt{translateTerms()}) the translation has been carried out.
+The lower part contains all target terms to which original terms should be translated. When encountering new terms, those target terms are used for fuzzy matching.
+Moreover, before the translated data are finally entered into the database, they are checked against this list so that no new translations violate the ontological consistency (\emph{SE: I still have to implement this feature}).
+
+\hypertarget{discussion}{%
+\section{Discussion}\label{discussion}}
+
+\emph{what does \texttt{censusTools} that other packages don't do?}
+
+\emph{what do other packages that \texttt{censusTools} doesn't do?}
+
+\emph{what can \texttt{censusTools} generally not be used for?}
+
+\hypertarget{outlook}{%
+\section{Outlook}\label{outlook}}
+
+Perhaps talk about how to implement this for use in citizen science and for building large and exhaustive open databases.
+
+\emph{mention a couple of words about LUCKINet?!}
+
+\hypertarget{sources-of-census-statistics-and-associated-geometries}{%
+\section{Sources of census statistics and associated geometries}\label{sources-of-census-statistics-and-associated-geometries}}
+
+Lots of information on processing census stats (in R) is based on the ``American Community Survey'' and ``Decennial Data from the US Census''.
+
+\href{https://en.wikipedia.org/wiki/List_of_national_and_international_statistical_services}{List of national and international statistical services}
+
+
+\end{document}
