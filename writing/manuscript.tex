@@ -123,7 +123,7 @@
   \postauthor{\par}
       \predate{\centering\large\emph}
   \postdate{\par}
-    \date{2019-04-11}
+    \date{2019-04-12}
 
 
 \begin{document}
@@ -138,11 +138,46 @@
 \hypertarget{introduction}{%
 \section{Introduction}\label{introduction}}
 
+\textbf{Definition and basic facts}
+
 Definition of Census data: ``A census is the procedure of systematically acquiring and recording information about the members of a given population.'' (\href{https://en.wikipedia.org/wiki/Census}{wiki})
 
-The \href{https://unstats.un.org/unsd/demographic/sources/census/docs/P\&R_Rev2.pdf}{United Nations} defines the essential features of population and housing censuses as ``\textbf{individual enumeration}, universality within a \textbf{defined territory}, simultaneity and defined periodicity'', and recommends that population censuses be taken at least every 10 years.
+The \href{https://unstats.un.org/unsd/demographic/sources/census/docs/P\&R_Rev2.pdf}{United Nations} defines the essential features of population and housing censuses as ``individual enumeration, universality within a defined territory, simultaneity and defined periodicity'', and recommends that population censuses be taken at least every 10 years.
 
-\emph{-\textgreater{} Typically, census data are counted per a specific spatial unit.} In other words, a census can have various properties, one of which is the location at which the recorded variables are true.
+\emph{-\textgreater{} Often census data are counted per a specific spatial unit.} In other words, a census can have various properties, one of which is the location at which the recorded variables are true. For monitoring or modelling system responses with a spatial dimension it is thus necessary to make census data and spatial information align perfectly.
+
+\emph{SE: Which term should we use for the geometries? There is so far `territorial unit', `administrative unit', `geometry' `spatial information' and derivations thereof.}
+
+\textbf{Outline the how and why of census data}
+
+\href{http://iasri.res.in/ebook/TEFCPI_sampling/AGRICULTURE\%20CENSUS\%20IN\%20INDIA.pdf}{AGRICULTURE CENSUS IN INDIA}
+
+Recording census data and processing them to gain knowledge about various phenomena can have various reasons:
+
+\begin{itemize}
+\tightlist
+\item
+  Economic interest
+\item
+  Environmental impact assessment
+\item
+  Improvement of the lifelihood of people
+\item
+  \ldots{}
+\end{itemize}
+
+\emph{mention one or more examples for each of those}
+
+Gathering census stats is a laborious task.
+It entails not only finding orientation in a vast number of different formats the data are provided in, but also associating those tabular information to the spatial information for which it often is recorded.
+
+A wide variety of census data are available. \emph{Outline two/three examples and their specifities}; \emph{Outline what they have in common and which differences between them need to be considered.}
+
+\emph{A couple of words on how census data are typically sampled and relationships between various census efforts: \url{http://www.fao.org/world-census-agriculture/methodology/en/}}
+
+\emph{A couple of words on why census data are recorded: \url{http://www.fao.org/fileadmin/templates/ess/documents/world_census_of_agriculture/chapter02_r7.pdf}; needs more sources of information}
+
+\textbf{Outline issues}
 
 Territory outlines may change with time. \emph{More on how this becomes problematic}
 
@@ -150,16 +185,12 @@ With the advancement of GIS knowhow, many census stats are provided together wit
 When census data are aggregated for a particular territorial unit, even if they are originally recorded in the form of point records, the spatial extent of that unit needs to be available.
 However, often those spatial information are not taken from a standardised set of spatial geometries, such as the GADM dataset {[}REF{]}, but are derived or manually created from (outdated) local maps.
 Various sources of error make the spatial data deviate from a possible standard.
-Those could be choice of the wrong or no particular coordinate reference system, systematic errors when manually copying paper maps with digitising tools (\emph{SE: I guess it makes sense to go a bit more into detail here, but I have not the greatest knowledge, as that was before my time\ldots{}}) or deviations that emerge when vectorising and processing raster maps (either raster-outline as boundary of the spatial unit, or a deviating boundary when the raster-boundary is smoothed with some unknown smoothing function).
-
-This poses a very general source of inconsistency, when including or excluding certain (point) sources of information due to deviating spatial extent or when census data are inately related to the area or topological information of the territorial unit.
-
-\emph{A bit bla about what ``key variables'' are and in general about the data types that might be recorded in census data}
-
-\emph{SE: Which term should we use for the geometries? There is so far `territorial unit', `administrative unit', `geometry' `spatial information' and derivations thereof.}
+Those could be choice of the wrong or no particular coordinate reference system, systematic errors when manually copying paper maps with digitising tools (\emph{SE: I guess it makes sense to go a bit more into detail here, but I have not the greatest knowledge, as that was before my time\ldots{}}) or deviations that emerge when vectorising and processing raster maps (either raster-outline as boundary of the spatial unit, or a deviating boundary when the raster-boundary is smoothed with some unknown smoothing function). This poses a very general source of inconsistency, when including or excluding certain (point) sources or other parts of information due to deviating spatial extent or when census data are inately related to the area or topological information of the territorial unit.
 
 \hypertarget{the-challenge}{%
 \subsection{The challenge}\label{the-challenge}}
+
+\textbf{This chapter shall clearly state the aspects we want to solve with \texttt{censusTools}.}
 
 Census data and geometries must be associated to each other, possibly on a global scale and so that they are compatible across distinct efforts.
 
@@ -187,7 +218,13 @@ Full list: \url{https://crantastic.org/search?utf8=\%E2\%9C\%93\&q=census}
 
 Implement mapping in shiny: \url{https://shiny.rstudio.com/tutorial/written-tutorial/lesson5/}
 
-An example workflow: \url{https://medium.com/@miles.mcbain/combining-australian-census-data-with-the-same-sex-marriage-postal-survey-in-r-39d9b2082249}
+\href{https://medium.com/@miles.mcbain/combining-australian-census-data-with-the-same-sex-marriage-postal-survey-in-r-39d9b2082249}{Combining Australian Census data with the Same Sex Marriage Postal Survey in R}
+
+\href{https://gl-li.netlify.com/2017/08/29/process-2010-census-data-with-data-table/}{Extract US Census 2010 data with data.table and dplyr}
+
+\href{http://zevross.com/blog/2018/10/02/creating-beautiful-demographic-maps-in-r-with-the-tidycensus-and-tmap-packages/}{Creating beautiful demographic maps in R with the tidycensus and tmap packages}
+
+\href{https://walkerke.github.io/2017/06/comparing-metros/}{Compare US metropolitan area characteristics in R with tidycensus and tigris}
 
 \href{https://rconsortium.github.io/censusguide/}{A Guide to Working with US Census Data in R}, \href{https://rconsortium.github.io/censusguide/r-packages-all.html}{R-packages}
 
@@ -260,6 +297,8 @@ Often similar or the same data are provided by different dataseries providers.
 \hypertarget{standardised-ontologies}{%
 \subsection{Standardised ontologies}\label{standardised-ontologies}}
 
+\emph{A couple of words about what ``key variables'' are and in general about the data types that might be recorded in census data}
+
 The key variables must all hold values that are part of the smallest common set.
 \emph{note: there is a difference between `variable names' and `values of key variables'. Yet, both need to be translated/unified. In the former case this would be following the Darwin Core standard, in the latter case this would be case-specific, but ideally still following some (external) standard. for LUCKINet this would be the FAO naming-standard}.
 Terms are gathered in a list, where they are related to a set of generalised terms.
@@ -291,7 +330,9 @@ Moreover, before the translated data are finally entered into the database, they
 
 \emph{what do other packages that \texttt{censusTools} doesn't do?}
 
-\emph{what can \texttt{censusTools} generally not be used for?}
+\emph{what can \texttt{censusTools} generally not be used for?} -\textgreater{} It is not a tool that automates extraction of census data from messy tables/spreadsheets. For that task, check out the R-package \texttt{rectr}. However, \texttt{censusTools} makes use of this package to organise a particular subset of messy data, agricultural census data that typically provide a narrow, predefined set of variables and meta information.
+
+\emph{Discuss, based on parts that have been mentioned in the introduction, how \texttt{censusTools} can actually deal with the outlined challenges and the requirements of different kinds of census data.}
 
 \hypertarget{outlook}{%
 \section{Outlook}\label{outlook}}
@@ -300,12 +341,16 @@ Perhaps talk about how to implement this for use in citizen science and for buil
 
 \emph{mention a couple of words about LUCKINet?!}
 
+\emph{How does \texttt{censusTools} facilitate interoperability with other tools (that may not exist yet)?}
+
 \hypertarget{sources-of-census-statistics-and-associated-geometries}{%
 \section{Sources of census statistics and associated geometries}\label{sources-of-census-statistics-and-associated-geometries}}
 
 Lots of information on processing census stats (in R) is based on the ``American Community Survey'' and ``Decennial Data from the US Census''.
 
 \href{https://en.wikipedia.org/wiki/List_of_national_and_international_statistical_services}{List of national and international statistical services}
+
+\href{https://pubs.usgs.gov/wri/wri944176/}{Spatial Data in Geographic Information System Format on Agricultural Chemical Use, Land Use, and Cropping Practices in the United States}
 
 
 \end{document}

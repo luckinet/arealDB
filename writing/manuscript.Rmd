@@ -3,18 +3,18 @@ title: "censusTools - Standardising census statistics"
 author: Steffen Ehrmann, Ralf Seppelt, Navin Ramakutty, Carsten Meyer
 date: "`r Sys.Date()`"
 output:
-  bookdown::html_document2:
-    fig_caption: yes
-    number_sections: yes
-    theme: spacelab
-    toc: yes
-    toc_float: yes
   bookdown::pdf_document2:
     fig_caption: yes
     highlight: pygments
     keep_tex: yes
     number_sections: yes
     toc: no
+  bookdown::html_document2:
+    fig_caption: yes
+    number_sections: yes
+    theme: spacelab
+    toc: yes
+    toc_float: yes
 bibliography: references.bib
 documentclass: article
 fontsize: 12pt
