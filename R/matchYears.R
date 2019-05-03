@@ -29,9 +29,7 @@ matchYears <- function(input = NULL, priority = "harvest", keepOrig = FALSE){
   assertChoice(x = priority, choices = c("harvest", "sowing"))
   assertLogical(x = keepOrig)
 
-
   out <- input
-
 
   out <- out %>%
     mutate(year = as.integer(years))

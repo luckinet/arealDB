@@ -22,3 +22,19 @@ getColTypes <- function(input = NULL){
   return(out)
 
 }
+
+#' Test whether a file is a compressed file
+#'
+#' @param x [\code{character(1)}]\cr the file name.
+#' @details This function looks at the file-extension and if it is one of
+#'   \code{.gz}, \code{.bz2}, \code{.tar} \code{.zip}, \code{.tgz}, \code{.gzip}
+#'   or \code{.7z}, it returns the value \code{TRUE}.
+#' @importFrom checkmate assertCharacter
+#' @export
+
+testCompressed <- function(x){
+
+  assertCharacter(x = x, any.missing = FALSE, len = 1)
+
+  return(grepl("^.*(.gz|.bz2|.tar|.zip|.tgz|.gzip|.7z)[[:space:]]*$", x))
+}

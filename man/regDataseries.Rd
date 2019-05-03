@@ -4,17 +4,14 @@
 \alias{regDataseries}
 \title{Register a new geometry entry}
 \usage{
-regDataseries(name = NULL, description = NULL, address = NULL,
-  website = NULL, notes = NULL, update = FALSE)
+regDataseries(name = NULL, description = NULL, website = NULL,
+  notes = NULL, update = FALSE)
 }
 \arguments{
 \item{name}{[\code{character(1)}]\cr the dataseries abbreviation.}
 
 \item{description}{[\code{character(1)}]\cr the "long name" or "brief
 description" of the dataseries.}
-
-\item{address}{[\code{character(1)}]\cr an optional address of the dataseries
-provider.}
 
 \item{website}{[\code{character(1)}]\cr the website, where the dataseries was
 found or where additional information can be found.}
@@ -23,6 +20,9 @@ found or where additional information can be found.}
 
 \item{update}{[\code{logical(1)}]\cr whether or not the file
 'id_dataseries.csv' should be updated.}
+
+\item{address}{[\code{character(1)}]\cr an optional address of the dataseries
+provider.}
 }
 \description{
 Register a new geometry entry
@@ -34,7 +34,6 @@ setPath(root = "/home/se87kuhe/Nextcloud/LUCKINet/data/")
 
 regDataseries(name = "maia",
               description = "Ministerio de Agroindustria",
-              address = "Buenos Aires, Argentina",
               website = "http://datosestimaciones.magyp.gob.ar/",
               update = FALSE)
 }

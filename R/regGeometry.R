@@ -122,6 +122,16 @@ regGeometry <- function(nation = NULL, subset = NULL, gSeries = NULL, level = 3,
   # make sure that the file is really there
   assertFileExists(x = filePath, access = "r", extension = "gpkg")
 
+  # also test whether the archive file is available ...
+  filesTrace <- str_split(archive, "\\|")[[1]]
+  assertFileExists(x = paste0(intPaths, "/administrative_boundaries/original_datasets/", filesTrace[1]), "r")
+
+  # ... and if it is compressed, whether also the file therein is given that contains the data
+  if(testCompressed(x = filesTrace[1]) & length(filesTrace) < 2){
+    theArchiveFile <- readline(paste0("please give the name of the file in ", filesTrace[1]," that contains the geometries: "))
+  }
+  archive <- paste0(archive, "|", theArchiveFile)
+
   # determine which layers exist and ask the user which to chose, if none is
   # given
   layers <- st_layers(dsn = filePath)

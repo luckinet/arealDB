@@ -66,6 +66,7 @@
 #'   assertIntegerish
 #' @importFrom dplyr filter distinct
 #' @importFrom readr read_csv
+#' @importFrom stringr str_split
 #' @export
 
 regCensus <- function(nation = NULL, subset = NULL, dSeries = NULL, gSeries = NULL,
@@ -77,7 +78,7 @@ regCensus <- function(nation = NULL, subset = NULL, dSeries = NULL, gSeries = NU
 
   # get tables
   id_census <- read_csv(paste0(intPaths, "/id_census.csv"), col_types = "iiicDcc")
-  id_dataseries <- read_csv(paste0(intPaths, "/id_dataseries.csv"), col_types = "iccccc")
+  id_dataseries <- read_csv(paste0(intPaths, "/id_dataseries.csv"), col_types = "icccc")
   id_geometries <- read_csv(paste0(intPaths, "/id_geometries.csv"), col_types = "iciccccDcc")
 
   # check validity of arguments
@@ -114,7 +115,6 @@ regCensus <- function(nation = NULL, subset = NULL, dSeries = NULL, gSeries = NU
   assertIntegerish(x = end, any.missing = FALSE, len = 1, upper = as.integer(format(Sys.Date(), "%Y")))
   assertCharacter(x = archive, any.missing = FALSE)
   assertCharacter(x = notes, ignore.case = TRUE, any.missing = FALSE, len = 1, null.ok = TRUE)
-  assertFileExists(x = paste0(intPaths, "/census/original_datasets/", archive), "r")
   assertLogical(x = update, len = 1)
 
   # determine nation value
@@ -160,6 +160,16 @@ regCensus <- function(nation = NULL, subset = NULL, dSeries = NULL, gSeries = NU
 
   # make sure that the file is really there
   assertFileExists(x = paste0(intPaths, "/census/stage1/", fileName), "r", extension = "csv")
+
+  # also test whether the archive file is available ...
+  filesTrace <- str_split(archive, "\\|")[[1]]
+  assertFileExists(x = paste0(intPaths, "/census/original_datasets/", filesTrace[1]), "r")
+
+  # ... and if it is compressed, whether also the file therein is given that contains the data
+  if(testCompressed(x = filesTrace[1]) & length(filesTrace) < 2){
+    theArchiveFile <- readline(paste0("please give the name of the file in ", filesTrace[1]," that contains the table: "))
+  }
+  archive <- paste0(archive, "|", theArchiveFile)
 
   # create a new data series, if dSeries is not part of the currently known data series names
   if(!any(id_dataseries$name %in% dSeries)){

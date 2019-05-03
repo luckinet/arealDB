@@ -17,7 +17,6 @@
 #'
 #' regDataseries(name = "maia",
 #'               description = "Ministerio de Agroindustria",
-#'               address = "Buenos Aires, Argentina",
 #'               website = "http://datosestimaciones.magyp.gob.ar/",
 #'               update = FALSE)
 #' }
@@ -25,18 +24,17 @@
 #' @importFrom tibble tibble
 #' @export
 
-regDataseries <- function(name = NULL, description = NULL, address = NULL,
-                          website = NULL, notes = NULL, update = FALSE){
+regDataseries <- function(name = NULL, description = NULL, website = NULL,
+                          notes = NULL, update = FALSE){
 
   # get tables
-  id_dataseries <- read_csv(paste0(getOption(x = "dmt_path"), "/id_dataseries.csv"), col_types = "iccccc")
+  id_dataseries <- read_csv(paste0(getOption(x = "dmt_path"), "/id_dataseries.csv"), col_types = "icccc")
 
   # check validity of arguments
   assertDataFrame(x = id_dataseries, ncols = 6)
   assertNames(x = colnames(id_dataseries), permutation.of = c("datID", "name", "long_name", "address", "website", "notes"))
   assertCharacter(x = name, ignore.case = TRUE, any.missing = FALSE, len = 1, null.ok = TRUE)
   assertCharacter(x = description, ignore.case = TRUE, any.missing = FALSE, len = 1, null.ok = TRUE)
-  assertCharacter(x = address, ignore.case = TRUE, any.missing = FALSE, len = 1, null.ok = TRUE)
   assertCharacter(x = website, ignore.case = TRUE, any.missing = FALSE, len = 1, null.ok = TRUE)
   assertCharacter(x = notes, ignore.case = TRUE, any.missing = FALSE, len = 1, null.ok = TRUE)
   assertLogical(x = update, len = 1)
@@ -69,10 +67,6 @@ regDataseries <- function(name = NULL, description = NULL, address = NULL,
     theWebsite <- website
   }
 
-  if(is.null(address)){
-    address = NA_character_
-  }
-
   if(is.null(notes)){
     notes = NA_character_
   }
@@ -82,7 +76,6 @@ regDataseries <- function(name = NULL, description = NULL, address = NULL,
   temp <- tibble(datID = newDID,
                  name = theName,
                  long_name = theDescr,
-                 address = address,
                  website = theWebsite,
                  notes = notes)
   if(update){
