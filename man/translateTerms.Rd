@@ -22,7 +22,7 @@ fuzzy-matching.}
 (default \code{TRUE}).}
 }
 \description{
-Translate terms
+Translate terms based on fuzzy matching.
 }
 \details{
 This is basically a sophisticated matching algorithm, that adds new

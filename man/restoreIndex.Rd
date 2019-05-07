@@ -34,6 +34,6 @@ setPath(root = "/home/se87kuhe/Nextcloud/LUCKINet/data/")
 restoreIndex(print = TRUE)
 
 # then restore one
-restoreIndex(pattern = "id_geometries", select = "newest")
+restoreIndex(pattern = "inv_geometries", select = "newest")
 }
 }

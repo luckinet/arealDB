@@ -18,5 +18,5 @@ object (\code{FALSE} default).}
 \code{subregion}.}
 }
 \description{
-Register geometries in a standardised format into a geo-database
+Harmonise and integrate  geometries in a standardised format
 }

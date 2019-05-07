@@ -4,7 +4,8 @@
 \alias{normCensus}
 \title{Register census tables}
 \usage{
-normCensus(input, algorithm = NULL, makeIDs = TRUE, update = FALSE)
+normCensus(input, algorithm = NULL, ..., keepOrig = TRUE,
+  update = FALSE)
 }
 \arguments{
 \item{input}{[\code{character(1)}]\cr path of the file to register.}
@@ -12,13 +13,13 @@ normCensus(input, algorithm = NULL, makeIDs = TRUE, update = FALSE)
 \item{algorithm}{[\code{character(1)}]\cr the algorithm to use for the
 specific format of the dataseries provider.}
 
-\item{makeIDs}{[\code{logical(1)}]\cr whether or not to derive IDs instead of
-chraracter strings describing adminstrative units and commodities.}
-
 \item{update}{[\code{logical(1)}]\cr whether or not the physical files should
 be updated (\code{TRUE}) or the function should merely return the new
 object (\code{FALSE} default).}
+
+\item{makeIDs}{[\code{logical(1)}]\cr whether or not to derive IDs instead of
+chraracter strings describing adminstrative units and commodities.}
 }
 \description{
-Register census tables in a standardised format
+Harmonise and integrate census tables in a standardised format
 }

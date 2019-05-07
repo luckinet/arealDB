@@ -44,7 +44,7 @@ boundaries emerge.}
 \item{notes}{[\code{character(1)}]\cr optional notes.}
 
 \item{update}{[\code{logical(1)}]\cr whether or not the file
-'id_sourceData.csv' should be updated.}
+'inv_sourceData.csv' should be updated.}
 }
 \description{
 This function creates the standardized name for a new census file and enters

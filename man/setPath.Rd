@@ -14,5 +14,5 @@ all tables and sub-directories.}
 Gather and load all look-up-tables for translating and matching terms.
 }
 \examples{
-setPath(root = "/home/se87kuhe/Nextcloud/LUCKINet/data/")
+setPath(root = "/home/se87kuhe/Nextcloud/LUCKINet/myProject/")
 }

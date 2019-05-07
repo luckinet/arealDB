@@ -19,7 +19,7 @@ found or where additional information can be found.}
 \item{notes}{[\code{character(1)}]\cr optional notes.}
 
 \item{update}{[\code{logical(1)}]\cr whether or not the file
-'id_dataseries.csv' should be updated.}
+'inv_dataseries.csv' should be updated.}
 
 \item{address}{[\code{character(1)}]\cr an optional address of the dataseries
 provider.}
