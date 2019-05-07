@@ -24,8 +24,8 @@ updateCensus <- function(census = NULL, nations = NULL, file = NULL){
   }
 
   # get some paths
-  targetDir <- paste0(getOption(x = "dmt_path"), "/census/stage2/")
-  archive <- paste0(getOption(x = "dmt_path"), "/census/stage1/processed")
+  targetDir <- paste0(getOption(x = "dmt_path"), "/cT_census/stage2/")
+  archive <- paste0(getOption(x = "dmt_path"), "/cT_census/stage1/processed")
 
   for(i in seq_along(nations)){
 
