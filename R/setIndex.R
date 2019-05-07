@@ -4,12 +4,15 @@
 #' @param input [\code{tibble(1)}]\cr a possibly already existing table based on
 #'   which a translation table should be constructed.
 #' @param output [\code{character(1)}]\cr name of the output file.
-#' @param origin [\code{character(1)}]\cr column in \code{input} that contains the terms
-#'   that should be mapped to a translation.
-#' @param target [\code{character(1)}]\cr column in \code{input} that contains the
-#'   standadrised terms to which \code{origin} should be mapped.
-#' @param source [\code{character(1)}]\cr column in \code{input} that contains the
-#'   source/provenance of the table.
+#' @param origin [\code{character(1)}]\cr column in \code{input} that contains
+#'   the terms that should be mapped to a translation.
+#' @param pid [\code{character(1)}]\cr column in \code{input} that contains the
+#'   primary ID for the index table. If this is not given, an ID name is created
+#'   as \code{paste0(str_sub(output, 1, 3), "ID")}
+#' @param target [\code{character(1)}]\cr column in \code{input} that contains
+#'   the standadrised terms to which \code{origin} should be mapped.
+#' @param source [\code{character(1)}]\cr column in \code{input} that contains
+#'   the source/provenance of the table.
 #' @details To translate variables or territorial unit names one could use
 #'   pre-existing translation tables, such as
 #'   \href{https://en.wikipedia.org/wiki/Gazetteer}{gazetteers}. At the start of
@@ -33,16 +36,16 @@
 #'
 #' # create index from an already existing table
 #' read_csv(file = "species.csv") %>%
-#'    makeIndex(output = "mySpecies", origin = messySynonyms,
-#'              target = scientificName)
+#'    setIndex(output = "mySpecies", origin = messySynonyms,
+#'             target = scientificName)
 #'
 #' # create empty table
-#' makeIndex(output = "exoticVariable")
+#' setIndex(output = "exoticVariable")
 #' @importFrom checkmate assertCharacter
-#' @importFrom stringr str_detect str_locate
+#' @importFrom stringr str_detect str_locate str_sub
 #' @export
 
-setIndex <- function(input = NULL, output = NULL, origin = NULL, target = NULL,
+setIndex <- function(input = NULL, output = NULL, pid = NULL, origin = NULL, target = NULL,
                      source = NULL){
 
   # set internal paths
@@ -52,9 +55,15 @@ setIndex <- function(input = NULL, output = NULL, origin = NULL, target = NULL,
   assertTibble(x = input, null.ok = TRUE)
   assertCharacter(x = output, any.missing = FALSE)
   if(!is.null(input)){
-    if(is.null(origin)){
-      assertChoice(x = as.character(origin), choices = colnames(input))
+    if(is.null(pid)){
+      idName <- paste0(str_sub(string = "commodities", start = 1, end = 3), "ID")
     } else {
+      idName <- pid
+    }
+    if(is.null(origin)){
+      makeLUS <- TRUE
+    } else {
+      makeLUS <- FALSE
       origin <- as.character(origin)
       assertChoice(x = origin, choices = colnames(input))
     }
@@ -72,42 +81,69 @@ setIndex <- function(input = NULL, output = NULL, origin = NULL, target = NULL,
 
   # if no input table is defined, create a new one
   if(is.null(input)){
-    out <- tibble(origin = character(), target = character())
+    outTT <- tibble(origin = character(), target = character())
+    outID <- tibble(!!idName := numeric(), target = character())
   } else {
     # otherwise, select the respective columns
-    out <- input %>%
-      select(origin = !!origin, target = !!target, everything())
+    outTT <- input %>%
+      select(origin = !!origin, target = !!target)
+    outID <- input %>%
+      select(!!idName, target = !!target, everything())
   }
 
-  # construct source
-  if(!any(colnames(out) == "source")){
+  # construct source for outTT
+  if(!any(colnames(outTT) == "source")){
     if(!is.null(source)){
       if(isColumn){
-        out <- out %>%
+        outTT <- outTT %>%
           rename(source = !!source)
       } else {
-        out <- out %>%
+        outTT <- outTT %>%
           mutate(source = paste0("makeIndex() from ", source, " on ", Sys.Date()))
       }
     } else {
-      out <- out %>%
+      outTT <- outTT %>%
         mutate(source = paste0("makeIndex() on ", Sys.Date()))
     }
   }
 
-  # if the output name doesn't contain 'tt' at the beginning, add it.
+  # construct ID for outID
+
+  # if origin was not provided, create the look-up section
+  if(makeLUS){
+    outTT <- outTT %>%
+      mutate(origin = NA_character_,
+             source = "original") %>%
+      select(origin, target, source)
+  }
+
+
+  # if the outputTT name doesn't contain 'tt' at the beginning, add it.
   if(!str_detect(string = output, pattern = "tt")){
-    output <- paste0("tt_", output)
+    outputTT <- paste0("tt_", output)
   } else {
     loc <- str_locate(string = output, pattern = "tt")
     if(loc[1] != 1){
-      output <- paste0("tt_", output)
+      outputTT <- paste0("tt_", output)
     }
   }
 
-  # write the table
-  write_csv(x = out,
-            path = paste0(intPaths, "/", output, ".csv"),
+  # if the outputID name doesn't contain 'id' at the beginning, add it.
+  if(!str_detect(string = output, pattern = "id")){
+    outputID <- paste0("id_", output)
+  } else {
+    loc <- str_locate(string = output, pattern = "id")
+    if(loc[1] != 1){
+      outputID <- paste0("id_", output)
+    }
+  }
+
+  # write the tables
+  write_csv(x = outTT,
+            path = paste0(intPaths, "/", outputTT, ".csv"),
+            na = "")
+  write_csv(x = outID,
+            path = paste0(intPaths, "/", outputID, ".csv"),
             na = "")
 
 }
