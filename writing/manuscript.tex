@@ -25,10 +25,14 @@
 }{}
 \usepackage[margin=1in]{geometry}
 \usepackage{hyperref}
+\PassOptionsToPackage{usenames,dvipsnames}{color} % color is loaded by hyperref
 \hypersetup{unicode=true,
-            pdftitle={censusTools - Standardising census statistics},
+            pdftitle={censusTools - An R package for integrating and harmonising census statistics},
             pdfauthor={Steffen Ehrmann, Ralf Seppelt, Navin Ramakutty, Carsten Meyer},
-            pdfborder={0 0 0},
+            colorlinks=true,
+            linkcolor=Maroon,
+            citecolor=Blue,
+            urlcolor=blue,
             breaklinks=true}
 \urlstyle{same}  % don't use monospace font for urls
 \usepackage{color}
@@ -115,7 +119,7 @@
 
 \setlength{\droptitle}{-2em}
 
-  \title{censusTools - Standardising census statistics}
+  \title{censusTools - An R package for integrating and harmonising census statistics}
     \pretitle{\vspace{\droptitle}\centering\huge}
   \posttitle{\par}
     \author{Steffen Ehrmann, Ralf Seppelt, Navin Ramakutty, Carsten Meyer}
@@ -123,55 +127,56 @@
   \postauthor{\par}
       \predate{\centering\large\emph}
   \postdate{\par}
-    \date{2019-04-12}
+    \date{2019-05-07}
 
 
 \begin{document}
 \maketitle
 
-\begin{Shaded}
-\begin{Highlighting}[]
-\KeywordTok{library}\NormalTok{(censusTools)}
-\end{Highlighting}
-\end{Shaded}
+\hypertarget{abstract}{%
+\section{Abstract}\label{abstract}}
+
+Humans gather information about a wide variety of phenomena in the form of census statistics.
+Those are typically based on recuring surveys that relate some quantity of socioeconomic, land-use, or environmental variables to a particular territorial area.
+We are interested in those data out of an economic interest, to assess environmental impacts or to support political decisions.
+
+Not only in the context of Sustainable Development Goals such data need to be harmonised across broad temporal and spatial extents up to the global scale.
+Mostly the issue is not to gather any data at all, but to make data across various sources compatible with one another.
+This obstacle has so far not been tackled to a degree that would be satisfying with respect to transparency and reproducability.
+However, to enable re-usability and thus future-proof the vast and often laboriously collected (and perhaps simplified) data, a transparent and reproducible workflow should be guaranteed.
+
+Here we introduce a software package (written in \texttt{R}) that allows the user to build up integrated and harmonised databases of a wide variety of census statistics, which are typically related to some sort of territorial unit. Databases set up with this tool are both internally consistent and can be combined with other databases assembled with this tool.
+We exemplify the usage by showcasing some of the important steps we carry out for an ongoing project on spatio-temporal dynamics of land-use.
+The package can be used for any kind of census statistics that shall be connected to territorial units.
 
 \hypertarget{introduction}{%
 \section{Introduction}\label{introduction}}
 
-\textbf{Definition and basic facts}
+Gathering census statistics to aggregate them is a laborious and cumbersome task.
+The aim of a census is to tally the overall population of some group of entities of interest.
+A census is thus often perceived as the opposite of a sampling, which merely tries to estimate the overall population based on a representative subset.
 
-Definition of Census data: ``A census is the procedure of systematically acquiring and recording information about the members of a given population.'' (\href{https://en.wikipedia.org/wiki/Census}{wiki})
+To enable an accurate assessment of any current situation, systematic census is crucial. A census is carried out to assess, for instance, the livelihood of people, to monitor agricultural production for food security, to inventory all sorts of commodities or products out of economic reasons or to assess the environmental impact of human activities with the help of checklists of plant and animal species.
 
-The \href{https://unstats.un.org/unsd/demographic/sources/census/docs/P\&R_Rev2.pdf}{United Nations} defines the essential features of population and housing censuses as ``individual enumeration, universality within a defined territory, simultaneity and defined periodicity'', and recommends that population censuses be taken at least every 10 years.
+While we already learn quite a bit from national censuses, there is a large incentive to aggregate several of such efforts across larger spatial or temporal scales to infer on phenomena that can only be perceived at those larger scales.
+For example, to successfully achieve several of the sustainable development goals, we need to recognize and acknowledge global phenomena that have unfolded during the course of decades (\emph{go into more details/examples here?!}).
+Moreover, we may want to combine census statistics from various sources that may cover the same spatio-temporal extent or that may be related to one another.
+For instance, combining several subsets that make up a larger area and considering the different sources of errors for small and large scale data lets us infer on uncertainties that may be introduced by all of the data sources.
 
-\emph{-\textgreater{} Often census data are counted per a specific spatial unit.} In other words, a census can have various properties, one of which is the location at which the recorded variables are true. For monitoring or modelling system responses with a spatial dimension it is thus necessary to make census data and spatial information align perfectly.
+This entails however that data from multiple, heterogeneous sources often have to be harmonised and integrated across several (spatio-temporal) scales. On top of the considerations and assumptions that go into individual nation level censuses, harmonizing them requires to consider yet another level of heterogeneity and assumptions.
 
-\emph{SE: Which term should we use for the geometries? There is so far `territorial unit', `administrative unit', `geometry' `spatial information' and derivations thereof.}
+\emph{Shall we also include a more theoretical section on how these census data are typically ``meso-scale'' data that fill an important gap between in-situ local scale data and larger scale data, cf Petr Keils topic?}
 
-\textbf{Outline the how and why of census data}
+The \href{https://unstats.un.org/unsd/demographic/sources/census/docs/P\&R_Rev2.pdf}{United Nations} defines the essential features of population and housing censuses as ``individual enumeration, universality within a defined territory, simultaneity and defined periodicity'', and recommends that population censuses be taken at least every 10 years. \emph{Agricultural censuses are defined by the FAO as follows\ldots{}}.
+Ecological assessments of plant or animal communities are typically not recorded in a census but merely sampled. (\emph{more details on that}) (König et al., \protect\hyperlink{ref-Koenig2019}{2019})
 
-\href{http://iasri.res.in/ebook/TEFCPI_sampling/AGRICULTURE\%20CENSUS\%20IN\%20INDIA.pdf}{AGRICULTURE CENSUS IN INDIA}
+Typically census data are counted per a specific spatial unit. In other words, a census can have various properties, one of which is the location at which the recorded variables are true.
+For monitoring or modelling system responses with a spatial dimension it is thus necessary to make census data and spatial information align perfectly.
 
-Recording census data and processing them to gain knowledge about various phenomena can have various reasons:
+A \emph{sample} of subsets of a population should be treated different than the \emph{census} of the (complete) population out of statistical considerations (\emph{should we mention details on that?}).
+The \emph{degree of detail/precision/\ldots{}} that comes with the difference between "sampling" and "taking a census" is an important property based on which we may want to select certain statistics under certain conditions.
 
-\begin{itemize}
-\tightlist
-\item
-  Economic interest
-\item
-  Environmental impact assessment
-\item
-  Improvement of the lifelihood of people
-\item
-  \ldots{}
-\end{itemize}
-
-\emph{mention one or more examples for each of those}
-
-Gathering census stats is a laborious task.
-It entails not only finding orientation in a vast number of different formats the data are provided in, but also associating those tabular information to the spatial information for which it often is recorded.
-
-A wide variety of census data are available. \emph{Outline two/three examples and their specifities}; \emph{Outline what they have in common and which differences between them need to be considered.}
+\emph{CM: Also, refer to some specific data integration processes that are currently underway but slowed down due to lack of such tools. E.g. FAO and IFPRI spend personnel funds each year on people like Ulrike who currently do this by hand. All these institutes are underfunded and understaffed and should thereby benefit from such a tool.}
 
 \emph{A couple of words on how census data are typically sampled and relationships between various census efforts: \url{http://www.fao.org/world-census-agriculture/methodology/en/}}
 
@@ -181,18 +186,36 @@ A wide variety of census data are available. \emph{Outline two/three examples an
 
 Territory outlines may change with time. \emph{More on how this becomes problematic}
 
-With the advancement of GIS knowhow, many census stats are provided together with the spatial information based on which they have been derived.
+Working with census statistics entails not only finding orientation in a vast number of different formats the data are provided in, but also associating those tabular information to the spatial information for which it often is recorded.
+
+With the advancement of GIS know-how, many census stats are provided together with the spatial information based on which they have been derived.
 When census data are aggregated for a particular territorial unit, even if they are originally recorded in the form of point records, the spatial extent of that unit needs to be available.
-However, often those spatial information are not taken from a standardised set of spatial geometries, such as the GADM dataset {[}REF{]}, but are derived or manually created from (outdated) local maps.
-Various sources of error make the spatial data deviate from a possible standard.
-Those could be choice of the wrong or no particular coordinate reference system, systematic errors when manually copying paper maps with digitising tools (\emph{SE: I guess it makes sense to go a bit more into detail here, but I have not the greatest knowledge, as that was before my time\ldots{}}) or deviations that emerge when vectorising and processing raster maps (either raster-outline as boundary of the spatial unit, or a deviating boundary when the raster-boundary is smoothed with some unknown smoothing function). This poses a very general source of inconsistency, when including or excluding certain (point) sources or other parts of information due to deviating spatial extent or when census data are inately related to the area or topological information of the territorial unit.
+However, often those spatial information are not taken from a standardized set of spatial geometries, such as the GADM data-set {[}REF{]}, but are derived or manually created from (outdated) local maps.
+Various sources of error make the spatial data deviate from a possible standard. Those could be:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Choice of the wrong or no particular coordinate reference system,
+\item
+  systematic errors when manually copying paper maps with digitizing tools,
+\item
+  deviations that emerge when vectorising and processing raster maps (either raster-outline as boundary of the spatial unit, or a deviating boundary when the raster-boundary is smoothed with some unknown smoothing function) or
+\item
+  disagreement on territorial boundaries.
+\end{enumerate}
+
+These eventually result in a very general source of inconsistency, when including or excluding certain (point) sources or other parts of information due to deviating spatial extents, or when census data are innately related to the area or topological information of territorial units.
 
 \hypertarget{the-challenge}{%
-\subsection{The challenge}\label{the-challenge}}
+\section{The challenge}\label{the-challenge}}
 
-\textbf{This chapter shall clearly state the aspects we want to solve with \texttt{censusTools}.}
+\textbf{This chapter shall clearly state/summarise the open aspects and what of that we want to solve with \texttt{censusTools}.}
 
-Census data and geometries must be associated to each other, possibly on a global scale and so that they are compatible across distinct efforts.
+A wide variety of census data are available. \emph{Outline two/three examples and their specifities}; \emph{Outline what they have in common and which differences between them need to be considered.}
+
+Census data and geometries must be associated to one another, possibly on a global scale and so that they are compatible across distinct efforts.
 
 This entails:
 
@@ -200,112 +223,204 @@ This entails:
 \def\labelenumi{\arabic{enumi}.}
 \tightlist
 \item
-  Any effort must be \emph{fully transparent and reproducible}.
-\item
   Administrative/territorial units must be matched \emph{across different languages}.
 \item
-  Likewise, particular key variables (species, commodities, basically any categories) might have different values in different languages or cenuses and they must also be matched.
+  Likewise, particular key variables (species, commodities, basically any categories) might have different values in different languages or censuses and they must also be matched.
 \item
   To make variables comparable across different efforts, there must be a standard for naming variables (\emph{SE: I would thus suggest in this paper that naming shall follow the Darwin Core, this would take the burden of defining such a naming standard off of our shoulders and would also assert that future compatibility is managed by the Darwin Core rules}).
+\item
+  Moreover, we believe that such efforts must be \emph{fully transparent and reproducible}.
 \end{enumerate}
 
 A generalised framework for managing census data that would be related to spatial information, irrespective of the covered variables, was devised and shall be presented in this paper.
 
-\hypertarget{known-tools-and-pipelines-based-on-r}{%
-\section{Known tools and pipelines (based on R)}\label{known-tools-and-pipelines-based-on-r}}
+\hypertarget{description-of-censustools}{%
+\section{\texorpdfstring{Description of \texttt{censusTools}}{Description of censusTools}}\label{description-of-censustools}}
 
-Full list: \url{https://crantastic.org/search?utf8=\%E2\%9C\%93\&q=census}
+This section describes briefly what \texttt{censusTools} does. In the following subsections technical details are outlined.
 
-Implement mapping in shiny: \url{https://shiny.rstudio.com/tutorial/written-tutorial/lesson5/}
+Typically some sort of polygons outlining territorial boundaries (here called \emph{geometries}) and some sort of tables outlining the quantities of particular variables (here called \emph{census tables}) shall be handled with \texttt{censusTools}.
 
-\href{https://medium.com/@miles.mcbain/combining-australian-census-data-with-the-same-sex-marriage-postal-survey-in-r-39d9b2082249}{Combining Australian Census data with the Same Sex Marriage Postal Survey in R}
+\textbf{Set project variables}
 
-\href{https://gl-li.netlify.com/2017/08/29/process-2010-census-data-with-data-table/}{Extract US Census 2010 data with data.table and dplyr}
+A typical workflow (Fig. 1) would initially consist of setting up project variables.
+Those variables are the categorical variables for which the census covers quantities, such as socio-economic groups of people, animal species or agricultural commodities.
+For each of the variables an \emph{index} and a \emph{translation table} are required.
+An index contains at least the values of the target variable (e.g. `maize', `wheat', `rice' for the variable `commodities'), unique IDs for each value and arbitrary data that describe the values further (e.g.~details on collecting/sampling the data, the scientific name or a description).
+A translation table contains at least the values that should be translated, the values of the translated target variable (same terms as in the index) and a statement as to how the translations have been created.
 
-\href{http://zevross.com/blog/2018/10/02/creating-beautiful-demographic-maps-in-r-with-the-tidycensus-and-tmap-packages/}{Creating beautiful demographic maps in R with the tidycensus and tmap packages}
+\textbf{Register input tables}
 
-\href{https://walkerke.github.io/2017/06/comparing-metros/}{Compare US metropolitan area characteristics in R with tidycensus and tigris}
+In a second step first of all some relevant data-series (i.e.~specific series of data which are delineated from other series due to their data format) and then the source-files of geometries and census tables are registered in respective index tables each.
+While project variables are set up only once, this second step will be carried out as often as new data are added to the database.
+The underlying functions give instructions, monitor and document progress and assert that all files are available in the correct directory (\emph{see section ``The directory structure''}).
+Additionally, they create unique IDs for data-series, geometries and census tables.
+The resulting index tables are eventually an inventory of which geometry and census files are part of the data-base, where and when they have been stored and which ID they have.
 
-\href{https://rconsortium.github.io/censusguide/}{A Guide to Working with US Census Data in R}, \href{https://rconsortium.github.io/censusguide/r-packages-all.html}{R-packages}
+\textbf{Normalise data}
 
-\hypertarget{packages}{%
-\subsection{Packages}\label{packages}}
+In a third step, both geometries and census tables are harmonised and integrated (i.e. \emph{normalised}) into a standardised data-base structure.
+Census tables typically contain information that are aggregated for certain territorial units and thus it makes sense, from an efficiency point of view, that the territorial units are first normalised, so that the census tables can simply be joined to them.
+Both, geometries and census tables are aggregated per nation.
+If data sources (geometries and census tables) contain information on several nations, they are dis-aggregated and the respective junks are appended to the nation specific files.
 
-\emph{perhaps include some statistics about how many packages there are}
+To normalise geometries a large computational effort is required, but much automisation is possible (\emph{see section ``Normalising spatial data''}).
+The geospatial data-base is built up from a basis that is provided by the user.
+It does not urge the user to employ for instance the GADM data-set {[}REF{]}, even though this is the recommended starting point recently.
+This basic geo-spatial data-set provides the hierarchical administrative organisation and the names of territorial units by which the following input shall be organised.
+GADM comes with alternative names for numerous territorial units, it acts thus in a way like a gazetteer.
+However, since it can't be guaranteed that all data providers use only names that have been covered by the included index, \texttt{censusTools} allows that new mappings between so far not recorded terms and target terms are made or that additional gazetteers are read in (\emph{see section ``Managing translation tables''}).
 
-\emph{explain briefly what the key packages are used for and how this relates to \texttt{censusTools}}
+Normalising census tables can only be automated to a certain degree.
+Most data providers don't follow a standard format when it comes to the provided data.
+All sort of messy tables need to be transformed and, to our knowledge, this is nothing a computer could recognise autonomously to date.
+\texttt{censusTools} relies on the \emph{rectr} R-package {[}REF{]}, which takes a list of instructions that describe where which data are located in a particular spreadsheet, and reorganises the information into a rectangular table that can be processed with a \emph{dplyr}-based pipeline {[}REF{]}.
+Eventually, the values of categorical variables in the census tables are mapped to their indices to reduce the size of the overall database.
+Such variables may prominently be the territorial units (\emph{see section ``Territory ID''}), agricultural commodities or basically any variable that is defined by the user (\emph{see section ``Normalising census data''}).
 
-tidycensus: \url{https://walkerke.github.io/tidycensus/}, \url{https://juliasilge.com/blog/using-tidycensus/}
+\begin{figure}
+\centering
+\includegraphics{data_management_overview.png}
+\caption{Fig. 1: Overview of the general workflow employed by \texttt{censusTools}.}
+\end{figure}
 
-censusapi: \url{https://github.com/hrecht/censusapi}, \url{https://cran.r-project.org/web/packages/censusapi/vignettes/getting-started.html}
+\hypertarget{the-directory-structure}{%
+\subsection{The directory structure}\label{the-directory-structure}}
 
-\href{https://journal.r-project.org/archive/2016/RJ-2016-043/RJ-2016-043.pdf}{tigris: An R Package to Access and Work with Geographic Data from the US Census Bureau}
-
-\hypertarget{what-this-r-package-provides}{%
-\section{What this R-package provides}\label{what-this-r-package-provides}}
-
-In a nutshell:
+\texttt{censusTools} relies on a rather rigid directory structure and thus creates this structure itself, when the function \texttt{setPath()} is called for the first time.
+Within the primary project directory the two directories \texttt{./cT\_geometries/} and \texttt{./cT\_census/} are created.
+Within both of those directories, the following directories are created:
 
 \begin{itemize}
 \tightlist
 \item
-  Builds a unique ID that relates census and spatial information.
+  \texttt{incoming/}: a tentative location for new data,
 \item
-  Standardises both census and spatial information so that they are compatible across large swaths of data sources.
+  \texttt{meta/} a place for related data,
 \item
-  Standardises ontologies of variable names and values.
+  \texttt{original\_datasets/} an archive of the original, unmodified files,
+\item
+  \texttt{stage1/} and \texttt{stage2/}, which store different qualities of modified data. In \texttt{stage1} the registered data are stored in a standardised format, geometries are stored as GeoPackage files {[}REF, \url{https://www.opengeospatial.org/standards/geopackage}{]} and census tables are stored as comma-separated value files with a UTF-8 encoding. In \texttt{stage2} the nation specific database files are stored.
 \end{itemize}
 
-\hypertarget{territory-id}{%
-\subsection{Territory ID}\label{territory-id}}
+\hypertarget{normalising-spatial-data}{%
+\subsection{Normalising spatial data}\label{normalising-spatial-data}}
 
-This is an ID per territorial unit which is unique per unit captures at the same time the hierarchical information.
-Territories, especially administrative units, are often subsets of larger administrative units and eventually of nations.
-At each administrative level, territorial units are enumerated along their sequence (\emph{starting from one through their count}) with a three-digit ID, restarting within each parent (\emph{I guess this needs some refinement}).
-The nestedness is represented by a sequence of those three digit IDs, where larger units are placed before units nested therein, such as \texttt{070\textquotesingle{}017\textquotesingle{}008} (which is, when sorting administrative units alphabetically, the community of Tammelin in Tartu, Estonia).
-This code is extended with more sets of unit-IDs, when working on the fourth/fifth/\ldots{} administrative level.
-The number of unit-IDs indicates thus the administrative level of the territorial unit.
+Despite this, \texttt{censusTools} matches territorial units not based on the administrative names, as those are less reliable than the spatial extent.
+It matches administrative units by their spatial overlap, with a so-called \emph{spatial join} {[}REF?{]}. (\emph{go into a couple moer details})
 
-\emph{I realised that the package also needs an option to join census and spatial data by an ID that may already be in the data, such as FIPS for the US census data.}
+\hypertarget{normalising-census-data}{%
+\subsection{Normalising census data}\label{normalising-census-data}}
 
-\hypertarget{standardised-census-data}{%
-\subsection{Standardised Census data}\label{standardised-census-data}}
+Census stats are stored in tables, where the data source(s), territorial and temporal information and the recorded variables are present in the following columns:
 
-Census stats are stored in tables, where the data source(s), territorial and temporal information and the recorded variables are present:
+\begin{itemize}
+\tightlist
+\item
+  \texttt{cenID} (census ID) and \texttt{geoID} (geometry ID) hold IDs that relate the respective row to a particular census and geometry data provider.
+  Often similar or the same data are provided by several distinct data providers or by data aggregators.
+  Those two IDs thus allow quality assessments of the data and ensure that the data provenance is properly documented.
+\item
+  \texttt{ahID} (administrative hierarchy ID) represents the ID that is also recorded in the respective spatial data and which relates census stats to territorial units.
+\item
+  \texttt{time-step} would be a column that denotes the time for which the census has been recorded. It could take any form, for example a combination of year and day-of-the-year (doy), merely the year or the month within a year, etc. This may depend on the temporal resolution of the source data-sets or of the questions that shall be addressed with the acquired data.
+\item
+  \texttt{variable(s)} can be any number of columns, each of which would contain either keys (typically categorical variables such as agricultural commodities or species) or values (typically some sort of quantity of the key, such as ``production'' and ``yield'' or ``abundance'').
+\end{itemize}
 
-\begin{longtable}[]{@{}llllll@{}}
+\begin{longtable}[]{@{}lllllll@{}}
 \toprule
-ID & censusSourceID & geometrySourceID & territoryID & timestep & variable(s)\tabularnewline
+\begin{minipage}[b]{0.07\columnwidth}\raggedright
+ID\strut
+\end{minipage} & \begin{minipage}[b]{0.07\columnwidth}\raggedright
+cenID\strut
+\end{minipage} & \begin{minipage}[b]{0.07\columnwidth}\raggedright
+geoID\strut
+\end{minipage} & \begin{minipage}[b]{0.13\columnwidth}\raggedright
+ahID\strut
+\end{minipage} & \begin{minipage}[b]{0.13\columnwidth}\raggedright
+time-step\strut
+\end{minipage} & \begin{minipage}[b]{0.17\columnwidth}\raggedright
+variable 1 (key)e.g.~commodity\strut
+\end{minipage} & \begin{minipage}[b]{0.17\columnwidth}\raggedright
+variable 2 (value)e.g.~production\strut
+\end{minipage}\tabularnewline
 \midrule
 \endhead
-1 & & & & &\tabularnewline
-2 & & & & &\tabularnewline
-\ldots{} & & & & &\tabularnewline
+\begin{minipage}[t]{0.07\columnwidth}\raggedright
+1\strut
+\end{minipage} & \begin{minipage}[t]{0.07\columnwidth}\raggedright
+1\strut
+\end{minipage} & \begin{minipage}[t]{0.07\columnwidth}\raggedright
+1\strut
+\end{minipage} & \begin{minipage}[t]{0.13\columnwidth}\raggedright
+070017008\strut
+\end{minipage} & \begin{minipage}[t]{0.13\columnwidth}\raggedright
+2016\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+maize\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+15000\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.07\columnwidth}\raggedright
+2\strut
+\end{minipage} & \begin{minipage}[t]{0.07\columnwidth}\raggedright
+1\strut
+\end{minipage} & \begin{minipage}[t]{0.07\columnwidth}\raggedright
+1\strut
+\end{minipage} & \begin{minipage}[t]{0.13\columnwidth}\raggedright
+070017008\strut
+\end{minipage} & \begin{minipage}[t]{0.13\columnwidth}\raggedright
+2016\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+wheat\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+12000\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.07\columnwidth}\raggedright
+3\strut
+\end{minipage} & \begin{minipage}[t]{0.07\columnwidth}\raggedright
+1\strut
+\end{minipage} & \begin{minipage}[t]{0.07\columnwidth}\raggedright
+1\strut
+\end{minipage} & \begin{minipage}[t]{0.13\columnwidth}\raggedright
+070017008\strut
+\end{minipage} & \begin{minipage}[t]{0.13\columnwidth}\raggedright
+2017\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+\ldots{}\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+\strut
+\end{minipage}\tabularnewline
+\begin{minipage}[t]{0.07\columnwidth}\raggedright
+\ldots{}\strut
+\end{minipage} & \begin{minipage}[t]{0.07\columnwidth}\raggedright
+\strut
+\end{minipage} & \begin{minipage}[t]{0.07\columnwidth}\raggedright
+\strut
+\end{minipage} & \begin{minipage}[t]{0.13\columnwidth}\raggedright
+\strut
+\end{minipage} & \begin{minipage}[t]{0.13\columnwidth}\raggedright
+\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+\strut
+\end{minipage} & \begin{minipage}[t]{0.17\columnwidth}\raggedright
+\strut
+\end{minipage}\tabularnewline
 \bottomrule
 \end{longtable}
 
-\texttt{censusSourceID} and \texttt{geometrySourceID} are important for data provenance.
-Often similar or the same data are provided by different dataseries providers.
+Both, \texttt{timestep} and \texttt{variables} are recorded indifferent of their units, which are recorded separately in the meta data. (\emph{SE: I still need to assert that the units are actually recorded; my idea would be that data should be recorded at the finest level at which they are reported so that aggregation only happens later, when the model is computed; which may not even be needed for some more advanced models in the future.}).
 
-\texttt{territoryID} relates territorial units to census stats.
-
-\texttt{timestep} would be a column that denotes the time for which the census has been recorded. It's temporal resolution should be adapted accordingly.
-
-\texttt{variable(s)} can be any number of columns, each of which would contain either keys (typically categorical variables such as ``commodities'' or ``species'') or values (typically some sort of quantity of the key, such as ``production'' and ``yield'' or ``abundance'').
-
-\hypertarget{standardised-spatial-data}{%
-\subsection{Standardised spatial data}\label{standardised-spatial-data}}
-
-\hypertarget{standardised-ontologies}{%
-\subsection{Standardised ontologies}\label{standardised-ontologies}}
+\hypertarget{managing-translation-tables}{%
+\subsection{Managing translation tables}\label{managing-translation-tables}}
 
 \emph{A couple of words about what ``key variables'' are and in general about the data types that might be recorded in census data}
 
 The key variables must all hold values that are part of the smallest common set.
-\emph{note: there is a difference between `variable names' and `values of key variables'. Yet, both need to be translated/unified. In the former case this would be following the Darwin Core standard, in the latter case this would be case-specific, but ideally still following some (external) standard. for LUCKINet this would be the FAO naming-standard}.
-Terms are gathered in a list, where they are related to a set of generalised terms.
+Terms are gathered in a list, where they are related to a set of generalized terms.
 For instance, commodities may either be labelled by their species, by the fao-ID or by a nation/language specific term.
-Hence, both, semantic synonyms and terms in other languages are translated to a common set of terms (\emph{SE: I have a more elgant word for that on the tip of my tounge, but can't come up with it right now}).
+Hence, both, semantic synonyms and terms in other languages are translated to a common set of terms.
 
 \begin{longtable}[]{@{}lll@{}}
 \toprule
@@ -321,38 +436,245 @@ anotherOne & itsTranslation & translateTerms() on 2019-02-28\tabularnewline
 \bottomrule
 \end{longtable}
 
-This table is split into two parts. The upper part contains all original terms, as they appear in different census datasets (\texttt{origin}), their unified translations (\texttt{target}) and \texttt{notes} on when and how (here, by the function \texttt{translateTerms()}) the translation has been carried out.
-The lower part contains all target terms to which original terms should be translated. When encountering new terms, those target terms are used for fuzzy matching.
-Moreover, before the translated data are finally entered into the database, they are checked against this list so that no new translations violate the ontological consistency (\emph{SE: I still have to implement this feature}).
+This table is split into two parts. The upper part contains all original terms, as they appear in different census data-sets (\texttt{origin}), their unified translations (\texttt{target}) and \texttt{notes} on when and how (here, by the function \texttt{translateTerms()}) the translation has been carried out.
+The lower part contains all target terms to which original terms should be translated.
+When encountering new terms, those target terms are used for fuzzy matching.
+Here, a list of the three most highly matched terms based on the Levenshtein distance {[}REF{]} is returned, from which the user has to chose.
+Moreover, before the translated data are finally entered into the database, they are checked against this list so that no new translations violate the ontological consistency (\emph{SE: I still have to make sure that this feature is actually implemented}).
+
+\hypertarget{territory-id}{%
+\subsection{Territory ID}\label{territory-id}}
+
+Administrative territorial units are often subsets of larger units and eventually of nations.
+To denote those units, we use a particular ID that is unique per unit, irrespective of the administrative level and which captures the hierarchical administrative information.
+
+At each administrative level, territorial units are enumerated along their alphabetic sequence with a three-digit ID, starting from 1 through their count. The "children" within each higher level unit ("parent") likewise restart at 1 and are enumerated along their alphabetic sequence.
+The nestedness is represented by a sequence of those three digit IDs, where parent units are placed before their children. For example, \texttt{070\textquotesingle{}017\textquotesingle{}008} is the community of Tammelin (8th community) in Tartumaa (17th county), Estonia (70th nation).
+This code is extended with more sets of unit-IDs, when working on the fourth/fifth/\ldots{} administrative level.
+
+(\emph{I have started a chapter in the discussion, where I outline how temporal and territorial shifts are dealt with in \texttt{censusTools}})
+
+\emph{I realised that the package also needs an option to join census and spatial data by an ID that may already be in the data, such as FIPS for the US census data.}
 
 \hypertarget{discussion}{%
 \section{Discussion}\label{discussion}}
 
-\emph{what does \texttt{censusTools} that other packages don't do?}
+\emph{what do other packages that \texttt{censusTools} doesn't do? -\textgreater{} CM: more precisely, what cool new things will now be facilitated with these new tools?), limitations (e.g.~against other tools or in general, but focusing on the specific challenges the toolls are meant to overcome), etc}
 
-\emph{what do other packages that \texttt{censusTools} doesn't do?}
-
-\emph{what can \texttt{censusTools} generally not be used for?} -\textgreater{} It is not a tool that automates extraction of census data from messy tables/spreadsheets. For that task, check out the R-package \texttt{rectr}. However, \texttt{censusTools} makes use of this package to organise a particular subset of messy data, agricultural census data that typically provide a narrow, predefined set of variables and meta information.
+\emph{what can \texttt{censusTools} generally not be used for?} -\textgreater{} It is not a tool that automates extraction of census data from messy tables/spreadsheets.
+For that task, check out the R-package \texttt{rectr}.
+However, \texttt{censusTools} makes use of this package to organize a particular subset of messy data, agricultural census data that typically provide a narrow, predefined set of variables and meta information.
 
 \emph{Discuss, based on parts that have been mentioned in the introduction, how \texttt{censusTools} can actually deal with the outlined challenges and the requirements of different kinds of census data.}
+
+\hypertarget{dealing-with-temporal-changes}{%
+\subsection{Dealing with temporal changes}\label{dealing-with-temporal-changes}}
+
+As the territory ID does not depend on any topological information of the territorial units, it allows to assign individual IDs to units that are valid only for a certain period of time.
+
+(\emph{SE: I still have to make sure that this is properly reflected by what the code does})
+
+\hypertarget{dealing-with-disputed-areas}{%
+\subsection{Dealing with disputed areas}\label{dealing-with-disputed-areas}}
+
+As the territory ID does not depend on any topological information of the territorial units, it allows to assign individual IDs to units that may be disputed territories.
+
+(\emph{SE: I still have to make sure that this is properly reflected by what the code does})
 
 \hypertarget{outlook}{%
 \section{Outlook}\label{outlook}}
 
 Perhaps talk about how to implement this for use in citizen science and for building large and exhaustive open databases.
 
-\emph{mention a couple of words about LUCKINet?!}
+\emph{mention a couple of words about LUCKINet?! -\textgreater{} CM: Could be done in a paragraph on different initiatives that could make good use of this tool. Could also mention e.g.~WorldPop for population census data, GIFT for regional checklists, etc.}
 
 \emph{How does \texttt{censusTools} facilitate interoperability with other tools (that may not exist yet)?}
 
+\hypertarget{session-info}{%
+\section{Session Info}\label{session-info}}
+
+\emph{this should probably be replaced by a proper list of packages that are used for \texttt{censusTools}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{sessionInfo}\NormalTok{()}
+\CommentTok{#> R version 3.6.0 (2019-04-26)}
+\CommentTok{#> Platform: x86_64-pc-linux-gnu (64-bit)}
+\CommentTok{#> Running under: Ubuntu 18.04.2 LTS}
+\CommentTok{#> }
+\CommentTok{#> Matrix products: default}
+\CommentTok{#> BLAS:   /usr/lib/x86_64-linux-gnu/blas/libblas.so.3.7.1}
+\CommentTok{#> LAPACK: /usr/lib/x86_64-linux-gnu/lapack/liblapack.so.3.7.1}
+\CommentTok{#> }
+\CommentTok{#> locale:}
+\CommentTok{#>  [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              }
+\CommentTok{#>  [3] LC_TIME=de_DE.UTF-8        LC_COLLATE=en_US.UTF-8    }
+\CommentTok{#>  [5] LC_MONETARY=de_DE.UTF-8    LC_MESSAGES=en_US.UTF-8   }
+\CommentTok{#>  [7] LC_PAPER=de_DE.UTF-8       LC_NAME=C                 }
+\CommentTok{#>  [9] LC_ADDRESS=C               LC_TELEPHONE=C            }
+\CommentTok{#> [11] LC_MEASUREMENT=de_DE.UTF-8 LC_IDENTIFICATION=C       }
+\CommentTok{#> }
+\CommentTok{#> attached base packages:}
+\CommentTok{#> [1] stats     graphics  grDevices utils     datasets  methods   base     }
+\CommentTok{#> }
+\CommentTok{#> other attached packages:}
+\CommentTok{#> [1] censusTools_0.1.0}
+\CommentTok{#> }
+\CommentTok{#> loaded via a namespace (and not attached):}
+\CommentTok{#>  [1] Rcpp_1.0.1         knitr_1.22         magrittr_1.5      }
+\CommentTok{#>  [4] units_0.6-2        hms_0.4.2          tidyselect_0.2.5  }
+\CommentTok{#>  [7] R6_2.4.0           rlang_0.3.4        stringr_1.4.0     }
+\CommentTok{#> [10] dplyr_0.8.0.1      tools_3.6.0        grid_3.6.0        }
+\CommentTok{#> [13] checkmate_1.9.1    xfun_0.6           KernSmooth_2.23-15}
+\CommentTok{#> [16] e1071_1.7-1        DBI_1.0.0          class_7.3-15      }
+\CommentTok{#> [19] htmltools_0.3.6    yaml_2.2.0         digest_0.6.18     }
+\CommentTok{#> [22] assertthat_0.2.1   tibble_2.1.1       sf_0.7-4          }
+\CommentTok{#> [25] crayon_1.3.4       bookdown_0.9       tidyr_0.8.3       }
+\CommentTok{#> [28] purrr_0.3.2        readr_1.3.1        glue_1.3.1        }
+\CommentTok{#> [31] evaluate_0.13      rmarkdown_1.12     stringi_1.4.3     }
+\CommentTok{#> [34] rectr_0.1.0        compiler_3.6.0     pillar_1.3.1      }
+\CommentTok{#> [37] backports_1.1.4    classInt_0.3-3     pkgconfig_2.0.2}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{miscellaneousnotescomments}{%
+\section{Miscellaneous/Notes/Comments}\label{miscellaneousnotescomments}}
+
+\hypertarget{comments-on-editorial-decisions}{%
+\subsection{Comments on editorial decisions}\label{comments-on-editorial-decisions}}
+
+\textbf{\emph{Steffen}}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  After reading more on it, it seems that it would make sense to use \emph{territorial unit}, which is at least in the European legislative speak the commonly used term: \url{https://en.wikipedia.org/wiki/Nomenclature_of_Territorial_Units_for_Statistics}.
+  Also, ``administrative unit'' seems to be often used to describe a unit that deals with administrative stuff within an organisation, like a school, etc.
+\item
+  I think it is not needed to specify in detail in the title that we only deal with \emph{census stats that are related to territorial units}, as this is typically the case for the concept of ``census'' (\url{https://en.wikipedia.org/wiki/Census}).
+\item
+  I am making a deliberate distinction between \emph{attribute} and \emph{property} (\url{https://stackoverflow.com/a/21566583})
+\end{enumerate}
+
+\hypertarget{known-tools-and-pipelines-based-on-r}{%
+\subsection{Known tools and pipelines (based on R)}\label{known-tools-and-pipelines-based-on-r}}
+
+\emph{this list is to gather information against what \texttt{censusTools} could be compared.}
+
+Implement mapping in shiny: \url{https://shiny.rstudio.com/tutorial/written-tutorial/lesson5/}
+
+\href{https://medium.com/@miles.mcbain/combining-australian-census-data-with-the-same-sex-marriage-postal-survey-in-r-39d9b2082249}{Combining Australian Census data with the Same Sex Marriage Postal Survey in R}
+
+\href{https://gl-li.netlify.com/2017/08/29/process-2010-census-data-with-data-table/}{Extract US Census 2010 data with data.table and dplyr}
+
+\href{http://zevross.com/blog/2018/10/02/creating-beautiful-demographic-maps-in-r-with-the-tidycensus-and-tmap-packages/}{Creating beautiful demographic maps in R with the tidycensus and tmap packages}
+
+\href{https://walkerke.github.io/2017/06/comparing-metros/}{Compare US metropolitan area characteristics in R with tidycensus and tigris}
+
+\href{https://rconsortium.github.io/censusguide/}{A Guide to Working with US Census Data in R}, \href{https://rconsortium.github.io/censusguide/r-packages-all.html}{R-packages}
+
+\hypertarget{important-papers-on-the-topic}{%
+\subsection{(Important) papers on the topic}\label{important-papers-on-the-topic}}
+
+Aalders \& Aitkenhead (\protect\hyperlink{ref-Aalders2006}{2006}): \emph{Modelling land use change is often constrained by imperfect and incomplete data sources. This paper explores three modelling methodologies and their ability to predict agricultural land use on the basis of information from the Scottish Agricultural Census.}
+
+Forclaz (\protect\hyperlink{ref-Forclaz2016}{2019}): \emph{This article provides a history of the First World Agricultural Census of 1930, an ambitious international attempt to evaluate world agricultural resources through the compilation of global statistics on crops, livestock, and agricultural production.}
+
+Monfreda et al. (\protect\hyperlink{ref-Monfreda2008}{2008}): \emph{Here we present land use data sets created by combining national, state, and county level census statistics with a recently updated global data set of croplands on a 5 min by 5 min (\textasciitilde{}10 km by 10 km) latitude-longitude grid.}
+
+Imbach et al. (\protect\hyperlink{ref-Imbach2015}{2015}): \emph{We present here an agricultural statistics database of the entire Amazonia region, with a harmonised description of crops and pastures in geospatial format, based on administrative boundary data at the municipality level. The spatial coverage includes countries within Amazonia and spans censuses and surveys from 1950 to 2012.}
+
+Otto et al. (\protect\hyperlink{ref-Otto2015}{2015}): \emph{Subnational socio-economic datasets are required if we are to assess the impacts of global environmental changes and to improve adaptation responses. Institutional and community efforts should concentrate on standardization of data collection methodologies, free public access, and geo-referencing.}
+
+Ricciardi et al. (\protect\hyperlink{ref-Ricciardi2018}{2018}\protect\hyperlink{ref-Ricciardi2018}{b}), Ricciardi et al. (\protect\hyperlink{ref-Ricciardi2018a}{2018}\protect\hyperlink{ref-Ricciardi2018a}{a}): \emph{We examine variations in crop production by farm size using a newly-compiled global sample of subnational level microdata and agricultural censuses covering more countries (n=55) and crop types (n=154) than assessed to date.}
+
+Waha et al. (\protect\hyperlink{ref-Waha2016}{2016}): \emph{Surveys for more than 9,500 households were conducted in the growing seasons 2002/2003 or 2003/2004 in eleven African countries: Burkina Faso, Cameroon, Ghana, Niger and Senegal in western Africa; Egypt in northern Africa; Ethiopia and Kenya in eastern Africa; South Africa, Zambia and Zimbabwe in southern Africa.}
+
+\hypertarget{links-to-look-through}{%
+\subsection{links to look through}\label{links-to-look-through}}
+
+\url{https://ajs.data-analysis.at/index.php/ajs/article/view/vol39,\%20no4\%20-\%202}
+
+\url{https://www.tandfonline.com/doi/abs/10.1080/136588198241590}
+
+\url{https://www.aeaweb.org/articles?id=10.1257/aer.p20161061}
+
+\url{https://www.journals.uchicago.edu/doi/abs/10.1086/693916}
+
+\url{https://search.proquest.com/openview/eb6bdc49aa2678f832fcf014ca09ae21/1?cbl=105444\&pq-origsite=gscholar}
+
+\url{https://www.jstor.org/stable/1403545?seq=1\#metadata_info_tab_contents}
+
+\url{http://www.fao.org/economic/ess/countrystat}
+
+\url{https://link.springer.com/chapter/10.1007/978-3-319-44421-5_3}
+
+\url{https://www.annualreviews.org/doi/abs/10.1146/annurev-statistics-041715-033713}
+
+\emph{there is still more\ldots{}}
+
+\url{https://www.ipums.org/}
+
+\url{https://datacatalog.worldbank.org/}
+
+\url{https://en.wikipedia.org/wiki/Gazetteer}
+
+\hypertarget{packages}{%
+\subsection{Packages}\label{packages}}
+
+\emph{perhaps include some statistics about how many packages there are}
+
+\emph{explain briefly what the key packages are used for and how this relates to \texttt{censusTools}}
+
+tidycensus: \url{https://walkerke.github.io/tidycensus/}, \url{https://juliasilge.com/blog/using-tidycensus/}
+
+censusapi: \url{https://github.com/hrecht/censusapi}, \url{https://cran.r-project.org/web/packages/censusapi/vignettes/getting-started.html}
+
+\href{https://journal.r-project.org/archive/2016/RJ-2016-043/RJ-2016-043.pdf}{tigris: An R Package to Access and Work with Geographic Data from the US Census Bureau}
+
 \hypertarget{sources-of-census-statistics-and-associated-geometries}{%
-\section{Sources of census statistics and associated geometries}\label{sources-of-census-statistics-and-associated-geometries}}
+\subsection{Sources of census statistics and associated geometries}\label{sources-of-census-statistics-and-associated-geometries}}
 
 Lots of information on processing census stats (in R) is based on the ``American Community Survey'' and ``Decennial Data from the US Census''.
 
 \href{https://en.wikipedia.org/wiki/List_of_national_and_international_statistical_services}{List of national and international statistical services}
 
 \href{https://pubs.usgs.gov/wri/wri944176/}{Spatial Data in Geographic Information System Format on Agricultural Chemical Use, Land Use, and Cropping Practices in the United States}
+
+\href{http://iasri.res.in/ebook/TEFCPI_sampling/AGRICULTURE\%20CENSUS\%20IN\%20INDIA.pdf}{AGRICULTURE CENSUS IN INDIA}
+
+\hypertarget{references}{%
+\section*{References}\label{references}}
+\addcontentsline{toc}{section}{References}
+
+\hypertarget{refs}{}
+\leavevmode\hypertarget{ref-Aalders2006}{}%
+Aalders, I. \& Aitkenhead, M.J. (2006). Agricultural census data and land use modelling. \emph{Computers, environment and urban systems}. 30 (6). pp. 799--814.
+
+\leavevmode\hypertarget{ref-Forclaz2016}{}%
+Forclaz, A.R. (2019). Agriculture, american expertise, and the quest for global data: Leon estabrook and the first world agricultural census of 1930*. \emph{Journal of Global History}.
+
+\leavevmode\hypertarget{ref-Imbach2015}{}%
+Imbach, P., Manrow, M., Barona, E., Barretto, A., Hyman, G. \& Ciais, P. (2015). Spatial and temporal contrasts in the distribution of crops and pastures across amazonia: A new agricultural land use data set from census data since 1950. \emph{Global biogeochemical cycles}. 29 (6). pp. 898--916.
+
+\leavevmode\hypertarget{ref-Koenig2019}{}%
+König, C., Weigelt, P., Schrader, J., Taylor, A., Kattge, J. \& Kreft, H. (2019). Biodiversity data integration--the significance of data resolution and domain. \emph{PLoS biology}. 17 (3). p. e3000183.
+
+\leavevmode\hypertarget{ref-Monfreda2008}{}%
+Monfreda, C., Ramankutty, N. \& Foley, J.A. (2008). Farming the planet: 2. Geographic distribution of crop areas, yields, physiological types, and net primary production in the year 2000. \emph{Global biogeochemical cycles}. 22 (1).
+
+\leavevmode\hypertarget{ref-Otto2015}{}%
+Otto, I.M., Biewald, A., Coumou, D., Feulner, G., Köhler, C., Nocke, T., Blok, A., Gröber, A., Selchow, S., Tyfield, D. \& others (2015). Socio-economic data for global environmental change research. \emph{Nature Climate Change}. 5 (6). p. 503.
+
+\leavevmode\hypertarget{ref-Ricciardi2018a}{}%
+Ricciardi, V., Ramankutty, N., Mehrabi, Z., Jarvis, L. \& Chookolingo, B. (2018a). An open-access dataset of crop production by farm size from agricultural censuses and surveys. \emph{Data in brief}. 19. pp. 1970--1988.
+
+\leavevmode\hypertarget{ref-Ricciardi2018}{}%
+Ricciardi, V., Ramankutty, N., Mehrabi, Z., Jarvis, L. \& Chookolingo, B. (2018b). How much of the world's food do smallholders produce? \emph{Global food security}. 17. pp. 64--72.
+
+\leavevmode\hypertarget{ref-Waha2016}{}%
+Waha, K., Zipf, B., Kurukulasuriya, P. \& Hassan, R.M. (2016). An agricultural survey for more than 9,500 african households. \emph{Scientific data}. 3. p. 160020.
 
 
 \end{document}
