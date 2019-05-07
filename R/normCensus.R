@@ -1,6 +1,6 @@
 #' Register census tables
 #'
-#' Register census tables in a standardised format
+#' Harmonise and integrate census tables in a standardised format
 #' @param input [\code{character(1)}]\cr path of the file to register.
 #' @param algorithm [\code{character(1)}]\cr the algorithm to use for the
 #'   specific format of the dataseries provider.
@@ -16,19 +16,24 @@
 #' @importFrom readr read_csv
 #' @importFrom rectr register rectangularise
 #' @importFrom stringr str_split
+#' @importFrom tidyselect everything
 #' @export
 
-normCensus <- function(input, algorithm = NULL, makeIDs = TRUE, update = FALSE){
+normCensus <- function(input, algorithm = NULL, ..., keepOrig = TRUE,
+                       update = FALSE){
 
   # get objects
-  id_census <- read_csv(paste0(getOption(x = "dmt_path"), "/id_census.csv"), col_types = "iiicDcc")
+  inv_census <- read_csv(paste0(getOption(x = "dmt_path"), "/inv_census.csv"), col_types = "iiicDcc")
   theAlgo <- get(algorithm)
+  vars <- exprs(..., .named = TRUE)
+
+  return(vars)
 
   # check validity of arguments
-  assertNames(x = colnames(id_census), permutation.of = c("cenID", "datID", "geoID", "source_file", "date", "orig_file", "notes"))
+  assertNames(x = colnames(inv_census), permutation.of = c("cenID", "datID", "geoID", "source_file", "date", "orig_file", "notes"))
   assertFileExists(x = input, access = "r")
   assertCharacter(x = algorithm, null.ok = TRUE)
-  assertLogical(x = makeIDs, len = 1)
+  assertList(x = makeIDs, types = "character")
   assertLogical(x = update, len = 1)
 
   # scrutinize file-name (the fields, which are delimited by "_" carry important information)
@@ -37,10 +42,10 @@ normCensus <- function(input, algorithm = NULL, makeIDs = TRUE, update = FALSE){
   fields <- str_split(file_name, "_")[[1]]
 
   # get some variables
-  cenID <- ifelse(length(id_census$cenID) == 0, 1,
-                  id_census$cenID[grep(pattern = file_name, x = id_census$source_file)])
-  geoID <- ifelse(length(id_census$geoID) == 0, 1,
-                  id_census$geoID[grep(pattern = file_name, x = id_census$source_file)])
+  cenID <- ifelse(length(inv_census$cenID) == 0, 1,
+                  inv_census$cenID[grep(pattern = file_name, x = inv_census$source_file)])
+  geoID <- ifelse(length(inv_census$geoID) == 0, 1,
+                  inv_census$geoID[grep(pattern = file_name, x = inv_census$source_file)])
   country <- countries$nation[countries$iso_a3 == toupper(fields[1])]
 
   out <- read_csv(input) %>%
@@ -48,18 +53,15 @@ normCensus <- function(input, algorithm = NULL, makeIDs = TRUE, update = FALSE){
     rectangularise() %>%
     mutate(id = seq_along(years),
            cenID = cenID,
-           geoID = geoID)
+           geoID = geoID) %>%
+    matchUnits(keepOrig = keepOrig)
 
-  if(makeIDs){
-    # match administrative units and commodites with the respective tables to
-    # get their IDs; match years to bring it into the correct format
+  if(length(vars) != 0){
     out <- out %>%
-      matchAdminUnits(keepOrig = TRUE) %>%
-      matchCommodities(simpleName = commodities) %>%
-      matchYears() %>%
-      select(id, cenID, geoID, ahID, faoID, year, `harvested area`, production, yield)
+      matchVars(vars, keepOrig = keepOrig)
   }
 
+  # in case the user wants to update, update the census file
   if(update){
 
     theNations <- out %>%
@@ -71,7 +73,6 @@ normCensus <- function(input, algorithm = NULL, makeIDs = TRUE, update = FALSE){
     out <- out %>%
       select(-al1_alt)
 
-    # in case the user wants to update, update the census file
     updateCensus(census = out, nations = theNations, file = toClean)
 
   } else{
