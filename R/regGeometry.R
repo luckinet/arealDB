@@ -66,10 +66,10 @@ regGeometry <- function(nation = NULL, subset = NULL, gSeries = NULL, level = 3,
   intPaths <- paste0(getOption(x = "dmt_path"))
 
   # get tables
-  id_geometries <- read_csv(paste0(intPaths, "/id_geometries.csv"), col_types = "iciccccDcc")
+  inv_geometries <- read_csv(paste0(intPaths, "/inv_geometries.csv"), col_types = "iciccccDcc")
 
   # check validity of arguments
-  assertNames(x = colnames(id_geometries), permutation.of = c("geoID", "name", "level", "source_file", "layer", "nation_column", "unit_column", "date", "orig_file", "notes"))
+  assertNames(x = colnames(inv_geometries), permutation.of = c("geoID", "name", "level", "source_file", "layer", "nation_column", "unit_column", "date", "orig_file", "notes"))
   assertCharacter(x = nation, ignore.case = TRUE, any.missing = FALSE, len = 1, null.ok = TRUE)
   assertCharacter(x = subset, any.missing = FALSE, null.ok = TRUE)
   if(!is.null(subset)){
@@ -89,7 +89,7 @@ regGeometry <- function(nation = NULL, subset = NULL, gSeries = NULL, level = 3,
   if(is.null(archive)){
     archive <- readline("... How is the original file named? ")
   }
-  assertFileExists(x = paste0(intPaths, "/administrative_boundaries/original_datasets/", archive))
+  assertFileExists(x = paste0(intPaths, "/cT_geometries/original_datasets/", archive))
   assertCharacter(x = notes, ignore.case = TRUE, any.missing = FALSE, len = 1, null.ok = TRUE)
   assertLogical(x = update, len = 1)
 
@@ -117,14 +117,14 @@ regGeometry <- function(nation = NULL, subset = NULL, gSeries = NULL, level = 3,
   fileName <- paste0(theNation, "_", level, "_", subset, "_", gSeries, ".gpkg")
   message(fileName)
   done <- readline(paste0("... press any key when the file '", fileName, "' is stored: "))
-  filePath <- paste0(intPaths, "/administrative_boundaries/stage1/", fileName)
+  filePath <- paste0(intPaths, "/cT_geometries/stage1/", fileName)
 
   # make sure that the file is really there
   assertFileExists(x = filePath, access = "r", extension = "gpkg")
 
   # also test whether the archive file is available ...
   filesTrace <- str_split(archive, "\\|")[[1]]
-  assertFileExists(x = paste0(intPaths, "/administrative_boundaries/original_datasets/", filesTrace[1]), "r")
+  assertFileExists(x = paste0(intPaths, "/cT_geometries/original_datasets/", filesTrace[1]), "r")
 
   # ... and if it is compressed, whether also the file therein is given that contains the data
   if(testCompressed(x = filesTrace[1]) & length(filesTrace) < 2){
@@ -153,7 +153,7 @@ regGeometry <- function(nation = NULL, subset = NULL, gSeries = NULL, level = 3,
   }
 
   # construct new documentation
-  newGID <- ifelse(length(id_geometries$geoID)==0, 1, as.integer(max(id_geometries$geoID)+1))
+  newGID <- ifelse(length(inv_geometries$geoID)==0, 1, as.integer(max(inv_geometries$geoID)+1))
   doc <- tibble(geoID = newGID,
                 name = gSeries,
                 level = level,
@@ -167,8 +167,8 @@ regGeometry <- function(nation = NULL, subset = NULL, gSeries = NULL, level = 3,
 
   if(update){
     # in case the user wants to update, attach the new information to the table
-    # id_geometries.csv
-    updateIndex(index = doc, name = "id_geometries")
+    # inv_geometries.csv
+    updateIndex(index = doc, name = "inv_geometries")
   }
 
   return(doc)

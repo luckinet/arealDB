@@ -19,7 +19,7 @@
 #' restoreIndex(print = TRUE)
 #'
 #' # then restore one
-#' restoreIndex(pattern = "id_geometries", select = "newest")
+#' restoreIndex(pattern = "inv_geometries", select = "newest")
 #' }
 #' @importFrom checkmate assertCharacter test_true assertLogical
 #' @importFrom utils tail

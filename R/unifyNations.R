@@ -39,7 +39,7 @@ unifyNations <- function(unify = NULL, nameCol = NULL){
 
     if(length(falseNames) > 0){
       newNames <- translateTerms(terms = falseNames,
-                                 index = "trans_nations")
+                                 index = "tt_nations")
 
       correctNames <- bind_cols(!!nameCol := correctNames,
                                 target = correctNames)
@@ -76,7 +76,7 @@ unifyNations <- function(unify = NULL, nameCol = NULL){
 
     if(length(falseNames) > 0){
       newNames <- translateTerms(terms = falseNames,
-                                 index = "trans_nations")
+                                 index = "tt_nations")
 
       if(dim(newNames)[1] == 0){
         return(NA_character_)

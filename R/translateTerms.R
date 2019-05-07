@@ -1,5 +1,6 @@
 #' Translate terms
 #'
+#' Translate terms based on fuzzy matching.
 #' @param terms [\code{character(.)}]\cr terms to be translated.
 #' @param index [\code{data.frame(1)}]\cr table that contains translations.
 #' @param fuzzy_terms [\code{vector(.)}]\cr target terms with which a fuzzy

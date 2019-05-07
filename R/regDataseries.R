@@ -9,7 +9,7 @@
 #'   found or where additional information can be found.
 #' @param notes [\code{character(1)}]\cr optional notes.
 #' @param update [\code{logical(1)}]\cr whether or not the file
-#'   'id_dataseries.csv' should be updated.
+#'   'inv_dataseries.csv' should be updated.
 #' @examples
 #' \dontrun{
 #'
@@ -28,11 +28,11 @@ regDataseries <- function(name = NULL, description = NULL, website = NULL,
                           notes = NULL, update = FALSE){
 
   # get tables
-  id_dataseries <- read_csv(paste0(getOption(x = "dmt_path"), "/id_dataseries.csv"), col_types = "icccc")
+  inv_dataseries <- read_csv(paste0(getOption(x = "dmt_path"), "/inv_dataseries.csv"), col_types = "icccc")
 
   # check validity of arguments
-  assertDataFrame(x = id_dataseries, ncols = 6)
-  assertNames(x = colnames(id_dataseries), permutation.of = c("datID", "name", "long_name", "address", "website", "notes"))
+  assertDataFrame(x = inv_dataseries, ncols = 6)
+  assertNames(x = colnames(inv_dataseries), permutation.of = c("datID", "name", "long_name", "address", "website", "notes"))
   assertCharacter(x = name, ignore.case = TRUE, any.missing = FALSE, len = 1, null.ok = TRUE)
   assertCharacter(x = description, ignore.case = TRUE, any.missing = FALSE, len = 1, null.ok = TRUE)
   assertCharacter(x = website, ignore.case = TRUE, any.missing = FALSE, len = 1, null.ok = TRUE)
@@ -72,15 +72,15 @@ regDataseries <- function(name = NULL, description = NULL, website = NULL,
   }
 
   # construct new documentation
-  newDID <- ifelse(length(id_dataseries$datID)==0, 1, as.integer(max(id_dataseries$datID)+1))
+  newDID <- ifelse(length(inv_dataseries$datID)==0, 1, as.integer(max(inv_dataseries$datID)+1))
   temp <- tibble(datID = newDID,
                  name = theName,
                  long_name = theDescr,
                  website = theWebsite,
                  notes = notes)
   if(update){
-    # in case the user wants to update, attach the new information to the table id_dataseries.csv
-    updateIndex(index = temp, name = "id_dataseries")
+    # in case the user wants to update, attach the new information to the table inv_dataseries.csv
+    updateIndex(index = temp, name = "inv_dataseries")
   }
 
   return(temp)

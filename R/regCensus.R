@@ -25,7 +25,7 @@
 #'   boundaries emerge.
 #' @param notes [\code{character(1)}]\cr optional notes.
 #' @param update [\code{logical(1)}]\cr whether or not the file
-#'   'id_sourceData.csv' should be updated.
+#'   'inv_sourceData.csv' should be updated.
 #' @details When processing census data, carry out the following steps:
 #'   \enumerate{ \item Determine the \code{nation}, \code{administrative level},
 #'   the \code{subset} of the nation and the \code{dataseries} of the shapefiles
@@ -77,15 +77,15 @@ regCensus <- function(nation = NULL, subset = NULL, dSeries = NULL, gSeries = NU
   intPaths <- paste0(getOption(x = "dmt_path"))
 
   # get tables
-  id_census <- read_csv(paste0(intPaths, "/id_census.csv"), col_types = "iiicDcc")
-  id_dataseries <- read_csv(paste0(intPaths, "/id_dataseries.csv"), col_types = "icccc")
-  id_geometries <- read_csv(paste0(intPaths, "/id_geometries.csv"), col_types = "iciccccDcc")
+  inv_census <- read_csv(paste0(intPaths, "/inv_census.csv"), col_types = "iiicDcc")
+  inv_dataseries <- read_csv(paste0(intPaths, "/inv_dataseries.csv"), col_types = "icccc")
+  inv_geometries <- read_csv(paste0(intPaths, "/inv_geometries.csv"), col_types = "iciccccDcc")
 
   # check validity of arguments
-  assertDataFrame(x = id_census, ncols = 7)
-  assertNames(x = colnames(id_census), permutation.of = c("cenID", "datID", "geoID", "source_file", "date", "orig_file", "notes"))
-  assertNames(x = colnames(id_dataseries), permutation.of = c("datID", "name", "long_name", "address", "website", "notes"))
-  assertNames(x = colnames(id_geometries), permutation.of = c("geoID", "name", "level", "source_file", "layer", "nation_column", "unit_column", "date", "orig_file", "notes"))
+  assertDataFrame(x = inv_census, ncols = 7)
+  assertNames(x = colnames(inv_census), permutation.of = c("cenID", "datID", "geoID", "source_file", "date", "orig_file", "notes"))
+  assertNames(x = colnames(inv_dataseries), permutation.of = c("datID", "name", "long_name", "website", "notes"))
+  assertNames(x = colnames(inv_geometries), permutation.of = c("geoID", "name", "level", "source_file", "layer", "nation_column", "unit_column", "date", "orig_file", "notes"))
   assertCharacter(x = nation, ignore.case = TRUE, any.missing = FALSE, len = 1, null.ok = TRUE)
   assertIntegerish(x = level, any.missing = FALSE, len = 1)
   assertCharacter(x = subset, any.missing = FALSE, null.ok = TRUE)
@@ -159,11 +159,11 @@ regCensus <- function(nation = NULL, subset = NULL, dSeries = NULL, gSeries = NU
   done <- readline(paste0("  ... press any key when the file '", fileName, "' is stored: "))
 
   # make sure that the file is really there
-  assertFileExists(x = paste0(intPaths, "/census/stage1/", fileName), "r", extension = "csv")
+  assertFileExists(x = paste0(intPaths, "/cT_census/stage1/", fileName), "r", extension = "csv")
 
   # also test whether the archive file is available ...
   filesTrace <- str_split(archive, "\\|")[[1]]
-  assertFileExists(x = paste0(intPaths, "/census/original_datasets/", filesTrace[1]), "r")
+  assertFileExists(x = paste0(intPaths, "/cT_census/original_datasets/", filesTrace[1]), "r")
 
   # ... and if it is compressed, whether also the file therein is given that contains the data
   if(testCompressed(x = filesTrace[1]) & length(filesTrace) < 2){
@@ -172,15 +172,15 @@ regCensus <- function(nation = NULL, subset = NULL, dSeries = NULL, gSeries = NU
   archive <- paste0(archive, "|", theArchiveFile)
 
   # create a new data series, if dSeries is not part of the currently known data series names
-  if(!any(id_dataseries$name %in% dSeries)){
+  if(!any(inv_dataseries$name %in% dSeries)){
     dataSeries <- regDataseries(name = dSeries,
                                 update = update)
     dataSeries <- dataSeries$datID
   } else{
-    dataSeries <- id_dataseries$datID[id_dataseries$name %in% dSeries]
+    dataSeries <- inv_dataseries$datID[inv_dataseries$name %in% dSeries]
   }
   # create a new geometry series, if gSeries is not part of the currently known geometry series names
-  geomSeries <- id_geometries[id_geometries$name %in% gSeries,] %>%
+  geomSeries <- inv_geometries[inv_geometries$name %in% gSeries,] %>%
     filter(level == !!level) %>%
     pull("geoID")
   if(length(geomSeries) == 0){
@@ -194,7 +194,7 @@ regCensus <- function(nation = NULL, subset = NULL, dSeries = NULL, gSeries = NU
   }
 
   # put together new census database entry
-  newCID <- ifelse(length(id_census$cenID)==0, 1, as.integer(max(id_census$cenID)+1))
+  newCID <- ifelse(length(inv_census$cenID)==0, 1, as.integer(max(inv_census$cenID)+1))
   doc <- tibble(cenID = newCID,
                 datID = dataSeries,
                 geoID = geomSeries,
@@ -204,8 +204,8 @@ regCensus <- function(nation = NULL, subset = NULL, dSeries = NULL, gSeries = NU
                 notes = notes)
 
   if(update){
-    # in case the user wants to update, attach the new information to the table id_sourceData.csv
-    updateIndex(index = doc, name = "id_census")
+    # in case the user wants to update, attach the new information to the table inv_sourceData.csv
+    updateIndex(index = doc, name = "inv_census")
   }
 
   # updateCensus()
