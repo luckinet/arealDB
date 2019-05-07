@@ -29,10 +29,10 @@
 #' @importFrom utils txtProgressBar setTxtProgressBar
 #' @export
 
-matchAdminUnits <- function(input = NULL, ..., keepOrig = FALSE){
+matchUnits <- function(input = NULL, ..., keepOrig = FALSE){
 
   # set internal objects
-  intPaths <- paste0(getOption(x = "dmt_path"), "/administrative_boundaries/")
+  intPaths <- paste0(getOption(x = "dmt_path"), "/cT_geometries/")
   adminLvls <- exprs(..., .named = TRUE)
 
   # check validity of arguments
@@ -67,7 +67,7 @@ matchAdminUnits <- function(input = NULL, ..., keepOrig = FALSE){
     cleanNation <- unifyNations(unify = rawNation)
 
     if(is.na(cleanNation)){
-      message(paste0("\n--> ! skipping ", rawNation, " because it does not match in 'trans_nations.csv'."))
+      message(paste0("\n--> ! skipping ", rawNation, " because it does not match in 'tt_nations.csv'."))
       next
     }
 
@@ -135,11 +135,11 @@ matchAdminUnits <- function(input = NULL, ..., keepOrig = FALSE){
 
         # ... translate them to the default unit names
         theParents <- translateTerms(terms = unique(inputUnits[[1]]),
-                                     index = "trans_units",
+                                     index = "tt_units",
                                      fuzzy_terms = unique(parentSubset$name))
         theParents <- unique(theParents)
         theUnits <- translateTerms(terms = unique(inputUnits[[2]]),
-                                   index = "trans_units",
+                                   index = "tt_units",
                                    fuzzy_terms = unique(unitSubset$name))
         theUnits <- unique(theUnits)
 
