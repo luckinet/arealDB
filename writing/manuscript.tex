@@ -245,44 +245,91 @@ Typically some sort of polygons outlining territorial boundaries (here called \e
 
 A typical workflow (Fig. 1) would initially consist of setting up project variables.
 Those variables are the categorical variables for which the census covers quantities, such as socio-economic groups of people, animal species or agricultural commodities.
-For each of the variables an \emph{index} and a \emph{translation table} are required.
+For each of the variables an \emph{index} and a \emph{translation table} are required (\emph{see section ``Index and translation tables''}).
 An index contains at least the values of the target variable (e.g. `maize', `wheat', `rice' for the variable `commodities'), unique IDs for each value and arbitrary data that describe the values further (e.g.~details on collecting/sampling the data, the scientific name or a description).
 A translation table contains at least the values that should be translated, the values of the translated target variable (same terms as in the index) and a statement as to how the translations have been created.
 
 \textbf{Register input tables}
 
-In a second step first of all some relevant data-series (i.e.~specific series of data which are delineated from other series due to their data format) and then the source-files of geometries and census tables are registered in respective index tables each.
+In a second step first of all some relevant data-series (i.e.~specific series of data which are delineated from other series due to their data format) and then the source-files of geometries and census tables are registered in respective inventory tables each.
 While project variables are set up only once, this second step will be carried out as often as new data are added to the database.
 The underlying functions give instructions, monitor and document progress and assert that all files are available in the correct directory (\emph{see section ``The directory structure''}).
 Additionally, they create unique IDs for data-series, geometries and census tables.
-The resulting index tables are eventually an inventory of which geometry and census files are part of the data-base, where and when they have been stored and which ID they have.
+The resulting inventory tables document which geometry and census files are part of the data-base, where and when they have been stored and which ID they have.
 
 \textbf{Normalise data}
 
 In a third step, both geometries and census tables are harmonised and integrated (i.e. \emph{normalised}) into a standardised data-base structure.
 Census tables typically contain information that are aggregated for certain territorial units and thus it makes sense, from an efficiency point of view, that the territorial units are first normalised, so that the census tables can simply be joined to them.
-Both, geometries and census tables are aggregated per nation.
-If data sources (geometries and census tables) contain information on several nations, they are dis-aggregated and the respective junks are appended to the nation specific files.
+Both, geometries and census tables are aggregated per nation (\emph{see section ``Normalising spatial data'' and ``Normalising census data''}).
 
-To normalise geometries a large computational effort is required, but much automisation is possible (\emph{see section ``Normalising spatial data''}).
-The geospatial data-base is built up from a basis that is provided by the user.
-It does not urge the user to employ for instance the GADM data-set {[}REF{]}, even though this is the recommended starting point recently.
-This basic geo-spatial data-set provides the hierarchical administrative organisation and the names of territorial units by which the following input shall be organised.
-GADM comes with alternative names for numerous territorial units, it acts thus in a way like a gazetteer.
-However, since it can't be guaranteed that all data providers use only names that have been covered by the included index, \texttt{censusTools} allows that new mappings between so far not recorded terms and target terms are made or that additional gazetteers are read in (\emph{see section ``Managing translation tables''}).
-
-Normalising census tables can only be automated to a certain degree.
-Most data providers don't follow a standard format when it comes to the provided data.
-All sort of messy tables need to be transformed and, to our knowledge, this is nothing a computer could recognise autonomously to date.
-\texttt{censusTools} relies on the \emph{rectr} R-package {[}REF{]}, which takes a list of instructions that describe where which data are located in a particular spreadsheet, and reorganises the information into a rectangular table that can be processed with a \emph{dplyr}-based pipeline {[}REF{]}.
 Eventually, the values of categorical variables in the census tables are mapped to their indices to reduce the size of the overall database.
-Such variables may prominently be the territorial units (\emph{see section ``Territory ID''}), agricultural commodities or basically any variable that is defined by the user (\emph{see section ``Normalising census data''}).
+Such variables may prominently be the territorial units (\emph{see section ``Territory ID''}), agricultural commodities or basically any variable that is defined by the user.
 
 \begin{figure}
 \centering
-\includegraphics{data_management_overview.png}
+\includegraphics{data_management_overview.svg}
 \caption{Fig. 1: Overview of the general workflow employed by \texttt{censusTools}.}
 \end{figure}
+
+\hypertarget{index-and-translation-tables}{%
+\subsection{Index and translation tables}\label{index-and-translation-tables}}
+
+Index tables shall at least contain the values of the target variables and an associated ID. Moreover, it can contain all sort of additional information or alternative IDs that could be selected based on the additional information. For the example case on agricultural commodities, \texttt{simpleName} and \texttt{faoID} are target variable and ID. Additional information are contained in the columns:
+
+\begin{itemize}
+\tightlist
+\item
+  \texttt{primary}, which specifies whether a commodity is a primary or a processed commodity,
+\item
+  \texttt{faoName}, which stores the official FAO name of the commodity,
+\item
+  \texttt{faoGrouID} and \texttt{faoGroupName}, the ID and name of the commodity group,
+\item
+  \texttt{canonicalName}, the scientific name of the primary commodities and
+\item
+  \texttt{definition}, which gives additional, contextual information that may serve to delineate the commodity in unclear cases.
+\end{itemize}
+
+When handling data from various data providers that are active in different languages and who don't follow any common standards for data curation or don't have shared ontologies, it is expected that plenty of variables will contain values that don't match.
+In those cases so-called gazetteers can help to find sort of a standard.
+For instance, the GADM data-set comes with alternative names for numerous territorial units, which can be used for alternative matching. The GBIF data-set contains the backbone taxonomy {[}REF{]}, which could be used for this purpose when it comes to species (\emph{SE: additional/other/better suggestions for widely known tables of that kind?}).
+However, since it can't be guaranteed that all data providers use only names that have been covered by the included translation tables, the function \texttt{translateTerms()} allows that new mappings between so far not recorded terms and target terms are made or that additional gazetteers are read in.
+
+Translation tables consist of two parts, a translation section and a look-up section. They are organised in the three columns:
+
+\begin{itemize}
+\tightlist
+\item
+  \texttt{origin}, which contains all native terms as they appear in different census data-sets,
+\item
+  \texttt{target}, their unified translations and
+\item
+  \texttt{source}, which documents how and when the translation has been carried out.
+\end{itemize}
+
+The upper part of the table contains all \texttt{origin\ \textless{}-\textgreater{}\ target} mappings.
+In this section one would insert an already existing translation table.
+The lower part contains the target terms to which new, unmapped terms should be translated.
+In this section of the translation table one would insert a standardised ontology, when encountering new terms, those target terms are used for fuzzy matching.
+However, here the column \texttt{origin} remains empty and the column \texttt{source} must contain the value \emph{original} for the function \texttt{translateTerms()} to recognise this distinction.
+
+\begin{longtable}[]{@{}lll@{}}
+\toprule
+origin & target & notes\tabularnewline
+\midrule
+\endhead
+Beans, dry & beans dry & translateTerms() on 2019-03-25\tabularnewline
+Poroto seco & beans dry & translateTerms() on 2019-03-19\tabularnewline
+\ldots{} & \ldots{} &\tabularnewline
+& beans dry & original\tabularnewline
+& broad beans dry & original\tabularnewline
+& peas dry & original\tabularnewline
+\bottomrule
+\end{longtable}
+
+Here, a list of the three most highly matched terms based on the Levenshtein distance {[}REF{]} is returned, from which the user has to chose.
+Moreover, before the translated data are finally entered into the database, they are checked against this list so that no new translations violate the ontological consistency (\emph{SE: I still have to make sure that this feature is actually implemented}).
 
 \hypertarget{the-directory-structure}{%
 \subsection{The directory structure}\label{the-directory-structure}}
@@ -294,11 +341,11 @@ Within both of those directories, the following directories are created:
 \begin{itemize}
 \tightlist
 \item
-  \texttt{incoming/}: a tentative location for new data,
+  \texttt{incoming/}, a tentative location for new data,
 \item
-  \texttt{meta/} a place for related data,
+  \texttt{meta/}, a place for related data,
 \item
-  \texttt{original\_datasets/} an archive of the original, unmodified files,
+  \texttt{original\_datasets/}, an archive of the original, unmodified files,
 \item
   \texttt{stage1/} and \texttt{stage2/}, which store different qualities of modified data. In \texttt{stage1} the registered data are stored in a standardised format, geometries are stored as GeoPackage files {[}REF, \url{https://www.opengeospatial.org/standards/geopackage}{]} and census tables are stored as comma-separated value files with a UTF-8 encoding. In \texttt{stage2} the nation specific database files are stored.
 \end{itemize}
@@ -306,13 +353,23 @@ Within both of those directories, the following directories are created:
 \hypertarget{normalising-spatial-data}{%
 \subsection{Normalising spatial data}\label{normalising-spatial-data}}
 
-Despite this, \texttt{censusTools} matches territorial units not based on the administrative names, as those are less reliable than the spatial extent.
-It matches administrative units by their spatial overlap, with a so-called \emph{spatial join} {[}REF?{]}. (\emph{go into a couple moer details})
+To normalise geometries a large computational effort is required, but much automisation is possible.
+The geospatial data-base is built up from a basis that is provided by the user.
+It does not urge the user to employ for instance the GADM data-set {[}REF{]}, even though this is the recommended starting point recently.
+This basic geo-spatial data-set should provide the hierarchical administrative organisation and the names of territorial units by which the following input shall be organised.
+
+\texttt{censusTools} matches territorial units not based on the administrative names, as those are less reliable than the spatial extent.
+It matches administrative units by their spatial overlap, with a so-called \emph{spatial join} {[}REF?{]}.
 
 \hypertarget{normalising-census-data}{%
 \subsection{Normalising census data}\label{normalising-census-data}}
 
-Census stats are stored in tables, where the data source(s), territorial and temporal information and the recorded variables are present in the following columns:
+Normalising census tables can only be automated to a certain degree.
+Most data providers don't follow a standard format when it comes to the provided data.
+All sort of messy tables need to be transformed and, to our knowledge, this is nothing a computer could recognise autonomously to date.
+\texttt{censusTools} relies on the \emph{rectr} R-package {[}REF{]}, which takes a list of instructions that describe where which data are located in a particular spreadsheet, and reorganises the information into a rectangular table that can be processed with a \emph{dplyr}-based pipeline {[}REF{]}.
+
+Census stats are eventually stored in tables, where the data source(s), territorial and temporal information and the recorded variables are present in the following columns:
 
 \begin{itemize}
 \tightlist
@@ -411,36 +468,6 @@ wheat\strut
 \end{longtable}
 
 Both, \texttt{timestep} and \texttt{variables} are recorded indifferent of their units, which are recorded separately in the meta data. (\emph{SE: I still need to assert that the units are actually recorded; my idea would be that data should be recorded at the finest level at which they are reported so that aggregation only happens later, when the model is computed; which may not even be needed for some more advanced models in the future.}).
-
-\hypertarget{managing-translation-tables}{%
-\subsection{Managing translation tables}\label{managing-translation-tables}}
-
-\emph{A couple of words about what ``key variables'' are and in general about the data types that might be recorded in census data}
-
-The key variables must all hold values that are part of the smallest common set.
-Terms are gathered in a list, where they are related to a set of generalized terms.
-For instance, commodities may either be labelled by their species, by the fao-ID or by a nation/language specific term.
-Hence, both, semantic synonyms and terms in other languages are translated to a common set of terms.
-
-\begin{longtable}[]{@{}lll@{}}
-\toprule
-origin & target & notes\tabularnewline
-\midrule
-\endhead
-toTranslate & translated & translateTerms() on 2019-02-28\tabularnewline
-anotherOne & itsTranslation & translateTerms() on 2019-02-28\tabularnewline
-\ldots{} & \ldots{} &\tabularnewline
-& term1 & target\tabularnewline
-& term2 & target\tabularnewline
-& term3 & target\tabularnewline
-\bottomrule
-\end{longtable}
-
-This table is split into two parts. The upper part contains all original terms, as they appear in different census data-sets (\texttt{origin}), their unified translations (\texttt{target}) and \texttt{notes} on when and how (here, by the function \texttt{translateTerms()}) the translation has been carried out.
-The lower part contains all target terms to which original terms should be translated.
-When encountering new terms, those target terms are used for fuzzy matching.
-Here, a list of the three most highly matched terms based on the Levenshtein distance {[}REF{]} is returned, from which the user has to chose.
-Moreover, before the translated data are finally entered into the database, they are checked against this list so that no new translations violate the ontological consistency (\emph{SE: I still have to make sure that this feature is actually implemented}).
 
 \hypertarget{territory-id}{%
 \subsection{Territory ID}\label{territory-id}}

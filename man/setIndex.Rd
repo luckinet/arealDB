@@ -4,8 +4,8 @@
 \alias{setIndex}
 \title{Make and set an index}
 \usage{
-setIndex(input = NULL, output = NULL, origin = NULL, target = NULL,
-  source = NULL)
+setIndex(input = NULL, output = NULL, pid = NULL, origin = NULL,
+  target = NULL, source = NULL)
 }
 \arguments{
 \item{input}{[\code{tibble(1)}]\cr a possibly already existing table based on
@@ -13,14 +13,18 @@ which a translation table should be constructed.}
 
 \item{output}{[\code{character(1)}]\cr name of the output file.}
 
-\item{origin}{[\code{character(1)}]\cr column in \code{input} that contains the terms
-that should be mapped to a translation.}
+\item{pid}{[\code{character(1)}]\cr column in \code{input} that contains the
+primary ID for the index table. If this is not given, an ID name is created
+as \code{paste0(str_sub(output, 1, 3), "ID")}}
 
-\item{target}{[\code{character(1)}]\cr column in \code{input} that contains the
-standadrised terms to which \code{origin} should be mapped.}
+\item{origin}{[\code{character(1)}]\cr column in \code{input} that contains
+the terms that should be mapped to a translation.}
 
-\item{source}{[\code{character(1)}]\cr column in \code{input} that contains the
-source/provenance of the table.}
+\item{target}{[\code{character(1)}]\cr column in \code{input} that contains
+the standadrised terms to which \code{origin} should be mapped.}
+
+\item{source}{[\code{character(1)}]\cr column in \code{input} that contains
+the source/provenance of the table.}
 }
 \description{
 Turn any table into a translation table.
@@ -50,9 +54,9 @@ setPath(root = "/home/se87kuhe/Nextcloud/LUCKINet/data/")
 
 # create index from an already existing table
 read_csv(file = "species.csv") \%>\%
-   makeIndex(output = "mySpecies", origin = messySynonyms,
-             target = scientificName)
+   setIndex(output = "mySpecies", origin = messySynonyms,
+            target = scientificName)
 
 # create empty table
-makeIndex(output = "exoticVariable")
+setIndex(output = "exoticVariable")
 }

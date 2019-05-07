@@ -34,7 +34,6 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
-library(censusTools)
 ```
 
 # Abstract
@@ -104,34 +103,59 @@ Various sources of error make the spatial data deviate from a possible standard.
 These eventually result in a very general source of inconsistency, when including or excluding certain (point) sources or other parts of information due to deviating spatial extents, or when census data are innately related to the area or topological information of territorial units.
 
 # The challenge
-**This chapter shall clearly state/summarise the open aspects and what of that we want to solve with `censusTools`.**
 
 A wide variety of census data are available. *Outline two/three examples and their specifities*; *Outline what they have in common and which differences between them need to be considered.*
 
-Census data and geometries must be associated to one another, possibly on a global scale and so that they are compatible across distinct efforts.
+Census data and geometries must be associated to one another, possibly across large spatial and temporal scales and so that they are compatible across distinct efforts.
 
 This entails:
 
-1. Administrative/territorial units must be matched *across different languages*.
-2. Likewise, particular key variables (species, commodities, basically any categories) might have different values in different languages or censuses and they must also be matched.
-3. To make variables comparable across different efforts, there must be a standard for naming variables (*SE: I would thus suggest in this paper that naming shall follow the Darwin Core, this would take the burden of defining such a naming standard off of our shoulders and would also assert that future compatibility is managed by the Darwin Core rules*).
-4. Moreover, we believe that such efforts must be *fully transparent and reproducible*.
+1. Administrative/territorial units must be matched across different languages.
+2. Likewise, particular key variables (species, commodities, ...) might have different values in different languages or use different ontologies and they must also be matched.
+3. To make variables comparable across different efforts, there must be a standard for naming variables (*well... then this might be a topic that we have identified as crucial, but that censusTools doesn't solve, as there is no commonly defined ontology available yet. Hence we should perhaps make a call for such efforts at the end of the discussion!?*).
+4. Moreover, we believe that full transparency and reproducibility are crucial so that changes that may become necessary based on a different view of a set of problems or different demands to the data can be compared meaningfully with previous efforts.
 
-A generalised framework for managing census data that would be related to spatial information, irrespective of the covered variables, was devised and shall be presented in this paper.
+A generalised framework for managing census data that would be related to spatial information, irrespective of the covered variables, was devised and shall be presented in this paper. As example data-set we use ...
+
+*example use-case on a dataset that is already publicly available, this could be a combination of the data (from the US census) that can be obtained with one of the already existing census packages (see below) and the relatively open data from brazil, which need to be downloaded with a custom workflow (i.e. wget).*
 
 # Description of `censusTools`
 
-This section describes briefly what `censusTools` does. In the following subsections technical details are outlined.
+This section describes briefly what `censusTools` does and showcases the example. In the following subsections the technical details are outlined.
 
 Typically some sort of polygons outlining territorial boundaries (here called *geometries*) and some sort of tables outlining the quantities of particular variables (here called *census tables*) shall be handled with `censusTools`.
+Moreover, it can't be expected that any of the data come in the same format, neither with regard to the file type nor with regard to how the data are arranged inside those files.
+
+```{r}
+library(censusTools)
+library(readr)
+library(magrittr)
+
+# set the project path
+setPath(root = "/home/se87kuhe/my_science/r-dev/censusTools/writing/newProject")
+```
 
 **Set project variables**
 
 A typical workflow (Fig. 1) would initially consist of setting up project variables.
 Those variables are the categorical variables for which the census covers quantities, such as socio-economic groups of people, animal species or agricultural commodities.
 For each of the variables an *index* and a *translation table* are required (*see section "Index and translation tables"*).
-An index contains at least the values of the target variable (e.g. 'maize', 'wheat', 'rice' for the variable 'commodities'), unique IDs for each value and arbitrary data that describe the values further (e.g. details on collecting/sampling the data, the scientific name or a description).
-A translation table contains at least the values that should be translated, the values of the translated target variable (same terms as in the index) and a statement as to how the translations have been created.
+An index contains at least the values of the target variable and unique IDs for each value.
+Additionally arbitrary data that describe the values further may be provided (e.g. details on collecting/sampling the data, the scientific name, a description or ...).
+A translation table contains at least the values that should be translated, the values of the translated target variable (same terms as in the index) and a statement that describes the source of the translations.
+
+```{r}
+# provide a table that is primarily an index table, i.e. it contains terms and a related ID
+read_csv(file = "fao_commodities.csv") %>% 
+  setIndex(output = "commodities", pid = "faoID", target = "simpleName")
+
+# this creates the tables 'id_commodities' and 'tt_commodities'
+read_csv(file = "newProject/id_commodities.csv", col_types = "iclciccc")
+read_csv(file = "newProject/tt_commodities.csv", col_types = "ccc")
+
+# provide a table that is primarily a translation table
+# SE: must still check whether this works
+```
 
 **Register input tables**
 
@@ -139,8 +163,11 @@ In a second step first of all some relevant data-series (i.e. specific series of
 While project variables are set up only once, this second step will be carried out as often as new data are added to the database.
 The underlying functions give instructions, monitor and document progress and assert that all files are available in the correct directory (*see section "The directory structure"*).
 Additionally, they create unique IDs for data-series, geometries and census tables.
-The resulting inventory tables document which geometry and census files are part of the data-base, where and when they have been stored and which ID they have.
+The resulting inventory tables document which geometry and census files are part of the data-base, which ID they have, where and when the data have been stored.
 
+```{r}
+# ...
+```
 **Normalise data**
 
 In a third step, both geometries and census tables are harmonised and integrated (i.e. *normalised*) into a standardised data-base structure.
@@ -163,9 +190,11 @@ Index tables shall at least contain the values of the target variables and an as
 * `definition`, which gives additional, contextual information that may serve to delineate the commodity in unclear cases.
 
 When handling data from various data providers that are active in different languages and who don't follow any common standards for data curation or don't have shared ontologies, it is expected that plenty of variables will contain values that don't match.
+Both, terms from different languages and terms from different ontologies need to be translated into one common language, this is covered by a translation table.
 In those cases so-called gazetteers can help to find sort of a standard.
-For instance, the GADM data-set comes with alternative names for numerous territorial units, which can be used for alternative matching. The GBIF data-set contains the backbone taxonomy [REF], which could be used for this purpose when it comes to species (*SE: additional/other/better suggestions for widely known tables of that kind?*).
-However, since it can't be guaranteed that all data providers use only names that have been covered by the included translation tables, the function `translateTerms()` allows that new mappings between so far not recorded terms and target terms are made or that additional gazetteers are read in.
+For instance, the GADM data-set comes with alternative names for numerous territorial units, which can be used for alternative matching.
+The GBIF data-set contains the backbone taxonomy [REF], which could be used for this purpose when it comes to species (*SE: additional/other/better suggestions for widely known tables of that kind?*).
+However, since it can't be guaranteed that all data providers use only names that have been covered by the included translation tables, the function `translateTerms()` allows that new mappings between so far not recorded terms and target terms are made.
 
 Translation tables consist of two parts, a translation section and a look-up section. They are organised in the three columns:
 
@@ -173,22 +202,25 @@ Translation tables consist of two parts, a translation section and a look-up sec
 * `target`, their unified translations and 
 * `source`, which documents how and when the translation has been carried out. 
 
-The upper part of the table contains all `origin <-> target` mappings.
-In this section one would insert an already existing translation table.
-The lower part contains the target terms to which new, unmapped terms should be translated.
-In this section of the translation table one would insert a standardised ontology, when encountering new terms, those target terms are used for fuzzy matching.
-However, here the column `origin` remains empty and the column `source` must contain the value *original* for the function `translateTerms()` to recognise this distinction.
+The translation section (upper part) of the table contains all `origin <-> target` mappings.
+This section is populated when using `translateTerms()`.
+Alternatively one could insert an already existing translation table.
 
 | origin | target | notes |
 | :- | :- | :- |
-| toTranslate | translated | translateTerms() on 2019-02-28|
-| anotherOne | itsTranslation | translateTerms() on 2019-02-28|
+| Beans, dry | beans dry | translateTerms() on 2019-03-25|
+| Poroto seco | beans dry | translateTerms() on 2019-03-19|
 | ... | ... |  |
-|  | term1 | target |
-|  | term2 | target |
-|  | term3 | target |
+|  | beans dry | original |
+|  | broad beans dry | original |
+|  | peas dry | original |
 
-Here, a list of the three most highly matched terms based on the Levenshtein distance [REF] is returned, from which the user has to chose.
+
+The look-up section (lower part) contains the target terms to which new, unmapped terms should be translated.
+In this section one would insert the terms of a standardised ontology.
+When encountering new terms, those target terms are used for fuzzy matching, where a list of the three most highly matched terms based on the Levenshtein distance [REF] is returned, from which the user has to chose.
+The column `origin` remains empty and the column `source` must contain the value *original* for the function `translateTerms()` to recognise the distinction between translation and look-up section.
+
 Moreover, before the translated data are finally entered into the database, they are checked against this list so that no new translations violate the ontological consistency (*SE: I still have to make sure that this feature is actually implemented*).
 
 ## The directory structure
@@ -208,6 +240,8 @@ To normalise geometries a large computational effort is required, but much autom
 The geospatial data-base is built up from a basis that is provided by the user.
 It does not urge the user to employ for instance the GADM data-set [REF], even though this is the recommended starting point recently.
 This basic geo-spatial data-set should provide the hierarchical administrative organisation and the names of territorial units by which the following input shall be organised.
+
+*needs more details*
 
 `censusTools` matches territorial units not based on the administrative names, as those are less reliable than the spatial extent.
 It matches administrative units by their spatial overlap, with a so-called *spatial join* [REF?].

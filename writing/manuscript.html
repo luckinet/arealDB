@@ -1624,34 +1624,92 @@ Various sources of error make the spatial data deviate from a possible standard.
 </div>
 <div id="the-challenge" class="section level1">
 <h1><span class="header-section-number">3</span> The challenge</h1>
-<p><strong>This chapter shall clearly state/summarise the open aspects and what of that we want to solve with <code>censusTools</code>.</strong></p>
 <p>A wide variety of census data are available. <em>Outline two/three examples and their specifities</em>; <em>Outline what they have in common and which differences between them need to be considered.</em></p>
-<p>Census data and geometries must be associated to one another, possibly on a global scale and so that they are compatible across distinct efforts.</p>
+<p>Census data and geometries must be associated to one another, possibly across large spatial and temporal scales and so that they are compatible across distinct efforts.</p>
 <p>This entails:</p>
 <ol style="list-style-type: decimal">
-<li>Administrative/territorial units must be matched <em>across different languages</em>.</li>
-<li>Likewise, particular key variables (species, commodities, basically any categories) might have different values in different languages or censuses and they must also be matched.</li>
-<li>To make variables comparable across different efforts, there must be a standard for naming variables (<em>SE: I would thus suggest in this paper that naming shall follow the Darwin Core, this would take the burden of defining such a naming standard off of our shoulders and would also assert that future compatibility is managed by the Darwin Core rules</em>).</li>
-<li>Moreover, we believe that such efforts must be <em>fully transparent and reproducible</em>.</li>
+<li>Administrative/territorial units must be matched across different languages.</li>
+<li>Likewise, particular key variables (species, commodities, …) might have different values in different languages or use different ontologies and they must also be matched.</li>
+<li>To make variables comparable across different efforts, there must be a standard for naming variables (<em>well… then this might be a topic that we have identified as crucial, but that censusTools doesn’t solve, as there is no commonly defined ontology available yet. Hence we should perhaps make a call for such efforts at the end of the discussion!?</em>).</li>
+<li>Moreover, we believe that full transparency and reproducibility are crucial so that changes that may become necessary based on a different view of a set of problems or different demands to the data can be compared meaningfully with previous efforts.</li>
 </ol>
-<p>A generalised framework for managing census data that would be related to spatial information, irrespective of the covered variables, was devised and shall be presented in this paper.</p>
+<p>A generalised framework for managing census data that would be related to spatial information, irrespective of the covered variables, was devised and shall be presented in this paper. As example data-set we use …</p>
+<p><em>example use-case on a dataset that is already publicly available, this could be a combination of the data (from the US census) that can be obtained with one of the already existing census packages (see below) and the relatively open data from brazil, which need to be downloaded with a custom workflow (i.e. wget).</em></p>
 </div>
 <div id="description-of-censustools" class="section level1">
 <h1><span class="header-section-number">4</span> Description of <code>censusTools</code></h1>
-<p>This section describes briefly what <code>censusTools</code> does. In the following subsections technical details are outlined.</p>
-<p>Typically some sort of polygons outlining territorial boundaries (here called <em>geometries</em>) and some sort of tables outlining the quantities of particular variables (here called <em>census tables</em>) shall be handled with <code>censusTools</code>.</p>
+<p>This section describes briefly what <code>censusTools</code> does and showcases the example. In the following subsections the technical details are outlined.</p>
+<p>Typically some sort of polygons outlining territorial boundaries (here called <em>geometries</em>) and some sort of tables outlining the quantities of particular variables (here called <em>census tables</em>) shall be handled with <code>censusTools</code>.
+Moreover, it can’t be expected that any of the data come in the same format, neither with regard to the file type nor with regard to how the data are arranged inside those files.</p>
+<pre class="r"><code>library(censusTools)
+library(readr)
+library(magrittr)
+
+# set the project path
+setPath(root = &quot;/home/se87kuhe/my_science/r-dev/censusTools/writing/newProject&quot;)</code></pre>
 <p><strong>Set project variables</strong></p>
 <p>A typical workflow (Fig. 1) would initially consist of setting up project variables.
 Those variables are the categorical variables for which the census covers quantities, such as socio-economic groups of people, animal species or agricultural commodities.
 For each of the variables an <em>index</em> and a <em>translation table</em> are required (<em>see section “Index and translation tables”</em>).
-An index contains at least the values of the target variable (e.g. ‘maize’, ‘wheat’, ‘rice’ for the variable ‘commodities’), unique IDs for each value and arbitrary data that describe the values further (e.g. details on collecting/sampling the data, the scientific name or a description).
-A translation table contains at least the values that should be translated, the values of the translated target variable (same terms as in the index) and a statement as to how the translations have been created.</p>
+An index contains at least the values of the target variable and unique IDs for each value.
+Additionally arbitrary data that describe the values further may be provided (e.g. details on collecting/sampling the data, the scientific name, a description or …).
+A translation table contains at least the values that should be translated, the values of the translated target variable (same terms as in the index) and a statement that describes the source of the translations.</p>
+<pre class="r"><code># provide a table that is primarily an index table, i.e. it contains terms and a related ID
+read_csv(file = &quot;fao_commodities.csv&quot;) %&gt;% 
+  setIndex(output = &quot;commodities&quot;, pid = &quot;faoID&quot;, target = &quot;simpleName&quot;)
+#&gt; Parsed with column specification:
+#&gt; cols(
+#&gt;   faoID = col_double(),
+#&gt;   simpleName = col_character(),
+#&gt;   primary = col_logical(),
+#&gt;   faoName = col_character(),
+#&gt;   faoGroupID = col_double(),
+#&gt;   faoGroupName = col_character(),
+#&gt;   canonicalName = col_character(),
+#&gt;   definition = col_character()
+#&gt; )
+
+# this creates the tables 'id_commodities' and 'tt_commodities'
+read_csv(file = &quot;newProject/id_commodities.csv&quot;, col_types = &quot;iclciccc&quot;)
+#&gt; # A tibble: 777 x 8
+#&gt;    faoID target primary faoName faoGroupID faoGroupName canonicalName
+#&gt;    &lt;int&gt; &lt;chr&gt;  &lt;lgl&gt;   &lt;chr&gt;        &lt;int&gt; &lt;chr&gt;        &lt;chr&gt;        
+#&gt;  1    15 wheat  TRUE    Wheat            1 cereals and… Triticum spp…
+#&gt;  2    16 flour… FALSE   Flour …          1 cereals and… &lt;NA&gt;         
+#&gt;  3    17 bran … FALSE   Bran o…         11 fodder crop… &lt;NA&gt;         
+#&gt;  4    18 macar… FALSE   Macaro…          1 cereals and… &lt;NA&gt;         
+#&gt;  5    19 germ … FALSE   Germ o…          1 cereals and… &lt;NA&gt;         
+#&gt;  6    20 bread  FALSE   Bread            1 cereals and… &lt;NA&gt;         
+#&gt;  7    21 bulgur FALSE   Bulgur           1 cereals and… &lt;NA&gt;         
+#&gt;  8    22 pastry FALSE   Pastry           1 cereals and… &lt;NA&gt;         
+#&gt;  9    23 starc… FALSE   Starch…          1 cereals and… &lt;NA&gt;         
+#&gt; 10    24 wheat… FALSE   Wheat …          1 cereals and… &lt;NA&gt;         
+#&gt; # … with 767 more rows, and 1 more variable: definition &lt;chr&gt;
+read_csv(file = &quot;newProject/tt_commodities.csv&quot;, col_types = &quot;ccc&quot;)
+#&gt; # A tibble: 777 x 3
+#&gt;    origin target          source  
+#&gt;    &lt;chr&gt;  &lt;chr&gt;           &lt;chr&gt;   
+#&gt;  1 &lt;NA&gt;   wheat           original
+#&gt;  2 &lt;NA&gt;   flour of wheat  original
+#&gt;  3 &lt;NA&gt;   bran of wheat   original
+#&gt;  4 &lt;NA&gt;   macaroni        original
+#&gt;  5 &lt;NA&gt;   germ of wheat   original
+#&gt;  6 &lt;NA&gt;   bread           original
+#&gt;  7 &lt;NA&gt;   bulgur          original
+#&gt;  8 &lt;NA&gt;   pastry          original
+#&gt;  9 &lt;NA&gt;   starch of wheat original
+#&gt; 10 &lt;NA&gt;   wheat gluten    original
+#&gt; # … with 767 more rows
+
+# provide a table that is primarily a translation table
+# SE: must still check whether this works</code></pre>
 <p><strong>Register input tables</strong></p>
 <p>In a second step first of all some relevant data-series (i.e. specific series of data which are delineated from other series due to their data format) and then the source-files of geometries and census tables are registered in respective inventory tables each.
 While project variables are set up only once, this second step will be carried out as often as new data are added to the database.
 The underlying functions give instructions, monitor and document progress and assert that all files are available in the correct directory (<em>see section “The directory structure”</em>).
 Additionally, they create unique IDs for data-series, geometries and census tables.
-The resulting inventory tables document which geometry and census files are part of the data-base, where and when they have been stored and which ID they have.</p>
+The resulting inventory tables document which geometry and census files are part of the data-base, which ID they have, where and when the data have been stored.</p>
+<pre class="r"><code># ...</code></pre>
 <p><strong>Normalise data</strong></p>
 <p>In a third step, both geometries and census tables are harmonised and integrated (i.e. <em>normalised</em>) into a standardised data-base structure.
 Census tables typically contain information that are aggregated for certain territorial units and thus it makes sense, from an efficiency point of view, that the territorial units are first normalised, so that the census tables can simply be joined to them.
@@ -1673,12 +1731,20 @@ Such variables may prominently be the territorial units (<em>see section “Terr
 <li><code>definition</code>, which gives additional, contextual information that may serve to delineate the commodity in unclear cases.</li>
 </ul>
 <p>When handling data from various data providers that are active in different languages and who don’t follow any common standards for data curation or don’t have shared ontologies, it is expected that plenty of variables will contain values that don’t match.
+Both, terms from different languages and terms from different ontologies need to be translated into one common language, this is covered by a translation table.
 In those cases so-called gazetteers can help to find sort of a standard.
-For instance, the GADM data-set comes with alternative names for numerous territorial units, which can be used for alternative matching. The GBIF data-set contains the backbone taxonomy [REF], which could be used for this purpose when it comes to species (<em>SE: additional/other/better suggestions for widely known tables of that kind?</em>).
-However, since it can’t be guaranteed that all data providers use only names that have been covered by the included translation tables, the function <code>translateTerms()</code> allows that new mappings between so far not recorded terms and target terms are made or that additional gazetteers are read in.</p>
-<p>Terms are gathered in a list, where they are related to a set of generalized terms.
-For instance, commodities may either be labelled by their species, by the fao-ID or by a nation/language specific term.
-Hence, both, semantic synonyms and terms in other languages are translated to a common set of terms.</p>
+For instance, the GADM data-set comes with alternative names for numerous territorial units, which can be used for alternative matching.
+The GBIF data-set contains the backbone taxonomy [REF], which could be used for this purpose when it comes to species (<em>SE: additional/other/better suggestions for widely known tables of that kind?</em>).
+However, since it can’t be guaranteed that all data providers use only names that have been covered by the included translation tables, the function <code>translateTerms()</code> allows that new mappings between so far not recorded terms and target terms are made.</p>
+<p>Translation tables consist of two parts, a translation section and a look-up section. They are organised in the three columns:</p>
+<ul>
+<li><code>origin</code>, which contains all native terms as they appear in different census data-sets,</li>
+<li><code>target</code>, their unified translations and</li>
+<li><code>source</code>, which documents how and when the translation has been carried out.</li>
+</ul>
+<p>The translation section (upper part) of the table contains all <code>origin &lt;-&gt; target</code> mappings.
+This section is populated when using <code>translateTerms()</code>.
+Alternatively one could insert an already existing translation table.</p>
 <table>
 <thead>
 <tr class="header">
@@ -1689,14 +1755,14 @@ Hence, both, semantic synonyms and terms in other languages are translated to a 
 </thead>
 <tbody>
 <tr class="odd">
-<td align="left">toTranslate</td>
-<td align="left">translated</td>
-<td align="left">translateTerms() on 2019-02-28</td>
+<td align="left">Beans, dry</td>
+<td align="left">beans dry</td>
+<td align="left">translateTerms() on 2019-03-25</td>
 </tr>
 <tr class="even">
-<td align="left">anotherOne</td>
-<td align="left">itsTranslation</td>
-<td align="left">translateTerms() on 2019-02-28</td>
+<td align="left">Poroto seco</td>
+<td align="left">beans dry</td>
+<td align="left">translateTerms() on 2019-03-19</td>
 </tr>
 <tr class="odd">
 <td align="left">…</td>
@@ -1705,26 +1771,26 @@ Hence, both, semantic synonyms and terms in other languages are translated to a 
 </tr>
 <tr class="even">
 <td align="left"></td>
-<td align="left">term1</td>
-<td align="left">target</td>
+<td align="left">beans dry</td>
+<td align="left">original</td>
 </tr>
 <tr class="odd">
 <td align="left"></td>
-<td align="left">term2</td>
-<td align="left">target</td>
+<td align="left">broad beans dry</td>
+<td align="left">original</td>
 </tr>
 <tr class="even">
 <td align="left"></td>
-<td align="left">term3</td>
-<td align="left">target</td>
+<td align="left">peas dry</td>
+<td align="left">original</td>
 </tr>
 </tbody>
 </table>
-<p>This table is split into two parts. The upper part contains all original terms, as they appear in different census data-sets (<code>origin</code>), their unified translations (<code>target</code>) and <code>notes</code> on when and how (here, by the function <code>translateTerms()</code>) the translation has been carried out.
-The lower part contains all target terms to which original terms should be translated.
-When encountering new terms, those target terms are used for fuzzy matching.
-Here, a list of the three most highly matched terms based on the Levenshtein distance [REF] is returned, from which the user has to chose.
-Moreover, before the translated data are finally entered into the database, they are checked against this list so that no new translations violate the ontological consistency (<em>SE: I still have to make sure that this feature is actually implemented</em>).</p>
+<p>The look-up section (lower part) contains the target terms to which new, unmapped terms should be translated.
+In this section one would insert the terms of a standardised ontology.
+When encountering new terms, those target terms are used for fuzzy matching, where a list of the three most highly matched terms based on the Levenshtein distance [REF] is returned, from which the user has to chose.
+The column <code>origin</code> remains empty and the column <code>source</code> must contain the value <em>original</em> for the function <code>translateTerms()</code> to recognise the distinction between translation and look-up section.</p>
+<p>Moreover, before the translated data are finally entered into the database, they are checked against this list so that no new translations violate the ontological consistency (<em>SE: I still have to make sure that this feature is actually implemented</em>).</p>
 </div>
 <div id="the-directory-structure" class="section level2">
 <h2><span class="header-section-number">4.2</span> The directory structure</h2>
@@ -1883,22 +1949,23 @@ However, <code>censusTools</code> makes use of this package to organize a partic
 #&gt; [1] stats     graphics  grDevices utils     datasets  methods   base     
 #&gt; 
 #&gt; other attached packages:
-#&gt; [1] censusTools_0.1.0
+#&gt; [1] magrittr_1.5      readr_1.3.1       censusTools_0.1.0
 #&gt; 
 #&gt; loaded via a namespace (and not attached):
-#&gt;  [1] Rcpp_1.0.1         knitr_1.22         magrittr_1.5      
-#&gt;  [4] units_0.6-2        hms_0.4.2          tidyselect_0.2.5  
-#&gt;  [7] R6_2.4.0           rlang_0.3.4        stringr_1.4.0     
-#&gt; [10] dplyr_0.8.0.1      tools_3.6.0        grid_3.6.0        
-#&gt; [13] checkmate_1.9.1    xfun_0.6           KernSmooth_2.23-15
-#&gt; [16] e1071_1.7-1        DBI_1.0.0          class_7.3-15      
-#&gt; [19] htmltools_0.3.6    yaml_2.2.0         digest_0.6.18     
-#&gt; [22] assertthat_0.2.1   tibble_2.1.1       sf_0.7-4          
-#&gt; [25] crayon_1.3.4       bookdown_0.9       tidyr_0.8.3       
-#&gt; [28] purrr_0.3.2        readr_1.3.1        glue_1.3.1        
-#&gt; [31] evaluate_0.13      rmarkdown_1.12     stringi_1.4.3     
-#&gt; [34] rectr_0.1.0        compiler_3.6.0     pillar_1.3.1      
-#&gt; [37] backports_1.1.4    classInt_0.3-3     pkgconfig_2.0.2</code></pre>
+#&gt;  [1] Rcpp_1.0.1         pillar_1.3.1       compiler_3.6.0    
+#&gt;  [4] class_7.3-15       tools_3.6.0        digest_0.6.18     
+#&gt;  [7] evaluate_0.13      tibble_2.1.1       checkmate_1.9.1   
+#&gt; [10] pkgconfig_2.0.2    rlang_0.3.4        DBI_1.0.0         
+#&gt; [13] cli_1.1.0          yaml_2.2.0         xfun_0.6          
+#&gt; [16] e1071_1.7-1        dplyr_0.8.0.1      stringr_1.4.0     
+#&gt; [19] knitr_1.22         hms_0.4.2          classInt_0.3-3    
+#&gt; [22] grid_3.6.0         tidyselect_0.2.5   glue_1.3.1        
+#&gt; [25] sf_0.7-4           R6_2.4.0           fansi_0.4.0       
+#&gt; [28] rmarkdown_1.12     bookdown_0.9       rectr_0.1.0       
+#&gt; [31] purrr_0.3.2        tidyr_0.8.3        backports_1.1.4   
+#&gt; [34] htmltools_0.3.6    units_0.6-2        assertthat_0.2.1  
+#&gt; [37] KernSmooth_2.23-15 utf8_1.1.4         stringi_1.4.3     
+#&gt; [40] crayon_1.3.4</code></pre>
 </div>
 <div id="miscellaneousnotescomments" class="section level1">
 <h1><span class="header-section-number">8</span> Miscellaneous/Notes/Comments</h1>
