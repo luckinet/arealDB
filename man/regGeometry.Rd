@@ -5,7 +5,7 @@
 \title{Register a new geometry entry}
 \usage{
 regGeometry(nation = NULL, subset = NULL, gSeries = NULL,
-  level = 3, layer = NULL, nameCol = NULL, archive = NULL,
+  level = NULL, layer = NULL, nameCol = NULL, archive = NULL,
   notes = NULL, update = FALSE)
 }
 \arguments{

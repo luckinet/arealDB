@@ -5,7 +5,7 @@
 \title{Make and set an index}
 \usage{
 setIndex(input = NULL, output = NULL, pid = NULL, origin = NULL,
-  target = NULL, source = NULL)
+  target = NULL)
 }
 \arguments{
 \item{input}{[\code{tibble(1)}]\cr a possibly already existing table based on

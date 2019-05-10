@@ -4,8 +4,8 @@
 \alias{translateTerms}
 \title{Translate terms}
 \usage{
-translateTerms(terms, index = NULL, fuzzy_terms = NULL,
-  fuzzy_dist = 5, verbose = TRUE)
+translateTerms(terms, source = NULL, index = NULL,
+  fuzzy_terms = NULL, fuzzy_dist = 5, verbose = TRUE)
 }
 \arguments{
 \item{terms}{[\code{character(.)}]\cr terms to be translated.}

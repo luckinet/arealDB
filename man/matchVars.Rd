@@ -4,10 +4,13 @@
 \alias{matchVars}
 \title{Determine the valid ID of variables}
 \usage{
-matchVars(input = NULL, ..., keepOrig = FALSE)
+matchVars(input = NULL, source = NULL, ..., keepOrig = FALSE)
 }
 \arguments{
 \item{input}{[\code{character(.)}]\cr terms to be translated.}
+
+\item{source}{[\code{integerish(1)}]\cr the census ID (\code{cenID}) from
+which the terms have been taken.}
 
 \item{...}{[\code{list(1)}]\cr lists that capture the variables by which to
 match and the new column names containing the resulting ID; see Details.}
