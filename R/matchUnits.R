@@ -4,6 +4,8 @@
 #' returns \code{input} containing the matched \code{ahID}.
 #' @param input [\code{data.frame(1)}]\cr table in which to match administrative
 #'   units.
+#' @param source [\code{integerish(1)}]\cr the geometry ID (\code{geoID}) from
+#'   which the terms have been taken.
 #' @param ... [\code{character(.)}]\cr define columns in \code{input}, where the
 #'   administrative units are recorded. Specify as \code{al1 = XYZ} to subset
 #'   administrative level 1 (nation) to "XYZ", \code{al2 = ...} for the second
@@ -29,7 +31,7 @@
 #' @importFrom utils txtProgressBar setTxtProgressBar
 #' @export
 
-matchUnits <- function(input = NULL, ..., keepOrig = FALSE){
+matchUnits <- function(input = NULL, source = NULL, ..., keepOrig = FALSE){
 
   # set internal objects
   intPaths <- paste0(getOption(x = "dmt_path"), "/cT_geometries/")
@@ -37,6 +39,7 @@ matchUnits <- function(input = NULL, ..., keepOrig = FALSE){
 
   # check validity of arguments
   assertDataFrame(x = input)
+  assertIntegerish(x = source)
   assertLogical(x = keepOrig)
   assertList(x = adminLvls)
   # assert that one of the arguments has the name "al1" so that at least nations are matched
@@ -135,10 +138,12 @@ matchUnits <- function(input = NULL, ..., keepOrig = FALSE){
 
         # ... translate them to the default unit names
         theParents <- translateTerms(terms = unique(inputUnits[[1]]),
+                                     source = source,
                                      index = "tt_units",
                                      fuzzy_terms = unique(parentSubset$name))
         theParents <- unique(theParents)
         theUnits <- translateTerms(terms = unique(inputUnits[[2]]),
+                                   source = source,
                                    index = "tt_units",
                                    fuzzy_terms = unique(unitSubset$name))
         theUnits <- unique(theUnits)
