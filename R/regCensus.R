@@ -13,7 +13,7 @@
 #' @param gSeries [\code{character(1)}]\cr optinally, if the geometry series
 #'   deviates from the data series with which the census data should be
 #'   registered.
-#' @param dimension [\code{character(.)}]\cr the land-use dimensions included in
+#' @param variable [\code{character(.)}]\cr the variables included in
 #'   the file.
 #' @param algo [\code{character}]\cr the dataseries specific algorithm
 #'   associated to the specific format of this file.
@@ -43,19 +43,19 @@
 #'
 #' # dry run to be able to check whether everything is as intended.
 #' regCensus(nation = "Argentina", level = 3, dSeries = "maia",
-#'           dimension = c("planted_area", "harvested_area", "production", "yield"),
+#'           variable = c("planted_area", "harvested_area", "production", "yield"),
 #'           algo = 1, begin = 1969, end = 2017,
 #'           archive = "AgroIndustria_Estimaciones_complete_2017_11_12.xlsx")
 #'
 #' # with several countries in one table (nation is NULL)
 #' regCensus(nation = NULL, level = 1, dSeries = "faostat", gSeries = "gadm",
-#'           dimension = c("planted_area","production","yield"),
+#'           variable = c("planted_area","production","yield"),
 #'           algo = 1, begin = 1961, end = 2017,
 #'           archive = "Production_Crops_E_All_Data_(Normalized).csv")
 #'
 #' # eventually, carry out the registration
 #' regCensus(nation = "Argentina", level = 3, dSeries = "maia",
-#'           dimension = c("planted_area", "harvested_area", "production", "yield"),
+#'           variable = c("planted_area", "harvested_area", "production", "yield"),
 #'           algo = 1, begin = 1969, end = 2017,
 #'           archive = "AgroIndustria_Estimaciones_complete_2017_11_12.xlsx",
 #'           update = TRUE)
@@ -70,11 +70,11 @@
 #' @export
 
 regCensus <- function(nation = NULL, subset = NULL, dSeries = NULL, gSeries = NULL,
-                      level = NULL, dimension = NULL, algo = NULL, begin = NULL,
+                      level = NULL, variable = NULL, algo = NULL, begin = NULL,
                       end = NULL, archive = NULL, notes = NULL, update = FALSE){
 
   # set internal paths
-  intPaths <- paste0(getOption(x = "dmt_path"))
+  intPaths <- paste0(getOption(x = "cT_path"))
 
   # get tables
   inv_census <- read_csv(paste0(intPaths, "/inv_census.csv"), col_types = "iiicDcc")
@@ -85,7 +85,7 @@ regCensus <- function(nation = NULL, subset = NULL, dSeries = NULL, gSeries = NU
   assertDataFrame(x = inv_census, ncols = 7)
   assertNames(x = colnames(inv_census), permutation.of = c("cenID", "datID", "geoID", "source_file", "date", "orig_file", "notes"))
   assertNames(x = colnames(inv_dataseries), permutation.of = c("datID", "name", "long_name", "website", "notes"))
-  assertNames(x = colnames(inv_geometries), permutation.of = c("geoID", "name", "level", "source_file", "layer", "nation_column", "unit_column", "date", "orig_file", "notes"))
+  assertNames(x = colnames(inv_geometries), permutation.of = c("geoID", "datID", "level", "source_file", "layer", "nation_column", "unit_column", "date", "orig_file", "notes"))
   assertCharacter(x = nation, ignore.case = TRUE, any.missing = FALSE, len = 1, null.ok = TRUE)
   assertIntegerish(x = level, any.missing = FALSE, len = 1)
   assertCharacter(x = subset, any.missing = FALSE, null.ok = TRUE)
@@ -108,8 +108,8 @@ regCensus <- function(nation = NULL, subset = NULL, dSeries = NULL, gSeries = NU
       stop("please give a geometry series name that does not contain any '_' characters.")
     }
   }
-  assertCharacter(x = dimension, ignore.case = TRUE, any.missing = FALSE)
-  assertSubset(x = dimension, choices = c("planted_area", "harvested_area", "production", "yield", "headcount", "animal_units"))
+  assertCharacter(x = variable, ignore.case = TRUE, any.missing = FALSE)
+  assertSubset(x = variable, choices = c("planted_area", "harvested_area", "production", "yield", "headcount", "animal_units"))
   assertIntegerish(x = algo, any.missing = FALSE, len = 1)
   assertIntegerish(x = begin, any.missing = FALSE, len = 1, lower = 1900)
   assertIntegerish(x = end, any.missing = FALSE, len = 1, upper = as.integer(format(Sys.Date(), "%Y")))
@@ -134,42 +134,41 @@ regCensus <- function(nation = NULL, subset = NULL, dSeries = NULL, gSeries = NU
   }
 
   tempDim <- NULL
-  if(any(grep("planted_area", dimension, ignore.case = TRUE))){
+  if(any(grep("planted_area", variable, ignore.case = TRUE))){
     tempDim <- paste0(tempDim, "B")
   }
-  if(any(grep("harvested_area", dimension, ignore.case = TRUE))){
+  if(any(grep("harvested_area", variable, ignore.case = TRUE))){
     tempDim <- paste0(tempDim, "N")
   }
-  if(any(grep("production", dimension, ignore.case = TRUE))){
+  if(any(grep("production", variable, ignore.case = TRUE))){
     tempDim <- paste0(tempDim, "P")
   }
-  if(any(grep("yield", dimension, ignore.case = TRUE))){
+  if(any(grep("yield", variable, ignore.case = TRUE))){
     tempDim <- paste0(tempDim, "Y")
   }
-  if(any(grep("headcount", dimension, ignore.case = TRUE))){
+  if(any(grep("headcount", variable, ignore.case = TRUE))){
     tempDim <- paste0(tempDim, "H")
   }
-  if(any(grep("animal_units", dimension, ignore.case = TRUE))){
+  if(any(grep("animal_units", variable, ignore.case = TRUE))){
     tempDim <- paste0(tempDim, "U")
   }
 
   # put together file name and get confirmation that file should exist now
   fileName <- paste0(theNation, "_", level, "_", subset, "_", dSeries, "_", tempDim, "_", algo, "_", begin, "_", end, ".csv")
-  message(fileName)
-  done <- readline(paste0("  ... press any key when the file '", fileName, "' is stored: "))
+  done <- readline(paste0("... please store the table as '", fileName, "' in './cT_census/stage2'\n  -> press any key when done: "))
 
   # make sure that the file is really there
-  assertFileExists(x = paste0(intPaths, "/cT_census/stage1/", fileName), "r", extension = "csv")
+  assertFileExists(x = paste0(intPaths, "/cT_census/stage2/", fileName), "r", extension = "csv")
 
   # also test whether the archive file is available ...
   filesTrace <- str_split(archive, "\\|")[[1]]
-  assertFileExists(x = paste0(intPaths, "/cT_census/original_datasets/", filesTrace[1]), "r")
+  assertFileExists(x = paste0(intPaths, "/cT_census/stage1/", filesTrace[1]), "r")
 
   # ... and if it is compressed, whether also the file therein is given that contains the data
   if(testCompressed(x = filesTrace[1]) & length(filesTrace) < 2){
     theArchiveFile <- readline(paste0("please give the name of the file in ", filesTrace[1]," that contains the table: "))
+    archive <- paste0(archive, "|", theArchiveFile)
   }
-  archive <- paste0(archive, "|", theArchiveFile)
 
   # create a new data series, if dSeries is not part of the currently known data series names
   if(!any(inv_dataseries$name %in% dSeries)){
@@ -180,13 +179,21 @@ regCensus <- function(nation = NULL, subset = NULL, dSeries = NULL, gSeries = NU
     dataSeries <- inv_dataseries$datID[inv_dataseries$name %in% dSeries]
   }
   # create a new geometry series, if gSeries is not part of the currently known geometry series names
-  geomSeries <- inv_geometries[inv_geometries$name %in% gSeries,] %>%
+  if(!any(inv_dataseries$name %in% gSeries)){
+    geomSeries <- regDataseries(name = gSeries,
+                                update = update)
+    geomSeries <- geomSeries$datID
+  } else {
+    geomSeries <- inv_dataseries$datID[inv_dataseries$name %in% gSeries]
+  }
+
+  geomSeries <- inv_geometries[inv_geometries$datID %in% geomSeries,] %>%
     filter(level == !!level) %>%
     pull("geoID")
   if(length(geomSeries) == 0){
     cat(paste0("\nI did not find a geometry series '", gSeries, "' at the requested level, registering one now ...\n"))
 
-    geomSeries <- regGeometry(nation = myNat,
+    geomSeries <- regGeometry(nation = theNation,
                               gSeries = gSeries,
                               level = level,
                               update = update)
@@ -196,8 +203,8 @@ regCensus <- function(nation = NULL, subset = NULL, dSeries = NULL, gSeries = NU
   # put together new census database entry
   newCID <- ifelse(length(inv_census$cenID)==0, 1, as.integer(max(inv_census$cenID)+1))
   doc <- tibble(cenID = newCID,
-                datID = dataSeries,
                 geoID = geomSeries,
+                datID = dataSeries,
                 source_file = fileName,
                 date = Sys.Date(),
                 orig_file = archive,
