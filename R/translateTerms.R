@@ -20,21 +20,22 @@
 #' @importFrom utils edit View adist file.edit
 #' @export
 
-translateTerms <- function(terms, index = NULL, fuzzy_terms = NULL, fuzzy_dist = 5,
-                           verbose = TRUE){
+translateTerms <- function(terms, source = NULL, index = NULL, fuzzy_terms = NULL,
+                           fuzzy_dist = 5, verbose = TRUE){
 
   # check validity of arguments
   assertCharacter(x = terms, any.missing = FALSE)
+  assertIntegerish(x = source)
   assertCharacter(x = index, len = 1, any.missing = FALSE)
   args <- enexpr(index)
-  index <- read_csv(paste0(getOption(x = "dmt_path"), "/", index, ".csv"), col_types = "ccc")
+  index <- read_csv(paste0(getOption(x = "cT_path"), "/", index, ".csv"), col_types = "cccDi")
   assertNames(x = colnames(index), must.include = c("origin", "target"))
   assertCharacter(x = fuzzy_terms, any.missing = FALSE, null.ok = TRUE)
   assertIntegerish(x = fuzzy_dist, any.missing = FALSE)
 
   # create a table with terms that will be used for fuzzy matching.
   theFuzzyTerms <- index %>%
-    filter(notes == "original") %>%
+    filter(source == "original") %>%
     pull(target)
   if(!is.null(fuzzy_terms)){
     if(length(theFuzzyTerms) == 0){
@@ -51,11 +52,11 @@ translateTerms <- function(terms, index = NULL, fuzzy_terms = NULL, fuzzy_dist =
 
   tempOut <- NULL
   newEntries <- FALSE
+  message("    translating from '", args, ".csv' ...")
   if(verbose){
-    message("    translating from '", args, ".csv' ...")
-  }
-  if(length(terms) > 15){
-    pb <- txtProgressBar(min = 0, max = length(terms), style = 3, char=">", width=getOption("width")-14)
+    if(length(terms) > 15){
+      pb <- txtProgressBar(min = 0, max = length(terms), style = 3, char=">", width=getOption("width")-14)
+    }
   }
 
   # go through all terms and process them
@@ -84,33 +85,45 @@ translateTerms <- function(terms, index = NULL, fuzzy_terms = NULL, fuzzy_dist =
         # in case a edit distance of 0 has been found, this term is perfectly
         # matched and doesn't need to be further treated
         if(thresh_dist[1] == 0){
-          app <- c(terms[i], theFuzz[1], paste0("translateTerms() on ", Sys.Date()))
+          app <- c(terms[i], theFuzz[1], "translateTerms()", paste0(Sys.Date()), source)
         } else{
           newEntries <- TRUE
-          app <- c(terms[i], "missing", paste0(theFuzz, collapse = " | "))
+          app <- c(terms[i], "missing", paste0(theFuzz, collapse = " | "), paste0(Sys.Date()), source)
         }
       } else{
         newEntries <- TRUE
-        app <- c(terms[i], "missing", paste0("check out ", args, ".csv"))
+        app <- c(terms[i], "missing", paste0("check out ", args, ".csv"), paste0(Sys.Date()), source)
       }
 
       names(app) <- colnames(index)
       tempOut <- bind_rows(tempOut, app)
     } else{
+      temp <- temp %>%
+        mutate(date = as.character(date),
+               cenID = as.character(cenID))
       tempOut <- bind_rows(tempOut, temp)
     }
-    if(length(terms) > 15){
-      setTxtProgressBar(pb, i)
+    if(verbose){
+      if(length(terms) > 15){
+        setTxtProgressBar(pb, i)
+      }
     }
   }
-  if(length(terms) > 15){
-    close(pb)
+
+  if(verbose){
+    if(length(terms) > 15){
+      close(pb)
+    }
   }
+
+  # make sure that the columns contain the correct data
+  tempOut$date <- as.Date(tempOut$date)
+  tempOut$cenID <- as.integer(tempOut$cenID)
 
   if(newEntries){
 
     # define paths for translating
-    basePath <- paste0(getOption("dmt_path"))
+    basePath <- paste0(getOption("cT_path"))
     translating <- paste0(basePath, "/translating.csv")
 
     toTranslate <- tempOut %>%
@@ -123,14 +136,15 @@ translateTerms <- function(terms, index = NULL, fuzzy_terms = NULL, fuzzy_dist =
 
     newOut <- read_csv(file = translating,
                        col_types = getColTypes(index))
-    newOut$notes <- ifelse(newOut$target != "missing", paste0("translateTerms() on ", Sys.Date()), NA_character_)
+    newOut$source <- ifelse(newOut$target != "missing", paste0("translateTerms()"), NA_character_)
     newOut$target <- ifelse(newOut$target == "missing", NA_character_, newOut$target)
 
     file.remove(translating)
     updateIndex(index = newOut, name = args)
 
-    out <- full_join(tempOut, newOut) %>%
+    out <- tempOut %>%
       filter(target != "missing") %>%
+      full_join(newOut) %>%
       select(origin, target)
   } else{
     out <- tempOut
