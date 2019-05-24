@@ -3,16 +3,20 @@
 #' In LUCKINet we use a default set of nations. This functions renames nations
 #' that don't abide by those rules yet.
 #' @param unify [\code{data.frame(1)}]\cr the object in which to unify nations.
+#' @param source [\code{integerish(1)}]\cr and ID, typically the census ID from
+#'   which the terms are provided.
 #' @param nameCol [\code{character}]\cr the name of the column that contains
 #'   nation names to unify.
+#' @param verbose [\code{logical(1)}]\cr be verbose about what is happening
+#'   (default \code{TRUE}).
 #' @examples
 #' \dontrun{
 #'
 #' library(sf)
 #'
 #' setPath(root = "/home/se87kuhe/Nextcloud/LUCKINet/data/")
-#' gadm <- st_read(paste0(getOption("dmt_path"),
-#'                        "administrative_boundaries/original_datasets/gadm36_levels.gpkg"),
+#' gadm <- st_read(paste0(getOption("cT_path"),
+#'                        "ct_geometries/stage1/gadm36_levels.gpkg"),
 #'                layer = "level0",
 #'                stringsAsFactors = FALSE)
 #'
@@ -23,12 +27,14 @@
 #' @importFrom sf st_sf
 #' @export
 
-unifyNations <- function(unify = NULL, nameCol = NULL){
+unifyNations <- function(unify = NULL, source = NULL, nameCol = NULL,
+                         verbose = TRUE){
 
   # check validity of arguments
   isSf <- testClass(x = unify, classes = "sf")
   isChar <- testCharacter(x = unify)
   assert(isSf, isChar)
+  assertIntegerish(x = source)
   assertCharacter(nameCol, len = 1, any.missing = FALSE, null.ok = TRUE)
 
   if(isSf){
@@ -39,7 +45,9 @@ unifyNations <- function(unify = NULL, nameCol = NULL){
 
     if(length(falseNames) > 0){
       newNames <- translateTerms(terms = falseNames,
-                                 index = "tt_nations")
+                                 source = source,
+                                 index = "tt_nations",
+                                 verbose = verbose)
 
       correctNames <- bind_cols(!!nameCol := correctNames,
                                 target = correctNames)
@@ -76,7 +84,9 @@ unifyNations <- function(unify = NULL, nameCol = NULL){
 
     if(length(falseNames) > 0){
       newNames <- translateTerms(terms = falseNames,
-                                 index = "tt_nations")
+                                 source = source,
+                                 index = "tt_nations",
+                                 verbose = verbose)
 
       if(dim(newNames)[1] == 0){
         return(NA_character_)
