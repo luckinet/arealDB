@@ -58,18 +58,19 @@
 #' @importFrom tibble tibble
 #' @export
 
-regGeometry <- function(nation = NULL, subset = NULL, gSeries = NULL, level = 3,
+regGeometry <- function(nation = NULL, subset = NULL, gSeries = NULL, level = NULL,
                         layer = NULL, nameCol = NULL, archive = NULL, notes = NULL,
                         update = FALSE){
 
   # set internal paths
-  intPaths <- paste0(getOption(x = "dmt_path"))
+  intPaths <- paste0(getOption(x = "cT_path"))
 
   # get tables
   inv_geometries <- read_csv(paste0(intPaths, "/inv_geometries.csv"), col_types = "iciccccDcc")
+  inv_dataseries <- read_csv(paste0(intPaths, "/inv_dataseries.csv"), col_types = "icccc")
 
   # check validity of arguments
-  assertNames(x = colnames(inv_geometries), permutation.of = c("geoID", "name", "level", "source_file", "layer", "nation_column", "unit_column", "date", "orig_file", "notes"))
+  assertNames(x = colnames(inv_geometries), permutation.of = c("geoID", "datID", "level", "source_file", "layer", "nation_column", "unit_column", "date", "orig_file", "notes"))
   assertCharacter(x = nation, ignore.case = TRUE, any.missing = FALSE, len = 1, null.ok = TRUE)
   assertCharacter(x = subset, any.missing = FALSE, null.ok = TRUE)
   if(!is.null(subset)){
@@ -83,13 +84,12 @@ regGeometry <- function(nation = NULL, subset = NULL, gSeries = NULL, level = 3,
       stop("please give a geometry series name that does not contain any '_' characters.")
     }
   }
-  assertIntegerish(x = level, any.missing = FALSE, len = 1)
+  assertIntegerish(x = level, any.missing = FALSE, len = 1, lower = 1)
   assertCharacter(x = layer, any.missing = FALSE, null.ok = TRUE)
   assertCharacter(x = archive, any.missing = FALSE, null.ok = TRUE)
   if(is.null(archive)){
     archive <- readline("... How is the original file named? ")
   }
-  assertFileExists(x = paste0(intPaths, "/cT_geometries/original_datasets/", archive))
   assertCharacter(x = notes, ignore.case = TRUE, any.missing = FALSE, len = 1, null.ok = TRUE)
   assertLogical(x = update, len = 1)
 
@@ -115,29 +115,29 @@ regGeometry <- function(nation = NULL, subset = NULL, gSeries = NULL, level = 3,
 
   # put together file name and get confirmation that file should exist now
   fileName <- paste0(theNation, "_", level, "_", subset, "_", gSeries, ".gpkg")
-  message(fileName)
-  done <- readline(paste0("... press any key when the file '", fileName, "' is stored: "))
-  filePath <- paste0(intPaths, "/cT_geometries/stage1/", fileName)
+  # message(fileName)
+  done <- readline(paste0("... please store the geometry as '", fileName, "' in './cT_geometries/stage2'\n  -> press any key when done: "))
+  filePath <- paste0(intPaths, "/cT_geometries/stage2/", fileName)
 
   # make sure that the file is really there
   assertFileExists(x = filePath, access = "r", extension = "gpkg")
 
   # also test whether the archive file is available ...
   filesTrace <- str_split(archive, "\\|")[[1]]
-  assertFileExists(x = paste0(intPaths, "/cT_geometries/original_datasets/", filesTrace[1]), "r")
+  assertFileExists(x = paste0(intPaths, "/cT_geometries/stage1/", filesTrace[1]), "r")
 
   # ... and if it is compressed, whether also the file therein is given that contains the data
   if(testCompressed(x = filesTrace[1]) & length(filesTrace) < 2){
     theArchiveFile <- readline(paste0("please give the name of the file in ", filesTrace[1]," that contains the geometries: "))
+    archive <- paste0(archive, "|", theArchiveFile)
   }
-  archive <- paste0(archive, "|", theArchiveFile)
 
   # determine which layers exist and ask the user which to chose, if none is
   # given
   layers <- st_layers(dsn = filePath)
   if(length(layers$name) != 1){
     if(is.null(layer)){
-      layer <- readline("... Please type in the name of the layer to chose. ")
+      layer <- readline(paste0("... Please chose only one of the layers ", paste0(layers$name, collapse = ", "), ": "))
     }
     assertChoice(x = layer, choices = layers$name)
   } else{
@@ -147,15 +147,23 @@ regGeometry <- function(nation = NULL, subset = NULL, gSeries = NULL, level = 3,
   # to check that what has been given in 'nation' is in fact a column in the geometry, load it
   if(is.null(theNation)){
     theGeometry <- read_sf(dsn = filePath,
-                           layer = layer,
                            stringsAsFactors = FALSE)
     assertChoice(x = nation, choices = colnames(theGeometry))
+  }
+
+  # create a new data series, if dSeries is not part of the currently known data series names
+  if(!any(inv_dataseries$name %in% gSeries)){
+    dataSeries <- regDataseries(name = gSeries,
+                                update = update)
+    dataSeries <- dataSeries$datID
+  } else{
+    dataSeries <- inv_dataseries$datID[inv_dataseries$name %in% gSeries]
   }
 
   # construct new documentation
   newGID <- ifelse(length(inv_geometries$geoID)==0, 1, as.integer(max(inv_geometries$geoID)+1))
   doc <- tibble(geoID = newGID,
-                name = gSeries,
+                datID = dataSeries,
                 level = level,
                 source_file = fileName,
                 layer = layer,
