@@ -3,6 +3,8 @@
 #' This function matches the values of a variable with an index and returns the
 #' specified IDs.
 #' @param input [\code{character(.)}]\cr terms to be translated.
+#' @param source [\code{integerish(1)}]\cr the census ID (\code{cenID}) from
+#'   which the terms have been taken.
 #' @param ... [\code{list(1)}]\cr lists that capture the variables by which to
 #'   match and the new column names containing the resulting ID; see Details.
 #' @param keepOrig [\code{logical(1)}]\cr to keep the original commodities in
@@ -34,15 +36,16 @@
 #' @importFrom utils txtProgressBar setTxtProgressBar
 #' @export
 
-matchVars <- function(input = NULL, ..., keepOrig = FALSE){
+matchVars <- function(input = NULL, source = NULL, ..., keepOrig = FALSE){
 
   # set internal objects
-  intPaths <- paste0(getOption(x = "dmt_path"))
+  intPaths <- paste0(getOption(x = "cT_path"))
   vars <- exprs(..., .named = TRUE)
 
   # check validity of arguments
   assertTibble(x = input)
-  assertDataFrame(x = input)
+  assertIntegerish(x = source)
+  assertList(x = vars)
   assertLogical(x = keepOrig)
 
   for(i in seq_along(vars)){
@@ -53,7 +56,7 @@ matchVars <- function(input = NULL, ..., keepOrig = FALSE){
     targetName <- toMatch[[1]]
 
     # get tables
-    id_temp <- suppressMessages(read_csv(paste0(getOption("dmt_path"), "/id_", varName, ".csv")))
+    id_temp <- suppressMessages(read_csv(paste0(getOption("cT_path"), "/id_", varName, ".csv")))
 
     # extract the respective column
     inputTerms <- input %>%
@@ -63,6 +66,7 @@ matchVars <- function(input = NULL, ..., keepOrig = FALSE){
 
     # translate the terms
     theTerms <- translateTerms(terms = unique(inputTerms),
+                               source = source,
                                index = paste0("tt_", varName))
 
     # get the matching terms

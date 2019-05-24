@@ -22,7 +22,7 @@
 #' @importFrom magrittr %>%
 #' @export
 
-matchYears <- function(input = NULL, priority = "harvest", keepOrig = FALSE){
+matchTemporal <- function(input = NULL, priority = "harvest", keepOrig = FALSE){
 
   # check validity of arguments
   assertDataFrame(x = input)

@@ -34,7 +34,7 @@
 matchUnits <- function(input = NULL, source = NULL, ..., keepOrig = FALSE){
 
   # set internal objects
-  intPaths <- paste0(getOption(x = "dmt_path"), "/cT_geometries/")
+  intPaths <- paste0(getOption(x = "cT_path"), "/cT_geometries/")
   adminLvls <- exprs(..., .named = TRUE)
 
   # check validity of arguments
@@ -86,11 +86,11 @@ matchUnits <- function(input = NULL, source = NULL, ..., keepOrig = FALSE){
       unique()
 
     # load the nation geometries ...
-    layers <- st_layers(dsn = paste0(intPaths, "stage2/", cleanNation, ".gpkg"))
+    layers <- st_layers(dsn = paste0(intPaths, "stage3/", cleanNation, ".gpkg"))
     geometries <- NULL
     message("\n--> Matching geometries of '", cleanNation, "'.")
     for(j in seq_along(layers$name)){
-      theGeom <- read_sf(dsn = paste0(intPaths, "stage2/", cleanNation, ".gpkg"),
+      theGeom <- read_sf(dsn = paste0(intPaths, "stage3/", cleanNation, ".gpkg"),
                          layer = sort(layers$name)[j],
                          stringsAsFactors = FALSE)
       geometries <- rbind(geometries, theGeom)
