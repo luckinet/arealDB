@@ -4,18 +4,21 @@
 \alias{normGeometry}
 \title{Register geometries}
 \usage{
-normGeometry(input, update = FALSE, ...)
+normGeometry(input, ..., update = FALSE, verbose = TRUE)
 }
 \arguments{
 \item{input}{[\code{character(1)}]\cr path of the file to register.}
+
+\item{...}{[\code{}]\cr chose a subset of administrative units by calling
+\code{nation}, \code{un_member}, \code{continent}, \code{region} or
+\code{subregion}.}
 
 \item{update}{[\code{logical(1)}]\cr whether or not the physical files should
 be updated (\code{TRUE}) or the function should merely return the new
 object (\code{FALSE} default).}
 
-\item{...}{[\code{}]\cr chose a subset of administrative units by calling
-\code{nation}, \code{un_member}, \code{continent}, \code{region} or
-\code{subregion}.}
+\item{verbose}{[\code{logical(1)}]\cr be verbose about what is happening
+(default \code{TRUE}).}
 }
 \description{
 Harmonise and integrate  geometries in a standardised format

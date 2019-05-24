@@ -4,13 +4,20 @@
 \alias{unifyNations}
 \title{Unify the names of Nations}
 \usage{
-unifyNations(unify = NULL, nameCol = NULL)
+unifyNations(unify = NULL, source = NULL, nameCol = NULL,
+  verbose = TRUE)
 }
 \arguments{
 \item{unify}{[\code{data.frame(1)}]\cr the object in which to unify nations.}
 
+\item{source}{[\code{integerish(1)}]\cr and ID, typically the census ID from
+which the terms are provided.}
+
 \item{nameCol}{[\code{character}]\cr the name of the column that contains
 nation names to unify.}
+
+\item{verbose}{[\code{logical(1)}]\cr be verbose about what is happening
+(default \code{TRUE}).}
 }
 \description{
 In LUCKINet we use a default set of nations. This functions renames nations
@@ -22,8 +29,8 @@ that don't abide by those rules yet.
 library(sf)
 
 setPath(root = "/home/se87kuhe/Nextcloud/LUCKINet/data/")
-gadm <- st_read(paste0(getOption("dmt_path"),
-                       "administrative_boundaries/original_datasets/gadm36_levels.gpkg"),
+gadm <- st_read(paste0(getOption("cT_path"),
+                       "ct_geometries/stage1/gadm36_levels.gpkg"),
                layer = "level0",
                stringsAsFactors = FALSE)
 

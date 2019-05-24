@@ -13,7 +13,7 @@ census data.}
 \item{nations}{[\code{character(1)}]\cr the nation name, which is also the
 new file name.}
 
-\item{file}{[\code{character(1)}]\cr full path of the stage1 file containing
+\item{file}{[\code{character(1)}]\cr full path of the stage2 file containing
 census stats.}
 }
 \description{

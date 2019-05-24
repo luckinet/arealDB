@@ -5,7 +5,7 @@
 \title{Register a new census data entry}
 \usage{
 regCensus(nation = NULL, subset = NULL, dSeries = NULL,
-  gSeries = NULL, level = NULL, dimension = NULL, algo = NULL,
+  gSeries = NULL, level = NULL, variable = NULL, algo = NULL,
   begin = NULL, end = NULL, archive = NULL, notes = NULL,
   update = FALSE)
 }
@@ -26,7 +26,7 @@ registered.}
 \item{level}{[\code{integerish(1)}]\cr the administrative level at which the
 boundaries are recorded.}
 
-\item{dimension}{[\code{character(.)}]\cr the land-use dimensions included in
+\item{variable}{[\code{character(.)}]\cr the variables included in
 the file.}
 
 \item{algo}{[\code{character}]\cr the dataseries specific algorithm
@@ -69,19 +69,19 @@ setPath(root = "/home/se87kuhe/Nextcloud/LUCKINet/data/")
 
 # dry run to be able to check whether everything is as intended.
 regCensus(nation = "Argentina", level = 3, dSeries = "maia",
-          dimension = c("planted_area", "harvested_area", "production", "yield"),
+          variable = c("planted_area", "harvested_area", "production", "yield"),
           algo = 1, begin = 1969, end = 2017,
           archive = "AgroIndustria_Estimaciones_complete_2017_11_12.xlsx")
 
 # with several countries in one table (nation is NULL)
 regCensus(nation = NULL, level = 1, dSeries = "faostat", gSeries = "gadm",
-          dimension = c("planted_area","production","yield"),
+          variable = c("planted_area","production","yield"),
           algo = 1, begin = 1961, end = 2017,
           archive = "Production_Crops_E_All_Data_(Normalized).csv")
 
 # eventually, carry out the registration
 regCensus(nation = "Argentina", level = 3, dSeries = "maia",
-          dimension = c("planted_area", "harvested_area", "production", "yield"),
+          variable = c("planted_area", "harvested_area", "production", "yield"),
           algo = 1, begin = 1969, end = 2017,
           archive = "AgroIndustria_Estimaciones_complete_2017_11_12.xlsx",
           update = TRUE)
