@@ -15,7 +15,6 @@
 #' @importFrom dplyr mutate select pull
 #' @importFrom magrittr %>%
 #' @importFrom readr read_csv
-#' @importFrom rectr register rectangularise
 #' @importFrom stringr str_split
 #' @importFrom tidyselect everything
 #' @export
