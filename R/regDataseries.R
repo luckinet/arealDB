@@ -28,11 +28,11 @@ regDataseries <- function(name = NULL, description = NULL, website = NULL,
                           notes = NULL, update = FALSE){
 
   # get tables
-  inv_dataseries <- read_csv(paste0(getOption(x = "dmt_path"), "/inv_dataseries.csv"), col_types = "icccc")
+  inv_dataseries <- read_csv(paste0(getOption(x = "cT_path"), "/inv_dataseries.csv"), col_types = "icccc")
 
   # check validity of arguments
-  assertDataFrame(x = inv_dataseries, ncols = 6)
-  assertNames(x = colnames(inv_dataseries), permutation.of = c("datID", "name", "long_name", "address", "website", "notes"))
+  assertDataFrame(x = inv_dataseries)
+  assertNames(x = colnames(inv_dataseries), permutation.of = c("datID", "name", "long_name", "website", "notes"))
   assertCharacter(x = name, ignore.case = TRUE, any.missing = FALSE, len = 1, null.ok = TRUE)
   assertCharacter(x = description, ignore.case = TRUE, any.missing = FALSE, len = 1, null.ok = TRUE)
   assertCharacter(x = website, ignore.case = TRUE, any.missing = FALSE, len = 1, null.ok = TRUE)
