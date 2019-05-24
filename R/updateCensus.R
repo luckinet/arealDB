@@ -4,7 +4,7 @@
 #'   census data.
 #' @param nations [\code{character(1)}]\cr the nation name, which is also the
 #'   new file name.
-#' @param file [\code{character(1)}]\cr full path of the stage1 file containing
+#' @param file [\code{character(1)}]\cr full path of the stage2 file containing
 #'   census stats.
 #' @importFrom checkmate assertTibble assertCharacter
 #' @importFrom readr read_csv write_csv cols col_number
@@ -24,8 +24,8 @@ updateCensus <- function(census = NULL, nations = NULL, file = NULL){
   }
 
   # get some paths
-  targetDir <- paste0(getOption(x = "dmt_path"), "/cT_census/stage2/")
-  archive <- paste0(getOption(x = "dmt_path"), "/cT_census/stage1/processed")
+  targetDir <- paste0(getOption(x = "cT_path"), "/cT_census/stage3/")
+  archive <- paste0(getOption(x = "cT_path"), "/cT_census/stage2/processed")
 
   for(i in seq_along(nations)){
 
@@ -51,7 +51,7 @@ updateCensus <- function(census = NULL, nations = NULL, file = NULL){
         mutate(id = seq_along(id))
     }
 
-    # write file to 'stage2' and move to folder 'processed'
+    # write file to 'stage3' and move to folder 'processed'
     write_csv(x = out, path = paste0(targetDir, "/", nations[i], ".csv"), na = "")
   }
 
