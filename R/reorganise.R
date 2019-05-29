@@ -5,8 +5,9 @@
 #' format.
 #' @param input [\code{data.frame(1)}]\cr table to rectangularise.
 #' @importFrom checkmate assertDataFrame
-#' @importFrom dplyr filter_all any_vars bind_rows
-#' @importFrom tidyr fill drop_na
+#' @importFrom dplyr filter_all any_vars bind_rows slice group_by ungroup select
+#' @importFrom tibble rownames_to_column
+#' @importFrom tidyr fill drop_na gather spread
 #' @importFrom tidyselect everything
 #' @importFrom magrittr %>%
 #' @export
@@ -24,9 +25,10 @@ reorganise <- function(input = NULL){
     default <- get(x = "meta_default", envir = baseenv())
   }
 
-  # derive the full configuration for clusters
+  # derive subsets for convenience
   clusters <- current$clusters
-  nClusters <- max(lengths(clusters))
+  variables <- current$variables
+  validRows <- rep(TRUE, dim(input)[1])
 
   # set cluster start if it is NULL
   if(is.null(clusters$top)){
@@ -35,91 +37,109 @@ reorganise <- function(input = NULL){
   if(is.null(clusters$left)){
     clusters$left <- 1
   }
+  nClusters <- max(lengths(clusters))
 
-  ### set width and height if they are NULL
+  # set width and height if they are NULL
   if(is.null(clusters$width)){
-    if(length(clusters$left) > 1){
-
-    } else {
-      clusters$width <- diff(c(clusters$left, dim(input)[2]+1))
-    }
+    clusters$width <- diff(c(clusters$left, dim(input)[2]+1))
   }
   if(is.null(clusters$height)){
     if(length(clusters$top) > 1){
       clusters$height <- diff(c(clusters$top, dim(input)[1]+1))
     } else {
-      clusters$height <- dim(input)[1] - min(clusters$top)
+      clusters$height <- dim(input)[1]+1 - min(clusters$top)
     }
   }
-  ### make sure that all elements occur the same number of times
+
+  # make sure that all elements occur the same number of times
   clusters$top <- rep(x = clusters$top, length.out = nClusters)
   clusters$left <- rep(x = clusters$left, length.out = nClusters)
   clusters$width <- rep(x = clusters$width, length.out = nClusters)
   clusters$height <- rep(x = clusters$height, length.out = nClusters)
 
-  # identifying variables
-  idVars <- unlist(lapply(
-    seq_along(current$variables), function(x){
-      vals <- current$variables[[x]]
-      if(vals$type == "id"){
-        return(names(current$variables)[x])
-      }
-    }
-  ))
+  idVars <- idTidy <- valVars <- valsTidy <- outsideCluster <- NULL
 
-  # values variables
-  valVars <- unlist(lapply(
-    seq_along(current$variables), function(x){
-      vals <- current$variables[[x]]
-      if(vals$type == "values"){
-        return(names(current$variables)[x])
-      }
-    }
-  ))
-  # ... does it have an id?
-  hasID <- unlist(lapply(
-    seq_along(current$variables), function(x){
-      vals <- current$variables[[x]]
-      if(vals$type == "values"){
-        return(!is.null(vals$id))
-      }
-    }
-  ))
+  # go through all properties of all variables and set the indices to values
+  # relative to the cluster
+  for(i in seq_along(variables)){
+    varProp <- variables[[i]]
+    varName <- names(variables)[i]
 
-  # test whether we have a tidy table. This depends on how the different
-  # variables are specified:
-  # 1. all identifying variables are of 'form = "long"' and are restricted to
-  # one column
-  idTidy <- unlist(lapply(
-    seq_along(current$variables), function(x){
-      vals <- current$variables[[x]]
-      if(vals$type == "id"){
-        if(vals$form == "long" & length(vals$col) == 1){
-          TRUE
-        } else {
-          FALSE
+    # get meta data on identifying variables
+    if(varProp$type == "id"){
+      idVars <- c(idVars, names(variables)[i])
+      if(varProp$form == "long" & length(varProp$col) == 1){
+        idTidy <- c(idTidy, TRUE)
+      } else {
+        idTidy <- c(idTidy, FALSE)
+      }
+    }
+
+    # get values variables
+    if(varProp$type == "values"){
+      valVars <- c(valVars, names(variables)[i])
+      if(is.null(varProp$id) & length(varProp$col) == 1){
+        valsTidy <- c(valsTidy, TRUE)
+      } else {
+        valsTidy <- c(valsTidy, FALSE)
+      }
+    }
+
+    # make sure that all elements occur the same number of times
+    if(!is.null(varProp$row)){
+      if(!all(varProp$row < clusters$top)){
+        if(length(varProp$row) < nClusters){
+          varProp$row <- rep(x = varProp$row, length.out = nClusters)
         }
       }
     }
-  ))
-
-  # 2. all values variables are restricted to one column and do have 'id = NULL'
-  # so that they don't have to be split
-  valsTidy <- unlist(lapply(
-    seq_along(current$variables), function(x){
-      vals <- current$variables[[x]]
-      if(vals$type == "values"){
-        if(is.null(vals$id) & length(vals$col) == 1){
-          TRUE
-        } else {
-          FALSE
+    if(!is.null(varProp$col)){
+      if(!all(varProp$col < clusters$left)){
+        if(length(varProp$col) < nClusters){
+          varProp$col <- rep(x = varProp$col, length.out = nClusters)
         }
       }
     }
-  ))
 
-  # determine variable names
-  varNames <- c(idVars, valVars)
+    # if the variable is the 'id' of clusters, set it to be an already tidy
+    # but missing column.
+    if(!is.null(clusters$id)){
+      if(varName == clusters$id){
+        missingTidy <- varName
+      }
+    } else {
+      missingTidy <- NULL
+    }
+
+    # set indices to relative values, but only if the variable is "in" a
+    # cluster, which is the case when its' row/col is larger than the smallest
+    # values for a cluster
+    if(!varProp$rel){
+      if(!is.null(varProp$row)){
+        if(!all(varProp$row < clusters$top)){
+          varProp$row <- varProp$row - clusters$top + 1
+          varProp$rel <- TRUE
+        } else {
+          # isolate variables that are outside of all clusters
+          outsideCluster <- c(outsideCluster, varName)
+        }
+      }
+      if(!is.null(varProp$col)){
+        if(!all(varProp$col < clusters$left)){
+          varProp$col <- varProp$col - clusters$left +1
+          varProp$rel <- TRUE
+        } else {
+          outsideCluster <- c(outsideCluster, varName)
+        }
+      }
+    }
+    variables[[i]] <- varProp
+  }
+
+  # combine variable names
+  varNames <- clustNames <- c(idVars, valVars)
+
+  # update variable names, for when the 'name' of any variable has been set
   varNames <- unlist(lapply(
     seq_along(current$variables), function(x){
       vals <- current$variables[[x]]
@@ -131,157 +151,202 @@ reorganise <- function(input = NULL){
     }
   ))
 
-  # keys <- lapply(seq_along(keyNames), function(x){
-  #   tibble(.rows = 0)
-  # })
+  if(!is.null(outsideCluster)){
+    # update cluster names, exclude variables that are not inside a cluster
+    clustNames <- clustNames[-which(clustNames %in% outsideCluster)]
 
-  tempValues <- list()
+    # update likewise the identifying variables included in each cluster
+    idTidy <- idTidy[-which(idVars %in% outsideCluster)]
+    idVars <- idVars[-which(idVars %in% outsideCluster)]
+  }
 
   # go through all clusters and process them ...
+  theValues <- theIDs <- list()
   for(i in 1:nClusters){
-    data <- input[clusters$top[i]:(clusters$top[i]+clusters$height[i] - 1),
-                  clusters$left[i]:(clusters$left[i]+clusters$width[i] - 1)]
+    clusterCols <- clusters$top[i]:(clusters$top[i]+clusters$height[i] - 1)
+    clusterRows <- clusters$left[i]:(clusters$left[i]+clusters$width[i] - 1)
+    data <- input[clusterCols, clusterRows]
+    validRows[-clusterCols] <- FALSE
+
+    # check whether any variable is the id of clusters and modify 'data'
+    # according to that
+    for(j in seq_along(variables)){
+      varProp <- variables[[j]]
+      varName <- names(variables)[j]
+      if(names(variables)[j] %in% missingTidy){
+        if(!is.null(varProp$row) & !is.null(varProp$col)){
+          id <- data %>%
+            slice(varProp$row[i]) %>%
+            select(varProp$col[i]) %>%
+            filter(!is.na(.)) %>%
+            unlist(use.names = FALSE)
+          data <- data %>%
+            slice(-varProp$row[i])
+          validRows[clusters$top[i] + varProp$row[i] - 1] <- FALSE
+        } else if(!is.null(varProp$row)){
+          id <- data %>%
+            slice(varProp$row) %>%
+            filter(!is.na(.)) %>%
+            unlist(use.names = FALSE)
+          data <- data %>%
+            slice(-varProp$row)
+          validRows[clusters$top[i] + varProp$row[i] - 1] <- FALSE
+        } else {
+          id <- data %>%
+            select(varProp$col) %>%
+            filter(!is.na(.)) %>%
+            unlist(use.names = FALSE)
+          data <- data %>%
+            select(-varProp$col)
+        }
+        theIDs <- c(theIDs, list(id))
+        if(missingTidy %in% clustNames){
+          clustNames <- clustNames[-which(names(variables) == missingTidy)]
+          idVars <- idVars[-which(names(variables) == missingTidy)]
+          idTidy <- idTidy[-which(names(variables) == missingTidy)]
+        }
+      }
+    }
 
     # remove rows that have NA in all columns
     data <- data %>%
       filter_all(any_vars(!is.na(.)))
 
-    # if not all ids and all vals are tidy, rearrange the data, otherwise
-    # continue filling gaps
-    if(!(all(idTidy) & all(valsTidy))){
+    # if not all ids and all vals are tidy, rearrange the data
+    spreadVars <- gatherVars <- mergeRows <- NULL
+    toGather <- rep(FALSE, dim(data)[2])
+    if(!all(idTidy)){
+      # identifiers might be not tidy because they are in separate clusters, but
+      # are actually tidy, or because they are really spread out over several
+      # columns. Distinguish the two from each other.
+      for(j in seq_along(idVars)){
 
-      # rearrange data
+        if(!idTidy[j]){
+          varName <- idVars[j]
+          varProp <- variables[[varName]]
 
-    } else {
+          # if the variable is long within the cluster, it is tidy, so we don't
+          # make this variable a gather variable
+          if(varProp$form != "long"){
+            toGather[varProp$col] <- TRUE
+            mergeRows <- c(mergeRows, varProp$row)
+            gatherVars <- c(gatherVars, varName)
+            spreadVars <- "key"
+          }
 
-      # fill gaps
-      temp <- data %>%
-        fill(everything()) %>%
-        drop_na(which(varNames%in%valVars))
-
+        }
+      }
     }
 
+    if(!all(valsTidy)){
+      for(j in seq_along(valVars)){
+        if(!valsTidy[j]){
+          varName <- valVars[j]
+          varProp <- variables[[varName]]
+
+          if(length(varProp$col) > 1 & is.null(clusters$id)){
+            toGather[varProp$col] <- TRUE
+          }
+          if(!is.null(varProp$id)){
+            spreadVars <- varProp$id
+          } else {
+            if(!"key" %in% gatherVars){
+              gatherVars <- c("key", gatherVars)
+            }
+          }
+        }
+      }
+    }
+
+    # fill NA to the right side of wide identifying variables
+    temp <- data %>%
+      rownames_to_column('rn') %>%
+      gather(key, val, -rn) %>%
+      group_by(rn) %>%
+      fill(val) %>%
+      spread(key, val) %>%
+      ungroup() %>%
+      select(-rn)
+
+    if(all(temp[1,] == clustNames)){
+      # it the column names are exactly the same as the first row, set the names
+      # and remove the first row
+      temp <- temp %>%
+        slice(-1)
+      newNames <- clustNames
+    } else if(!is.null(mergeRows)){
+      # if there are rows to merge, set column names from those. If it was not
+      # the first row that has been registered, but any other row, it is likely
+      # that the first row is not data, and thus it might be part of the column
+      # names (at least the first row within a cluster).
+      if(!1 %in% mergeRows){
+        mergeRows <- c(1, mergeRows)
+      }
+      newNames <- temp %>%
+        t() %>%
+        as_tibble() %>%
+        select(mergeRows) %>%
+        unite(col = "name", sep = "-_-_") %>%
+        unlist()
+      temp <- temp %>%
+        slice(-mergeRows)
+    } else if(!is.null(spreadVars)) {
+      # if there are variables that need to be spread, set the first row as
+      # column names
+      newNames <- temp %>%
+        slice(1)
+      temp <- temp %>%
+        slice(-1)
+    } else {
+      newNames <- clustNames
+    }
+    colnames(temp) <- newNames
+
+    # gather all gather variables
+    if(any(toGather)){
+      temp <- temp %>%
+        gather(key, values, -!!colnames(temp)[!toGather])
+
+      # ... and separate the column containing column names
+      if(!is.null(mergeRows)){
+        temp <- temp %>%
+          separate(key, into = c(gatherVars), sep = "-_-_")
+      }
+    }
+
+    # spread long identifying variables
+    if(!is.null(spreadVars)){
+      temp <- temp %>%
+        spread(spreadVars, value = "values")
+      if(any(spreadVars %in% varNames)){
+        varNames <- varNames[-which(varNames %in% spreadVars)]
+      }
+    }
+
+    # if a tidy column is outside of clusters, reconstruct it
+    if(!is.null(outsideCluster)){
+      theColumn <- variables[[which(names(variables) == outsideCluster)]]$col
+      missingCol <- input %>%
+        select(!!outsideCluster := theColumn) %>%
+        filter(validRows)
+      temp <- temp %>%
+        bind_cols(missingCol)
+    }
+
+    # if a cluster id has been specified, reconstruct the column
+    if(!is.null(clusters$id)){
+      temp <- temp %>%
+        mutate(!!clusters$id := theIDs[[i]]) %>%
+        select(names(variables))
+    }
     # append cluster to the overall output list
-    tempValues <- c(tempValues, list(temp))
+    theValues <- c(theValues, list(temp))
 
   }
 
   # row bind the values of all clusters
-  out <- bind_rows(tempValues)
-
-  # set column names
+  out <- bind_rows(theValues)
   colnames(out) <- varNames
-
-
-
-    # cycle through all variables of interest
-    # newNames <- NULL
-    # oldNames <- varNames
-    # for(j in seq_along(varNames)){
-      # theVariable <- varNames[j]
-      # var <- current$variables[[theVariable]]
-
-      # # test whether the variable is registered at all.
-      # if(all(c(is.null(var$row), is.null(var$col)))){
-      #   stop(paste0("please register ", theVariable, "."))
-      # }
-
-      # # determine whether the variable is either 'key' or 'values'
-      # isKey <- FALSE
-      # isValues <- FALSE
-      # if(all(!is.null(var$row), !is.null(current$variables$key$row))){
-      #   if(var$row == current$variables$key$row){
-      #     isKey <- TRUE
-      #   }
-      # }
-      # if(all(!is.null(var$col), !is.null(current$variables$key$col))){
-      #   if(var$col == current$variables$key$col){
-      #     isKey <- TRUE
-      #   }
-      # }
-      # if(all(!is.null(var$row), !is.null(current$variables$values$row))){
-      #   if(var$row == current$variables$values$row){
-      #     isValues <- TRUE
-      #   }
-      # }
-      # if(all(!is.null(var$col), !is.null(current$variables$values$col))){
-      #   if(var$col == current$variables$values$col){
-      #     isValues <- TRUE
-      #   }
-      # }
-
-      # # replace the variable name with 'value', if it's not 'values' itself
-      # if(!is.null(var$value) & !isValues){
-      #   oldNames[j] <- var$value
-      #   theVariable <- var$value
-      # }
-
-      # # proceed with extracting this variable only if it's not already covered
-      # # by 'values', which is true either when one of them is NULL, or when they
-      # # both have a different value other than NULL
-      # if(!is.null(var$row) & !theVariable %in% c("key", "values")){
-      #   if(isValues){
-      #     oldNames <- oldNames[-which(oldNames == theVariable)]
-      #     if(!is.null(var$value)){
-      #       newName <- setNames(object = var$value, nm = theVariable)
-      #       newNames <- c(newNames, newName)
-      #     }
-      #     next
-      #   }
-      # }
-      # if(!is.null(var$col) & !theVariable %in% c("key", "values")){
-      #   if(isValues){
-      #     oldNames <- oldNames[-which(oldNames == theVariable)]
-      #     if(!is.null(var$value)){
-      #       newName <- setNames(object = var$value, nm = theVariable)
-      #       newNames <- c(newNames, newName)
-      #     }
-      #     next
-      #   }
-      # }
-
-      # # get the values
-      # if(is.null(var$row)){
-      #   if(var$relPos){
-      #     temp <- data[, var$col]
-      #   } else {
-      #     temp <- input[clusters$row[i]:clusters$height[i], var$col]
-      #   }
-      # } else if(is.null(var$col)){
-      #   if(var$relPos){
-      #     temp <- data[var$row, ]
-      #   } else {
-      #     temp <- input[var$row, clusters$col]
-      #   }
-      # } else{
-      #   if(var$relPos){
-      #     temp <- data[var$row, var$col]
-      #   } else {
-      #     temp <- input[var$row, var$col]
-      #   }
-      # }
-
-      # # include copies of the current variable name when there is more than one
-      # # output
-      # if(dim(temp)[2] > 1){
-      #   before <- oldNames[0:(which(oldNames == theVariable)-1)]
-      #   after <- oldNames[(which(oldNames == theVariable)+1):length(oldNames)]
-      #   self <- paste0(theVariable, 1:dim(temp)[2])
-      #   oldNames <- c(before, self, after)
-      # }
-    # }
-
-  # out <- tibble(.rows = dim(values[[1]])[1])
-  # for(i in seq_along(values)){
-  #   out <- bind_cols(out, values[[i]])
-  # }
-  # colnames(out) <- oldNames
-
-  # if(current$body$format$type == "long"){
-  #   out <- out %>%
-  #     spread(key = key, value = values, convert = TRUE) %>%
-  #     rename(!!newNames)
-  # }
 
   return(out)
 }
