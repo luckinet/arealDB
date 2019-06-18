@@ -31,7 +31,7 @@ restoreIndex <- function(pattern = NULL, print = FALSE, select = NULL){
   assertCharacter(x = pattern, len = 1, null.ok = TRUE)
   if(is.null(pattern)) pattern <- ""
   assertLogical(x = print, len = 1)
-  path <- getOption("cT_path")
+  path <- getOption("adb_path")
 
   printIndex <- function(index){
     temp <- suppressMessages(read_csv(paste0(path, "/log/", index)))
@@ -104,7 +104,7 @@ restoreIndex <- function(pattern = NULL, print = FALSE, select = NULL){
   outName <- paste0(outName[-c(length(outName), length(outName)-1)], collapse = "_")
   if(!print){
     write_csv(x = restored,
-              path = paste0(getOption("cT_path"), outName, ".csv"),
+              path = paste0(getOption("adb_path"), outName, ".csv"),
               na = "")
     message("'", outName, ".csv' has been restored.")
   }

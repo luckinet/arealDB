@@ -18,37 +18,39 @@
 
 normalise <- function(what, ..., keepOrig = TRUE, update = FALSE, verbose = TRUE){
 
+  # what = "geometries"; subsets <- list(nation = "bolivia"); update = TRUE; verbose = FALSE
+
   assertChoice(x = what, choices = c("census", "geometries"))
 
-  recent_jobs <- list.files(path = paste0(getOption("cT_path"), "/cT_", what,"/stage2"))
+  recent_jobs <- list.files(path = paste0(getOption("adb_path"), "/adb_", what,"/stage2"))
   if(what == "geometries"){
-    test_id <- read_csv(paste0(getOption("cT_path"), "/inv_geometries.csv"), col_types = "iiiccccDcc")
+    test_id <- read_csv(paste0(getOption("adb_path"), "/inv_geometries.csv"), col_types = "iiiccccDcc")
   } else {
-    test_id <- read_csv(paste0(getOption("cT_path"), "/inv_census.csv"), col_types = "iiicDcc")
+    test_id <- read_csv(paste0(getOption("adb_path"), "/inv_census.csv"), col_types = "iiicDcc")
   }
-  id_dataseries <- read_csv(paste0(getOption(x = "cT_path"), "/inv_dataseries.csv"), col_types = "icccc")
+  id_dataseries <- read_csv(paste0(getOption(x = "adb_path"), "/inv_dataseries.csv"), col_types = "icccc")
 
   for(i in seq_along(recent_jobs)){
 
     if(recent_jobs[i] %in% test_id$source_file){
 
-      file <- paste0(getOption("cT_path"), "/cT_", what,"/stage2/", recent_jobs[i])
+      file <- paste0(getOption("adb_path"), "/adb_", what, "/stage2/", recent_jobs[i])
 
       if(what == "geometries"){
 
         normGeometry(input = file,
-                     update = TRUE,
+                     update = update,
                      verbose = verbose,
                      ...)
 
       } else {
 
-        normCensus(input = file,
-                   # faoID = list(commodities = "simpleName"),
-                   ...,
-                   keepOrig = keepOrig,
-                   update = TRUE,
-                   verbose = verbose)
+        normTable(input = file,
+                  # faoID = list(commodities = "simpleName"),
+                  ...,
+                  keepOrig = keepOrig,
+                  update = update,
+                  verbose = verbose)
 
       }
     }

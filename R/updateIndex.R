@@ -10,7 +10,7 @@
 updateIndex <- function(index = NULL, name = NULL){
 
   # set internal paths
-  intPaths <- getOption("cT_path")
+  intPaths <- getOption("adb_path")
 
   # check validity of arguments
   assertTibble(x = index)

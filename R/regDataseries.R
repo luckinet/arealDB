@@ -28,7 +28,7 @@ regDataseries <- function(name = NULL, description = NULL, website = NULL,
                           notes = NULL, update = FALSE){
 
   # get tables
-  inv_dataseries <- read_csv(paste0(getOption(x = "cT_path"), "/inv_dataseries.csv"), col_types = "icccc")
+  inv_dataseries <- read_csv(paste0(getOption(x = "adb_path"), "/inv_dataseries.csv"), col_types = "icccc")
 
   # check validity of arguments
   assertDataFrame(x = inv_dataseries)

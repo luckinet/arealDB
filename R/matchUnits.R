@@ -34,7 +34,7 @@
 matchUnits <- function(input = NULL, source = NULL, ..., keepOrig = FALSE){
 
   # set internal objects
-  intPaths <- paste0(getOption(x = "cT_path"), "/cT_geometries/")
+  intPaths <- paste0(getOption(x = "adb_path"), "/adb_geometries/")
   adminLvls <- exprs(..., .named = TRUE)
 
   # check validity of arguments

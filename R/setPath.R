@@ -23,51 +23,51 @@ setPath <- function(root = NULL){
     message("I have created a new project directory.\n  -> please run 'setIndex()' to create optional indices and translation tables.")
   }
 
-  if(!testDirectory(x = file.path(root, "cT_census"), access = "rw")){
-    dir.create(file.path(root, "cT_census"))
+  if(!testDirectory(x = file.path(root, "adb_census"), access = "rw")){
+    dir.create(file.path(root, "adb_census"))
   }
-  if(!testDirectory(x = file.path(root, "cT_geometries"), access = "rw")){
-    dir.create(file.path(root, "cT_geometries"))
+  if(!testDirectory(x = file.path(root, "adb_geometries"), access = "rw")){
+    dir.create(file.path(root, "adb_geometries"))
   }
   if(!testDirectory(x = file.path(root, "log"), access = "rw")){
     dir.create(file.path(root, "log"))
   }
 
-  if(!testDirectory(x = file.path(root, "cT_census", "incoming"), access = "rw")){
-    dir.create(file.path(root, "cT_census", "incoming"))
+  if(!testDirectory(x = file.path(root, "adb_census", "incoming"), access = "rw")){
+    dir.create(file.path(root, "adb_census", "incoming"))
   }
-  if(!testDirectory(x = file.path(root, "cT_census", "meta"), access = "rw")){
-    dir.create(file.path(root, "cT_census", "meta"))
+  if(!testDirectory(x = file.path(root, "adb_census", "meta"), access = "rw")){
+    dir.create(file.path(root, "adb_census", "meta"))
   }
-  if(!testDirectory(x = file.path(root, "cT_census", "stage1"), access = "rw")){
-    dir.create(file.path(root, "cT_census", "stage1"))
+  if(!testDirectory(x = file.path(root, "adb_census", "stage1"), access = "rw")){
+    dir.create(file.path(root, "adb_census", "stage1"))
   }
-  if(!testDirectory(x = file.path(root, "cT_census", "stage2"), access = "rw")){
-    dir.create(file.path(root, "cT_census", "stage2"))
+  if(!testDirectory(x = file.path(root, "adb_census", "stage2"), access = "rw")){
+    dir.create(file.path(root, "adb_census", "stage2"))
   }
-  if(!testDirectory(x = file.path(root, "cT_census", "stage2", "processed"), access = "rw")){
-    dir.create(file.path(root, "cT_census", "stage2", "processed"))
+  if(!testDirectory(x = file.path(root, "adb_census", "stage2", "processed"), access = "rw")){
+    dir.create(file.path(root, "adb_census", "stage2", "processed"))
   }
-  if(!testDirectory(x = file.path(root, "cT_census", "stage3"), access = "rw")){
-    dir.create(file.path(root, "cT_census", "stage3"))
+  if(!testDirectory(x = file.path(root, "adb_census", "stage3"), access = "rw")){
+    dir.create(file.path(root, "adb_census", "stage3"))
   }
-  if(!testDirectory(x = file.path(root, "cT_geometries", "incoming"), access = "rw")){
-    dir.create(file.path(root, "cT_geometries", "incoming"))
+  if(!testDirectory(x = file.path(root, "adb_geometries", "incoming"), access = "rw")){
+    dir.create(file.path(root, "adb_geometries", "incoming"))
   }
-  if(!testDirectory(x = file.path(root, "cT_geometries", "meta"), access = "rw")){
-    dir.create(file.path(root, "cT_geometries", "meta"))
+  if(!testDirectory(x = file.path(root, "adb_geometries", "meta"), access = "rw")){
+    dir.create(file.path(root, "adb_geometries", "meta"))
   }
-  if(!testDirectory(x = file.path(root, "cT_geometries", "stage1"), access = "rw")){
-    dir.create(file.path(root, "cT_geometries", "stage1"))
+  if(!testDirectory(x = file.path(root, "adb_geometries", "stage1"), access = "rw")){
+    dir.create(file.path(root, "adb_geometries", "stage1"))
   }
-  if(!testDirectory(x = file.path(root, "cT_geometries", "stage2"), access = "rw")){
-    dir.create(file.path(root, "cT_geometries", "stage2"))
+  if(!testDirectory(x = file.path(root, "adb_geometries", "stage2"), access = "rw")){
+    dir.create(file.path(root, "adb_geometries", "stage2"))
   }
-  if(!testDirectory(x = file.path(root, "cT_geometries", "stage2", "processed"), access = "rw")){
-    dir.create(file.path(root, "cT_geometries", "stage2", "processed"))
+  if(!testDirectory(x = file.path(root, "adb_geometries", "stage2", "processed"), access = "rw")){
+    dir.create(file.path(root, "adb_geometries", "stage2", "processed"))
   }
-  if(!testDirectory(x = file.path(root, "cT_geometries", "stage3"), access = "rw")){
-    dir.create(file.path(root, "cT_geometries", "stage3"))
+  if(!testDirectory(x = file.path(root, "adb_geometries", "stage3"), access = "rw")){
+    dir.create(file.path(root, "adb_geometries", "stage3"))
   }
 
   # create the empty inventory tables
@@ -121,5 +121,5 @@ setPath <- function(root = NULL){
               na = "")
   }
 
-  options(cT_path = root)
+  options(adb_path = root)
 }

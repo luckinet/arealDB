@@ -1,7 +1,7 @@
 #' Register geometries
 #'
 #' Harmonise and integrate  geometries in a standardised format
-#' @param input [\code{character(1)}]\cr path of the file to register.
+#' @param input [\code{character(1)}]\cr path of the file to normalise.
 #' @param ... [\code{}]\cr chose a subset of administrative units by calling
 #'   \code{nation}, \code{un_member}, \code{continent}, \code{region} or
 #'   \code{subregion}.
@@ -27,7 +27,7 @@
 normGeometry <- function(input, ..., update = FALSE, verbose = TRUE){
 
   # set internal paths
-  intPaths <- paste0(getOption(x = "cT_path"))
+  intPaths <- paste0(getOption(x = "adb_path"))
 
   # set internal objects
   subsets <- exprs(..., .named = TRUE)
@@ -146,7 +146,7 @@ normGeometry <- function(input, ..., update = FALSE, verbose = TRUE){
     }
 
     # in case the object consists of several POLYGONs per unique name, dissolve
-    # them into a multipolygon
+    # them into a single MULTIPOLYGON
     if(unique(st_geometry_type(nationGeom)) == "POLYGON"){
       uniqueUnits <- nationGeom %>%
         as_tibble() %>%
@@ -169,9 +169,9 @@ normGeometry <- function(input, ..., update = FALSE, verbose = TRUE){
 
     # determine whether a geometry with the nation as name already exists and
     # whether that contains the correct layer ...
-    fileExists <- testFileExists(x = paste0(intPaths, "/cT_geometries/stage3/", tempNation, ".gpkg"))
+    fileExists <- testFileExists(x = paste0(intPaths, "/adb_geometries/stage3/", tempNation, ".gpkg"))
     if(fileExists){
-      targetLayers <- st_layers(dsn = paste0(intPaths, "/cT_geometries/stage3/", tempNation, ".gpkg"))
+      targetLayers <- st_layers(dsn = paste0(intPaths, "/adb_geometries/stage3/", tempNation, ".gpkg"))
       if(!grepl(pattern = paste0("level_", theLevel), x = paste0(targetLayers$name, collapse = "|"))){
         fileExists <- FALSE
       }
@@ -181,7 +181,7 @@ normGeometry <- function(input, ..., update = FALSE, verbose = TRUE){
     if(fileExists){
 
       message("    Reading target geometries")
-      targetGeom <- read_sf(dsn = paste0(intPaths, "/cT_geometries/stage3/", tempNation, ".gpkg"),
+      targetGeom <- read_sf(dsn = paste0(intPaths, "/adb_geometries/stage3/", tempNation, ".gpkg"),
                             layer = sort(targetLayers$name)[theLevel],
                             stringsAsFactors = FALSE)
 
@@ -215,7 +215,7 @@ normGeometry <- function(input, ..., update = FALSE, verbose = TRUE){
       if(severalNations){
         if(theLevel > 1){
           if(theLevel == 2){
-            oldIDs <- read_sf(dsn = paste0(intPaths, "/cT_geometries/stage3/", tempNation, ".gpkg"),
+            oldIDs <- read_sf(dsn = paste0(intPaths, "/adb_geometries/stage3/", tempNation, ".gpkg"),
                               layer = sort(targetLayers$name)[theLevel-1],
                               stringsAsFactors = FALSE) %>%
               as_tibble() %>%
@@ -223,7 +223,7 @@ normGeometry <- function(input, ..., update = FALSE, verbose = TRUE){
               select(-geoID, -geom) %>%
               unique()
           } else {
-            oldIDs <- read_sf(dsn = paste0(intPaths, "/cT_geometries/stage3/", tempNation, ".gpkg"),
+            oldIDs <- read_sf(dsn = paste0(intPaths, "/adb_geometries/stage3/", tempNation, ".gpkg"),
                               layer = sort(targetLayers$name)[theLevel-1],
                               stringsAsFactors = FALSE) %>%
               as_tibble() %>%
@@ -248,7 +248,7 @@ normGeometry <- function(input, ..., update = FALSE, verbose = TRUE){
         }
       } else {
         if(theLevel > 1){
-          oldIDs <- read_sf(dsn = paste0(intPaths, "/cT_geometries/stage3/", tempNation, ".gpkg"),
+          oldIDs <- read_sf(dsn = paste0(intPaths, "/adb_geometries/stage3/", tempNation, ".gpkg"),
                             layer = sort(targetLayers$name)[theLevel-1],
                             stringsAsFactors = FALSE) %>%
             as_tibble() %>%
@@ -272,7 +272,7 @@ normGeometry <- function(input, ..., update = FALSE, verbose = TRUE){
         }
       }
 
-      suppressMessages(newIDs <- joinedGeom %>%
+      suppressWarnings(newIDs <- joinedGeom %>%
         filter(is.na(nation)) %>%
         select(-nation, -name, -ahID, -geoID, -level, -starts_with("al"))  %>%
         mutate_if(is.character, tolower) %>%
@@ -337,16 +337,20 @@ normGeometry <- function(input, ..., update = FALSE, verbose = TRUE){
 
     } else {
 
+      # check whether a gadm geometry has been registered previously
       if(!grepl(pattern = "gadm", x = lut$source_file)){
         message(paste0("  ! I didn't find any geometries, please provide first the GADM level ", theLevel, " data product !"))
         next
       }
 
-      gadmIDs <- inv_geometries$geoID[inv_geometries$name %in% "gadm"]
+      # get all gadm inventory entries
+      gadmIDs <- inv_geometries$geoID[grep(pattern = "gadm", x = inv_geometries$source_file)]
 
+      # get ahID and other information from the parent layer, if it is the first
+      # level, just set up new information
       if(theLevel > 1){
         if(theLevel == 2){
-          oldIDs <- read_sf(dsn = paste0(intPaths, "/cT_geometries/stage3/", tempNation, ".gpkg"),
+          oldIDs <- read_sf(dsn = paste0(intPaths, "/adb_geometries/stage3/", tempNation, ".gpkg"),
                             layer = sort(targetLayers$name)[theLevel-1],
                             stringsAsFactors = FALSE) %>%
             as_tibble() %>%
@@ -354,7 +358,7 @@ normGeometry <- function(input, ..., update = FALSE, verbose = TRUE){
             rename(NAME_0 = nation) %>%
             select(-geom)
         } else {
-          oldIDs <- read_sf(dsn = paste0(intPaths, "/cT_geometries/stage3/", tempNation, ".gpkg"),
+          oldIDs <- read_sf(dsn = paste0(intPaths, "/adb_geometries/stage3/", tempNation, ".gpkg"),
                             layer = sort(targetLayers$name)[theLevel-1],
                             stringsAsFactors = FALSE) %>%
             as_tibble() %>%
@@ -368,10 +372,13 @@ normGeometry <- function(input, ..., update = FALSE, verbose = TRUE){
         unitCols <- c("NAME_0", "NAME_1")
       }
 
+      # for joining the geom(s) to modified objects
       matchGeom <- nationGeom %>%
         select(!!unitCols) %>%
         mutate_if(is.character, tolower)
 
+      # join the object with the parent ID to derive IDs of this level that are
+      # actual children of the correct parent
       suppressMessages(joinedGeom <- nationGeom %>%
         as_tibble() %>%
         select(-geom)  %>%
@@ -383,6 +390,7 @@ normGeometry <- function(input, ..., update = FALSE, verbose = TRUE){
 
       xyz <- unitCols[!seq_along(unitCols) %in% c(1, length(unitCols))]
 
+      # derive required information
       outGeom <- joinedGeom %>%
         group_by(!!as.symbol(unitCols[length(unitCols)-1])) %>%
         mutate(level = theLevel,
@@ -404,7 +412,7 @@ normGeometry <- function(input, ..., update = FALSE, verbose = TRUE){
     if(update){
       # in case the user wants to update, output the simple feature
       st_write(obj = outGeom,
-               dsn = paste0(intPaths, "/cT_geometries/stage3/", tempNation, ".gpkg"),
+               dsn = paste0(intPaths, "/adb_geometries/stage3/", tempNation, ".gpkg"),
                layer = paste0("level_", theLevel),
                layer_options = "OVERWRITE=yes",
                quiet = TRUE)
@@ -413,7 +421,7 @@ normGeometry <- function(input, ..., update = FALSE, verbose = TRUE){
 
   if(update & moveFile){
     message(paste0("    Moving '", file_name, "' to './stage2/processed'"))
-    firstStage <- paste0(intPaths, "/cT_geometries/stage2")
+    firstStage <- paste0(intPaths, "/adb_geometries/stage2")
     file.copy(from = paste0(firstStage, "/", file_name), to = paste0(firstStage, "/processed/", file_name))
     file.remove(paste0(firstStage, "/", file_name))
   }

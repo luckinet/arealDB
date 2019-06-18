@@ -28,7 +28,7 @@ translateTerms <- function(terms, source = NULL, index = NULL, fuzzy_terms = NUL
   assertIntegerish(x = source)
   assertCharacter(x = index, len = 1, any.missing = FALSE)
   args <- enexpr(index)
-  index <- read_csv(paste0(getOption(x = "cT_path"), "/", index, ".csv"), col_types = "cccDi")
+  index <- read_csv(paste0(getOption(x = "adb_path"), "/", index, ".csv"), col_types = "cccDi")
   assertNames(x = colnames(index), must.include = c("origin", "target"))
   assertCharacter(x = fuzzy_terms, any.missing = FALSE, null.ok = TRUE)
   assertIntegerish(x = fuzzy_dist, any.missing = FALSE)
@@ -123,7 +123,7 @@ translateTerms <- function(terms, source = NULL, index = NULL, fuzzy_terms = NUL
   if(newEntries){
 
     # define paths for translating
-    basePath <- paste0(getOption("cT_path"))
+    basePath <- paste0(getOption("adb_path"))
     translating <- paste0(basePath, "/translating.csv")
 
     toTranslate <- tempOut %>%

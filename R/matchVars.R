@@ -39,7 +39,7 @@
 matchVars <- function(input = NULL, source = NULL, ..., keepOrig = FALSE){
 
   # set internal objects
-  intPaths <- paste0(getOption(x = "cT_path"))
+  intPaths <- paste0(getOption(x = "adb_path"))
   vars <- exprs(..., .named = TRUE)
 
   # check validity of arguments
@@ -56,7 +56,7 @@ matchVars <- function(input = NULL, source = NULL, ..., keepOrig = FALSE){
     targetName <- toMatch[[1]]
 
     # get tables
-    id_temp <- suppressMessages(read_csv(paste0(getOption("cT_path"), "/id_", varName, ".csv")))
+    id_temp <- suppressMessages(read_csv(paste0(getOption("adb_path"), "/id_", varName, ".csv")))
 
     # extract the respective column
     inputTerms <- input %>%

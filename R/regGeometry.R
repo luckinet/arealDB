@@ -63,7 +63,7 @@ regGeometry <- function(nation = NULL, subset = NULL, gSeries = NULL, level = NU
                         update = FALSE){
 
   # set internal paths
-  intPaths <- paste0(getOption(x = "cT_path"))
+  intPaths <- paste0(getOption(x = "adb_path"))
 
   # get tables
   inv_geometries <- read_csv(paste0(intPaths, "/inv_geometries.csv"), col_types = "iciccccDcc")
@@ -116,15 +116,15 @@ regGeometry <- function(nation = NULL, subset = NULL, gSeries = NULL, level = NU
   # put together file name and get confirmation that file should exist now
   fileName <- paste0(theNation, "_", level, "_", subset, "_", gSeries, ".gpkg")
   # message(fileName)
-  done <- readline(paste0("... please store the geometry as '", fileName, "' in './cT_geometries/stage2'\n  -> press any key when done: "))
-  filePath <- paste0(intPaths, "/cT_geometries/stage2/", fileName)
+  done <- readline(paste0("... please store the geometry as '", fileName, "' in './adb_geometries/stage2'\n  -> press any key when done: "))
+  filePath <- paste0(intPaths, "/adb_geometries/stage2/", fileName)
 
   # make sure that the file is really there
   assertFileExists(x = filePath, access = "r", extension = "gpkg")
 
   # also test whether the archive file is available ...
   filesTrace <- str_split(archive, "\\|")[[1]]
-  assertFileExists(x = paste0(intPaths, "/cT_geometries/stage1/", filesTrace[1]), "r")
+  assertFileExists(x = paste0(intPaths, "/adb_geometries/stage1/", filesTrace[1]), "r")
 
   # ... and if it is compressed, whether also the file therein is given that contains the data
   if(testCompressed(x = filesTrace[1]) & length(filesTrace) < 2){
