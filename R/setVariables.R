@@ -39,20 +39,20 @@
 #'
 #' # create index from an already existing table
 #' read_csv(file = "species.csv") %>%
-#'    setTables(variable = "mySpecies", origin = messySynonyms,
+#'    setVariables(variable = "mySpecies", origin = messySynonyms,
 #'             target = scientificName)
 #'
 #' # create empty table
-#' setTables(variable = "exoticVariable")
+#' setVariables(variable = "exoticVariable")
 #' @importFrom checkmate assertCharacter
 #' @importFrom stringr str_detect str_locate str_sub
 #' @export
 
-setTables <- function(input = NULL, variable = NULL, type = "both", pid = NULL,
-                     origin = NULL, target = NULL){
+setVariables <- function(input = NULL, variable = NULL, type = "both", pid = NULL,
+                         origin = NULL, target = NULL){
 
   # set internal paths
-  intPaths <- getOption("cT_path")
+  intPaths <- getOption("adb_path")
 
   # check validity of arguments
   assertTibble(x = input, null.ok = TRUE)

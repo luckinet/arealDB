@@ -1,4 +1,4 @@
-#' Register a new census data entry
+#' Register a new census data table
 #'
 #' This function creates the standardized name for a new census file and enters
 #' the required information into all look-up tables.
@@ -42,23 +42,23 @@
 #' setPath(root = "/home/se87kuhe/Nextcloud/LUCKINet/data/")
 #'
 #' # dry run to be able to check whether everything is as intended.
-#' regCensus(nation = "Argentina", level = 3, dSeries = "maia",
-#'           variable = c("planted_area", "harvested_area", "production", "yield"),
-#'           algo = 1, begin = 1969, end = 2017,
-#'           archive = "AgroIndustria_Estimaciones_complete_2017_11_12.xlsx")
+#' regTable(nation = "Argentina", level = 3, dSeries = "maia",
+#'          variable = c("planted_area", "harvested_area", "production", "yield"),
+#'          algo = 1, begin = 1969, end = 2017,
+#'          archive = "AgroIndustria_Estimaciones_complete_2017_11_12.xlsx")
 #'
 #' # with several countries in one table (nation is NULL)
-#' regCensus(nation = NULL, level = 1, dSeries = "faostat", gSeries = "gadm",
-#'           variable = c("planted_area","production","yield"),
-#'           algo = 1, begin = 1961, end = 2017,
-#'           archive = "Production_Crops_E_All_Data_(Normalized).csv")
+#' regTable(nation = NULL, level = 1, dSeries = "faostat", gSeries = "gadm",
+#'          variable = c("planted_area","production","yield"),
+#'          algo = 1, begin = 1961, end = 2017,
+#'          archive = "Production_Crops_E_All_Data_(Normalized).csv")
 #'
 #' # eventually, carry out the registration
-#' regCensus(nation = "Argentina", level = 3, dSeries = "maia",
-#'           variable = c("planted_area", "harvested_area", "production", "yield"),
-#'           algo = 1, begin = 1969, end = 2017,
-#'           archive = "AgroIndustria_Estimaciones_complete_2017_11_12.xlsx",
-#'           update = TRUE)
+#' regTable(nation = "Argentina", level = 3, dSeries = "maia",
+#'          variable = c("planted_area", "harvested_area", "production", "yield"),
+#'          algo = 1, begin = 1969, end = 2017,
+#'          archive = "AgroIndustria_Estimaciones_complete_2017_11_12.xlsx",
+#'          update = TRUE)
 #' }
 #' # when the data series and the geometry series are different, specify
 #' # both of them
@@ -69,12 +69,12 @@
 #' @importFrom stringr str_split
 #' @export
 
-regCensus <- function(nation = NULL, subset = NULL, dSeries = NULL, gSeries = NULL,
-                      level = NULL, variable = NULL, algo = NULL, begin = NULL,
-                      end = NULL, archive = NULL, notes = NULL, update = FALSE){
+regTable <- function(nation = NULL, subset = NULL, dSeries = NULL, gSeries = NULL,
+                     level = NULL, variable = NULL, algo = NULL, begin = NULL,
+                     end = NULL, archive = NULL, notes = NULL, update = FALSE){
 
   # set internal paths
-  intPaths <- paste0(getOption(x = "cT_path"))
+  intPaths <- paste0(getOption(x = "adb_path"))
 
   # get tables
   inv_census <- read_csv(paste0(intPaths, "/inv_census.csv"), col_types = "iiicDcc")
@@ -155,14 +155,14 @@ regCensus <- function(nation = NULL, subset = NULL, dSeries = NULL, gSeries = NU
 
   # put together file name and get confirmation that file should exist now
   fileName <- paste0(theNation, "_", level, "_", subset, "_", dSeries, "_", tempDim, "_", algo, "_", begin, "_", end, ".csv")
-  done <- readline(paste0("... please store the table as '", fileName, "' in './cT_census/stage2'\n  -> press any key when done: "))
+  done <- readline(paste0("... please store the table as '", fileName, "' in './adb_census/stage2'\n  -> press any key when done: "))
 
   # make sure that the file is really there
-  assertFileExists(x = paste0(intPaths, "/cT_census/stage2/", fileName), "r", extension = "csv")
+  assertFileExists(x = paste0(intPaths, "/adb_census/stage2/", fileName), "r", extension = "csv")
 
   # also test whether the archive file is available ...
   filesTrace <- str_split(archive, "\\|")[[1]]
-  assertFileExists(x = paste0(intPaths, "/cT_census/stage1/", filesTrace[1]), "r")
+  assertFileExists(x = paste0(intPaths, "/adb_census/stage1/", filesTrace[1]), "r")
 
   # ... and if it is compressed, whether also the file therein is given that contains the data
   if(testCompressed(x = filesTrace[1]) & length(filesTrace) < 2){

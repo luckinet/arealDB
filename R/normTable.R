@@ -19,10 +19,10 @@
 #' @importFrom tidyselect everything
 #' @export
 
-normCensus <- function(input, ..., keepOrig = TRUE, update = FALSE, verbose = TRUE){
+normTable <- function(input, ..., keepOrig = TRUE, update = FALSE, verbose = TRUE){
 
   # get objects
-  inv_census <- read_csv(paste0(getOption(x = "cT_path"), "/inv_census.csv"), col_types = "iiicDcc")
+  inv_census <- read_csv(paste0(getOption(x = "adb_path"), "/inv_census.csv"), col_types = "iiicDcc")
   vars <- exprs(..., .named = TRUE)
 
   # check validity of arguments
@@ -49,7 +49,7 @@ normCensus <- function(input, ..., keepOrig = TRUE, update = FALSE, verbose = TR
   country <- countries$nation[countries$iso_a3 == toupper(fields[1])]
 
   out <- read_csv(input, col_names = FALSE) %>%
-    record(what = "algorithm", name = algorithm) %>%
+    record(mdo = algorithm) %>%
     reorganise() %>%
     mutate(id = seq_along(years),
            cenID = cenID,
