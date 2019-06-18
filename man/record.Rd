@@ -4,10 +4,12 @@
 \alias{record}
 \title{Record table properties}
 \usage{
-record(input, what = NULL, export = FALSE, ...)
+record(input, mdo = NULL, ...)
 }
 \arguments{
 \item{input}{[\code{data.frame(1)}]\cr table for which to record properties.}
+
+\item{...}{[\code{various}]\cr property specific arguments; see Details.}
 
 \item{what}{[\code{character(1)}]\cr properties that should be recorded as
 deviating from the default. Possible values are \code{algorithm},
@@ -16,8 +18,6 @@ deviating from the default. Possible values are \code{algorithm},
 
 \item{export}{[\code{logical(1)}]\cr whether or not to export the meta data
 as \code{XML}.}
-
-\item{...}{[\code{various}]\cr property specific arguments; see Details.}
 }
 \description{
 This functions records properties of tables and stores them in a meta data
