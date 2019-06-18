@@ -31,43 +31,17 @@
 #'   assertNames
 #' @export
 
-record <- function(input, what = NULL, export = FALSE, ...){
-
-  # set internal objects
-  args <- exprs(..., .named = TRUE)
+record <- function(input, mdo = NULL, ...){
 
   # check validity of arguments
   assertDataFrame(x = input)
-  assertCharacter(x = what, any.missing = FALSE)
-  assertChoice(x = what, choices = c("algorithm"))
-  assertList(x = args)
+  assertList(x = mdo)
 
-  # check whether there is already a metadata object
-  if(exists(x = "meta_default", envir = baseenv())){
-    default <- get(x = "meta_default", envir = baseenv())
-  } else{
-    assign(x = "meta_default", value = meta_default, envir = baseenv())
-    assign(x = "meta_default", value = meta_default, envir = baseenv())
-  }
+  meta <- eval(parse(text = mdo))
 
-  # modify 'meta' according to what has been specified
-  if(what == "algorithm"){
-    assertNames(x = names(args), must.include = "name")
-    meta <- eval(parse(text = args$name))
+  # assign the meta data object into the base-environment
+  assign(x = "meta_object", value = meta, envir = baseenv())
 
-    # check whether the algorithm can be used on 'input'
-
-  } else {
-
-  }
-
-  # assign the modified meta-object into the base-environment
-  assign(x = "meta_default", value = meta, envir = baseenv())
-
-  if(export){
-    # write 'meta' as xml into the working directory
-
-  }
 
   return(input)
 

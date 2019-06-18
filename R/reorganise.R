@@ -7,7 +7,7 @@
 #' @importFrom checkmate assertDataFrame
 #' @importFrom dplyr filter_all any_vars bind_rows slice group_by ungroup select
 #' @importFrom tibble rownames_to_column
-#' @importFrom tidyr fill drop_na gather spread
+#' @importFrom tidyr fill drop_na gather spread separate
 #' @importFrom tidyselect everything
 #' @importFrom magrittr %>%
 #' @export
@@ -18,11 +18,10 @@ reorganise <- function(input = NULL){
   assertDataFrame(x = input)
 
   # check whether there is already a metadata object
-  if(!exists(x = "meta_default", envir = baseenv())){
+  if(!exists(x = "meta_object", envir = baseenv())){
     stop("please first use 'register()' to specify the table properties.")
   } else{
-    current <- get(x = "meta_default", envir = baseenv())
-    default <- get(x = "meta_default", envir = baseenv())
+    current <- get(x = "meta_object", envir = baseenv())
   }
 
   # derive subsets for convenience
@@ -57,7 +56,7 @@ reorganise <- function(input = NULL){
   clusters$width <- rep(x = clusters$width, length.out = nClusters)
   clusters$height <- rep(x = clusters$height, length.out = nClusters)
 
-  idVars <- idTidy <- valVars <- valsTidy <- outsideCluster <- NULL
+  idVars <- idTidy <- valVars <- valsTidy <- outsideCluster <- tidyCols <- tidyNames <- NULL
 
   # go through all properties of all variables and set the indices to values
   # relative to the cluster
@@ -70,6 +69,7 @@ reorganise <- function(input = NULL){
       idVars <- c(idVars, names(variables)[i])
       if(varProp$form == "long" & length(varProp$col) == 1){
         idTidy <- c(idTidy, TRUE)
+        tidyCols <- c(tidyCols, varProp$col)
       } else {
         idTidy <- c(idTidy, FALSE)
       }
@@ -80,6 +80,7 @@ reorganise <- function(input = NULL){
       valVars <- c(valVars, names(variables)[i])
       if(is.null(varProp$id) & length(varProp$col) == 1){
         valsTidy <- c(valsTidy, TRUE)
+        tidyCols <- c(tidyCols, varProp$col)
       } else {
         valsTidy <- c(valsTidy, FALSE)
       }
@@ -213,7 +214,7 @@ reorganise <- function(input = NULL){
       filter_all(any_vars(!is.na(.)))
 
     # if not all ids and all vals are tidy, rearrange the data
-    spreadVars <- gatherVars <- mergeRows <- NULL
+    spreadVars <- gatherVars <- mergeRows <- newNames <- NULL
     toGather <- rep(FALSE, dim(data)[2])
     if(!all(idTidy)){
       # identifiers might be not tidy because they are in separate clusters, but
@@ -233,8 +234,17 @@ reorganise <- function(input = NULL){
             gatherVars <- c(gatherVars, varName)
             spreadVars <- "key"
           }
-
         }
+      }
+    }
+
+    # If it is not the first row that has been registered for containing an
+    # identifying variable, but any other row, it is likely that the first row
+    # is not data, and thus it might be part of the column names (at least the
+    # first row within a cluster); set it also to 'mergeRows'.
+    if(!is.null(mergeRows)){
+      if(!1 %in% mergeRows){
+        mergeRows <- c(1, mergeRows)
       }
     }
 
@@ -250,8 +260,14 @@ reorganise <- function(input = NULL){
           if(!is.null(varProp$id)){
             spreadVars <- varProp$id
           } else {
-            if(!"key" %in% gatherVars){
+            if(length(mergeRows) > length(gatherVars)){
               gatherVars <- c("key", gatherVars)
+            } else {
+              spreadVars <- spreadVars[-which(spreadVars %in% "key")]
+              # set the variable to NULL, if it doesn't have a content anymore
+              if(length(spreadVars) == 0){
+                spreadVars <- NULL
+              }
             }
           }
         }
@@ -259,46 +275,52 @@ reorganise <- function(input = NULL){
     }
 
     # fill NA to the right side of wide identifying variables
+    colnames(data) <- formatC(c(1:dim(data)[2]), width = nchar(dim(data)[2]), flag = "0")
     temp <- data %>%
       rownames_to_column('rn') %>%
       gather(key, val, -rn) %>%
       group_by(rn) %>%
       fill(val) %>%
-      spread(key, val) %>%
       ungroup() %>%
+      spread(key, val) %>%
+      mutate(rn = as.numeric(rn)) %>%
+      arrange(rn) %>%
       select(-rn)
 
-    if(all(temp[1,] == clustNames)){
-      # it the column names are exactly the same as the first row, set the names
-      # and remove the first row
+    if(!any(toGather) & is.null(spreadVars)){
       temp <- temp %>%
+        select(tidyCols) %>%
         slice(-1)
-      newNames <- clustNames
-    } else if(!is.null(mergeRows)){
-      # if there are rows to merge, set column names from those. If it was not
-      # the first row that has been registered, but any other row, it is likely
-      # that the first row is not data, and thus it might be part of the column
-      # names (at least the first row within a cluster).
-      if(!1 %in% mergeRows){
-        mergeRows <- c(1, mergeRows)
+      newNames <- tidyNames
+    }
+
+    if(is.null(newNames)){
+      if(all(temp[1,] == clustNames)){
+        # it the column names are exactly the same as the first row, set the names
+        # and remove the first row
+        temp <- temp %>%
+          slice(-1)
+        newNames <- clustNames
+      } else if(!is.null(mergeRows)){
+        # if there are rows to merge, set column names from those.
+        newNames <- temp %>%
+          t() %>%
+          as_tibble() %>%
+          select(mergeRows) %>%
+          unite(col = "name", sep = "-_-_") %>%
+          unlist()
+        temp <- temp %>%
+          slice(-mergeRows)
+      } else if(!is.null(spreadVars)) {
+        # if there are variables that need to be spread, set the first row as
+        # column names
+        newNames <- temp %>%
+          slice(1)
+        temp <- temp %>%
+          slice(-1)
+      } else {
+        newNames <- clustNames
       }
-      newNames <- temp %>%
-        t() %>%
-        as_tibble() %>%
-        select(mergeRows) %>%
-        unite(col = "name", sep = "-_-_") %>%
-        unlist()
-      temp <- temp %>%
-        slice(-mergeRows)
-    } else if(!is.null(spreadVars)) {
-      # if there are variables that need to be spread, set the first row as
-      # column names
-      newNames <- temp %>%
-        slice(1)
-      temp <- temp %>%
-        slice(-1)
-    } else {
-      newNames <- clustNames
     }
     colnames(temp) <- newNames
 
