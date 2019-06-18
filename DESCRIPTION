@@ -1,7 +1,7 @@
-Package: censusTools
+Package: arealDB
 Type: Package
-Title: Manage Census statistics and associated geographic information
-Description: This package standardises matching of census statistics and associated geographical information. 
+Title: Manage areal census and survey data
+Description: This package helps the user to build up integrated and harmonised databases of areal census and survey data.
 Version: 0.1.0
 Authors@R: person("Steffen", "Ehrmann", email = "steffen.ehrmann@idiv.de",
     role = c("aut", "cre"), 
