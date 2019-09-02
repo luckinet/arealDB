@@ -2,7 +2,7 @@
 % Please edit documentation in R/regDataseries.R
 \name{regDataseries}
 \alias{regDataseries}
-\title{Register a new geometry entry}
+\title{Register a new dataseries}
 \usage{
 regDataseries(name = NULL, description = NULL, website = NULL,
   notes = NULL, update = FALSE)
@@ -13,28 +13,33 @@ regDataseries(name = NULL, description = NULL, website = NULL,
 \item{description}{[\code{character(1)}]\cr the "long name" or "brief
 description" of the dataseries.}
 
-\item{website}{[\code{character(1)}]\cr the website, where the dataseries was
-found or where additional information can be found.}
+\item{website}{[\code{character(1)}]\cr a website where the dataseries or
+additional information can be found.}
 
 \item{notes}{[\code{character(1)}]\cr optional notes.}
 
 \item{update}{[\code{logical(1)}]\cr whether or not the file
 'inv_dataseries.csv' should be updated.}
-
-\item{address}{[\code{character(1)}]\cr an optional address of the dataseries
-provider.}
+}
+\value{
+Returns the entry that is appended to 'inv_dataseries.csv' in case
+  \code{update = TRUE}.
 }
 \description{
-Register a new geometry entry
+This function registers a new dataseries of both, geometries or areal data
+into the geospatial database
 }
 \examples{
 \dontrun{
 
-setPath(root = "/home/se87kuhe/Nextcloud/LUCKINet/data/")
+regDataseries(name = "gadm",
+              description = "Database of Global Administrative Areas",
+              website = "https://gadm.org/index.html",
+              update = TRUE)
 
-regDataseries(name = "maia",
-              description = "Ministerio de Agroindustria",
-              website = "http://datosestimaciones.magyp.gob.ar/",
-              update = FALSE)
+regDataseries(name = "usda",
+              description = "US Dept. of Agriculture",
+              website = "https://www.nass.usda.gov/Quick_Stats/Lite/index.php",
+              update = TRUE)
 }
 }

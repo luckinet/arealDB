@@ -19,20 +19,21 @@ nation names to unify.}
 \item{verbose}{[\code{logical(1)}]\cr be verbose about what is happening
 (default \code{TRUE}).}
 }
+\value{
+The object provided in \code{unify} where the nation values in
+  \code{nameCol} have been harmonised.
+}
 \description{
-In LUCKINet we use a default set of nations. This functions renames nations
-that don't abide by those rules yet.
+This function harmonises the nation names with the standard list in
+\code{\link{countries}}.
 }
 \examples{
 \dontrun{
 
 library(sf)
-
-setPath(root = "/home/se87kuhe/Nextcloud/LUCKINet/data/")
-gadm <- st_read(paste0(getOption("cT_path"),
-                       "ct_geometries/stage1/gadm36_levels.gpkg"),
-               layer = "level0",
-               stringsAsFactors = FALSE)
+gadm <- st_read(dsn = ".../adb_geometries/stage2/gadm36_levels.gpkg",
+                layer = "level0",
+                stringsAsFactors = FALSE)
 
 (gadm2 <- unifyNations(unify = gadm, nameCol = "NAME_0"))
 }

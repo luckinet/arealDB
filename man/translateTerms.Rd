@@ -10,6 +10,9 @@ translateTerms(terms, source = NULL, index = NULL,
 \arguments{
 \item{terms}{[\code{character(.)}]\cr terms to be translated.}
 
+\item{source}{[\code{integerish(1)}]\cr the table ID (\code{tabID}) from
+which the terms have been taken.}
+
 \item{index}{[\code{data.frame(1)}]\cr table that contains translations.}
 
 \item{fuzzy_terms}{[\code{vector(.)}]\cr target terms with which a fuzzy
@@ -21,10 +24,20 @@ fuzzy-matching.}
 \item{verbose}{[\code{logical(1)}]\cr be verbose about what is happening
 (default \code{TRUE}).}
 }
+\value{
+translated \code{terms}.
+}
 \description{
 Translate terms based on fuzzy matching.
 }
 \details{
 This is basically a sophisticated matching algorithm, that adds new
   entries to the respective index, if no match was found.
+}
+\examples{
+\dontrun{
+
+translateTerms(terms = c("wheet", "weizen", "Wheat", "Weat"),
+               index = paste0("tt_commodities"))
+}
 }

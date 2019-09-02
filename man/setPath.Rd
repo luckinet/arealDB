@@ -7,12 +7,19 @@
 setPath(root = NULL)
 }
 \arguments{
-\item{root}{[\code{character(1)}]\cr path tothe root directory that contains
-all tables and sub-directories.}
+\item{root}{[\code{character(1)}]\cr path to the root directory that contains
+or shall contain an areal database.}
+}
+\value{
+Enters the root path as 'adb_path' into the options.
 }
 \description{
-Gather and load all look-up-tables for translating and matching terms.
+Initiate a geospatial database or register a database that exists at the root
+path.
 }
-\examples{
-setPath(root = "/home/se87kuhe/Nextcloud/LUCKINet/myProject/")
+\details{
+This is the first function that is run in a project, as it initiates
+  the areal database by creating the default sub-directories and initial
+  inventory tables. When a database has already been set up, this funciton is
+  used to register that path in the options of the current R session.
 }

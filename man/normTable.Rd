@@ -2,26 +2,66 @@
 % Please edit documentation in R/normTable.R
 \name{normTable}
 \alias{normTable}
-\title{Register census tables}
+\title{Normalise data tables}
 \usage{
 normTable(input, ..., keepOrig = TRUE, update = FALSE,
   verbose = TRUE)
 }
 \arguments{
-\item{input}{[\code{character(1)}]\cr path of the file to register.}
+\item{input}{[\code{character(1)}]\cr path of the file to normalise.}
 
-\item{...}{[\code{}]\cr ...}
+\item{...}{[\code{list(.)}]\cr matching lists that capture the variables by
+which to match and the new column names containing the resulting ID; see
+Details.}
 
 \item{keepOrig}{[\code{logical(1)}]\cr whether or not to keep not only the
-IDs btu also the original terms for which IDs have been derived.}
+IDs but also the original terms for which IDs have been derived.}
 
 \item{update}{[\code{logical(1)}]\cr whether or not the physical files should
 be updated (\code{TRUE}) or the function should merely return the new
 object (\code{FALSE} default).}
 
-\item{algorithm}{[\code{character(1)}]\cr the algorithm to use for the
-specific format of the dataseries provider.}
+\item{verbose}{[\code{logical(1)}]\cr be verbose about what is happening
+(default \code{TRUE}).}
+}
+\value{
+This function integrates unprocessed data tables at stage two into
+  the geospatial database.
 }
 \description{
-Harmonise and integrate census tables in a standardised format
+Harmonise and integrate data tables into standardised format
 }
+\details{
+Arguments in \code{...} are so-called matching lists that indicate
+  with which target column variables shall be matched and which value should
+  be used as target ID.
+
+  targetID = list(variable = targetColumn)
+
+  The variable must be present as column in \code{input} and a table that is
+  named "id_VARIABLE.csv" must be available in the root directory of the
+  project. This should have been created with \code{\link{setVariables}}.
+
+  To normalise data tables, this function proceeds as follows: \enumerate{
+  \item Read in \code{input} and extract initial metadata from the file name.
+  \item Employ the functions \code{\link{record}} and
+  \code{\link{reorganise}} to reshape \code{input} according to the
+  respective schema description (see \code{\link{meta_default}}). \item Match
+  the territorial units in \code{input} via the \code{\link{matchUnits}}.
+  \item If \code{...} has been provided with variables to match, those are
+  matched via \code{\link{matchVars}}. \item Harmonise territorial unit
+  names. \item If \code{update = TRUE}, store the processed data table at
+  stage three.}
+}
+\examples{
+\dontrun{
+
+normTable(input = ".../adb_tables/stage2/dataTable.csv",
+          faoID = list(commodities = "simpleName"),
+          update = TRUE, verbose = FALSE)
+}
+}
+\seealso{
+Other normalisers: \code{\link{normGeometry}}
+}
+\concept{normalisers}

@@ -2,18 +2,19 @@
 % Please edit documentation in R/normalise.R
 \name{normalise}
 \alias{normalise}
-\title{Normlise census tables or geometries}
+\title{Normlise data tables or geometries}
 \usage{
 normalise(what, ..., keepOrig = TRUE, update = FALSE, verbose = TRUE)
 }
 \arguments{
 \item{what}{[\code{character(1)}]\cr the data to normalise, either
-\code{"census"} or \code{"geometries"}.}
+\code{"geometries"} or \code{"tables"}.}
 
-\item{...}{[\code{}]\cr for \code{what = "geometries"} chose a subset of
-administrative units by calling \code{nation}, \code{un_member},
-\code{continent}, \code{region} or \code{subregion}.\cr for \code{what =
-"census"} chose}
+\item{...}{[\code{various(.)}]\cr additional arguments of \code{normGeometry}
+and \code{normTable}; see details.}
+
+\item{keepOrig}{[\code{logical(1)}]\cr whether or not to keep not only the
+IDs but also the original terms for which IDs have been derived.}
 
 \item{update}{[\code{logical(1)}]\cr whether or not the physical files should
 be updated (\code{TRUE}) or the function should merely return the new
@@ -22,6 +23,42 @@ object (\code{FALSE} default).}
 \item{verbose}{[\code{logical(1)}]\cr be verbose about what is happening
 (default \code{TRUE}).}
 }
+\value{
+see \code{\link{normGeometry}} and \code{\link{normTable}}.
+}
 \description{
-Normlise census tables or geometries
+This function is a wrapper around the functions \code{\link{normGeometry}}
+and \code{\link{normTable}}. When called, it automatically processes all
+files in stage two that are not yet processed.
+}
+\details{
+The argument \code{...} captures all commands that would be provided
+  to the other \code{norm*} functions. These could be: \itemize{ \item a
+  subset of administrative units as given by \code{nation}, \code{continent},
+  \code{region}, \code{subregion} or \code{un_member = TRUE/FALSE}. Valid
+  values can be found in the object \code{\link{countries}}. \item socalled
+  'matching lists' that indicate which variables shall be matched with which
+  index tables and which value should be used as target ID.
+
+  targetID = list(variable = targetColumn)
+
+  The variable must be present as column in the areal data table and an index
+  table that is named "id_VARIABLE.csv" must be available in the root
+  directory of the project. This should have been created with
+  \code{\link{setVariables}}.}
+}
+\examples{
+\dontrun{
+
+# select geometries for the united states
+normalise(what = "geometries",
+          nation = c("united states"),
+          update = TRUE, verbose = FALSE)
+
+# match commodities with the fao commodity list and selsect faoID as target ID.
+normalise(what = "tables",
+          nation = c("united states"),
+          faoID = list(commodities = "simpleName"),
+          update = TRUE, verbose = FALSE)
+}
 }

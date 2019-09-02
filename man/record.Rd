@@ -4,20 +4,15 @@
 \alias{record}
 \title{Record table properties}
 \usage{
-record(input, mdo = NULL, ...)
+record(input, schema = NULL, ...)
 }
 \arguments{
 \item{input}{[\code{data.frame(1)}]\cr table for which to record properties.}
 
+\item{schema}{[\code{symbol(1)}]\cr the schema documentation that has been
+saved in the global environment.}
+
 \item{...}{[\code{various}]\cr property specific arguments; see Details.}
-
-\item{what}{[\code{character(1)}]\cr properties that should be recorded as
-deviating from the default. Possible values are \code{algorithm},
-\code{format}, \code{clusters}, \code{commodities}, \code{adminUnits},
-\code{years}.}
-
-\item{export}{[\code{logical(1)}]\cr whether or not to export the meta data
-as \code{XML}.}
 }
 \description{
 This functions records properties of tables and stores them in a meta data

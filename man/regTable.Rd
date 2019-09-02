@@ -2,7 +2,7 @@
 % Please edit documentation in R/regTable.R
 \name{regTable}
 \alias{regTable}
-\title{Register a new census data table}
+\title{Register a new areal data table}
 \usage{
 regTable(nation = NULL, subset = NULL, dSeries = NULL,
   gSeries = NULL, level = NULL, variable = NULL, algo = NULL,
@@ -10,82 +10,80 @@ regTable(nation = NULL, subset = NULL, dSeries = NULL,
   update = FALSE)
 }
 \arguments{
-\item{nation}{[\code{character(1)}]\cr the nation for which the boundaries
-are defined.}
+\item{nation}{[\code{character(1)}]\cr the nation for which the areal data
+are valid.}
 
 \item{subset}{[\code{character(1)}]\cr optional argument to specify which
-subset the file contains. This could be a subset of administrative units or
-of commodities.}
+subset the file contains. This could be a subset of territorial units (e.g.
+only one municipality) or of a target variable.}
 
-\item{dSeries}{[\code{character(1)}]\cr the dataseries of the census data.}
+\item{dSeries}{[\code{character(1)}]\cr the dataseries of the areal data.}
 
-\item{gSeries}{[\code{character(1)}]\cr optinally, if the geometry series
-deviates from the data series with which the census data should be
-registered.}
+\item{gSeries}{[\code{character(1)}]\cr optinally, the dataseries of the
+geometries, if the geometry dataseries deviates from the dataseries of the
+areal data.}
 
 \item{level}{[\code{integerish(1)}]\cr the administrative level at which the
 boundaries are recorded.}
 
-\item{variable}{[\code{character(.)}]\cr the variables included in
-the file.}
+\item{variable}{[\code{character(.)}]\cr the variables included in the file.}
 
-\item{algo}{[\code{character}]\cr the dataseries specific algorithm
-associated to the specific format of this file.}
+\item{algo}{[\code{character}]\cr a serial number that indicates permutations
+of the areal data dataseries.}
 
-\item{begin}{[\code{integerish(1)}]\cr the first date from which on the
-boundaries are valid.}
+\item{begin}{[\code{integerish(1)}]\cr the date from which on the boundaries
+are valid.}
 
-\item{end}{[\code{integerish(1)}]\cr the last date from which on the
-boundaries are valid.}
+\item{end}{[\code{integerish(1)}]\cr the date until which the boundaries are
+valid.}
 
 \item{archive}{[\code{character(1)}]\cr the original file from which the
 boundaries emerge.}
 
 \item{notes}{[\code{character(1)}]\cr optional notes.}
 
-\item{update}{[\code{logical(1)}]\cr whether or not the file
-'inv_sourceData.csv' should be updated.}
+\item{update}{[\code{logical(1)}]\cr whether or not the file 'inv_tables.csv'
+should be updated.}
+}
+\value{
+Returns the entry that is appended to 'inv_tables.csv' in case
+  \code{update = TRUE}.
 }
 \description{
-This function creates the standardized name for a new census file and enters
-the required information into all look-up tables.
+This function registers a new areal data table into the geospatial database.
 }
 \details{
-When processing census data, carry out the following steps:
-  \enumerate{ \item Determine the \code{nation}, \code{administrative level},
-  the \code{subset} of the nation and the \code{dataseries} of the shapefiles
-  and provide them as arguments to this function. \item Provide a
-  \code{begin} and \code{end} date for the census data. \item Run the
-  function. \item (Re)Save the table with the following properties:
-  \itemize{\item Format: csv \item Encoding: UTF-8 \item File name: What is
-  provided as message by this function \item make sure that no columns or
-  rows are removed. This will happen later via a \code{rect*} function that
+When processing areal data tables, carry out the following steps:
+  \enumerate{ \item Determine the \code{nation}, administrative \code{level},
+  a \code{subset} (if applicable), the \code{dataseries} of the areal data
+  and of the geometry and an \code{algo}rithm (if applicable), and provide
+  them as arguments to this function. \item Provide a \code{begin} and
+  \code{end} date for the areal data. \item Run the function. \item (Re)Save
+  the table with the following properties: \itemize{\item Format: csv \item
+  Encoding: UTF-8 \item File name: What is provided as message by this
+  function \item make sure that the file is not modified or reshaped. This
+  will happen during data normalisation via the schema description, which
   expects the original table.} \item Confirm that you have saved the file.}
+
+  Every areal data dataseries (\code{dSeries}) may come as a slight
+  permutation of a particular table arrangement. The function
+  \code{\link{normalise}} expects internally a schema description (a list
+  that describes the position of the data components) for each data table,
+  which is saved as \code{paste0("meta_", dSeries, algo)}. A template
+  thereof, and documentation on how to set them up, comes as the object
+  \code{\link{meta_default}} with \code{arealDB}.
 }
 \examples{
 \dontrun{
 
-setPath(root = "/home/se87kuhe/Nextcloud/LUCKINet/data/")
-
-# dry run to be able to check whether everything is as intended.
-regTable(nation = "Argentina", level = 3, dSeries = "maia",
-         variable = c("planted_area", "harvested_area", "production", "yield"),
-         algo = 1, begin = 1969, end = 2017,
-         archive = "AgroIndustria_Estimaciones_complete_2017_11_12.xlsx")
-
-# with several countries in one table (nation is NULL)
-regTable(nation = NULL, level = 1, dSeries = "faostat", gSeries = "gadm",
-         variable = c("planted_area","production","yield"),
-         algo = 1, begin = 1961, end = 2017,
-         archive = "Production_Crops_E_All_Data_(Normalized).csv")
-
-# eventually, carry out the registration
-regTable(nation = "Argentina", level = 3, dSeries = "maia",
-         variable = c("planted_area", "harvested_area", "production", "yield"),
-         algo = 1, begin = 1969, end = 2017,
-         archive = "AgroIndustria_Estimaciones_complete_2017_11_12.xlsx",
+regTable(nation = "United States of America",
+         subset = "soy",
+         dSeries = "usda", gSeries = "gadm",
+         level = 3,
+         variable = c("harvested_area"),
+         algo = 1,
+         begin = 1990, end = 2017,
+         archive = "soybean_us_county_1990_2017.csv",
          update = TRUE)
 }
-# when the data series and the geometry series are different, specify
-# both of them
 }

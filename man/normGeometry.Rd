@@ -2,16 +2,20 @@
 % Please edit documentation in R/normGeometry.R
 \name{normGeometry}
 \alias{normGeometry}
-\title{Register geometries}
+\title{Normalise geometries}
 \usage{
-normGeometry(input, ..., update = FALSE, verbose = TRUE)
+normGeometry(input, ..., thresh = 90, update = FALSE, verbose = TRUE)
 }
 \arguments{
 \item{input}{[\code{character(1)}]\cr path of the file to normalise.}
 
-\item{...}{[\code{}]\cr chose a subset of administrative units by calling
-\code{nation}, \code{un_member}, \code{continent}, \code{region} or
-\code{subregion}.}
+\item{...}{[\code{character(.)}]\cr a subset of administrative units as given
+by \code{nation}, \code{continent}, \code{region}, \code{subregion} or
+\code{un_member = TRUE/FALSE}. Valid values can be found in the object
+\code{\link{countries}}.}
+
+\item{thresh}{[\code{integerish(1)}]\cr the threshold of percentage of
+overlap above which to consider two territorial units "the same".}
 
 \item{update}{[\code{logical(1)}]\cr whether or not the physical files should
 be updated (\code{TRUE}) or the function should merely return the new
@@ -20,6 +24,52 @@ object (\code{FALSE} default).}
 \item{verbose}{[\code{logical(1)}]\cr be verbose about what is happening
 (default \code{TRUE}).}
 }
-\description{
-Harmonise and integrate  geometries in a standardised format
+\value{
+This function integrates unprocessed geometries at stage two into the
+  geospatial database.
 }
+\description{
+Harmonise and integrate geometries in a standardised format
+}
+\details{
+To normalise geometries, this function proceeds as follows:
+  \enumerate{ \item Read in \code{input} and extract initial metadata from
+  the file name. \item Loop through every nation that shall be processed and
+  carry out the following steps: \itemize{ \item In case the geometries are
+  provided as a list of simple feature POLYGONS, they are dissolved into a
+  single MULTIPOLYGON per nation. \item In case the nation to which a
+  geometry belongs has not yet been created at stage three, the following
+  steps are carried out: \enumerate{ \item Check whether initial GADM
+  geometries of the required level are registered and normalised, and stop if
+  this is not the case. \item Extract the full hierarchy of all territorial
+  units that are part of the geometry. \item Match all territorial units of
+  the geometry within their respective parents with the hierarchy table of
+  the GADM geometries. \item Reconstruct ahID from the intermediate spatial
+  objects and from the metadata. } \item In case the nation to which the
+  geometry belongs has already been created at stage three, the following
+  steps are carried out: \enumerate{ \item Check whether the new geometries
+  have the same coordinate reference system as the already existing database
+  and reproject if this is not the case. \item Check whether all new
+  geometries are already exactly matched spatially and stop if that is the
+  case. \item Carry out a spatial join (via \code{sf::st_join(... largest =
+  TRUE)}). \item Match all territorial units of the geometry within their
+  respective parents with the previous hierarchy table. \item For all units
+  that did match, reconstruct ahID from the intermediate spatial objects and
+  from the metadata. \item For all units that did not match, rebuild metadata
+  and a new ahID. } \item If update = TRUE, store the processed geometry at
+  stage three.} \item Move the geometry to the folder '/processed', if it is
+  fully processed.}
+}
+\examples{
+\dontrun{
+
+normGeometry(input = ".../adb_geometries/stage2/geometry.gpkg",
+             nation = c("united states"),
+             update = TRUE, verbose = FALSE)
+
+}
+}
+\seealso{
+Other normalisers: \code{\link{normTable}}
+}
+\concept{normalisers}

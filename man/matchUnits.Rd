@@ -2,9 +2,9 @@
 % Please edit documentation in R/matchUnits.R
 \name{matchUnits}
 \alias{matchUnits}
-\title{Determine the valid hierarchy ID of administrative units}
+\title{Determine the administrative hierarchy ID}
 \usage{
-matchUnits(input = NULL, source = NULL, ..., keepOrig = FALSE)
+matchUnits(input = NULL, source = NULL, keepOrig = FALSE)
 }
 \arguments{
 \item{input}{[\code{data.frame(1)}]\cr table in which to match administrative
@@ -12,11 +12,6 @@ units.}
 
 \item{source}{[\code{integerish(1)}]\cr the geometry ID (\code{geoID}) from
 which the terms have been taken.}
-
-\item{...}{[\code{character(.)}]\cr define columns in \code{input}, where the
-administrative units are recorded. Specify as \code{al1 = XYZ} to subset
-administrative level 1 (nation) to "XYZ", \code{al2 = ...} for the second
-level, etc.}
 
 \item{keepOrig}{[\code{logical(1)}]\cr to keep the original units in the
 output (\code{TRUE}) or to remove them (\code{FALSE}, default). Useful for
@@ -28,10 +23,11 @@ The table provided in \code{input}, where the given columns are
   hierarchy ID.
 }
 \description{
-This function matches administrative units with a list of known units and
-returns \code{input} containing the matched \code{ahID}.
+This function matches territorial units with a list of known units to derive
+the administrative hierarchy ID.
 }
 \details{
-\code{...} must contain at least the argument \code{al1 = ...} to
-  subset for a certain nation.
+\code{names(input)} must contain at least the \code{al1 = ...} to
+  match at least a certain nation. Further administrative levels are denoted
+  by column names \code{al2}, \code{al3}, ...
 }

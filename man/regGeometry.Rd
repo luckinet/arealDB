@@ -9,67 +9,73 @@ regGeometry(nation = NULL, subset = NULL, gSeries = NULL,
   notes = NULL, update = FALSE)
 }
 \arguments{
-\item{nation}{[\code{character(1)}]\cr wither the nation name or the column
-that contains nation names.}
+\item{nation}{[\code{character(1)}]\cr either the nation name or the column
+of the file's attribute table that contains nations.}
 
 \item{subset}{[\code{character(1)}]\cr optional argument to specify which
-subset the file contains. This could be a subset of administrative units or
-of commodities.}
+subset the file contains. This could be a subset of territorial units (e.g.
+only one municipality) or of a target variable.}
 
-\item{gSeries}{[\code{character(1)}]\cr the geometry series name.}
+\item{gSeries}{[\code{character(1)}]\cr the name of the geometry dataseries.}
 
 \item{level}{[\code{integerish(1)}]\cr the administrative level at which the
-boundaries are recorded.}
+geometry is recorded.}
 
-\item{layer}{[\code{character}]\cr the name of the layer from which the
-geometry should be created.}
+\item{layer}{[\code{character}]\cr the name of the file's layer from which
+the geometry should be created (if applicable).}
 
 \item{nameCol}{[\code{character(.)}]\cr the columns in which the names of
 administrative units are to be found, delimited by \code{"|"}; see
 Examples.}
 
-\item{archive}{[\code{character(1)}]\cr the original file from which the
-boundaries emerge.}
+\item{archive}{[\code{character(1)}]\cr the original file (perhaps a *.zip)
+from which the geometry emerges.}
 
 \item{notes}{[\code{character(1)}]\cr optional notes that are assigned to all
 features of this geometry.}
 
-\item{update}{[\code{logical(1)}]\cr whether or not the physical files should
-be updated (\code{TRUE}). or the function should merely return the new
-object (\code{FALSE} default).}
+\item{update}{[\code{logical(1)}]\cr whether or not the file
+'inv_geometries.csv' should be updated (\code{TRUE}).}
+}
+\value{
+Returns the entry that is appended to 'inv_geometries.csv' in case
+  \code{update = TRUE}.
 }
 \description{
-This function registers a new geometry of administrative units into the
-LUCKINet geospatial database.
+This function registers a new geometry of territorial units into the
+geospatial database.
 }
 \details{
-When processing geometries/shapfiles to which census data are
-  assigned, carry out the following steps: \enumerate{ \item Determine the
-  \code{nation}, the \code{subset} of administrative units (if applicable),
-  the geometry series and the \code{administrative level} and provide them as
-  arguments to this function. \item Run the function. \item Export the
-  shapefile via QGIS with the following properties: \itemize{ \item Format:
+When processing geometries to which areal data shall be linked
+  linked, carry out the following steps: \enumerate{ \item Determine the
+  \code{nation}, a \code{subset} (if applicable),
+  the dataseries of the geometry and the administrative \code{level}, and
+  provide them as arguments to this function. \item Run the function. \item
+  Export the shapefile with the following properties: \itemize{ \item Format:
   GeoPackage \item File name: What is provided as message by this function
   \item CRS: EPSG:4326 - WGS 84 \item make sure that 'all fields are
   exported'} \item Confirm that you have saved the file.}
 }
 \examples{
 \dontrun{
-setPath(root = "/home/se87kuhe/Nextcloud/LUCKINet/data/")
 
-# dry-run to be able to check whether everything is as intended.
-argGeom <- regGeometry(nation = "Argentina", gSeries = "maia",
-                       level = 3, nameCol = "NAM",
-                       archive = "DEPARTAMENTOS.zip")
+# The GADM dataset comes as *.zip archive
+regGeometry(nation = "NAME_0",
+            gSeries = "gadm",
+            level = 1,
+            layer = "level0",
+            nameCol = "NAME_0",
+            archive = "gadm36_levels_gpkg.zip|gadm36_levels.gpkg",
+            update = TRUE)
 
-# with several countries in one geometry (specify nation column)
-latAmGeoms <- regGeometry(nation = "COUNTRY_NA", gSeries = "lamer",
-                          level = 2, nameCol = "NAME1_",
-                          archive = "lamer_ad1.shp")
-
-# eventually, carry out the registration
-regGeometry(nation = "Argentina", gSeries = "maia", level = 3,
-            nameCol = "NAM", archive = "DEPARTAMENTOS.zip",
+# The second administrative level in GADM contains names in the columns
+# NAME_0 and NAME_1
+regGeometry(nation = "NAME_0",
+            gSeries = "gadm",
+            level = 2,
+            layer = "level1",
+            nameCol = "NAME_0|NAME_1",
+            archive = "gadm36_levels_gpkg.zip|gadm36_levels.gpkg",
             update = TRUE)
 }
 }

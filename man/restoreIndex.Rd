@@ -20,15 +20,13 @@ should be reverted. Alternatively \code{"oldest"} or \code{"newest"}.}
 Restore an index
 }
 \details{
-Whenever an index is updated with \code{\link{updateIndex}}, a
+Whenever an index is updated with \code{\link{updateTable}}, a
   backup of it is stored. When restoring one of these backup files with
-  \code{restoreIndex}, the changes of \code{updateIndex} will be rolled back
+  \code{restoreIndex}, the changes of \code{updateTable} will be rolled back
   to the status of the selected backup.
 }
 \examples{
-
 \dontrun{
-setPath(root = "/home/se87kuhe/Nextcloud/LUCKINet/data/")
 
 # first print the existing logs to chose from
 restoreIndex(print = TRUE)

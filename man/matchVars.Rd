@@ -28,18 +28,20 @@ This function matches the values of a variable with an index and returns the
 specified IDs.
 }
 \details{
-Arguments in \code{...} are named lists, where the name of the list
-  represents at the same time the variable to match and the the index in
-  which to match (should have been created with \code{\link{makeIndex}}). The
-  value represents the column in the index, with which to match the variable.
-  The argument name represents the column in the index, which should be
-  returned and which contains the new ID.
+Arguments in \code{...} are named lists that indicate with which
+  target column variables shall be matched and which value should be used as
+  target ID.
+
+  targetID = list(variable = targetColumn)
+
+  The variable must be present as column in \code{input} and a table that is
+  named "id_VARIABLE.csv" must be available in the root directory of the
+  project. This should have been created with \code{\link{setVariables}}.
 }
 \examples{
 \dontrun{
 
-# match the column 'commodities' in 'someInput' with the column 'simpleName'
-# in the index 'commodities' and chose the column 'faoID' in the index.
+# match 'commodities' with the column 'simpleName' and chose 'faoID'
 matchVars(input = someInput, faoID = list(commodities = "simpleName"))
 
 # alternatively, the column 'faoGroupID' could be used via
