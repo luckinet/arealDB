@@ -3,12 +3,8 @@
 #' This functions records properties of tables and stores them in a meta data
 #' object in preparation of rectangularisation.
 #' @param input [\code{data.frame(1)}]\cr table for which to record properties.
-#' @param what [\code{character(1)}]\cr properties that should be recorded as
-#'   deviating from the default. Possible values are \code{algorithm},
-#'   \code{format}, \code{clusters}, \code{commodities}, \code{adminUnits},
-#'   \code{years}.
-#' @param export [\code{logical(1)}]\cr whether or not to export the meta data
-#'   as \code{XML}.
+#' @param schema [\code{symbol(1)}]\cr the schema documentation that has been
+#'   saved in the global environment.
 #' @param ... [\code{various}]\cr property specific arguments; see Details.
 #' @details Property-specific arguments are:\itemize{ \item \code{algorithm}:
 #'   \itemize{\item \code{name = ...}} An algorithm is a list of table
@@ -31,13 +27,13 @@
 #'   assertNames
 #' @export
 
-record <- function(input, mdo = NULL, ...){
+record <- function(input, schema = NULL, ...){
 
   # check validity of arguments
   assertDataFrame(x = input)
-  assertList(x = mdo)
+  # assertList(x = schema)
 
-  meta <- eval(parse(text = mdo))
+  meta <- eval(parse(text = schema))
 
   # assign the meta data object into the base-environment
   assign(x = "meta_object", value = meta, envir = baseenv())

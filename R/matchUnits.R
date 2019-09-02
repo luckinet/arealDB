@@ -1,20 +1,17 @@
-#' Determine the valid hierarchy ID of administrative units
+#' Determine the administrative hierarchy ID
 #'
-#' This function matches administrative units with a list of known units and
-#' returns \code{input} containing the matched \code{ahID}.
+#' This function matches territorial units with a list of known units to derive
+#' the administrative hierarchy ID.
 #' @param input [\code{data.frame(1)}]\cr table in which to match administrative
 #'   units.
 #' @param source [\code{integerish(1)}]\cr the geometry ID (\code{geoID}) from
 #'   which the terms have been taken.
-#' @param ... [\code{character(.)}]\cr define columns in \code{input}, where the
-#'   administrative units are recorded. Specify as \code{al1 = XYZ} to subset
-#'   administrative level 1 (nation) to "XYZ", \code{al2 = ...} for the second
-#'   level, etc.
 #' @param keepOrig [\code{logical(1)}]\cr to keep the original units in the
 #'   output (\code{TRUE}) or to remove them (\code{FALSE}, default). Useful for
 #'   debugging.
-#' @details \code{...} must contain at least the argument \code{al1 = ...} to
-#'   subset for a certain nation.
+#' @details \code{names(input)} must contain at least the \code{al1 = ...} to
+#'   match at least a certain nation. Further administrative levels are denoted
+#'   by column names \code{al2}, \code{al3}, ...
 #' @return The table provided in \code{input}, where the given columns are
 #'   replaced by the column \code{ahID}, which contains the administrative
 #'   hierarchy ID.
@@ -31,43 +28,27 @@
 #' @importFrom utils txtProgressBar setTxtProgressBar
 #' @export
 
-matchUnits <- function(input = NULL, source = NULL, ..., keepOrig = FALSE){
+matchUnits <- function(input = NULL, source = NULL, keepOrig = FALSE){
 
   # set internal objects
   intPaths <- paste0(getOption(x = "adb_path"), "/adb_geometries/")
-  adminLvls <- exprs(..., .named = TRUE)
 
   # check validity of arguments
   assertDataFrame(x = input)
   assertIntegerish(x = source)
   assertLogical(x = keepOrig)
-  assertList(x = adminLvls)
-  # assert that one of the arguments has the name "al1" so that at least nations are matched
-  if(length(adminLvls) != 0){
-    assertNames(x = names(adminLvls), must.include = "al1")
-    wrongSubset <- !grepl(pattern = "al[[:digit:]]$", names(adminLvls))
-    if(any(wrongSubset)){
-      stop("Assertion on argument(s) '", paste0(names(adminLvls)[wrongSubset], " = ", adminLvls[wrongSubset]), "' failed: Must comply to pattern 'al[[:digit:]]$'")
-    }
-    # assert that the target columns are part of input
-    targetColumns <- sapply(seq_along(adminLvls), function(x){
-      as.character(adminLvls[[x]])
-    })
-    assertSubset(x = targetColumns, choices = names(input))
-  } else {
-    adminLvls <- list(al1 = as.symbol("al1"))
-    assertNames(x = names(input), must.include = "al1")
-  }
+  # assert that one of the columnnames is "al1" so that at least nations are matched
+  assertNames(x = names(input), must.include = "al1")
 
   out <- input
-  nationCol <- adminLvls$al1
+  adminLvls <- names(input)[grepl(pattern = "al", x = names(input))]
 
   # to manage the workload, split up input according to nations ("al1")
-  nations <- unique(eval(parse(text = nationCol), envir = input))
+  nations <- unique(eval(parse(text = "al1"), envir = input))
   outhIDs <- NULL
   for(i in seq_along(nations)){
     rawNation <- nations[i]
-    cleanNation <- unifyNations(unify = rawNation)
+    cleanNation <- unifyNations(unify = rawNation, verbose = FALSE)
 
     if(is.na(cleanNation)){
       message(paste0("\n--> ! skipping ", rawNation, " because it does not match in 'tt_nations.csv'."))
@@ -76,13 +57,13 @@ matchUnits <- function(input = NULL, source = NULL, ..., keepOrig = FALSE){
 
     # make an input subset for the current nation ...
     inputSbst <- input %>%
-      filter(!!nationCol == rawNation)
+      filter(al1 == rawNation)
 
     # ... extract and find the unique combinations of the respective columns,
     # this asserts that only administrative units nested in their parents are
     # found
     allInputUnits <- inputSbst %>%
-      select(!!!adminLvls) %>%
+      select(adminLvls) %>%
       unique()
 
     # load the nation geometries ...
@@ -98,7 +79,7 @@ matchUnits <- function(input = NULL, source = NULL, ..., keepOrig = FALSE){
 
     # ... and select only unique rows of all 'al*_id'
     temp <- geometries %>%
-      select(name, al1_id, al2_id, al3_id, al4_id, al5_id, al6_id)
+      select(name, starts_with("al"))
     st_geometry(temp) <- NULL
     geometries <- geometries %>%
       filter(!duplicated(temp))
@@ -108,7 +89,7 @@ matchUnits <- function(input = NULL, source = NULL, ..., keepOrig = FALSE){
     for(j in seq_along(adminLvls)){
       theLevel <- as.integer(sub(pattern = "\\D*(\\d+).*",
                                  replacement = "\\1",
-                                 x = names(adminLvls)[j]))
+                                 x = adminLvls)[j])
       levels <- c(levels, theLevel)
 
       if(j == 1){
@@ -139,12 +120,13 @@ matchUnits <- function(input = NULL, source = NULL, ..., keepOrig = FALSE){
         # ... translate them to the default unit names
         theParents <- translateTerms(terms = unique(inputUnits[[1]]),
                                      source = source,
-                                     index = "tt_units",
-                                     fuzzy_terms = unique(parentSubset$name))
+                                     index = "tt_territories",
+                                     fuzzy_terms = unique(parentSubset$name),
+                                     verbose = FALSE)
         theParents <- unique(theParents)
         theUnits <- translateTerms(terms = unique(inputUnits[[2]]),
                                    source = source,
-                                   index = "tt_units",
+                                   index = "tt_territories",
                                    fuzzy_terms = unique(unitSubset$name))
         theUnits <- unique(theUnits)
 

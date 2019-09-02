@@ -1,7 +1,7 @@
 #' Unify the names of Nations
 #'
-#' In LUCKINet we use a default set of nations. This functions renames nations
-#' that don't abide by those rules yet.
+#' This function harmonises the nation names with the standard list in
+#' \code{\link{countries}}.
 #' @param unify [\code{data.frame(1)}]\cr the object in which to unify nations.
 #' @param source [\code{integerish(1)}]\cr and ID, typically the census ID from
 #'   which the terms are provided.
@@ -9,16 +9,15 @@
 #'   nation names to unify.
 #' @param verbose [\code{logical(1)}]\cr be verbose about what is happening
 #'   (default \code{TRUE}).
+#' @return The object provided in \code{unify} where the nation values in
+#'   \code{nameCol} have been harmonised.
 #' @examples
 #' \dontrun{
 #'
 #' library(sf)
-#'
-#' setPath(root = "/home/se87kuhe/Nextcloud/LUCKINet/data/")
-#' gadm <- st_read(paste0(getOption("cT_path"),
-#'                        "ct_geometries/stage1/gadm36_levels.gpkg"),
-#'                layer = "level0",
-#'                stringsAsFactors = FALSE)
+#' gadm <- st_read(dsn = ".../adb_geometries/stage2/gadm36_levels.gpkg",
+#'                 layer = "level0",
+#'                 stringsAsFactors = FALSE)
 #'
 #' (gadm2 <- unifyNations(unify = gadm, nameCol = "NAME_0"))
 #' }
@@ -34,14 +33,14 @@ unifyNations <- function(unify = NULL, source = NULL, nameCol = NULL,
   isSf <- testClass(x = unify, classes = "sf")
   isChar <- testCharacter(x = unify)
   assert(isSf, isChar)
-  assertIntegerish(x = source)
+  assertIntegerish(x = source, null.ok = TRUE)
   assertCharacter(nameCol, len = 1, any.missing = FALSE, null.ok = TRUE)
 
   if(isSf){
     toUnify <- unique(eval(parse(text = nameCol), envir = unify))
 
-    correctNames <- toUnify[toUnify %in% countries$nation]
-    falseNames <- toUnify[!toUnify %in% countries$nation]
+    correctNames <- as.character(toUnify[toUnify %in% countries$nation])
+    falseNames <- as.character(toUnify[!toUnify %in% countries$nation])
 
     if(length(falseNames) > 0){
       newNames <- translateTerms(terms = falseNames,
@@ -64,7 +63,9 @@ unifyNations <- function(unify = NULL, source = NULL, nameCol = NULL,
 
     } else{
 
-      message("--> units are already unified.")
+      if(verbose){
+        message("--> units are already unified.")
+      }
       return(unify)
 
     }
@@ -105,7 +106,9 @@ unifyNations <- function(unify = NULL, source = NULL, nameCol = NULL,
 
     } else{
 
-      message("--> units are already unified.")
+      if(verbose){
+        message("--> units are already unified.")
+      }
       return(unify)
 
     }

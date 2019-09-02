@@ -1,49 +1,47 @@
-#' Make and set index and translation tables
+#' Set index and translation tables
 #'
-#' Turn a table into a index and translation table.
+#' Use a pre-compiled table to create an index and/or translation table for the
+#' target variables of a geospatial database.
 #' @param input [\code{tibble(1)}]\cr a possibly already existing table based on
-#'   which the output should be constructed.
-#' @param variable [\code{character(1)}]\cr name of the variable and output file(s).
+#'   which the output should be constructed; see details.
+#' @param variable [\code{character(1)}]\cr name of the variable and thus of the
+#'   output file(s).
 #' @param type [\code{character(1)}]\cr the type of table to create, either an
 #'   index (\code{"id"}), a translation table (\code{"tt"}) or \code{"both"}
 #'   (default).
 #' @param origin [\code{character(1)}]\cr column in \code{input} that contains
-#'   the terms that should be mapped to a translation.
+#'   terms that shall be translated.
 #' @param pid [\code{character(1)}]\cr column in \code{input} that contains the
 #'   primary ID for the index table. If this is not given, an ID name is created
 #'   as \code{paste0(str_sub(variable, 1, 3), "ID")}
 #' @param target [\code{character(1)}]\cr column in \code{input} that contains
-#'   the standadrised terms to which \code{origin} should be mapped.
-#' @param source [\code{character(1)}]\cr column in \code{input} that contains
-#'   the source/provenance of the table.
-#' @details To translate variables or territorial unit names one could use
-#'   pre-existing translation tables, such as
-#'   \href{https://en.wikipedia.org/wiki/Gazetteer}{gazetteers}. At the start of
-#'   any project you would read in the translation tables that are relevant for
-#'   your project, in case such tables do already exist. A table should be
-#'   created for each variable that occurrs in your project, such as a table for
-#'   territorial units, for species or for agricultural commodities.
-#'
-#'   However, often a translation table doesn't contain all required mappings,
-#'   or does not yet exist. Even if the table for a particular variable does not
-#'   yet exist, you should create an empty table that could capture upcoming
-#'   terms of the respective variable. When terms of a variable are encountered
-#'   that can't be matched in any of the provided translation tables, the
-#'   function asks you to translate them by hand. This is based on the functions
-#'   \code{\link{translateTerms}} and \code{\link{updateIndex}}, however, those
-#'   functions don't need to be called manually, they are instead called
-#'   automatically, when unknown terms occur.
+#'   the standadrised terms.
+#' @details This is the second function that is run in a project, as it creates
+#'   index and translation tables for the target variables that shall be stored
+#'   in an areal database. For each variable other than 'territorial unit' and
+#'   'time' that shall be included in the areal database, both index and
+#'   translation table must be created. \itemize{ \item An index table relates
+#'   an ID (given in \code{pid}) to the variable terms (given in \code{target})
+#'   and potentially to ancilliary information. Such tables should be compiled
+#'   before a project is started and should contain a clear set of values per
+#'   variable (which will be used as standard ontology). \item A translation
+#'   table relates terms in foreign languages (given in \code{origin}) to terms
+#'   in the target language (given in \code{target}). It does not have to be
+#'   filled with initial values, but could be.}
+#' @return Writes a table to the project root directory with name paste0(type,
+#'   "_", variable, ".csv").
 #' @examples
+#' \dontrun{
+#'
+#' # https://github.com/EhrmannS/tidy_fao
 #' library(readr)
-#' setPath(root = "/home/se87kuhe/Nextcloud/LUCKINet/data/")
+#' library(magrittr)
 #'
 #' # create index from an already existing table
-#' read_csv(file = "species.csv") %>%
-#'    setVariables(variable = "mySpecies", origin = messySynonyms,
-#'             target = scientificName)
-#'
-#' # create empty table
-#' setVariables(variable = "exoticVariable")
+#' read_csv(file = "fao_commodities.csv", col_types = "iclciccc") %>%
+#'   setVariables(variable = "commodities", pid = "faoID",
+#'                target = "simpleName")
+#' }
 #' @importFrom checkmate assertCharacter
 #' @importFrom stringr str_detect str_locate str_sub
 #' @export
@@ -59,7 +57,7 @@ setVariables <- function(input = NULL, variable = NULL, type = "both", pid = NUL
   assertCharacter(x = variable, any.missing = FALSE)
   assertChoice(x = type, choices = c("both", "tt", "id"))
 
-  # derive some switched
+  # derive some switches
   if(!is.null(input)){
     if(is.null(pid)){
       idName <- paste0(str_sub(string = variable, start = 1, end = 3), "ID")
@@ -79,6 +77,8 @@ setVariables <- function(input = NULL, variable = NULL, type = "both", pid = NUL
       target <- as.character(target)
       assertChoice(x = target, choices = colnames(input))
     }
+  } else {
+    makeLUS <- FALSE
   }
 
   if(type == "both"){
@@ -99,12 +99,12 @@ setVariables <- function(input = NULL, variable = NULL, type = "both", pid = NUL
                       target = character(),
                       source = character(),
                       date = date(),
-                      cenID = character())
+                      tabID = character())
     } else {
       # otherwise, select the respective columns
       outTT <- input %>%
-        mutate(source = "setTables()", date = Sys.Date(), cenID = NA_character_) %>%
-        select(origin = !!origin, target = !!target, source, date, cenID)
+        mutate(source = "setVariables()", date = Sys.Date(), tabID = NA_character_) %>%
+        select(origin = !!origin, target = !!target, source, date, tabID)
     }
 
     # if origin was not provided, create the look-up section
@@ -112,7 +112,7 @@ setVariables <- function(input = NULL, variable = NULL, type = "both", pid = NUL
       outTT <- outTT %>%
         mutate(origin = NA_character_,
                source = "original") %>%
-        select(origin, target, source, date, cenID)
+        select(origin, target, source, date, tabID)
     }
 
     # if the variableTT name doesn't contain 'tt' at the beginning, add it.
@@ -125,7 +125,7 @@ setVariables <- function(input = NULL, variable = NULL, type = "both", pid = NUL
       }
     }
 
-    updateIndex(index = outTT, name = variableTT)
+    updateTable(index = outTT, name = variableTT)
   }
 
   # if no index exists, create one
@@ -149,7 +149,7 @@ setVariables <- function(input = NULL, variable = NULL, type = "both", pid = NUL
       }
     }
 
-    updateIndex(index = outID, name = variableID)
+    updateTable(index = outID, name = variableID)
   }
 
 }

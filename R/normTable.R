@@ -1,15 +1,47 @@
-#' Register census tables
+#' Normalise data tables
 #'
-#' Harmonise and integrate census tables in a standardised format
-#' @param input [\code{character(1)}]\cr path of the file to register.
-#' @param algorithm [\code{character(1)}]\cr the algorithm to use for the
-#'   specific format of the dataseries provider.
-#' @param ... [\code{}]\cr ...
+#' Harmonise and integrate data tables into standardised format
+#' @param input [\code{character(1)}]\cr path of the file to normalise.
+#' @param ... [\code{list(.)}]\cr matching lists that capture the variables by
+#'   which to match and the new column names containing the resulting ID; see
+#'   Details.
 #' @param keepOrig [\code{logical(1)}]\cr whether or not to keep not only the
-#'   IDs btu also the original terms for which IDs have been derived.
+#'   IDs but also the original terms for which IDs have been derived.
 #' @param update [\code{logical(1)}]\cr whether or not the physical files should
 #'   be updated (\code{TRUE}) or the function should merely return the new
 #'   object (\code{FALSE} default).
+#' @param verbose [\code{logical(1)}]\cr be verbose about what is happening
+#'   (default \code{TRUE}).
+#' @details Arguments in \code{...} are so-called matching lists that indicate
+#'   with which target column variables shall be matched and which value should
+#'   be used as target ID.
+#'
+#'   targetID = list(variable = targetColumn)
+#'
+#'   The variable must be present as column in \code{input} and a table that is
+#'   named "id_VARIABLE.csv" must be available in the root directory of the
+#'   project. This should have been created with \code{\link{setVariables}}.
+#'
+#'   To normalise data tables, this function proceeds as follows: \enumerate{
+#'   \item Read in \code{input} and extract initial metadata from the file name.
+#'   \item Employ the functions \code{\link{record}} and
+#'   \code{\link{reorganise}} to reshape \code{input} according to the
+#'   respective schema description (see \code{\link{meta_default}}). \item Match
+#'   the territorial units in \code{input} via the \code{\link{matchUnits}}.
+#'   \item If \code{...} has been provided with variables to match, those are
+#'   matched via \code{\link{matchVars}}. \item Harmonise territorial unit
+#'   names. \item If \code{update = TRUE}, store the processed data table at
+#'   stage three.}
+#' @family normalisers
+#' @return This function integrates unprocessed data tables at stage two into
+#'   the geospatial database.
+#' @examples
+#' \dontrun{
+#'
+#' normTable(input = ".../adb_tables/stage2/dataTable.csv",
+#'           faoID = list(commodities = "simpleName"),
+#'           update = TRUE, verbose = FALSE)
+#' }
 #' @importFrom checkmate assertDataFrame assertNames assertFileExists
 #'   assertIntegerish assertLogical
 #' @importFrom dplyr mutate select pull
@@ -22,11 +54,11 @@
 normTable <- function(input, ..., keepOrig = TRUE, update = FALSE, verbose = TRUE){
 
   # get objects
-  inv_census <- read_csv(paste0(getOption(x = "adb_path"), "/inv_census.csv"), col_types = "iiicDcc")
+  inv_tables <- read_csv(paste0(getOption(x = "adb_path"), "/inv_tables.csv"), col_types = "iiicDcc")
   vars <- exprs(..., .named = TRUE)
 
   # check validity of arguments
-  assertNames(x = colnames(inv_census), permutation.of = c("cenID", "datID", "geoID", "source_file", "date", "orig_file", "notes"))
+  assertNames(x = colnames(inv_tables), permutation.of = c("tabID", "datID", "geoID", "source_file", "date", "orig_file", "notes"))
   assertFileExists(x = input, access = "r")
   assertLogical(x = update, len = 1)
   assertLogical(x = verbose, len = 1)
@@ -42,26 +74,26 @@ normTable <- function(input, ..., keepOrig = TRUE, update = FALSE, verbose = TRU
   }
 
   # get some variables
-  cenID <- ifelse(length(inv_census$cenID) == 0, 1,
-                  inv_census$cenID[grep(pattern = file_name, x = inv_census$source_file)])
-  geoID <- ifelse(length(inv_census$geoID) == 0, 1,
-                  inv_census$geoID[grep(pattern = file_name, x = inv_census$source_file)])
-  country <- countries$nation[countries$iso_a3 == toupper(fields[1])]
+  tabID <- ifelse(length(inv_tables$tabID) == 0, 1,
+                  inv_tables$tabID[grep(pattern = file_name, x = inv_tables$source_file)])
+  geoID <- ifelse(length(inv_tables$geoID) == 0, 1,
+                  inv_tables$geoID[grep(pattern = file_name, x = inv_tables$source_file)])
 
   out <- read_csv(input, col_names = FALSE) %>%
-    record(mdo = algorithm) %>%
+    record(schema = algorithm) %>%
     reorganise() %>%
-    mutate(id = seq_along(years),
-           cenID = cenID,
+    mutate(id = seq_along(year),
+           tabID = tabID,
            geoID = geoID) %>%
     matchUnits(source = geoID, keepOrig = keepOrig)
 
+  # if a matching list for other variables is defined, match those
   if(length(vars) != 0){
     out <- out %>%
-      matchVars(source = cenID, vars, keepOrig = keepOrig)
+      matchVars(source = tabID, vars, keepOrig = keepOrig)
   }
 
-  # in case the user wants to update, update the census file
+  # in case the user wants to update, update the data table
   if(update){
 
     theNations <- out %>%
@@ -73,7 +105,7 @@ normTable <- function(input, ..., keepOrig = TRUE, update = FALSE, verbose = TRU
     out <- out %>%
       select(-al1_alt)
 
-    updateCensus(census = out, nations = theNations, file = toClean)
+    updateData(table = out, nations = theNations, file = pathStr)
 
   } else{
     out <- out %>%

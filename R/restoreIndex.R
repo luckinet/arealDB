@@ -6,14 +6,12 @@
 #'   indices should be printed.
 #' @param select [\code{character(1)}]\cr name of the table to which the table
 #'   should be reverted. Alternatively \code{"oldest"} or \code{"newest"}.
-#' @details Whenever an index is updated with \code{\link{updateIndex}}, a
+#' @details Whenever an index is updated with \code{\link{updateTable}}, a
 #'   backup of it is stored. When restoring one of these backup files with
-#'   \code{restoreIndex}, the changes of \code{updateIndex} will be rolled back
+#'   \code{restoreIndex}, the changes of \code{updateTable} will be rolled back
 #'   to the status of the selected backup.
 #' @examples
-#'
 #' \dontrun{
-#' setPath(root = "/home/se87kuhe/Nextcloud/LUCKINet/data/")
 #'
 #' # first print the existing logs to chose from
 #' restoreIndex(print = TRUE)
