@@ -1,13 +1,15 @@
-#' Update an index
+#' Update a table
 #'
-#' @param index [\code{tibble(1)}]\cr the index to save.
-#' @param name [\code{character(1)}]\cr name of the index that shall be updated.
+#' Update any inventory, index or translation table of a geospatial
+#' database.
+#' @param index [\code{tibble(1)}]\cr the table to use as update.
+#' @param name [\code{character(1)}]\cr name of the table that shall be updated.
 #' @importFrom checkmate assertTibble assertCharacter
 #' @importFrom readr write_csv
 #' @importFrom dplyr union arrange row_number
 #' @export
 
-updateIndex <- function(index = NULL, name = NULL){
+updateTable <- function(index = NULL, name = NULL){
 
   # set internal paths
   intPaths <- getOption("adb_path")

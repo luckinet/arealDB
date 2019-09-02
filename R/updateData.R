@@ -1,37 +1,38 @@
-#' Update the census data
+#' Update the database
 #'
-#' @param census [\code{tibble(1)}]\cr the table that contains the standardised
-#'   census data.
+#' Store a harmonised and reshaped table into the database.
+#' @param table [\code{tibble(1)}]\cr the object that contains the standardised
+#'   data table.
 #' @param nations [\code{character(1)}]\cr the nation name, which is also the
 #'   new file name.
 #' @param file [\code{character(1)}]\cr full path of the stage2 file containing
-#'   census stats.
+#'   stats.
 #' @importFrom checkmate assertTibble assertCharacter
 #' @importFrom readr read_csv write_csv cols col_number
 #' @importFrom dplyr full_join arrange
 #' @export
 
-updateCensus <- function(census = NULL, nations = NULL, file = NULL){
+updateData <- function(table = NULL, nations = NULL, file = NULL){
 
   # check validity of arguments
-  assertTibble(x = census)
+  assertTibble(x = table)
   assertCharacter(x = nations)
   assertFileExists(x = file, access = "rw")
 
   if(length(nations) > 1){
-    census <- census %>%
+    table <- table %>%
       left_join(countries[c("nation", "ahID")], by = "ahID")
   }
 
   # get some paths
-  targetDir <- paste0(getOption(x = "adb_path"), "/adb_census/stage3/")
-  archive <- paste0(getOption(x = "adb_path"), "/adb_census/stage2/processed")
+  targetDir <- paste0(getOption(x = "adb_path"), "/adb_tables/stage3/")
+  archive <- paste0(getOption(x = "adb_path"), "/adb_tables/stage2/processed")
 
   for(i in seq_along(nations)){
 
-    message("\n--> Updating census of '", nations[i], "'.")
+    message("\n--> Updating table of '", nations[i], "'.")
 
-    tempCensus <- census %>%
+    tempTable <- table %>%
       filter(nation == nations[i]) %>%
       select(-nation)
 
@@ -43,11 +44,11 @@ updateCensus <- function(census = NULL, nations = NULL, file = NULL){
                                             harvested_area = col_number(),
                                             production = col_number(),
                                             yield = col_number()))
-      out <- full_join(tempData, tempCensus) %>%
+      out <- full_join(tempData, tempTable) %>%
         arrange(id) %>%
         mutate(id = seq_along(id))
     } else{
-      out <- tempCensus %>%
+      out <- tempTable %>%
         mutate(id = seq_along(id))
     }
 
