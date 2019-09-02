@@ -1,6 +1,6 @@
 library(testthat)
 library(checkmate)
-context("newCensus")
+context("regTable")
 
 test_that("", {
 

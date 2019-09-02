@@ -1,14 +1,14 @@
 library(testthat)
 library(checkmate)
-context("registerTables")
+context("setPath")
 
 test_that("path has been added to the global options", {
-  path <- system.file("test_data", package="DMT", mustWork = TRUE)
-  setPath(root = paste0(path, "/"))
-
-  out <- getOption("dmt_path")
-  expect_character(x = out)
-  expect_true(out == path)
+  # path <- system.file("test_datasets", package="arealDB", mustWork = TRUE)
+  # setPath(root = paste0(path, "/"))
+  #
+  # out <- getOption("adb_path")
+  # expect_character(x = out)
+  # expect_true(out == path)
 })
 
 test_that("Error if arguments have wrong value", {
