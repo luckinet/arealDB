@@ -1,26 +1,33 @@
-#' Register a new geometry entry
+#' Register a new dataseries
 #'
+#' This function registers a new dataseries of both, geometries or areal data
+#' into the geospatial database
 #' @param name [\code{character(1)}]\cr the dataseries abbreviation.
 #' @param description [\code{character(1)}]\cr the "long name" or "brief
 #'   description" of the dataseries.
-#' @param address [\code{character(1)}]\cr an optional address of the dataseries
-#'   provider.
-#' @param website [\code{character(1)}]\cr the website, where the dataseries was
-#'   found or where additional information can be found.
+#' @param website [\code{character(1)}]\cr a website where the dataseries or
+#'   additional information can be found.
 #' @param notes [\code{character(1)}]\cr optional notes.
 #' @param update [\code{logical(1)}]\cr whether or not the file
 #'   'inv_dataseries.csv' should be updated.
+#' @return Returns the entry that is appended to 'inv_dataseries.csv' in case
+#'   \code{update = TRUE}.
 #' @examples
 #' \dontrun{
 #'
-#' setPath(root = "/home/se87kuhe/Nextcloud/LUCKINet/data/")
+#' regDataseries(name = "gadm",
+#'               description = "Database of Global Administrative Areas",
+#'               website = "https://gadm.org/index.html",
+#'               update = TRUE)
 #'
-#' regDataseries(name = "maia",
-#'               description = "Ministerio de Agroindustria",
-#'               website = "http://datosestimaciones.magyp.gob.ar/",
-#'               update = FALSE)
+#' regDataseries(name = "usda",
+#'               description = "US Dept. of Agriculture",
+#'               website = "https://www.nass.usda.gov/Quick_Stats/Lite/index.php",
+#'               update = TRUE)
 #' }
-#' @importFrom checkmate assertCharacter
+#' @importFrom readr read_csv
+#' @importFrom checkmate assertDataFrame assertNames assertCharacter
+#'   assertLogical
 #' @importFrom tibble tibble
 #' @export
 
@@ -80,9 +87,8 @@ regDataseries <- function(name = NULL, description = NULL, website = NULL,
                  notes = notes)
   if(update){
     # in case the user wants to update, attach the new information to the table inv_dataseries.csv
-    updateIndex(index = temp, name = "inv_dataseries")
+    updateTable(index = temp, name = "inv_dataseries")
   }
 
   return(temp)
-
 }

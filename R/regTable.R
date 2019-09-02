@@ -1,72 +1,70 @@
-#' Register a new census data table
+#' Register a new areal data table
 #'
-#' This function creates the standardized name for a new census file and enters
-#' the required information into all look-up tables.
-#' @param nation [\code{character(1)}]\cr the nation for which the boundaries
-#'   are defined.
+#' This function registers a new areal data table into the geospatial database.
+#' @param nation [\code{character(1)}]\cr the nation for which the areal data
+#'   are valid.
+#' @param subset [\code{character(1)}]\cr optional argument to specify which
+#'   subset the file contains. This could be a subset of territorial units (e.g.
+#'   only one municipality) or of a target variable.
+#' @param dSeries [\code{character(1)}]\cr the dataseries of the areal data.
+#' @param gSeries [\code{character(1)}]\cr optinally, the dataseries of the
+#'   geometries, if the geometry dataseries deviates from the dataseries of the
+#'   areal data.
 #' @param level [\code{integerish(1)}]\cr the administrative level at which the
 #'   boundaries are recorded.
-#' @param subset [\code{character(1)}]\cr optional argument to specify which
-#'   subset the file contains. This could be a subset of administrative units or
-#'   of commodities.
-#' @param dSeries [\code{character(1)}]\cr the dataseries of the census data.
-#' @param gSeries [\code{character(1)}]\cr optinally, if the geometry series
-#'   deviates from the data series with which the census data should be
-#'   registered.
-#' @param variable [\code{character(.)}]\cr the variables included in
-#'   the file.
-#' @param algo [\code{character}]\cr the dataseries specific algorithm
-#'   associated to the specific format of this file.
-#' @param begin [\code{integerish(1)}]\cr the first date from which on the
-#'   boundaries are valid.
-#' @param end [\code{integerish(1)}]\cr the last date from which on the
-#'   boundaries are valid.
+#' @param variable [\code{character(.)}]\cr the variables included in the file.
+#' @param algo [\code{character}]\cr a serial number that indicates permutations
+#'   of the areal data dataseries.
+#' @param begin [\code{integerish(1)}]\cr the date from which on the boundaries
+#'   are valid.
+#' @param end [\code{integerish(1)}]\cr the date until which the boundaries are
+#'   valid.
 #' @param archive [\code{character(1)}]\cr the original file from which the
 #'   boundaries emerge.
 #' @param notes [\code{character(1)}]\cr optional notes.
-#' @param update [\code{logical(1)}]\cr whether or not the file
-#'   'inv_sourceData.csv' should be updated.
-#' @details When processing census data, carry out the following steps:
-#'   \enumerate{ \item Determine the \code{nation}, \code{administrative level},
-#'   the \code{subset} of the nation and the \code{dataseries} of the shapefiles
-#'   and provide them as arguments to this function. \item Provide a
-#'   \code{begin} and \code{end} date for the census data. \item Run the
-#'   function. \item (Re)Save the table with the following properties:
-#'   \itemize{\item Format: csv \item Encoding: UTF-8 \item File name: What is
-#'   provided as message by this function \item make sure that no columns or
-#'   rows are removed. This will happen later via a \code{rect*} function that
+#' @param update [\code{logical(1)}]\cr whether or not the file 'inv_tables.csv'
+#'   should be updated.
+#' @details When processing areal data tables, carry out the following steps:
+#'   \enumerate{ \item Determine the \code{nation}, administrative \code{level},
+#'   a \code{subset} (if applicable), the \code{dataseries} of the areal data
+#'   and of the geometry and an \code{algo}rithm (if applicable), and provide
+#'   them as arguments to this function. \item Provide a \code{begin} and
+#'   \code{end} date for the areal data. \item Run the function. \item (Re)Save
+#'   the table with the following properties: \itemize{\item Format: csv \item
+#'   Encoding: UTF-8 \item File name: What is provided as message by this
+#'   function \item make sure that the file is not modified or reshaped. This
+#'   will happen during data normalisation via the schema description, which
 #'   expects the original table.} \item Confirm that you have saved the file.}
+#'
+#'   Every areal data dataseries (\code{dSeries}) may come as a slight
+#'   permutation of a particular table arrangement. The function
+#'   \code{\link{normalise}} expects internally a schema description (a list
+#'   that describes the position of the data components) for each data table,
+#'   which is saved as \code{paste0("meta_", dSeries, algo)}. A template
+#'   thereof, and documentation on how to set them up, comes as the object
+#'   \code{\link{meta_default}} with \code{arealDB}.
+#' @return Returns the entry that is appended to 'inv_tables.csv' in case
+#'   \code{update = TRUE}.
 #' @examples
 #' \dontrun{
 #'
-#' setPath(root = "/home/se87kuhe/Nextcloud/LUCKINet/data/")
-#'
-#' # dry run to be able to check whether everything is as intended.
-#' regTable(nation = "Argentina", level = 3, dSeries = "maia",
-#'          variable = c("planted_area", "harvested_area", "production", "yield"),
-#'          algo = 1, begin = 1969, end = 2017,
-#'          archive = "AgroIndustria_Estimaciones_complete_2017_11_12.xlsx")
-#'
-#' # with several countries in one table (nation is NULL)
-#' regTable(nation = NULL, level = 1, dSeries = "faostat", gSeries = "gadm",
-#'          variable = c("planted_area","production","yield"),
-#'          algo = 1, begin = 1961, end = 2017,
-#'          archive = "Production_Crops_E_All_Data_(Normalized).csv")
-#'
-#' # eventually, carry out the registration
-#' regTable(nation = "Argentina", level = 3, dSeries = "maia",
-#'          variable = c("planted_area", "harvested_area", "production", "yield"),
-#'          algo = 1, begin = 1969, end = 2017,
-#'          archive = "AgroIndustria_Estimaciones_complete_2017_11_12.xlsx",
+#' regTable(nation = "United States of America",
+#'          subset = "soy",
+#'          dSeries = "usda", gSeries = "gadm",
+#'          level = 3,
+#'          variable = c("harvested_area"),
+#'          algo = 1,
+#'          begin = 1990, end = 2017,
+#'          archive = "soybean_us_county_1990_2017.csv",
 #'          update = TRUE)
 #' }
-#' # when the data series and the geometry series are different, specify
-#' # both of them
-#' @importFrom checkmate assertCharacter assertSubset assertChoice
-#'   assertIntegerish
-#' @importFrom dplyr filter distinct
 #' @importFrom readr read_csv
+#' @importFrom checkmate assertDataFrame assertNames assertCharacter
+#'   assertIntegerish assertSubset assertLogical testChoice assertChoice
+#'   assertFileExists
+#' @importFrom dplyr filter distinct
 #' @importFrom stringr str_split
+#' @importFrom tibble tibble
 #' @export
 
 regTable <- function(nation = NULL, subset = NULL, dSeries = NULL, gSeries = NULL,
@@ -77,13 +75,27 @@ regTable <- function(nation = NULL, subset = NULL, dSeries = NULL, gSeries = NUL
   intPaths <- paste0(getOption(x = "adb_path"))
 
   # get tables
-  inv_census <- read_csv(paste0(intPaths, "/inv_census.csv"), col_types = "iiicDcc")
+  inv_tables <- read_csv(paste0(intPaths, "/inv_tables.csv"), col_types = "iiicDcc")
   inv_dataseries <- read_csv(paste0(intPaths, "/inv_dataseries.csv"), col_types = "icccc")
   inv_geometries <- read_csv(paste0(intPaths, "/inv_geometries.csv"), col_types = "iciccccDcc")
 
+  # create a new data series, if dSeries is not part of the currently known data series names
+  if(!any(inv_dataseries$name %in% dSeries)){
+    stop(paste0("please first create the new data table dataseries '", dSeries, "' via 'regDataseries()'"))
+
+  } else{
+    dataSeries <- inv_dataseries$datID[inv_dataseries$name %in% dSeries]
+  }
+  # create a new geometry series, if gSeries is not part of the currently known geometry series names
+  if(!any(inv_dataseries$name %in% gSeries)){
+    stop(paste0("please first create the new geometry dataseries '", gSeries,"' via 'regDataseries()'"))
+  } else {
+    geomSeries <- inv_dataseries$datID[inv_dataseries$name %in% gSeries]
+  }
+
   # check validity of arguments
-  assertDataFrame(x = inv_census, ncols = 7)
-  assertNames(x = colnames(inv_census), permutation.of = c("cenID", "datID", "geoID", "source_file", "date", "orig_file", "notes"))
+  assertDataFrame(x = inv_tables, ncols = 7)
+  assertNames(x = colnames(inv_tables), permutation.of = c("tabID", "datID", "geoID", "source_file", "date", "orig_file", "notes"))
   assertNames(x = colnames(inv_dataseries), permutation.of = c("datID", "name", "long_name", "website", "notes"))
   assertNames(x = colnames(inv_geometries), permutation.of = c("geoID", "datID", "level", "source_file", "layer", "nation_column", "unit_column", "date", "orig_file", "notes"))
   assertCharacter(x = nation, ignore.case = TRUE, any.missing = FALSE, len = 1, null.ok = TRUE)
@@ -155,36 +167,19 @@ regTable <- function(nation = NULL, subset = NULL, dSeries = NULL, gSeries = NUL
 
   # put together file name and get confirmation that file should exist now
   fileName <- paste0(theNation, "_", level, "_", subset, "_", dSeries, "_", tempDim, "_", algo, "_", begin, "_", end, ".csv")
-  done <- readline(paste0("... please store the table as '", fileName, "' in './adb_census/stage2'\n  -> press any key when done: "))
+  done <- readline(paste0("... please store the table as '", fileName, "' in './adb_tables/stage2'\n  -> press any key when done: "))
 
   # make sure that the file is really there
-  assertFileExists(x = paste0(intPaths, "/adb_census/stage2/", fileName), "r", extension = "csv")
+  assertFileExists(x = paste0(intPaths, "/adb_tables/stage2/", fileName), "r", extension = "csv")
 
   # also test whether the archive file is available ...
   filesTrace <- str_split(archive, "\\|")[[1]]
-  assertFileExists(x = paste0(intPaths, "/adb_census/stage1/", filesTrace[1]), "r")
+  assertFileExists(x = paste0(intPaths, "/adb_tables/stage1/", filesTrace[1]), "r")
 
   # ... and if it is compressed, whether also the file therein is given that contains the data
   if(testCompressed(x = filesTrace[1]) & length(filesTrace) < 2){
     theArchiveFile <- readline(paste0("please give the name of the file in ", filesTrace[1]," that contains the table: "))
     archive <- paste0(archive, "|", theArchiveFile)
-  }
-
-  # create a new data series, if dSeries is not part of the currently known data series names
-  if(!any(inv_dataseries$name %in% dSeries)){
-    dataSeries <- regDataseries(name = dSeries,
-                                update = update)
-    dataSeries <- dataSeries$datID
-  } else{
-    dataSeries <- inv_dataseries$datID[inv_dataseries$name %in% dSeries]
-  }
-  # create a new geometry series, if gSeries is not part of the currently known geometry series names
-  if(!any(inv_dataseries$name %in% gSeries)){
-    geomSeries <- regDataseries(name = gSeries,
-                                update = update)
-    geomSeries <- geomSeries$datID
-  } else {
-    geomSeries <- inv_dataseries$datID[inv_dataseries$name %in% gSeries]
   }
 
   geomSeries <- inv_geometries[inv_geometries$datID %in% geomSeries,] %>%
@@ -201,8 +196,8 @@ regTable <- function(nation = NULL, subset = NULL, dSeries = NULL, gSeries = NUL
   }
 
   # put together new census database entry
-  newCID <- ifelse(length(inv_census$cenID)==0, 1, as.integer(max(inv_census$cenID)+1))
-  doc <- tibble(cenID = newCID,
+  newCID <- ifelse(length(inv_tables$tabID)==0, 1, as.integer(max(inv_tables$tabID)+1))
+  doc <- tibble(tabID = newCID,
                 geoID = geomSeries,
                 datID = dataSeries,
                 source_file = fileName,
@@ -211,11 +206,14 @@ regTable <- function(nation = NULL, subset = NULL, dSeries = NULL, gSeries = NUL
                 notes = notes)
 
   if(update){
-    # in case the user wants to update, attach the new information to the table inv_sourceData.csv
-    updateIndex(index = doc, name = "inv_census")
+    if(!any(inv_tables$source_file %in% fileName)){
+      # in case the user wants to update, attach the new information to the table inv_sourceData.csv
+      updateTable(index = doc, name = "inv_tables")
+    } else {
+      warning(paste0("'", fileName, "' has already been registered."))
+    }
   }
 
-  # updateCensus()
   return(doc)
 
 }

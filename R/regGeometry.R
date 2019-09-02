@@ -1,60 +1,65 @@
 #' Register a new geometry entry
 #'
-#' This function registers a new geometry of administrative units into the
-#' LUCKINet geospatial database.
-#' @param nation [\code{character(1)}]\cr wither the nation name or the column
-#'   that contains nation names.
-#' @param level [\code{integerish(1)}]\cr the administrative level at which the
-#'   boundaries are recorded.
+#' This function registers a new geometry of territorial units into the
+#' geospatial database.
+#' @param nation [\code{character(1)}]\cr either the nation name or the column
+#'   of the file's attribute table that contains nations.
 #' @param subset [\code{character(1)}]\cr optional argument to specify which
-#'   subset the file contains. This could be a subset of administrative units or
-#'   of commodities.
-#' @param gSeries [\code{character(1)}]\cr the geometry series name.
-#' @param layer [\code{character}]\cr the name of the layer from which the
-#'   geometry should be created.
+#'   subset the file contains. This could be a subset of territorial units (e.g.
+#'   only one municipality) or of a target variable.
+#' @param gSeries [\code{character(1)}]\cr the name of the geometry dataseries.
+#' @param level [\code{integerish(1)}]\cr the administrative level at which the
+#'   geometry is recorded.
+#' @param layer [\code{character}]\cr the name of the file's layer from which
+#'   the geometry should be created (if applicable).
 #' @param nameCol [\code{character(.)}]\cr the columns in which the names of
 #'   administrative units are to be found, delimited by \code{"|"}; see
 #'   Examples.
-#' @param archive [\code{character(1)}]\cr the original file from which the
-#'   boundaries emerge.
+#' @param archive [\code{character(1)}]\cr the original file (perhaps a *.zip)
+#'   from which the geometry emerges.
 #' @param notes [\code{character(1)}]\cr optional notes that are assigned to all
 #'   features of this geometry.
-#' @param update [\code{logical(1)}]\cr whether or not the physical files should
-#'   be updated (\code{TRUE}). or the function should merely return the new
-#'   object (\code{FALSE} default).
-#' @details When processing geometries/shapfiles to which census data are
-#'   assigned, carry out the following steps: \enumerate{ \item Determine the
-#'   \code{nation}, the \code{subset} of administrative units (if applicable),
-#'   the geometry series and the \code{administrative level} and provide them as
-#'   arguments to this function. \item Run the function. \item Export the
-#'   shapefile via QGIS with the following properties: \itemize{ \item Format:
+#' @param update [\code{logical(1)}]\cr whether or not the file
+#'   'inv_geometries.csv' should be updated (\code{TRUE}).
+#' @details When processing geometries to which areal data shall be linked
+#'   linked, carry out the following steps: \enumerate{ \item Determine the
+#'   \code{nation}, a \code{subset} (if applicable),
+#'   the dataseries of the geometry and the administrative \code{level}, and
+#'   provide them as arguments to this function. \item Run the function. \item
+#'   Export the shapefile with the following properties: \itemize{ \item Format:
 #'   GeoPackage \item File name: What is provided as message by this function
 #'   \item CRS: EPSG:4326 - WGS 84 \item make sure that 'all fields are
 #'   exported'} \item Confirm that you have saved the file.}
+#' @return Returns the entry that is appended to 'inv_geometries.csv' in case
+#'   \code{update = TRUE}.
 #' @examples
 #' \dontrun{
-#' setPath(root = "/home/se87kuhe/Nextcloud/LUCKINet/data/")
 #'
-#' # dry-run to be able to check whether everything is as intended.
-#' argGeom <- regGeometry(nation = "Argentina", gSeries = "maia",
-#'                        level = 3, nameCol = "NAM",
-#'                        archive = "DEPARTAMENTOS.zip")
+#' # The GADM dataset comes as *.zip archive
+#' regGeometry(nation = "NAME_0",
+#'             gSeries = "gadm",
+#'             level = 1,
+#'             layer = "level0",
+#'             nameCol = "NAME_0",
+#'             archive = "gadm36_levels_gpkg.zip|gadm36_levels.gpkg",
+#'             update = TRUE)
 #'
-#' # with several countries in one geometry (specify nation column)
-#' latAmGeoms <- regGeometry(nation = "COUNTRY_NA", gSeries = "lamer",
-#'                           level = 2, nameCol = "NAME1_",
-#'                           archive = "lamer_ad1.shp")
-#'
-#' # eventually, carry out the registration
-#' regGeometry(nation = "Argentina", gSeries = "maia", level = 3,
-#'             nameCol = "NAM", archive = "DEPARTAMENTOS.zip",
+#' # The second administrative level in GADM contains names in the columns
+#' # NAME_0 and NAME_1
+#' regGeometry(nation = "NAME_0",
+#'             gSeries = "gadm",
+#'             level = 2,
+#'             layer = "level1",
+#'             nameCol = "NAME_0|NAME_1",
+#'             archive = "gadm36_levels_gpkg.zip|gadm36_levels.gpkg",
 #'             update = TRUE)
 #' }
-#' @importFrom checkmate assertCharacter assertIntegerish assertFileExists
-#'   testChoice assertLogical
+#' @importFrom checkmate assertNames assertCharacter assertIntegerish
+#'   assertFileExists testChoice assertLogical
 #' @importFrom readr read_csv
 #' @importFrom dplyr filter distinct
-#' @importFrom sf st_layers
+#' @importFrom stringr str_split
+#' @importFrom sf st_layers read_sf
 #' @importFrom tibble tibble
 #' @export
 
@@ -68,6 +73,13 @@ regGeometry <- function(nation = NULL, subset = NULL, gSeries = NULL, level = NU
   # get tables
   inv_geometries <- read_csv(paste0(intPaths, "/inv_geometries.csv"), col_types = "iciccccDcc")
   inv_dataseries <- read_csv(paste0(intPaths, "/inv_dataseries.csv"), col_types = "icccc")
+
+  # create a new data series, if gSeries is not part of the currently known data series names
+  if(!any(inv_dataseries$name %in% gSeries)){
+    stop(paste0("please first create the new geometry dataseries '", gSeries,"' via 'regDataseries()'"))
+  } else{
+    dataSeries <- inv_dataseries$datID[inv_dataseries$name %in% gSeries]
+  }
 
   # check validity of arguments
   assertNames(x = colnames(inv_geometries), permutation.of = c("geoID", "datID", "level", "source_file", "layer", "nation_column", "unit_column", "date", "orig_file", "notes"))
@@ -151,15 +163,6 @@ regGeometry <- function(nation = NULL, subset = NULL, gSeries = NULL, level = NU
     assertChoice(x = nation, choices = colnames(theGeometry))
   }
 
-  # create a new data series, if dSeries is not part of the currently known data series names
-  if(!any(inv_dataseries$name %in% gSeries)){
-    dataSeries <- regDataseries(name = gSeries,
-                                update = update)
-    dataSeries <- dataSeries$datID
-  } else{
-    dataSeries <- inv_dataseries$datID[inv_dataseries$name %in% gSeries]
-  }
-
   # construct new documentation
   newGID <- ifelse(length(inv_geometries$geoID)==0, 1, as.integer(max(inv_geometries$geoID)+1))
   doc <- tibble(geoID = newGID,
@@ -174,9 +177,13 @@ regGeometry <- function(nation = NULL, subset = NULL, gSeries = NULL, level = NU
                 notes = notes)
 
   if(update){
-    # in case the user wants to update, attach the new information to the table
-    # inv_geometries.csv
-    updateIndex(index = doc, name = "inv_geometries")
+    if(!any(inv_geometries$source_file %in% fileName)){
+      # in case the user wants to update, attach the new information to the table
+      # inv_geometries.csv
+      updateTable(index = doc, name = "inv_geometries")
+    } else {
+      warning(paste0("'", fileName, "' has already been registered."))
+    }
   }
 
   return(doc)
