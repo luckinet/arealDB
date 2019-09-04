@@ -80,8 +80,7 @@ normTable <- function(input, ..., keepOrig = TRUE, update = FALSE, verbose = TRU
                   inv_tables$geoID[grep(pattern = file_name, x = inv_tables$source_file)])
 
   out <- read_csv(input, col_names = FALSE) %>%
-    record(schema = algorithm) %>%
-    reorganise() %>%
+    reorganise(schema = algorithm) %>%
     mutate(id = seq_along(year),
            tabID = tabID,
            geoID = geoID) %>%
