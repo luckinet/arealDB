@@ -10,7 +10,7 @@
 
   Theoretically, there is no limit to how data can be arranged in a
   spreadsheet. However, mostly it is the case that data are gathered in areas
-  of a spreadsheet, which can be encompassed by a rectangle. Those rectangles,
+  of a spreadsheet that can be outlined by a rectangle. Those rectangles,
   including more or less coherent tables, are what is considered 'cluster' in
   arealDB. Clusters are described by the properties: \itemize{
     \item \code{row}:\cr the vertical cell values of the top-left cell of each cluster.
