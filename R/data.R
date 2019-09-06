@@ -11,7 +11,7 @@
 #'
 #' @format An object of class sf (inherits from tbl_df, tbl, data.frame) with
 #'   177 rows and 7 columns
-"geom_countries"
+"countries_sf"
 
 #' Default template of a schema description
 #'
