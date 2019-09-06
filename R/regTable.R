@@ -167,19 +167,32 @@ regTable <- function(nation = NULL, subset = NULL, dSeries = NULL, gSeries = NUL
 
   # put together file name and get confirmation that file should exist now
   fileName <- paste0(theNation, "_", level, "_", subset, "_", dSeries, "_", tempDim, "_", algo, "_", begin, "_", end, ".csv")
-  done <- readline(paste0("... please store the table as '", fileName, "' in './adb_tables/stage2'\n  -> press any key when done: "))
+  if(any(inv_tables$source_file %in% fileName)){
+    return(paste0("'", fileName, "' has already been registered."))
+  }
 
-  # make sure that the file is really there
-  assertFileExists(x = paste0(intPaths, "/adb_tables/stage2/", fileName), "r", extension = "csv")
-
-  # also test whether the archive file is available ...
+  # test whether the archive file is available
   filesTrace <- str_split(archive, "\\|")[[1]]
-  assertFileExists(x = paste0(intPaths, "/adb_tables/stage1/", filesTrace[1]), "r")
+  if(!testFileExists(x = paste0(intPaths, "/adb_tables/stage1/", filesTrace[1]), "r")){
+    done <- readline(paste0("... please store the archive '", filesTrace[[1]], "' in './adb_tables/stage1'\n  -> press any key when done: "))
 
-  # ... and if it is compressed, whether also the file therein is given that contains the data
-  if(testCompressed(x = filesTrace[1]) & length(filesTrace) < 2){
-    theArchiveFile <- readline(paste0("please give the name of the file in ", filesTrace[1]," that contains the table: "))
-    archive <- paste0(archive, "|", theArchiveFile)
+    # make sure that the file is really there
+    assertFileExists(x = paste0(intPaths, "/adb_tables/stage1/", filesTrace[1]), "r")
+
+    # ... and if it is compressed, whether also the file therein is given that contains the data
+    if(testCompressed(x = filesTrace[1]) & length(filesTrace) < 2){
+      theArchiveFile <- readline(paste0("please give the name of the file in ", filesTrace[1]," that contains the table: "))
+      archive <- paste0(archive, "|", theArchiveFile)
+    }
+  }
+
+  # test that the file is available
+  filePath <- paste0(intPaths, "/adb_tables/stage2/", fileName)
+  if(!testFileExists(x = filePath, "r", extension = "csv")){
+    done <- readline(paste0("... please store the table as '", fileName, "' in './adb_tables/stage2'\n  -> press any key when done: "))
+
+    # make sure that the file is really there
+    assertFileExists(x = filePath, "r", extension = "csv")
   }
 
   geomSeries <- inv_geometries[inv_geometries$datID %in% geomSeries,] %>%
@@ -209,11 +222,8 @@ regTable <- function(nation = NULL, subset = NULL, dSeries = NULL, gSeries = NUL
     if(!any(inv_tables$source_file %in% fileName)){
       # in case the user wants to update, attach the new information to the table inv_sourceData.csv
       updateTable(index = doc, name = "inv_tables")
-    } else {
-      warning(paste0("'", fileName, "' has already been registered."))
     }
   }
-
   return(doc)
 
 }

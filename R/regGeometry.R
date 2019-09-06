@@ -127,22 +127,34 @@ regGeometry <- function(nation = NULL, subset = NULL, gSeries = NULL, level = NU
 
   # put together file name and get confirmation that file should exist now
   fileName <- paste0(theNation, "_", level, "_", subset, "_", gSeries, ".gpkg")
-  # message(fileName)
-  done <- readline(paste0("... please store the geometry as '", fileName, "' in './adb_geometries/stage2'\n  -> press any key when done: "))
-  filePath <- paste0(intPaths, "/adb_geometries/stage2/", fileName)
 
-  # make sure that the file is really there
-  assertFileExists(x = filePath, access = "r", extension = "gpkg")
-
-  # also test whether the archive file is available ...
-  filesTrace <- str_split(archive, "\\|")[[1]]
-  assertFileExists(x = paste0(intPaths, "/adb_geometries/stage1/", filesTrace[1]), "r")
-
-  # ... and if it is compressed, whether also the file therein is given that contains the data
-  if(testCompressed(x = filesTrace[1]) & length(filesTrace) < 2){
-    theArchiveFile <- readline(paste0("please give the name of the file in ", filesTrace[1]," that contains the geometries: "))
-    archive <- paste0(archive, "|", theArchiveFile)
+  if(any(inv_geometries$source_file %in% fileName)){
+    return(paste0("'", fileName, "' has already been registered."))
   }
+
+  # test whether the archive file is available
+  filesTrace <- str_split(archive, "\\|")[[1]]
+  if(!testFileExists(x = paste0(intPaths, "/adb_geometries/stage1/", filesTrace[1]), "r")){
+    done <- readline(paste0("... please store the archive '", filesTrace[[1]], "' in './adb_geometries/stage1'\n  -> press any key when done: "))
+
+    # make sure that the file is really there
+    assertFileExists(x = paste0(intPaths, "/adb_geometries/stage1/", filesTrace[1]), "r")
+
+    # ... and if it is compressed, whether also the file therein is given that contains the data
+    if(testCompressed(x = filesTrace[1]) & length(filesTrace) < 2){
+      theArchiveFile <- readline(paste0("please give the name of the file in ", filesTrace[1]," that contains the geometries: "))
+      archive <- paste0(archive, "|", theArchiveFile)
+    }
+  }
+
+  filePath <- paste0(intPaths, "/adb_geometries/stage2/", fileName)
+  if(!testFileExists(x = filePath, access = "r", extension = "gpkg")){
+    done <- readline(paste0("... please store the geometry as '", fileName, "' in './adb_geometries/stage2'\n  -> press any key when done: "))
+
+    # make sure that the file is really there
+    assertFileExists(x = filePath, access = "r", extension = "gpkg")
+  }
+
 
   # determine which layers exist and ask the user which to chose, if none is
   # given
@@ -181,10 +193,7 @@ regGeometry <- function(nation = NULL, subset = NULL, gSeries = NULL, level = NU
       # in case the user wants to update, attach the new information to the table
       # inv_geometries.csv
       updateTable(index = doc, name = "inv_geometries")
-    } else {
-      warning(paste0("'", fileName, "' has already been registered."))
     }
   }
-
   return(doc)
 }
