@@ -49,6 +49,7 @@ matchUnits <- function(input = NULL, source = NULL, keepOrig = FALSE){
   for(i in seq_along(nations)){
     rawNation <- nations[i]
     cleanNation <- unifyNations(unify = rawNation, verbose = FALSE)
+    cleanNation <- translateTerms(terms = rawNation, verbose = FALSE)
 
     if(is.na(cleanNation)){
       message(paste0("\n--> ! skipping ", rawNation, " because it does not match in 'tt_nations.csv'."))

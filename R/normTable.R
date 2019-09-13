@@ -98,8 +98,8 @@ normTable <- function(input, ..., keepOrig = TRUE, update = FALSE, verbose = TRU
     theNations <- out %>%
       filter(!is.na(ahID)) %>%
       pull(al1_alt) %>%
-      unique() %>%
-      unifyNations()
+      unique() #%>%
+      # unifyNations()
 
     out <- out %>%
       select(-al1_alt)
