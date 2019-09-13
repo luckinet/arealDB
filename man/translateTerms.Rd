@@ -4,22 +4,26 @@
 \alias{translateTerms}
 \title{Translate terms}
 \usage{
-translateTerms(terms, source = NULL, index = NULL,
+translateTerms(terms, index = NULL, source = NULL, strict = FALSE,
   fuzzy_terms = NULL, fuzzy_dist = 5, verbose = TRUE)
 }
 \arguments{
 \item{terms}{[\code{character(.)}]\cr terms to be translated.}
 
-\item{source}{[\code{integerish(1)}]\cr the table ID (\code{tabID}) from
-which the terms have been taken.}
-
 \item{index}{[\code{data.frame(1)}]\cr table that contains translations.}
 
-\item{fuzzy_terms}{[\code{vector(.)}]\cr target terms with which a fuzzy
-match should be carried out.}
+\item{source}{[\code{list(1)}]\cr the table or geometry ID from which the
+terms have been taken. List must be named with either \code{tabID} or
+\code{geoID} to denote where the ID comes from.}
 
-\item{fuzzy_dist}{[\code{integerish(1)}]\cr the maximum distance for
-fuzzy-matching.}
+\item{strict}{[\code{logical(1)}]\cr whether or not to stick to the terms
+that have been defined as \code{'original'} in a translation table.}
+
+\item{fuzzy_terms}{[\code{vector(.)}]\cr additional target terms with which a
+fuzzy match should be carried out.}
+
+\item{fuzzy_dist}{[\code{integerish(1)}]\cr the maximum edit-distance for
+which terms of fuzzy-matching should be suggested as match.}
 
 \item{verbose}{[\code{logical(1)}]\cr be verbose about what is happening
 (default \code{TRUE}).}
@@ -32,7 +36,7 @@ Translate terms based on fuzzy matching.
 }
 \details{
 This is basically a sophisticated matching algorithm, that adds new
-  entries to the respective index, if no match was found.
+  entries to the respective index.
 }
 \examples{
 \dontrun{
