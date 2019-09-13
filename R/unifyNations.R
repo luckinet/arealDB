@@ -84,9 +84,10 @@ unifyNations <- function(unify = NULL, source = NULL, nameCol = NULL,
       pull(terms)
 
     if(length(falseNames) > 0){
-      newNames <- translateTerms(terms = falseNames,
+      newNames <- translateTerms(terms = unify,
                                  source = source,
                                  index = "tt_nations",
+                                 strict = TRUE,
                                  verbose = verbose)
 
       if(dim(newNames)[1] == 0){
