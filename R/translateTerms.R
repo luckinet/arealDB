@@ -2,18 +2,21 @@
 #'
 #' Translate terms based on fuzzy matching.
 #' @param terms [\code{character(.)}]\cr terms to be translated.
-#' @param source [\code{integerish(1)}]\cr the table ID (\code{tabID}) from
-#'   which the terms have been taken.
+#' @param source [\code{list(1)}]\cr the table or geometry ID from which the
+#'   terms have been taken. List must be named with either \code{tabID} or
+#'   \code{geoID} to denote where the ID comes from.
 #' @param index [\code{data.frame(1)}]\cr table that contains translations.
-#' @param fuzzy_terms [\code{vector(.)}]\cr target terms with which a fuzzy
-#'   match should be carried out.
-#' @param fuzzy_dist [\code{integerish(1)}]\cr the maximum distance for
-#'   fuzzy-matching.
+#' @param strict [\code{logical(1)}]\cr whether or not to stick to the terms
+#'   that have been defined as \code{'original'} in a translation table.
+#' @param fuzzy_terms [\code{vector(.)}]\cr additional target terms with which a
+#'   fuzzy match should be carried out.
+#' @param fuzzy_dist [\code{integerish(1)}]\cr the maximum edit-distance for
+#'   which terms of fuzzy-matching should be suggested as match.
 #' @param verbose [\code{logical(1)}]\cr be verbose about what is happening
 #'   (default \code{TRUE}).
 #' @return translated \code{terms}.
 #' @details This is basically a sophisticated matching algorithm, that adds new
-#'   entries to the respective index, if no match was found.
+#'   entries to the respective index.
 #' @examples
 #' \dontrun{
 #'
@@ -23,38 +26,42 @@
 #' @importFrom checkmate assertCharacter assertDataFrame assertNames
 #'   testCharacter
 #' @importFrom tibble as_tibble
-#' @importFrom dplyr filter pull bind_rows
+#' @importFrom dplyr filter pull bind_rows ends_with mutate select
 #' @importFrom readr read_csv write_csv
 #' @importFrom rlang enexpr
 #' @importFrom utils edit View adist file.edit
 #' @export
 
-translateTerms <- function(terms, source = NULL, index = NULL, fuzzy_terms = NULL,
-                           fuzzy_dist = 5, verbose = TRUE){
+translateTerms <- function(terms, index = NULL, source = NULL, strict = FALSE,
+                           fuzzy_terms = NULL, fuzzy_dist = 5, verbose = TRUE){
 
   # check validity of arguments
   assertCharacter(x = terms, any.missing = FALSE)
-  assertIntegerish(x = source, null.ok = TRUE)
-  if(is.null(source)){
-    source <- NA_character_
-  }
+  assertList(x = source, len = 1, null.ok = TRUE)
+  assertNames(x = names(source), subset.of = c("geoID", "tabID"))
   assertCharacter(x = index, len = 1, any.missing = FALSE)
   args <- enexpr(index)
   indFile <- index
-  index <- read_csv(paste0(getOption(x = "adb_path"), "/", index, ".csv"), col_types = "cccDi")
+  index <- read_csv(paste0(getOption(x = "adb_path"), "/", index, ".csv"), col_types = "cccic")
   assertNames(x = colnames(index), must.include = c("origin", "target"))
   assertCharacter(x = fuzzy_terms, any.missing = FALSE, null.ok = TRUE)
   assertIntegerish(x = fuzzy_dist, any.missing = FALSE)
 
   # create a table with terms that will be used for fuzzy matching.
-  theFuzzyTerms <- index %>%
-    filter(source == "original") %>%
-    pull(target)
+  if(strict){
+    theFuzzyTerms <- index %>%
+      filter(source == "original") %>%
+      pull(target)
+  } else {
+    theFuzzyTerms <- index %>%
+      filter(target != "missing") %>%
+      pull(target)
+  }
   if(!is.null(fuzzy_terms)){
     if(length(theFuzzyTerms) == 0){
       theFuzzyTerms <- fuzzy_terms
     } else{
-      theFuzzyTerms <- c(theFuzzyTerms, tempFuzz)
+      theFuzzyTerms <- c(theFuzzyTerms, fuzzy_terms)
     }
   }
   if(length(theFuzzyTerms) == 0){
@@ -64,6 +71,8 @@ translateTerms <- function(terms, source = NULL, index = NULL, fuzzy_terms = NUL
   }
 
   tempOut <- NULL
+  sourceName <- names(source)
+  sourceVal <- as.character(source[[1]])
   newEntries <- FALSE
   if(verbose){
     message("    translating from '", args, ".csv' ...")
@@ -74,13 +83,41 @@ translateTerms <- function(terms, source = NULL, index = NULL, fuzzy_terms = NUL
 
   # go through all terms and process them
   for(i in seq_along(terms)){
-    # get a row of 'index' where there might be an instance of the term
-    temp <- index %>%
-      filter(tolower(origin) %in% tolower(terms[i]))
+    # check whether the exact term is in 'target' or 'origin'
+    exists <- terms[i] %in% unique(index$target) | terms[i] %in% unique(index$origin)
 
-    # if there is no translation registered so far, create a new entry to
-    # translate
-    if(dim(temp)[1] < 1){
+    if(exists){
+
+      temp <- index %>%
+        filter(index$target %in% terms[i] | index$origin %in% terms[i]) %>%
+        rename("ID" = ends_with("ID"))
+
+      # first make sure that the term should not be ignored
+      if(any(temp$target == "ignore")){
+        temp <- tibble(origin = terms[i], target = "ignore", source = NA_character_, ID = NA_character_, notes = NA_character_)
+      }
+
+      # then take terms that are not 'missing'
+      if(any(temp$target != "missing")){
+        temp <- temp %>%
+          filter(temp$target != "missing") %>%
+          mutate(source = sourceName,
+                 ID = sourceVal) %>%
+          select(-notes) %>%
+          unique() %>%
+          mutate(notes = paste0("translateTerms_", Sys.Date()))
+      } else {
+        temp <- tibble(origin = terms[i], target = "missing", source = sourceName, ID = sourceVal, notes = NA_character_)
+      }
+
+      # make sure that there is only one translation
+      if(length(unique(temp$target)) != 1){
+        stop(paste0("'", terms[i], "' does not have a unique translation in ", indFile, ".csv."))
+      }
+
+      tempOut <- bind_rows(tempOut, temp)
+
+    } else {
 
       # if a set of fuzzy terms is available, try to match with those
       if(length(theFuzzyTerms) != 0){
@@ -100,40 +137,20 @@ translateTerms <- function(terms, source = NULL, index = NULL, fuzzy_terms = NUL
         # in case an edit distance of 0 has been found, this term is perfectly
         # matched and doesn't need to be further treated
         if(thresh_dist[1] == 0){
-          app <- c(terms[i], theFuzz[1], "translateTerms()", paste0(Sys.Date()), source)
+          app <- c(terms[i], theFuzz[1], sourceName, sourceVal, NA_character_)
         } else{
           newEntries <- TRUE
-          app <- c(terms[i], "missing", paste0(theFuzz, collapse = " | "), paste0(Sys.Date()), source)
+          app <- c(terms[i], "missing", sourceName, sourceVal, paste0(theFuzz, collapse = " | "))
         }
       } else{
-        newEntries <- TRUE
-        app <- c(terms[i], "missing", paste0("check out ", args, ".csv"), paste0(Sys.Date()), source)
+        app <- c(terms[i], tolower(terms[i]), sourceName, sourceVal, NA_character_)
       }
 
-      names(app) <- colnames(index)
+      names(app) <- c("origin", "target", "source", "ID", "notes")
       tempOut <- bind_rows(tempOut, app)
-    } else{
-      # otherwise, determine whether the previous translation was successful
-      # (whether there is any value other than "missing" in temp$target) and
-      # append that to the temporary output, which is processed in the next step
-      # below.
-      if(any(temp$target != "missing")){
-        temp <- temp %>%
-          filter(temp$target != "missing") %>%
-          mutate(date = as.character(date),
-                 tabID = as.character(tabID))
-
-        # throw warning if there is more than one target of this term
-        if(length(unique(temp$target)) != 1){
-          stop(paste0("'", terms[i], "' does not have a unique translation in ", indFile, ".csv."))
-        }
-
-      } else {
-        temp <- tibble(origin = terms[i], target = "ignore", source = NA_character_, date = NA_character_, tabID = NA_character_)
-      }
-      tempOut <- bind_rows(tempOut, temp)
 
     }
+
     if(verbose){
       if(length(terms) > 15){
         setTxtProgressBar(pb, i)
@@ -148,8 +165,7 @@ translateTerms <- function(terms, source = NULL, index = NULL, fuzzy_terms = NUL
   }
 
   # make sure that the columns contain the correct data
-  tempOut$date <- as.Date(tempOut$date)
-  tempOut$tabID <- as.integer(tempOut$tabID)
+  tempOut$ID <- as.integer(tempOut$ID)
 
   if(newEntries){
 
@@ -166,20 +182,30 @@ translateTerms <- function(terms, source = NULL, index = NULL, fuzzy_terms = NUL
     done <- readline("\nplease replace the missing values, save the file and press any key to continue.\n")
 
     newOut <- read_csv(file = translating,
-                       col_types = getColTypes(index))
-    newOut$source <- "translateTerms()"
+                       col_types = getColTypes(index)) %>%
+      mutate(notes = paste0("translateTerms_", Sys.Date()))
+
+    translated <- newOut$target
+    translated <- translated[translated != "missing"]
+    translated <- translated[translated != "ignore"]
+
+    if(strict){
+      if(!all(translated %in% theFuzzyTerms)){
+        stop("there are translated terms that did not appear in the standard vocabulary.")
+      }
+    }
 
     file.remove(translating)
-    updateTable(index = newOut, name = args)
 
     out <- tempOut %>%
       filter(target != "missing") %>%
-      full_join(newOut) %>%
-      select(origin, target)
+      bind_rows(newOut)
   } else{
     out <- tempOut
   }
+  updateTable(index = out, name = args)
 
+  # output should contain instead of the colum 'source' the column 'inventory' and instead of 'tabID' simply 'ID'
   return(out)
 }
 
