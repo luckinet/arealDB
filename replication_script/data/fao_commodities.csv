@@ -1,0 +1,778 @@
+faoID,simpleName,primary,faoName,faoGroupID,faoGroupName,canonicalName,definition
+15,wheat,TRUE,Wheat,1,cereals and cereal products,Triticum spp. | Triticum aestivum | Triticum durum | Triticum spelta,"Common and durum wheat are the main types. Among common wheat, the main varieties are spring and winter, hard and soft, and red and white. At the national level, different varieties should be reported separately, reflecting their different uses. It includes meslin (a mixture wheat/rye). Used mainly for human food."
+16,flour of wheat,FALSE,Flour of Wheat,1,cereals and cereal products,NA,"Defined broadly to include meal, groats and pellets. Strong flours from hard wheat are used for bread, while durum wheat flour is used primarily for pasta. Weaker flours from soft wheat are mainly used in cakes, pastries, biscuits and certain noodles."
+17,bran of wheat,FALSE,Bran of Wheat,11,fodder crops and products,NA,"Defined broadly to include sharps and other residue from the milling, sifting or other working of the grain. Contains a little flour."
+18,macaroni,FALSE,Macaroni,1,cereals and cereal products,NA,"Pasta made from semolina, or flour, that is mixed with water and kneaded into a dough. Other ingredients may be included as well. The dough is then shaped into various forms. This heading is limited to macaroni that is not cooked, stuffed or otherwise prepared."
+19,germ of wheat,FALSE,Germ of Wheat,1,cereals and cereal products,NA,"The seed embryo. Whole or rolled germ is used for oil extraction by solvents. Flaked or ground germ is used in bakers' wares, dietetic preparations, feed supplements and in pharmaceutical preparations."
+20,bread,FALSE,Bread,1,cereals and cereal products,NA,"A baked product of flour or meal of cereals, especially wheat. Includes ordinary, unleavened, crackers, rusks, etc."
+21,bulgur,FALSE,Bulgur,1,cereals and cereal products,NA,"Whole wheat grains that are boiled, dried and cracked, either between stones or in a hand mill. Very popular in the Near East"
+22,pastry,FALSE,Pastry,1,cereals and cereal products,NA,"All baked products excluding those listed under bread. Pastry products may contain ingredients other than wheat flour, such as milk, eggs, sugar, honey, starch, fats, fruit, seeds, etc."
+23,starch of wheat,FALSE,Starch of Wheat,1,cereals and cereal products,NA,"Starch is the carbohydrate component in many plant cells. A white, odourless powder that is insoluble in cold water, it forms a paste in hot water. Wheat starch is used for human consumption and animal feed, and is processed into glucose and dextrine for industrial use. It is usually obtained from low-quality flour."
+24,wheat gluten,FALSE,Wheat Gluten,1,cereals and cereal products,NA,"A by-product of the industrial production of starch, wheat gluten is the preferred cereal gluten for food purposes. Uses include enriching protein in flours for bread, pasta, etc."
+26,wheat-fermented beverages,FALSE,Wheat-Fermented Beverages,15,beverages,NA,"Low-alcohol beverages from fermented flour, e.g. Korean jakju and takju."
+27,rice paddy,TRUE,"Rice, paddy",1,cereals and cereal products,Oryza spp. | Oryza sativa,Rice grain after threshing and winnowing.Also known as rice in the husk and rough rice. Used mainly for human food.
+28,rice husked,FALSE,"Rice, Husked",1,cereals and cereal products,NA,Rice grain without hulls or husks. Also known as brown or cargo rice.
+29,rice milled (husked),FALSE,"Rice, Milled (Husked)",1,cereals and cereal products,NA,"White rice milled from imported husked rice. Includes semi-milled, whole-milled and parboiled rice."
+31,rice milled,FALSE,"Rice, Milled",1,cereals and cereal products,NA,"White rice milled from locally grown paddy. Includes semi-milled, whole-milled and parboiled rice."
+32,rice broken,FALSE,"Rice, Broken",1,cereals and cereal products,NA,"Residues from the selection of whole-grain, milled rice."
+33,rice gluten,FALSE,"Rice, Gluten",1,cereals and cereal products,NA,A by-product of the industrial production of starch. Not suitable for food use.
+34,starch of rice,FALSE,Starch of Rice,1,cereals and cereal products,NA,"See 0023 Rice starch is usually obtained from broken rice. Use primarily in the photographic industry to prepare ""matt"" paper."
+35,bran of rice,FALSE,Bran of Rice,11,fodder crops and products,NA,"A by-product of polishing brown rice, comprising the pericarp, aleurone layer, embryo and some endosperm."
+36,oil of rice bran,FALSE,Oil of Rice Bran,14,vegetable and animal oils and fats,NA,"Extracted from bran by pressure or, more frequently, by solvents."
+37,cake of rice bran,FALSE,Cake of Rice Bran,11,fodder crops and products,NA,A residue of the extraction of oil. Also known as de-oiled rice bran.
+38,flour of rice,FALSE,Flour of Rice,1,cereals and cereal products,NA,Produced by milling broken or milled rice. Finely ground rice flour is widely used in infant foods and in noodles. It is not used in bread because it lacks the necessary gluten-forming protein.
+39,rice-fermented beverages,FALSE,Rice-Fermented Beverages,15,beverages,NA,"Low-alcohol beverages, such as rice wine and sake."
+41,breakfast cereals,FALSE,Breakfast Cereals,1,cereals and cereal products,NA,"Foods prepared by swelling and roasting cereals or cereal products, e.g. corn flakes, puffed rice; cereals o/t maize, in grain form, precooked or otherwise prepared."
+44,barley,TRUE,Barley,1,cereals and cereal products,Hordeum spp. | Hordeum disticum | Hordeum hexasticum | Hordeum vulgare,"Tolerates poorer soils and lower temperatures better than does wheat. Varieties include with husk and without (naked). Used as a livestock feed, for malt and for preparing foods. The roasted grains are a coffee substitute."
+45,pot barley,FALSE,Pot Barley,1,cereals and cereal products,NA,"Whole-seed barley with the husks, hulls and bran removed."
+46,barley pearled,FALSE,"Barley, Pearled",1,cereals and cereal products,NA,"Small, round pellets obtained by the further milling of pot barley. This definition also includes kibbled, rolled or flaked grains."
+47,bran of barley,FALSE,Bran of Barley,11,fodder crops and products,NA,A by-product of the production of pot barley.
+48,barley flour and grits,FALSE,Barley Flour and Grits,1,cereals and cereal products,NA,Fine flour and course meal obtained as milling by-products of pearled barley.
+49,malt,FALSE,Malt,1,cereals and cereal products,NA,"A grain - usually barley - that has been germinated through a soaking process and then dried. Malt is used in brewing and distilling, and as a nutrient additive. Includes whole, ground, flour, and roasted malt, but excludes extracts and preparations."
+50,malt extract,FALSE,Malt Extract,1,cereals and cereal products,NA,"A concentrated solution from water-macerated malt, which is used in infant and dietetic foods and in bread baking."
+51,beer of barley,FALSE,Beer of Barley,15,beverages,NA,"Beverage that may be alcoholic or non-alcoholic that is made from fermented malted cereals (mainly barley), water and hops. Non-malted cereals may also be used. The FAO definition differs from the main international classifications in that it includes non-alcoholic beer."
+56,maize,TRUE,Maize,1,cereals and cereal products,Zea mays,"A grain with a high germ content. At the national level, hybrid and ordinary maize should be reported separately owing to widely different yields and uses. Used largely for animal feed and commercial starch production."
+57,germ of maize,FALSE,Germ of Maize,1,cereals and cereal products,NA,The seed embryo that is separated during processing and is valued mainly for its oil.
+58,flour of maize,FALSE,Flour of Maize,1,cereals and cereal products,NA,"Broadly defined to include meal, groats and pellets."
+59,bran of maize,FALSE,Bran of Maize,11,fodder crops and products,NA,A by-product of the milling of shelled maize.
+60,oil of maize,FALSE,Oil of Maize,14,vegetable and animal oils and fats,NA,Extracted from germ by pressure or by solvents.
+61,cake of maize,FALSE,Cake of Maize,11,fodder crops and products,NA,A residue of the extraction of oil from germ.
+63,maize gluten,FALSE,Maize Gluten,1,cereals and cereal products,NA,"Maize protein is often called gluten, although it lacks the quality characteristics of wheat gluten. It is separated from maize during commercial wet milling and used to enrich animal feeds."
+64,starch of maize,FALSE,Starch of Maize,1,cereals and cereal products,NA,"See 0023. The primary product of the large- scale industrial wet-milling process. Used mainly for the production of glucose, dextrin and alcohol."
+66,beer of maize,FALSE,Beer of Maize,15,beverages,NA,Prepared either from malted or unmalted cereal.
+67,white maize,FALSE,White Maize,1,cereals and cereal products,NA,"Although separate data are reported for white maize production owing to its regional importance, its production is also included in 0056."
+68,popcorn,TRUE,Popcorn,1,cereals and cereal products,Zea mays var. everta,"A variety of maize that is eaten after the kernels have been heated and have ""popped""."
+71,rye,TRUE,Rye,1,cereals and cereal products,Secale cereale,"A grain that is tolerant of poor soils, high latitudes and altitudes. Mainly used in making bread, whisky and beer. When fed to livestock, it is generally mixed with other grains."
+72,flour of rye,FALSE,Flour of Rye,1,cereals and cereal products,NA,"Broadly defined to include meal, groats and pellets. In northern countries, rye flour is used primarily in bread."
+73,bran of rye,FALSE,Bran of Rye,11,fodder crops and products,NA,A milling by-product.
+75,oats,TRUE,Oats,1,cereals and cereal products,Avena spp. | Avena sativa,"A plant with open, spreading panicle-bearing large spikelets. Used primarily in breakfast foods. Makes excellent fodder for horses."
+76,oats rolled,FALSE,"Oats, Rolled",1,cereals and cereal products,NA,"Obtained by crushing or rolling the whole or broken grain; includes grains flaked, hulled or otherwise worked for human consumption."
+77,bran of oats,FALSE,Bran of Oats,11,fodder crops and products,NA,"By-product of milling oats for human consumption, containing mainly hulls and fragments of the endosperm (oat millfeed), as well as residues from hulling, rolling, flaking, etc."
+79,millet,TRUE,Millet,1,cereals and cereal products,Echinocloa frumentacea | Eleusine coracana | Panicum miliaceum | Paspalum scrobiculatum | Pennisetum glaucum | Setaria italica,"Small-grained cereals that include a large number of different botanical species. Originated by the domestication of wild African grasses in the Nile valley and the Sahel zone, millets were subsequently taken to China and India. These cereals tolerate arid conditions and possess a small, highly nutritious grain that stores well. Used locally, both as a food and as a livestock feed. In all areas where they are cultivated, millets are used in traditional beer brewing. Also used as a feed for birds. It does not include Teff (Eragrostis abyssinica) cf. 0108."
+80,flour of millet,FALSE,Flour of Millet,1,cereals and cereal products,NA,"Broadly defined to include meal, groats and pellets."
+81,bran of millet,FALSE,Bran of Millet,11,fodder crops and products,NA,A milling by-product.
+82,beer of millet,FALSE,Beer of Millet,15,beverages,NA,A traditional beer prepared in African countries in which millets are cultivated. It is normally consumed while still fermenting.
+83,sorghum,TRUE,Sorghum,1,cereals and cereal products,Sorghum spp. | Sorghum guineense | Sorghum vulgare | Sorghum dura,"A cereal that has both food and feed uses. Sorghum is a major food grain in most of Africa, where it is also used in traditional beer brewing. It is desirable to report hybrid and other varieties separately."
+84,flour of sorghum,FALSE,Flour of Sorghum,1,cereals and cereal products,NA,"Broadly defined to include meal, groats and pellets."
+85,bran of sorghum,FALSE,Bran of Sorghum,11,fodder crops and products,NA,A milling by-product.
+86,beer of sorghum,FALSE,Beer of Sorghum,15,beverages,NA,A traditional beer prepared in African countries in which sorghum is cultivated. It is normally consumed while still fermenting.
+89,buckwheat,TRUE,Buckwheat,1,cereals and cereal products,Fagopyrum esculentum (Polygonaceae),"A minor cereal cultivated primarily in northern regions. Buckwheat is considered a cereal, although it does not belong to the gramineous family."
+90,flour of buckwheat,FALSE,Flour of Buckwheat,1,cereals and cereal products,NA,"Broadly defined to include meal, groats and pellets. The flour is normally used in bread and crackers, and is also mixed with wheat flour. Meal and groats are normally used for soups."
+91,bran of buckwheat,FALSE,Bran of Buckwheat,11,fodder crops and products,NA,A milling by-product.
+92,quinoa,TRUE,Quinoa,1,cereals and cereal products,Chenopodium quinoa (Chenopodiaceae),"A minor cereal, which tolerates high altitudes, quinoa is cultivated primarily in Andean countries. Used for food and to make chicha, a fermented beverage."
+94,fonio,TRUE,Fonio,1,cereals and cereal products,Digitaria spp. | Digitaria exilis | Digitaria iburua,A minor cereal of importance only in West Africa where it is eaten in place of rice during famines. The seeds are cooked by steaming the whole grain.
+95,flour of fonio,FALSE,Flour of Fonio,1,cereals and cereal products,NA,"Broadly defined to include meal, groats and pellets."
+96,bran of fonio,FALSE,Bran of Fonio,11,fodder crops and products,NA,A milling by-product.
+97,triticale,FALSE,Triticale,1,cereals and cereal products,NA,"A minor cereal that is a cross between wheat and rye, combining the quality and yield of wheat with the hardiness of rye."
+98,flour of triticale,FALSE,Flour of Triticale,1,cereals and cereal products,NA,"Broadly defined to include meal, groats and pellets."
+99,bran of triticale,FALSE,Bran of Triticale,11,fodder crops and products,NA,A milling by-product.
+101,canary seed,TRUE,Canary seed,1,cereals and cereal products,Phalaris canariensis,Minor cereal normally used as bird feed.
+103,mixed grain,FALSE,Mixed grain,1,cereals and cereal products,NA,A mixture of cereal species that are sown and harvested together. It does not include: meslin (a mixture wheat/rye).
+104,flour of mixed grain,FALSE,Flour of Mixed Grain,1,cereals and cereal products,NA,"Broadly defined to include meal, groats and pellets."
+105,bran of mixed grain,FALSE,Bran of Mixed Grain,11,fodder crops and products,NA,A milling by-product.
+108,cereals nes,TRUE,"Cereals, nes",1,cereals and cereal products,Chenopodium pallidicaule | Amaranthus caudatus | Coix lacryma-jobi | Zizania aquatica | Teff,"Other cereal crops that are not identified separately because of their minor relevance at the international level. Because of their limited local importance, some countries report cereals under this commodity heading that are classified individually by FAO."
+109,infant food,FALSE,Infant Food,1,cereals and cereal products,NA,"Preparations for infant consumption, usually containing some non-cereal ingredients."
+110,wafers,FALSE,Wafers,1,cereals and cereal products,NA,"Communion wafers, empty cachets for pharmaceutical use and sealing wafers."
+111,flour of cereals nes,FALSE,Flour of Cereals nes,1,cereals and cereal products,NA,"Broadly defined to include meal, groats and pellets."
+112,bran of cereals nes,FALSE,Bran of Cereals nes,11,fodder crops and products,NA,A milling by-product.
+113,cereal preparations,FALSE,Cereal Preparations,1,cereals and cereal products,NA,"Cereal grains, excluding barley and oats, that are either rolled, flaked, pearled, sliced or kibbled."
+114,mixes and doughs,FALSE,Mixes and Doughs,1,cereals and cereal products,NA,Used in the preparation of bakers' wares.
+115,food preparations of flour meal or malt extract,FALSE,"Food Preparations of Flour, Meal or Malt Extract",1,cereals and cereal products,NA,"Food preparations of flour, meal, starch or malt extracts, that either do not contain, or contain less than 50%, cocoa powder. Also, food preparations of milk that either do not contain, or contain less than 10%, cocoa powder."
+116,potatoes,TRUE,Potatoes,2,roots and tubers and derived products,Solanum tuberosum,"A seasonal crop grown in temperate zones all over the world, but primarily in the northern hemisphere."
+117,flour of potatoes,FALSE,Flour of Potatoes,2,roots and tubers and derived products,NA,"Produced from tubers that have been peeled, dried and milled. Includes flour, meal, flakes, granules and pellets."
+118,frozen potatoes,FALSE,Frozen Potatoes,2,roots and tubers and derived products,NA,"Peeled potatoes that are either cooked or uncooked, sliced or unsliced, and then frozen."
+119,starch of potatoes,FALSE,Starch of Potatoes,2,roots and tubers and derived products,NA,"A carbohydrate found in many plant cells. A white odourless powder that is insoluble in cold water, but forms a paste in hot water. Has wide food and non-food uses."
+120,potato offals,FALSE,Potato Offals,11,fodder crops and products,NA,The residue and waste from the preparation of potatoes.
+121,tapioca of potatoes,FALSE,Tapioca of Potatoes,2,roots and tubers and derived products,NA,"A product obtained by heating potato starch mixed with water. Tapioca may be in the form of flakes, grains, pearls, siftings, seeds or other similar forms. Used in the preparation of soups and puddings or in foods for invalids."
+122,sweet potatoes,TRUE,Sweet potatoes,2,roots and tubers and derived products,Ipomoea batatas,"A seasonal crop grown in tropical and subtropical regions. Used mainly for human food. Trade data cover fresh and dried tubers, whether or not sliced or in the form or pellets."
+125,cassava,TRUE,Cassava,2,roots and tubers and derived products,Manihot esculenta | Manihot utilissima | Manihot palmata | Manihot dulcis,"A semi-permanent crop grown in tropical and subtropical regions. Sometimes bitter and sweet cassavas are referred to as separate species, the former being M. esculenta and the latter M. palmata, but this is incorrect since the toxicity varies according to location. Cassava is the staple food in many tropical countries. It is not traded internationally in its fresh state because tubers deteriorate very rapidly."
+126,flour of cassava,FALSE,Flour of Cassava,2,roots and tubers and derived products,NA,"A product of tubers that have been peeled, dried and milled; mainly for human consumption. Includes flour, meal and flakes."
+127,tapioca of cassava,FALSE,Tapioca of Cassava,2,roots and tubers and derived products,NA,See 0121. Obtained from cassava starch and used in the preparation of puddings and in infant foods.
+128,cassava dried,FALSE,"Cassava, Dried",2,roots and tubers and derived products,NA,"Includes peeled, sliced and sun-dried (cassava chips), as well as ground and compressed cassava (pellets). Used mainly as livestock feed."
+129,starch of cassava,FALSE,Starch of Cassava,2,roots and tubers and derived products,NA,"See 0119. The principal industrial outlet for cassava. Cassava starch is used in the foodstuffs, textile and paper industries for the manufacture of plywood and veneer, adhesives, glucose and dextrine."
+135,yautia (cocoyam),TRUE,Yautia (Cocoyam),2,roots and tubers and derived products,Xanthosoma spp. | Xanthosoma sagittifolium,"Several plants are included in this group, some with edible tubers and others with edible stems (also called aroids). Yautia is grown mainly in the Caribbean and is used for food. Trade data cover both fresh and dried yautia."
+136,taro (cocoyam),TRUE,Taro (Cocoyam),2,roots and tubers and derived products,Colocasia esculenta,Aroids cultivated for their edible starchy corms or underground stems. Taro is grown throughout the tropics for food. Trade data cover both fresh and dried taro.
+137,yams,TRUE,Yams,2,roots and tubers and derived products,Dioscorea spp.,"The principal edible yams are widely grown throughout the tropics. A starchy staple foodstuff, normally eaten as a vegetable, boiled, baked or fried. In West Africa they are consumed mainly as ""fufu"", a stiff glutinous dough. Trade data cover both fresh and dried yams."
+149,roots and tubers nes,TRUE,Roots and tubers nes,2,roots and tubers and derived products,"Arracacoa xanthorrhiza | Maranta arundinacea | Cyperus esculentus | Metroxylon spp. | Oxalis tuberosa and Ullucus tuberosus | Pachyrxhizus erosus, Pachyrxhizus angulatus | Tropaeolum tuberosum | Helianthus tuberosus","Other tubers, roots or rhizomes, fresh, that are not identified separately because of their minor relevance at the international level. Because of their limited local importance, some countries report roots and tubers under this commodity heading that are classified individually by FAO."
+150,flour of roots and tubers nes,FALSE,Flour of Roots and Tubers nes,2,roots and tubers and derived products,NA,Flour and meal produced from roots and tubers o/t potatoes and cassava.
+151,roots and tubers dried nes,FALSE,"Roots and Tubers, Dried nes",2,roots and tubers and derived products,NA,"Other tubers, roots or rizhomes, dried, o/t potatoes and cassava."
+154,fructose chemically pure,FALSE,"Fructose, Chemically Pure",3,sugar crops and sweeteners and derived products,NA,"Or levulose, monosaccharide, present with glucose in sweet fruits and honey."
+155,maltose chemically pure,FALSE,"Maltose, Chemically Pure",3,sugar crops and sweeteners and derived products,NA,Produced industrially from starch by hydrolysis with malt diastase. Used in the brewing industry.
+156,sugar cane,TRUE,Sugar cane,3,sugar crops and sweeteners and derived products,Saccharum officinarum,"In some producing countries, marginal quantities of sugar cane are consumed, either directly as food or in the form of juice."
+157,sugar beet,TRUE,Sugar beet,3,sugar crops and sweeteners and derived products,Beta vulgaris var. altissima,"In some producing countries, marginal quantities are consumed, either directly as food or in the preparation of jams."
+158,cane sugar,FALSE,Cane Sugar,3,sugar crops and sweeteners and derived products,NA,"A non-refined, crystallized material derived from the juices of sugar-cane stalk and consisting either wholly or essentially of sucrose."
+159,beet sugar,FALSE,Beet Sugar,3,sugar crops and sweeteners and derived products,NA,"A non-refined, crystallized material derived from the juices extracted from the root of the sugar beet and consisting either wholly or essentially of sucrose."
+160,maple sugar and syrups,FALSE,Maple Sugar and Syrups,3,sugar crops and sweeteners and derived products,NA,Maple syrup is produced by atmospheric boiling of maple sap in an open-pan evaporator. Continuing the evaporation process until the syrup crystalizes yields maple sugar.
+161,sugar crops nes,TRUE,Sugar crops nes,3,sugar crops and sweeteners and derived products,Acer saccharum | Sorghum saccharatum | Arenga saccharifera,"Includes minor sugar crops of local importance. In the case of saps, production is to be expressed in liquid equivalent."
+162,sugar raw centrifugal,FALSE,"Sugar, Raw Centrifugal",3,sugar crops and sweeteners and derived products,NA,The sum of codes 0158 and 0159. Processed further to obtain refined sugar.
+163,sugar non-centrifugal,FALSE,"Sugar, Non-Centrifugal",3,sugar crops and sweeteners and derived products,NA,Generally derived from sugar cane through traditional methods without centrifugation.
+164,sugar refined,FALSE,"Sugar, Refined",3,sugar crops and sweeteners and derived products,NA,"Production covers domestic production, plus or minus imports and/or exports of raw centrifugal sugar in terms of refined sugar."
+165,molasses,FALSE,Molasses,3,sugar crops and sweeteners and derived products,NA,"A by-product of the extraction or refining of beet or cane sugar or of the production of fructose from maize. Used for feed, food, industrial alcohol, alcoholic beverages and ethanol."
+166,other fructose and syrup,FALSE,Other Fructose and Syrup,3,sugar crops and sweeteners and derived products,NA,"Monosaccharide found in fruits and honey, commercially produced from glucose, sucrose or by hydrolysis of inulin (polysaccharide found mainly in the tubers of the dahlia and the Jerusalem artichoke). Especially suitable for use by diabetics."
+167,sugar and syrups nes,FALSE,Sugar and Syrups nes,3,sugar crops and sweeteners and derived products,NA,"Includes invert sugar, caramel, golden syrup, artificial honey, maltose other than chemically pure, sorghum and palm sugars. See also the general note in the introduction."
+168,sugar confectionery,FALSE,Sugar Confectionery,3,sugar crops and sweeteners and derived products,NA,"Sugar confectionery, including chewing gum, that does not contain cocoa. Includes white chocolate."
+169,beet pulp,FALSE,Beet Pulp,11,fodder crops and products,NA,Residue from the extraction of sugar from the root of sugar beets. Used for animal feed.
+170,bagasse,FALSE,Bagasse,11,fodder crops and products,NA,"Residue consisting of the fibrous portion of the sugar cane after the juice has been extracted. Used as a fuel in sugar mills, as an animal feed, and in paper production."
+172,glucose and dextrose,FALSE,Glucose and Dextrose,3,sugar crops and sweeteners and derived products,NA,"Glucose is a monosaccharide produced by hydrolysing starch with acids and/or enzymes. Dextrose is chemically pure glucose. Used in the food industry, in brewing, in tobacco fermentation and in pharmaceutical products."
+173,lactose,FALSE,Lactose,3,sugar crops and sweeteners and derived products,NA,Also known as milk sugar. Produced commercially from whey.
+174,artificial sweeteners,FALSE,Artificial Sweeteners,3,sugar crops and sweeteners and derived products,NA,High-intensity or low-caloric sweetening agents that are produced chemically.
+175,isoglucose,FALSE,Isoglucose,3,sugar crops and sweeteners and derived products,NA,"Also known as HFCS (high-fructose corn syrup), HFSS (high-fructose starch syrup), HFGS (high-fructose glucose syrup). Isoglucose is a new type of starch syrup where glucose has been isomerized to fructose by using one or more isomerizing enzymes. Most important of the sweeteners manufactured from maize starch. Widely used in the production of food and soft drinks."
+176,beans dry,TRUE,"Beans, dry",4,pulses and derived products,Phaseolus and Vigna spp. | Phaseolus vulgaris | Phaseolus lunatus | Phaseolus angularis | Vigna angularis | Phaseolus aureus | Phaseolus mungo | Vigna mungo | Phaseolus coccineus | Phaseolus calcaratus | Phaseolus aconitifolius | Phaseolus acutifolius | Vigna radiata | Vigna aconitifolia,Includes species of Phaseolus and Vigna.
+181,broad beans dry,TRUE,"Broad beans, dry",4,pulses and derived products,Vicia faba | Vicia faba var. equina | Vicia faba var. major | Vicia faba var. minor,No definition available.
+187,peas dry,TRUE,"Peas, dry",4,pulses and derived products,Pisum sativum | Pisum arvense,No definition available.
+191,chick-peas dry,TRUE,"Chick-peas, dry",4,pulses and derived products,Cicer arietinum,No definition available
+195,cow peas dry,TRUE,"Cow peas, dry",4,pulses and derived products,Vigna sinensis | Dolichos sinensis,No definition available.
+197,pigeon peas,TRUE,Pigeon peas,4,pulses and derived products,Cajanus cajan,No definition available.
+201,lentils dry,TRUE,"Lentils, dry",4,pulses and derived products,Lens esculenta | Ervum lens,No definition available.
+203,bambara beans,TRUE,Bambara beans,4,pulses and derived products,Voandzeia subterranea | Vigna subterranea,These beand are grown underground in a similar way to groundnuts
+205,vetches,TRUE,Vetches,4,pulses and derived products,Vicia sativa,Used mainly for animal feed.
+210,lupins,TRUE,Lupins,4,pulses and derived products,Lupinus spp.,"Used primarily for feed, though in some parts of Africa and in Latin America some varieties are cultivated for human food."
+211,pulses nes,TRUE,Pulses nes,4,pulses and derived products,Dolichos spp. | Canavalia spp. | Psophocarpus tetragonolobus | Cyamopsis tetragonoloba | Stizolobium spp. | Pachyrrhizus erosus,"Other pulses that are not identified separately because of their minor relevance at the international level. Because of their limited local importance, some countries report pulses under this heading that are classified individually by FAO."
+212,flour of pulses,FALSE,Flour of Pulses,4,pulses and derived products,NA,Produced through milling or grinding of pulses. This heading also includes meal.
+213,bran of pulses,FALSE,Bran of Pulses,11,fodder crops and products,NA,"Bran, sharps and other residues from the milling or working of pulses."
+216,brazil nuts,TRUE,Brazil nuts,5,nuts and derived products,Bertholletia excelsa,No definition available.
+217,cashew nuts,TRUE,Cashew nuts,5,nuts and derived products,Anacardium occidentale,"Produced mainly in East Africa, India and Brazil."
+220,chestnuts,TRUE,Chestnuts,5,nuts and derived products,Castanea spp. | Castanea vesca | Castanea vulgaris | Castanea sativa,Produced mainly in Europe and Asia.
+221,almonds,TRUE,Almonds,5,nuts and derived products,Prunus amygdalus | Prunus communis | Amygdalus communis,"Produced mainly in Mediterranean countries, the United States and Asia."
+222,walnuts,TRUE,Walnuts,5,nuts and derived products,Jugland spp. | Jugland regia,"Produced in temperate zones of the Northern Hemisphere, particularly in the United States."
+223,pistachios,TRUE,Pistachios,5,nuts and derived products,Pistacia vera,Produced mainly in the Near East and the United States.
+224,kolanuts,TRUE,Kolanuts,5,nuts and derived products,Cola nitida | Cola vera; Cola acuminata,"Produced mainly in Africa. Kola nuts, containing 2.4 to 2.6% caffeine, are commonly chewed by the local population. Much used in Europe and America in the production of beverages."
+225,hazelnuts (filberts),TRUE,Hazelnuts (Filberts),5,nuts and derived products,Corylus avellana,Produced mainly in Mediterranean countries and the United States.
+226,areca nuts,TRUE,Areca nuts,5,nuts and derived products,Areca catechu,Produced mainly in the Far East. Areca nuts are used mainly as masticatory. These nuts contain alkaloids (arecoline and arecaidine).
+229,brazil nuts shelled,FALSE,"Brazil Nuts, Shelled",5,nuts and derived products,NA,Around 55% of the weight in shell.
+230,cashew nuts shelled,FALSE,"Cashew Nuts, Shelled",5,nuts and derived products,NA,Around 25% of the weight in shell.
+231,almonds shelled,FALSE,"Almonds, Shelled",5,nuts and derived products,NA,Around 55% of the weight in shell.
+232,walnuts shelled,FALSE,"Walnuts, Shelled",5,nuts and derived products,NA,Around 53% of the weight in shell.
+233,hazelnuts shelled,FALSE,"Hazelnuts, Shelled",5,nuts and derived products,NA,Around 50% of the weight in shell.
+234,nuts nes,TRUE,Nuts nes,5,nuts and derived products,Carya illinoensis | Caryocar nuciferum | Canarium spp. | Lecythis zabucajo | Macadamia ternifolia | Pinus pinea,"Other nuts that are not identified separately because of their minor relevance at the international level. Because of their limited local importance, some countries report nuts under this heading that are classified individually by FAO."
+235,prepared nuts,FALSE,Prepared Nuts,5,nuts and derived products,NA,"Mainly roasted, whether or not containing vegetable oils, salt, flavours, spices or other additives. Excludes prepared groundnuts, except when mixed with other nuts."
+236,soybeans,TRUE,Soybeans,6,oil-bearing crops and derived products,Glycine soja,"The most important oil crop. Also widely consumed as a bean and in the form of various derived products because of its high protein content, e.g. soya milk, meat, etc."
+237,oil of soybeans,FALSE,Oil of Soybeans,14,vegetable and animal oils and fats,NA,Obtained by solvent extraction from the beans. Used mainly for food.
+238,cake of soybeans,FALSE,Cake of Soybeans,11,fodder crops and products,NA,"Oilcake and other solid residues (except dregs), whether or not ground, or in the form of pellets, resulting from the extraction of fats or oils."
+239,soya sauce,FALSE,Soya Sauce,6,oil-bearing crops and derived products,NA,A fermented soya product from defatted soybeans and wheat or other cereals that is filtered and pasteurized.
+240,soya paste,FALSE,Soya Paste,6,oil-bearing crops and derived products,NA,"A fermented, salty condiment. Soya paste can be produced through brine fermentation of low- moisture soya curd."
+241,soya curd,FALSE,Soya Curd,6,oil-bearing crops and derived products,NA,Obtained by precipitating proteins from soya milk and removing the fluid. Can be fermented or non-fermented.
+242,groundnuts in shell,TRUE,"Groundnuts, in shell",6,oil-bearing crops and derived products,Arachis hypogaea,"For trade data, groundnuts in shell are converted at 70% and reported on a shelled basis."
+243,groundnuts shelled,FALSE,"Groundnuts, Shelled",6,oil-bearing crops and derived products,NA,Used as direct food and for extracting oil.
+244,oil of groundnuts,FALSE,Oil of Groundnuts,14,vegetable and animal oils and fats,NA,Obtained by pressure or solvent extraction. Used mainly for food.
+245,cake of groundnuts,FALSE,Cake of Groundnuts,11,fodder crops and products,NA,Residue from oil extraction.
+246,prepared groundnuts,FALSE,Prepared Groundnuts,6,oil-bearing crops and derived products,NA,"Roasted, salted, flavoured, etc"
+247,peanut butter,FALSE,Peanut Butter,6,oil-bearing crops and derived products,NA,"Obtained by grinding roasted peanuts. In addition to fat, at 40-46%, peanut butter contains all other components of the nuts."
+249,coconuts,TRUE,Coconuts,6,oil-bearing crops and derived products,Cocos nucifera,"In shell, covered by the endocarp, while exocarp (the smooth outer skin) and mesocarp (the fibrous covering) are removed. Immature nuts contain a milky juice that is consumed as a refreshing drink. Mature nuts are consumed as such, or processed for copra or desiccated coconut. The flesh, from which copra/oil is extracted, constitutes 40-70% of the weight of the husked coconut. The oil content is about 36% of the flesh."
+250,coconuts desiccated,FALSE,"Coconuts, Desiccated",6,oil-bearing crops and derived products,NA,"Dried, shredded flesh of coconut processed for human consumption. It retains most of the oil and proteins of the fresh nut and is mainly used in confectionery and baking."
+251,copra,FALSE,Copra,6,oil-bearing crops and derived products,NA,The dried flesh of coconut from which the oil is extracted.
+252,oil of coconuts,FALSE,Oil of Coconuts,14,vegetable and animal oils and fats,NA,Obtained by pressure from copra and by solvent from the residues of pressure extraction. Has both food and industrial uses.
+253,cake of copra,FALSE,Cake of Copra,11,fodder crops and products,NA,Residue from oil extraction.
+254,[oil palm fruit],TRUE,[Oil palm fruit],6,oil-bearing crops and derived products,Elaeis guineensis,"The oil palm produces bunches containing a large number of fruits with the fleshy mesocarp enclosing a kernel that is covered by a very hard shell. FAO considers palm oil (coming from the pulp) and palm kernels to be primary products. The oil extraction rate from a bunch varies from 17 to 27% for palm oil, and from 4 to 10% for palm kernels."
+256,palm kernels,FALSE,Palm kernels,6,oil-bearing crops and derived products,NA,Seeds of the oil palm. Babassu kernels (Orbignya speciosa) are often reported as palm kernels.
+257,oil of palm,FALSE,Oil of palm,14,vegetable and animal oils and fats,NA,"Obtained from the mesocarp of the fruit of the oil palm by pressure, and also by solvent from the residues of the pressure extraction."
+258,oil of palm kernel,FALSE,Oil of Palm Kernel,14,vegetable and animal oils and fats,NA,Obtained from the kernel of the nut of the fruits of the oil palm by pressure in two or three stages at different temperatures. Including oil of babassu kernels.
+259,cake of palm kernel,FALSE,Cake of Palm Kernel,11,fodder crops and products,NA,Residue from oil extraction.
+260,olives,TRUE,Olives,6,oil-bearing crops and derived products,Olea europaea,Includes table olives and olives for oil.
+261,oil of olives virgin,FALSE,"Oil of Olives, Virgin",14,vegetable and animal oils and fats,NA,Obtained from olives by mechanical or other physical means. Olive oil is the only vegetable oil that can be consumed without refining.
+262,olives preserved,FALSE,"Olives, Preserved",6,oil-bearing crops and derived products,NA,"Treated with SO2, brine, water, or otherwise prepared or preserved."
+263,karite nuts (sheanuts),TRUE,Karite Nuts (Sheanuts),6,oil-bearing crops and derived products,Butyrospermum parkii,Production data refer only to the nut contained in the fruit although the pulp around the nut is also edible.
+264,butter of karite nuts,FALSE,Butter of Karite Nuts,14,vegetable and animal oils and fats,NA,A very important vegetable oil in West Africa. Used as a substitute for cocoa butter and in cosmetics.
+265,castor beans,TRUE,Castor Beans,6,oil-bearing crops and derived products,Ricinus communis,"Valued mainly for their oil, which is used in pharmaceutical products. Ground seedcakes are used as fertilizers (castor oil pomace)."
+266,oil of castor beans,FALSE,Oil of Castor Beans,14,vegetable and animal oils and fats,NA,"Obtained by pressure or by solvent. Uses include mainly industrial ones, in pharmaceuticals and cosmetics."
+267,sunflower seed,TRUE,Sunflower seed,6,oil-bearing crops and derived products,Helianthus annuus,Valued mainly for its oil. Minor uses include as a human food and as feed for birds.
+268,oil of sunflower seed,FALSE,Oil of Sunflower Seed,14,vegetable and animal oils and fats,NA,Obtained by pressure extraction. Mainly for food use.
+269,cake of sunflower seed,FALSE,Cake of Sunflower Seed,11,fodder crops and products,NA,"Residue from oil extraction. The cake is used for feed if it is from decorticated seeds, or for fertilizer if it comes from undecorticated seeds."
+270,rapeseed or colza seed,TRUE,Rapeseed or colza seed,6,oil-bearing crops and derived products,Brassica napus var. oleifera,"Valued mainly for its oil. Older varieties are rich in Erucic acid, which is considered unhealthy."
+271,oil of rapeseed or canola oil,FALSE,Oil of Rapeseed or Canola oil,14,vegetable and animal oils and fats,NA,Obtained by pressure extraction for food use. Oil recovered with solvent from the residues of the pressure extraction is used for industrial purposes. Canola oil is produced from new varieties of rapeseed.
+272,cake of rapeseed,FALSE,Cake of Rapeseed,11,fodder crops and products,NA,Residue from oil extraction.
+273,olive residues,FALSE,Olive Residues,11,fodder crops and products,NA,"Residues make up about 40% of the olives crushed for oil, but account for about 5% of the oil."
+274,oil of olive residues,FALSE,Oil of Olive Residues,14,vegetable and animal oils and fats,NA,Oil extracted from olive residues with solvents.
+275,tung nuts,TRUE,Tung Nuts,6,oil-bearing crops and derived products,Aleurites cordata | Aleurites fordii,Valued mainly for their oil.
+276,oil of tung nuts,FALSE,Oil of Tung Nuts,14,vegetable and animal oils and fats,NA,Obtained by pressure and used exclusively for industrial purposes. The resulting cake contains a toxic protein and thus cannot be used for feed.
+277,jojoba seeds,TRUE,Jojoba Seeds,6,oil-bearing crops and derived products,Simmondsia californica | S. chinensis,From the shrub or small tree of the Buxaceae family.
+278,jojoba oil,FALSE,Jojoba Oil,14,vegetable and animal oils and fats,NA,"Obtained by cold pressure. Its peculiar chemical properties make it the only vegetable oil in nature having the same characteristics as spermaceti. Below 15ËšC it solidifies and assumes the characteristics of wax. It is used as a lubricant, in cosmetics and in pharmaceuticals, and is considered a product with good growth prospects."
+280,safflower seed,TRUE,Safflower seed,6,oil-bearing crops and derived products,Carthamus tinctorius,Valued mainly for its oil. Minor uses include as a human food and as poultry feed.
+281,oil of safflower seed,FALSE,Oil of Safflower Seed,14,vegetable and animal oils and fats,NA,Obtained either by pressure or by solvent. Has both food and industrial uses.
+282,cake of safflower seed,FALSE,Cake of Safflower Seed,11,fodder crops and products,NA,Residue from oil extraction.
+289,sesame seed,TRUE,Sesame seed,6,oil-bearing crops and derived products,Sesamum indicum,"Valued for its oil, but also as a food, either raw or roasted, as well as in bakery products and other food preparations."
+290,oil of sesame seed,FALSE,Oil of Sesame Seed,14,vegetable and animal oils and fats,NA,Obtained by pressure extraction in two or three stages at different temperatures. Sometimes the oil is also extracted by solvent from the residue of the pressure extraction. Used mainly for food.
+291,cake of sesame seed,FALSE,Cake of Sesame Seed,11,fodder crops and products,NA,Residue from oil extraction.
+292,mustard seed,TRUE,Mustard seed,6,oil-bearing crops and derived products,Brassica alba | Brassica hirta; Sinapis alba | Brassica nigra | Sinapis nigra,"In addition to the oil extracted from them, white mustard seeds, may be processed into flour for food use. Black mustard seeds also yield oil and are processed into flour that is used mainly in pharmaceutical products."
+293,oil of mustard seed,FALSE,Oil of Mustard Seed,14,vegetable and animal oils and fats,NA,Obtained by dry pressure extraction. Has both food and industrial uses.
+294,cake of mustard seed,FALSE,Cake of Mustard Seed,11,fodder crops and products,NA,Residue from oil extraction.
+295,flour of mustard seed,FALSE,Flour of Mustard Seed,6,oil-bearing crops and derived products,NA,"Includes flour, meal and prepared mustard."
+296,poppy seed,TRUE,Poppy seed,6,oil-bearing crops and derived products,Papaver somniferum,"The source of opium, poppy seeds are also used in baking and confectionery."
+297,oil of poppy seed,FALSE,Oil of Poppy Seed,14,vegetable and animal oils and fats,NA,Obtained by pressure extraction. Has both food and industrial uses.
+298,cake of poppy seed,FALSE,Cake of Poppy Seed,11,fodder crops and products,NA,Residue from oil extraction.
+299,melonseed,TRUE,Melonseed,6,oil-bearing crops and derived products,Cucumis melo,Includes seeds of other Cucurbitaceae.
+305,tallowtree seeds,TRUE,Tallowtree Seeds,6,oil-bearing crops and derived products,Shorea aptera | Shorea stenocarpa | Sapium sebiferum | Stillingia sebifera,Grown wild and cultivated. FAO considers vegetable tallow (0306) and stillingia oil (0307) to be primary products.
+306,vegetable tallow,FALSE,Vegetable tallow,14,vegetable and animal oils and fats,NA,"Obtained by pressure extraction or by solvent from the kernels of the fruit of the Borneo tallow tree and from the outer coating that surrounds the seeds of the fruit of the Chinese tallow tree. Used as a substitute for cocoa butter. Also used in soap, candles, medicines and cosmetics."
+307,stillingia oil,FALSE,Stillingia oil,14,vegetable and animal oils and fats,NA,Obtained by solvent from the seeds of Stillingia sebifera. Used as a drying agent in paints and varnishes.
+310,kapok fruit,TRUE,Kapok fruit,6,oil-bearing crops and derived products,Ceiba pentandra,"The fruit of kapok contains fibre (see Group 9) and seeds (see 0311), which FAO treats as primary crops."
+311,kapokseed in shell,FALSE,Kapokseed in shell,6,oil-bearing crops and derived products,NA,The soft shell is approximately 40-50% of the total weight of the nut.
+312,kapokseed shelled,FALSE,"Kapokseed, shelled",6,oil-bearing crops and derived products,NA,Used for extracting oil.
+313,oil of kapok,FALSE,Oil of Kapok,14,vegetable and animal oils and fats,NA,Obtained from shelled seeds by pressure. Used for food and soap.
+314,cake of kapok,FALSE,Cake of Kapok,11,fodder crops and products,NA,Residue from oil extraction.
+328,[seed cotton],TRUE,[Seed Cotton],6,oil-bearing crops and derived products,Gossypium spp.,"Grown for both seed and for fibre. FAO considers cottonseed, cotton lint and linters to be primary products. Lint content ranges from 30 to 40%, seed 55 to 65%, and linters 2 to 5% though they are not always separated."
+329,cottonseed,FALSE,Cottonseed,6,oil-bearing crops and derived products,NA,Used for extracting oil.
+331,oil of cottonseed,FALSE,Oil of Cottonseed,14,vegetable and animal oils and fats,NA,Obtained first by pressure extraction from the kernels of cotton seeds. The residue from this process is then exposed to a solvent. Used mainly as a food.
+332,cake of cottonseed,FALSE,Cake of Cottonseed,11,fodder crops and products,NA,Residue from oil extraction.
+333,linseed,TRUE,Linseed,6,oil-bearing crops and derived products,Linum usitatissimum,An annual herbaceous that is cultivated for its fibre as well as its oil.
+334,oil of linseed,FALSE,Oil of Linseed,14,vegetable and animal oils and fats,NA,Obtained by pressure extraction. Used mainly in non-food items.
+335,cake of linseed,FALSE,Cake of Linseed,11,fodder crops and products,NA,Residue from oil extraction.
+336,hempseed,TRUE,Hempseed,6,oil-bearing crops and derived products,Cannabis sativa,An annual herbaceous that is cultivated for its fibre as well as its oil. In major producing countries oil is extracted from the seeds.
+337,oil of hempseed,FALSE,Oil of Hempseed,14,vegetable and animal oils and fats,NA,Obtained either by pressure extraction or by solvent. Used mainly in non-food items.
+338,cake of hempseed,FALSE,Cake of Hempseed,11,fodder crops and products,NA,Residue from oil extraction.
+339,oilseeds nes,TRUE,Oilseeds nes,6,oil-bearing crops and derived products,Fagus sylvatica | Aleurites moluccana | Carapa guineensis | Croton tiglium | Bassia latifolia | Guizotia abyssinica | Licania rigida | Perilla frutescens | Jatropha curcas | Shorea robusta | Pongamia glabra | Astrocaryum spp.,"Other oilseeds, oleaginous fruits and nuts that are not identified separately because of their minor relevance at the international level. Because of their limited local importance, some countries report commodities under this heading that are classified individually by FAO. Also included under this code are tea seeds, grape pips and tomato seeds from which oil is extracted."
+340,oil of vegetable origin nes,FALSE,Oil of Vegetable Origin nes,14,vegetable and animal oils and fats,NA,"Includes, inter alia, myrtle wax and Japan wax."
+341,cake of oilseeds nes,FALSE,Cake of Oilseeds nes,11,fodder crops and products,NA,Residue from oil extraction.
+343,flour of oilseeds,FALSE,Flour of Oilseeds,6,oil-bearing crops and derived products,NA,"Flours and meals of oilseeds and oleaginous fruits (excluding mustard), non defatted or partially defatted."
+358,cabbages,TRUE,Cabbages,7,vegetables and derived products,Brassica chinensis | Brassica oleracea all var. except botrytis,No definition available.
+366,artichokes,TRUE,Artichokes,7,vegetables and derived products,Cynara scolymus,No definition available.
+367,asparagus,TRUE,Asparagus,7,vegetables and derived products,Asparagus officinalis,No definition available.
+372,lettuce and chicory,TRUE,Lettuce and chicory,7,vegetables and derived products,Lactuca sativa | Cichorium intybus var. foliosum | Cichorium endivia var. crispa | Cichorium endivia var. latifolia,No definition available.
+373,spinach,TRUE,Spinach,7,vegetables and derived products,Spinacia oleracea,Trade figures may include New Zealand spinach (Tetragonia espansa) and orache (garden) spinach (Atriplex hortensis).
+378,cassava leaves,TRUE,Cassava leaves,7,vegetables and derived products,Manihot esculenta | Manihot utilissima,Young cassava leaves are eaten in some areas of Africa as a vegetable.
+388,tomatoes fresh,TRUE,"Tomatoes, fresh",7,vegetables and derived products,Lycopersicon esculentum,No definition available.
+390,juice of tomatoes,FALSE,Juice of Tomatoes,7,vegetables and derived products,NA,"Juice is obtained by treating tomatoes with cold or hot water or with steam. The juice then undergoes various processes, such as clarification, homogenization, sterilization, etc."
+391,paste of tomatoes,FALSE,Paste of Tomatoes,7,vegetables and derived products,NA,"Tomatoes prepared or preserved o/t by vinegar, in the form of paste, pure or concentrate. Includes juice of dry weight content of 7% or more."
+392,tomatoes peeled (o/t vinegar),FALSE,"Tomatoes, Peeled (O/T vinegar)",7,vegetables and derived products,NA,Prepared or preserved o/t by vinegar; either whole or in pieces.
+393,cauliflowers and broccoli,TRUE,Cauliflowers and broccoli,7,vegetables and derived products,"Brassica oleracea var. botrytis, subvariety cauliflora and cymosa",Includes headed broccoli.
+394,pumpkins squash and gourds,TRUE,"Pumpkins, squash and gourds",7,vegetables and derived products,Cucurbita spp.,Includes marrows.
+397,cucumbers and gherkins,TRUE,Cucumbers and gherkins,7,vegetables and derived products,Cucumis sativus,No definition available.
+399,eggplants,TRUE,Eggplants,7,vegetables and derived products,Solanum melongena,Also called aubergines.
+401,chillies and peppers (green),TRUE,Chillies and peppers (green),7,vegetables and derived products,Capsicum annuum | Capsicum fructescens | Pimenta officinalis,"Production data exclude crops cultivated explicitly as spices. In contrast, trade data include these crops, provided they are fresh, uncrushed and unground."
+402,onions shallots (green),TRUE,"Onions, shallots (green)",7,vegetables and derived products,Allium ascalonicum | Allium cepa | Allium fistulosum,Young onions pulled before the bulb has enlarged; used especially in salads. Includes onion sets.
+403,onions dry,TRUE,"Onions, dry",7,vegetables and derived products,Allium cepa,"Includes onions at a mature stage, but not dehydrated onions."
+406,garlic,TRUE,Garlic,7,vegetables and derived products,Allium sativum,No definition available.
+407,leeks and other alliaceous vegetables,TRUE,Leeks and other alliaceous vegetables,7,vegetables and derived products,Allium porrum | Allium schoenoprasum,"Allium varieties except those of 0402, 0403 and 0406"
+414,beans green,TRUE,"Beans, green",7,vegetables and derived products,Phaseolus spp. | Vigna spp.,For shelling.
+417,peas green,TRUE,"Peas, green",7,vegetables and derived products,Pisum sativum,"Mostly for shelling, but including edible- podded peas or sugar peas."
+420,broad beans green,TRUE,"Broad Beans, Green",7,vegetables and derived products,Vicia faba,For shelling.
+423,string beans,TRUE,String Beans,7,vegetables and derived products,Phaseolus vulgaris,Not for shelling
+426,carrot,TRUE,Carrot,7,vegetables and derived products,Daucus carota,Trade data may include turnips (Brassica rapa var. rapifera).
+430,okra,TRUE,Okra,7,vegetables and derived products,Abelmoschus esculentus | Hibiscus esculentus,Also called gombo.
+446,green corn (maize),TRUE,Green Corn (Maize),7,vegetables and derived products,"Zea mays, particularly var. saccharata",Maize harvested green for food. Saccharata variety is commonly known as sweet corn.
+447,sweet corn frozen,FALSE,"Sweet Corn, Frozen",7,vegetables and derived products,NA,"Either uncooked, or cooked by steaming or boiling in water, and then frozen."
+448,sweet corn prepared or preserved,FALSE,"Sweet Corn, Prepared or Preserved",7,vegetables and derived products,NA,Prepared or preserved other than by vinegar or acetic acid; not frozen.
+449,mushrooms,TRUE,Mushrooms,7,vegetables and derived products,Boletus edulis | Agaricus campestris | Morchella spp. | Tuber magnatum,Cultivated or spontaneous. Includes truffles.
+450,dried mushrooms,FALSE,Dried Mushrooms,7,vegetables and derived products,NA,"Mushrooms and truffles, whether dried, dehydrated, evaporated or freeze-dried."
+451,canned mushrooms,FALSE,Canned Mushrooms,7,vegetables and derived products,NA,"Mushrooms and truffles, prepared or preserved o/t by vinegar or acetic acid; either whole, in pieces, or homogenized."
+459,chicory roots,TRUE,Chicory roots,13,tobacco and rubber and other crops,Cichorium intybus | Cichorium sativum,Unroasted chicory roots.
+460,vegetable products fresh or dry nes,FALSE,"Vegetable products, fresh or dry nes",13,tobacco and rubber and other crops,NA,"Fruit stones, kernels and other vegetable products used primarily for human food that are not specified or included elsewhere."
+461,carobs,TRUE,Carobs,13,tobacco and rubber and other crops,Ceratonia siliqua,Includes also seeds. Mainly used as an animal feed and for industrial purposes. Rich in pectin.
+463,vegetables fresh n.e.s.,TRUE,"Vegetables, Fresh n.e.s.",7,vegetables and derived products,Bambusa spp. | Beta vulgaris | Capparis spinosa | Cynara cardunculus | Apium graveolens | Anthriscus cerefolium | Lepidium sativum | Foeniculum vulgare | Cochlearia armoracia | Majorana hortensis | Tragopogon porrifolius | Petroselinum crispum | Pastinaca sativa | Raphanus sativu | Rheum spp. | Brassica napus | Satureja hortensis | Scorzonera hispanica | Rumex acetosa | Artemisia dracunculus | Nasturtium officinale,"Other vegetables that are not identified separately because of their minor relevance at the international level. Because of their limited local importance, some countries report vegetables under this heading that are classified individually by FAO."
+466,juice of vegetables nes,FALSE,Juice of Vegetables nes,7,vegetables and derived products,NA,"Juice obtained by pressing, or by treatment with water or with steam, then submitted to various processes. Vegetable juice may contain added salt, spices or flavouring substances."
+469,vegetables dehydrated,FALSE,"Vegetables, Dehydrated",7,vegetables and derived products,NA,"Vegetables that are dried, dehydrated, evaporated or freeze-dried. Includes dried vegetables that are broken or powdered."
+471,vegetables in vinegar,FALSE,Vegetables in Vinegar,7,vegetables and derived products,NA,"Vegetables, fruit, nuts and other edible parts of plants, prepared or preserved with vinegar or acetic acid, with or without added sugar, salt, spices, etc. Includes pickles."
+472,vegetables preserved nes (o/t vinegar),FALSE,"Vegetables, Preserved nes (O/T vinegar)",7,vegetables and derived products,NA,Vegetables prepared or preserved o/t by vinegar and which have not been frozen.
+473,vegetables frozen,FALSE,"Vegetables, Frozen",7,vegetables and derived products,NA,"Vegetables, either uncooked, or cooked by steaming or boiling in water, and then frozen."
+474,vegetables temporarily preserved,FALSE,"Vegetables, Temporarily Preserved",7,vegetables and derived products,NA,"Vegetables preserved with SO2, brine, etc., but which are unsuitable for consumption in that state."
+475,vegetables preserved (frozen),FALSE,"Vegetables, Preserved (Frozen)",7,vegetables and derived products,NA,"Vegetables that are prepared or preserved o/t by vinegar, and then frozen."
+476,homogenized vegetable preparations,FALSE,Homogenized Vegetable Preparations,7,vegetables and derived products,NA,Preparations Vegetables prepared for dietetic and infant food.
+486,bananas,TRUE,Bananas,8,fruits and derived products,Musa sapientum | Musa cavendishii | Musa nana,Bananas are normally eaten raw. Trade figures may include dried bananas. Data should be reported excluding the weight of the central stalk.
+489,plantains,TRUE,Plantains,8,fruits and derived products,Musa paradisiaca,Generally known as a cooking banana. Data should be reported excluding the weight of the central stalk.
+490,oranges,TRUE,Oranges,8,fruits and derived products,Citrus sinensis | Citrus aurantium,Bitter oranges are used primarily in the preparation of marmalade.
+491,juice of orange,FALSE,Juice of Orange,8,fruits and derived products,NA,"Juice is obtained by mechanical extractors, or by pressing, and is then submitted to various processes. Unfermented, it may or may not be frozen. For direct consumption."
+492,orange juice concentrated,FALSE,"Orange Juice, Concentrated",8,fruits and derived products,NA,"Juice that is obtained by a concentration process in which the water is physically removed from the juice until it has not less than 20% of solids by weight. It is then reconstituted with water before consumption. Unfermented, it may or may not be frozen."
+495,tangerines mandarins clementines satsumas,TRUE,"Tangerines, mandarins, clementines, satsumas",8,fruits and derived products,Citrus reticulata | Citrus unshiu,No definition available.
+496,juice of tangerine mandarin and clementin,FALSE,"Juice of Tangerine, Mandarin and Clementin",8,fruits and derived products,NA,See 0491.
+497,lemons and limes,TRUE,Lemons and limes,8,fruits and derived products,Citrus limon | Citrus aurantifolia | Citrus limetta,No definition available.
+498,juice of lemon,FALSE,Juice of Lemon,8,fruits and derived products,NA,See 0491.
+499,lemon juice concentrated,FALSE,"Lemon Juice, Concentrated",8,fruits and derived products,NA,See 0492.
+507,grapefruit and pomelo,TRUE,Grapefruit and pomelo,8,fruits and derived products,Citrus maxima | Citrus grandis | Citrus paradisi,No definition available.
+509,juice of grapefruit,FALSE,Juice of Grapefruit,8,fruits and derived products,NA,See 0491.
+510,grapefruit juice concentrated,FALSE,"Grapefruit Juice, Concentrated",8,fruits and derived products,NA,See 0492.
+512,citrus fruit nes,TRUE,Citrus fruit nes,8,fruits and derived products,Citrus bergamia | Citrus medica var. cedrata | Citrus myrtifolia | Fortunella japonica,Some minor varieties of citrus are used primarily in the preparation of perfumes and soft drinks.
+513,juice of citrus fruit nes,TRUE,Juice of Citrus Fruit nes,8,fruits and derived products,Citrus bergamia | Citrus medica var. cedrata | Citrus myrtifolia | Fortunella japonica,See 0491.
+514,citrus juice concentrated nes,FALSE,"Citrus Juice, Concentrated nes",8,fruits and derived products,NA,See 0492.
+515,apples,TRUE,Apples,8,fruits and derived products,Malus pumila | Malus sylvestris | Malus communis | Pyrus malus,No definition available.
+517,cider etc.,FALSE,"Cider, etc.",15,beverages,NA,"Fermented beverages nes (e.g. cider, perry, mead), including alcoholic beverages (that are not distilled) made from cereals, roots and fruits, that are not included under other headings, e.g. beer from plantains and ginger."
+518,apple juice,FALSE,Apple Juice,8,fruits and derived products,NA,See 0491.
+519,apple juice concentrated,FALSE,"Apple Juice, Concentrated",8,fruits and derived products,NA,See 0492.
+521,pears,TRUE,Pears,8,fruits and derived products,Pyrus communis,No definition available.
+523,quinces,TRUE,Quinces,8,fruits and derived products,Cydonia oblonga | Cydonia vulgaris | Cydonia japonica,No definition available.
+526,apricots,TRUE,Apricots,8,fruits and derived products,Prunus armeniaca,No definition available.
+527,apricots dried,FALSE,"Apricots, Dried",8,fruits and derived products,NA,"Prepared either by direct drying in the sun or by industrial processes. May be marketed as slices or blocks of pulp, either dried or evaporated."
+530,sour cherries,TRUE,Sour cherries,8,fruits and derived products,Prunus cerasus | Cerasus acida,No definition available.
+531,cherries,TRUE,Cherries,8,fruits and derived products,Prunus avium | Cerasus avium | var. duracina | var. juliana,No definition available.
+534,peaches and nectarines,TRUE,Peaches and nectarines,8,fruits and derived products,Prunus persica | Amygdalus persica | Persica laevis,No definition available.
+536,plums,TRUE,Plums,8,fruits and derived products,Prunus domestica | Prunus spinosa,No definition available.
+537,plums dried,FALSE,"Plums, dried",8,fruits and derived products,NA,See 0527. Known as prunes.
+538,juice of plum,FALSE,Juice of plum,8,fruits and derived products,NA,See 0491.
+539,juice of plum concentrated,FALSE,"Juice of plum, concentrated",8,fruits and derived products,NA,See 0492.
+541,stone fruit fresh nes,FALSE,"Stone fruit, fresh nes",8,fruits and derived products,NA,"Other stone fruit not separately identified. In some countries, apricots, cherries, peaches, nectarines and plums are reported under this general category."
+542,pome fruit nes,FALSE,Pome fruit nes,8,fruits and derived products,NA,"Other pome fruit not separately identified. In some countries apples, pears and quinces are reported under this general category."
+544,strawberries,TRUE,Strawberries,8,fruits and derived products,Fragaria spp.,No definition available.
+547,raspberries,TRUE,Raspberries,8,fruits and derived products,Rubus idaeus,"Trade data may include blackberries, mulberries and loganberries (a cross between the raspberry and blackberry)."
+549,gooseberries,TRUE,Gooseberries,8,fruits and derived products,Ribes grossularia,"Trade data may sometimes include black, white or red currants."
+550,currants,TRUE,Currants,8,fruits and derived products,Ribes nigrum | Ribes rubrum,Trade data may sometimes include gooseberries.
+552,blueberries,TRUE,Blueberries,8,fruits and derived products,Vaccinium myrtillus | Vaccinium corymbosum,"Trade data may include cranberries, myrtle berries and other fruits of the genus Vaccinium."
+554,cranberries,TRUE,Cranberries,8,fruits and derived products,Vaccinium macrocarpon | Vaccinium oxycoccus,"Trade data may include blueberries, myrtle berries and other fruits of the genus Vaccinium."
+558,berries nes,TRUE,Berries nes,8,fruits and derived products,Morus nigra | Morus alba | Morus rubra | Myrtus communis | Gaylussacia spp.,"Other berries not separately identified. In some countries, some or all of the berries listed previously are reported under this general category."
+560,grapes,TRUE,Grapes,8,fruits and derived products,Vitis vinifera,Includes both table and wine grapes.
+561,raisins,FALSE,Raisins,8,fruits and derived products,NA,Dried grapes. Includes sultanas and currants.
+562,juice of grape,FALSE,Juice of Grape,8,fruits and derived products,NA,See 0491. Includes unfermented grape must.
+563,must of grape,FALSE,Must of Grape,15,beverages,NA,"Grape must that has partially fermented, whether or not fermentation has been arrested, as well as unfermented grape must to which alcohol has been added."
+564,wine,FALSE,Wine,15,beverages,NA,"Wines of fresh grapes of all qualities, including sparkling, fortified and dessert wines."
+565,vermouths etc.,FALSE,"Vermouths, etc.",15,beverages,NA,Beverages made with wine of fresh grapes and flavoured with aromatic substances.
+566,marc of grape,FALSE,Marc of Grape,11,fodder crops and products,NA,Residues from the pressing of grapes. Used also for distilling.
+567,watermelons,TRUE,Watermelons,7,vegetables and derived products,Citrullus vulgaris,No definition available.
+568,melons cantaloupes,TRUE,"Melons, Cantaloupes",7,vegetables and derived products,Cucumis melo,No definition available.
+569,figs,TRUE,Figs,8,fruits and derived products,Ficus carica,No definition available.
+570,figs dried,FALSE,"Figs, Dried",8,fruits and derived products,NA,See 0527.
+571,mangoes,TRUE,Mangoes,8,fruits and derived products,Mangifera indica,"Trade figures may include dried mangoes, guavas and mangosteens, including both fresh and dried."
+572,avocados,TRUE,Avocados,8,fruits and derived products,Persea americana,No definition available.
+574,pineapples,TRUE,Pineapples,8,fruits and derived products,Ananas comosus | Ananas sativus,Trade figures may include dried pineapples.
+575,pineapples canned,FALSE,"Pineapples, Canned",8,fruits and derived products,NA,"Fruit pulp prepared in water, syrup, etc."
+576,juice of pineapples,FALSE,Juice of Pineapples,8,fruits and derived products,NA,See 0491.
+577,dates,TRUE,Dates,8,fruits and derived products,Phoenix dactylifera,Includes fresh and dried fruit.
+580,juice of pineapples concentrated,FALSE,"Juice of Pineapples, Concentrated",8,fruits and derived products,NA,See 0492. Soluble fruit solids of not less than 27% by weight.
+583,juice of mango,FALSE,Juice of Mango,8,fruits and derived products,NA,See 0491.
+584,mango pulp,FALSE,Mango Pulp,8,fruits and derived products,NA,"Fruit pulp prepared in water, syrup, etc."
+587,persimmons,TRUE,Persimmons,8,fruits and derived products,Diospyros kaki | Diospyros virginiana,No definition available.
+591,cashewapple,TRUE,Cashewapple,8,fruits and derived products,Anacardium occidentale,"The thickened, fleshy stem below the cashew nut. When soft it is used for jam."
+592,kiwi fruit,TRUE,Kiwi fruit,8,fruits and derived products,Actinidia chinensis,No definition available.
+600,papayas,TRUE,Papayas,8,fruits and derived products,Carica papaya,No definition available.
+603,fruit tropical (fresh) nes,TRUE,"Fruit, tropical (fresh) nes",8,fruits and derived products,Artocarpus incisa | Averrhoa carambola | Annona spp. | Durio zibethinus | Feijoa sellowiana | Psidium guajava | Spondias spp. | Artocarpus integrifolia | Nephelium longan | Mammea americana | Garcinia mangostana | Solanum quitoense | Passiflora edulis | Nephelium lappaceum | Calocarpum mammosum | Achras sapota | Chrysophyllum spp,"Other tropical fresh fruit are not identified separately because of their minor relevance at the international level. In some countries mangoes, avocados, pineapples, dates and papayas are reported under this general category."
+604,fruit tropical (dried) nes,FALSE,"Fruit, tropical (Dried) nes",8,fruits and derived products,NA,"Including, whenever possible, dried bananas, plantains and pineapples as well as other unlisted tropical fruits."
+619,fruit fresh nes,TRUE,"Fruit, fresh nes",8,fruits and derived products,Crataegus azarolus | Carica pentagona | Sambucus nigra | Zizyphus jujuba | Nephelium litchi | Eriobotrya japonica | Mespilus germanica | Asimina triloba | Punica granatum | Opuntia ficus-indica | Rosa spp. | Sorbus aucuparia | Sorbus domestica | Tamarindus indica | Arbutus unedo,"Other fresh fruit that are not identified separately because of their minor relevance at the international level. Because of their limited local importance, some countries report fresh fruit under this heading that are classified separately by FAO."
+620,fruit dried nes,FALSE,"Fruit, dried nes",8,fruits and derived products,NA,"Dried fruit other than apricots, dates, citrus, figs, grapes, nuts and plums."
+622,juice of fruits nes,FALSE,Juice of fruits nes,8,fruits and derived products,NA,See 0491.
+623,fruit prepared nes,FALSE,"Fruit, prepared nes",8,fruits and derived products,NA,"Fruit, nuts and peel, including frozen, prepared or preserved, jam, paste, marmalade, pure and cooked fruits, other than those listed separately."
+624,flour of fruits,FALSE,Flour of Fruits,8,fruits and derived products,NA,"Includes the flour, meal, powder, nuts and peel of fruits."
+625,fruit nuts peel sugar preserved,FALSE,"Fruit, Nuts, Peel, Sugar Preserved",8,fruits and derived products,NA,"Fruit, nuts, fruit peel, and other parts of plants preserved with sugar (either drained, glazed or crystallized)."
+626,homogenized cooked fruit prepared,FALSE,"Homogenized Cooked Fruit, Prepared",8,fruits and derived products,NA,"Cooked fruit preparations, homogenized for dietetic and infant foods."
+628,pulp waste of fruit for feed,FALSE,"Pulp, Waste of Fruit for Feed",11,fodder crops and products,NA,"Waste of fruit, fruit pomace and marc, excluding marc of grapes."
+629,beet tops,FALSE,Beet Tops,11,fodder crops and products,NA,"Beet tops, consisting of the leaves and upper part of the root, are used for feed. They account for about 25% of plant weight, though it is uncertain how much, if any, of this is included in national production statistics."
+630,cane tops,FALSE,Cane Tops,11,fodder crops and products,NA,"The leaves and upper part of the stalks, which are used for feed. The tops represent about 10% of the weight of the plant."
+631,waters ice and snow,FALSE,"Waters, Ice and Snow",15,beverages,NA,"Includes natural or artificial mineral waters without added sugar, sweeteners or flavourings."
+632,alcohol non-food purposes,FALSE,"Alcohol, Non-Food Purposes",15,beverages,NA,Includes undenatured ethyl alcohol (strength by volume of > 80%) and denatured (any strength).
+633,beverages non-alcoholic,FALSE,"Beverages, Non-Alcoholic",15,beverages,NA,"Includes sweetened or flavoured mineral waters and other non-alcoholic beverages, such as lemonade, orangeade, cola, etc. Excludes fruit and vegetable juices."
+634,beverages distilled alcoholic,FALSE,"Beverages, Distilled Alcoholic",15,beverages,NA,"Includes undenatured ethyl alcohol (strength by volume < 80%); spirits, liqueurs and other spirituous beverages and preparations."
+635,straw and husks,FALSE,Straw and Husks,11,fodder crops and products,NA,"Cereal straw and husks, unprepared, whether or not chopped, ground, pressed, or in the form of pellets."
+636,maize for forage,FALSE,Maize for forage,11,fodder crops and products,NA,Maize cut green as grass.
+637,sorghum for forage,FALSE,Sorghum for forage,11,fodder crops and products,NA,"Usually sweet sorghum, so called for the sweet juice in the stem, which is cut green as grass."
+638,rye grass for forage,TRUE,Rye grass for forage,11,fodder crops and products,Lolium multiflorum | Lolium perenne,Quick-growing grasses.
+639,grasses nes for forage,TRUE,Grasses nes for forage,11,fodder crops and products,Agrostis spp. | Poa spp. | Sorghum almum | Festuca spp. | Pennisetum purpureum | Dactylis glomerata | Chloris gayana | Sorghum vulgare var. sudanense | Phleum pratense,"Includes species used for cereal production, if cut green for fodder"
+640,clover for forage,TRUE,Clover for forage,11,fodder crops and products,Trifolium spp.,"Various species grown for pasture, green fodder or silage."
+641,alfalfa for forage,TRUE,Alfalfa for forage,11,fodder crops and products,Medicago sativa,"A deep-rooted perennial herb used for green fodder, for hay or silage, and for pasture."
+642,green oilseeds for silage,FALSE,Green oilseeds for silage,11,fodder crops and products,NA,Cut green as grass.
+643,legumes for silage,TRUE,Legumes for silage,11,fodder crops and products,Lotus corniculatus | Lespedeza spp. | Pueraria lobata | Sesbania spp. | Onobrychis sativa | Hedysarum coronarium,"Includes species of pulses, if harvested for fodder."
+644,cabbage for fodder,TRUE,Cabbage for fodder,11,fodder crops and products,Brassica chinensis | Brassica oleracea,Especially cultivated for fodder.
+645,pumpkins for fodder,TRUE,Pumpkins for fodder,11,fodder crops and products,Cucurbita spp.,Especially cultivated for fodder.
+646,turnips for fodder,TRUE,Turnips for fodder,11,fodder crops and products,Brassica rapa var. rapifera,Especially cultivated for fodder.
+647,beets for fodder,TRUE,Beets for fodder,11,fodder crops and products,Beta vulgaris,Especially cultivated for fodder.
+648,carrots for fodder,TRUE,Carrots for fodder,11,fodder crops and products,Daucus carota,Especially cultivated for fodder.
+649,swedes for fodder,TRUE,Swedes for fodder,11,fodder crops and products,Brassica napus var. napobrassica,Especially cultivated for fodder.
+650,leaves tops and vines nes,FALSE,"Leaves, Tops and Vines nes",11,fodder crops and products,NA,"Vegetable products that are not specifically grown for animal feed, but are used for that purpose."
+651,forage products nes,FALSE,Forage Products nes,11,fodder crops and products,NA,Plants specifically grown for animal feed.
+652,vegetable products for feed nes,FALSE,Vegetable Products for Feed nes,11,fodder crops and products,NA,"Vegetable products, vegetable waste, residues and by-products from the industrial processing of vegetable materials."
+653,food wastes,FALSE,Food Wastes,11,fodder crops and products,NA,"Sweetened forage and preparations of a kind used for animal feed, e.g. wine lees, argol."
+655,vegetables roots fodder nes,FALSE,"Vegetables, roots fodder nes",11,fodder crops and products,NA,Any other crop of the vegetable group that is cultivated for fodder.
+656,coffee green,TRUE,Coffee green,12,stimulant crops and derived products,Coffea spp. | Coffea arabica | Coffea robusta | Coffea liberica,Raw coffee in all forms.
+657,coffee roasted,FALSE,"Coffee, Roasted",12,stimulant crops and derived products,NA,"With or without caffeine, and whether or not ground."
+658,coffee substitutes,FALSE,Coffee Substitutes,12,stimulant crops and derived products,NA,Coffee substitutes containing coffee in any proportion.
+659,coffee extracts,FALSE,Coffee Extracts,12,stimulant crops and derived products,NA,"Essences and concentrates, including instant coffee, roasted chicory and other coffee substitutes, extracts and essences thereof."
+660,coffee husks and skins,FALSE,Coffee Husks and Skins,12,stimulant crops and derived products,NA,No definition available.
+661,cocoa beans,TRUE,Cocoa beans,12,stimulant crops and derived products,Theobroma cacao,"The seeds contained in the fruit of the cacao- tree, including whole or broken, raw or roasted."
+662,cocoa paste,FALSE,Cocoa Paste,12,stimulant crops and derived products,NA,Obtained by grinding roasted cocoa beans. Also called liquor. Not defatted.
+663,cocoa husks and shells,FALSE,Cocoa Husks and Shells,12,stimulant crops and derived products,NA,Including skins and other cocoa waste.
+664,cocoa butter,FALSE,Cocoa Butter,12,stimulant crops and derived products,NA,Obtained by hot-pressing either cocoa paste or the whole bean. Includes the fat and oil.
+665,cocoa powder and cake,FALSE,Cocoa Powder and Cake,12,stimulant crops and derived products,NA,"Wholly or partly defatted paste (cake) and cake reduced to powder, without added sugar or other sweeteners."
+666,chocolate products nes,FALSE,Chocolate Products nes,12,stimulant crops and derived products,NA,"Includes sweetened cocoa powder, chocolate and other food preparations containing cocoa, as well as sugar confectionery containing cocoa in any amount. Excludes white chocolate (see 0168 in Group 3)."
+667,tea,TRUE,Tea,12,stimulant crops and derived products,Camellia sinensis | Thea sinensis | Thea assaamica,"Includes green tea (unfermented), black tea (fermented), and partially fermented tea. Excludes green tea eaten as a vegetable."
+671,mate,TRUE,Mate,12,stimulant crops and derived products,Ilex paraguayensis,The dried leaves of certain shrubs of the holly family which grow in South America. Prepared in a way similar to tea.
+672,extracts of tea and mate,FALSE,Extracts of Tea and Mate,12,stimulant crops and derived products,NA,"Includes essences, concentrates and preparations of tea and maté."
+674,tea nes,FALSE,Tea nes,12,stimulant crops and derived products,NA,"Various plants used for making infusions like tea, i.e. herbal teas."
+677,hops,TRUE,Hops,13,tobacco and rubber and other crops,Humulus lupulus,"Hop cones, fresh or dried, whether or not ground, powdered or in the form of pellets. Includes lupuline, a yellow resinous powder that covers the hop cones. Mainly used in the brewing industry to give flavour to beer."
+687,pepper,TRUE,Pepper,10,spices,Piper nigrum | Piper longum,"Perennial climbing vines. Includes whole, crushed or ground berries. Black pepper is produced from partially ripe berries, while white pepper is from fully ripe berries which have had the outer hull removed."
+689,pimento,TRUE,Pimento,10,spices,Capsicum frutescens | Capsicum annuum | Pimenta officinalis,Uncrushed or unground fresh pimentos are considered to be vegetables. See Group 7.
+692,vanilla,TRUE,Vanilla,10,spices,Vanilla planifolia | Vanilla pompona,"The fruit (or bean) of a climbing plant of the orchid family. Includes whole, crushed or ground."
+693,cinnamon (canella),TRUE,Cinnamon (canella),10,spices,Cinnamomum zeylanicum | Cinnamomum cassia,"The inner bark of young branches of certain trees of the Laurus family. Includes cinnamon- tree flowers, cinnamon fruit and cinnamon waste (chips), whether whole, crushed or ground."
+698,cloves,TRUE,Cloves,10,spices,Eugenia caryophyllata | Caryophyllus aromaticus,"The whole fruit of the clove tree, including the flowers picked before maturity and dried in the sun, and the stems of the clove flowers."
+702,nutmeg mace cardamoms,TRUE,"Nutmeg, mace, cardamoms",10,spices,Myristica fragrans | Elettaria cardamomum | Aframomum angustifolium | Aframomum hambury; Amomun aromaticum; Amomun cardamomum | Aframomum melegueta | NA,Nutmeg is the inner brown kernel of the fruit of the nutmeg tree. Mace is the net-like membrane between the outer shell and the kernel. Cardamon seeds are enclosed in the capsule produced by perennial herbs of the Zingiberaceae family.
+711,anise badian fennel,TRUE,"Anise, badian, fennel",10,spices,Pimpinella anisum | Illicium verum | Carum carvi | Coriandrum sativum | Cuminum cyminum | Foeniculum vulgare | Juniperus communis,"Seeds and berries from the various plants listed. They are normally used as spices, but also have industrial (e.g. in distilleries) and medicinal applications."
+720,ginger,TRUE,Ginger,10,spices,Zingiber officinale,"Rhizome of a perennial herb. It also is used for making beverages. Includes fresh, provisionally preserved or dried, whereas ginger preserved in sugar or syrup is excluded."
+723,spices nes,TRUE,Spices nes,10,spices,Laurus nobilis | Anethum graveolens | Trigonella foenum-graecum | Crocus sativus | Thymus vulgaris | Curcuma longa,"Other spices that are not identified separately because of their minor relevance at the international level. Because of their limited local importance, some countries report spices under this heading that are classified individually by FAO. This heading also includes curry powder and other mixtures of different spices."
+737,oil of citronella,FALSE,Oil of citronella,13,tobacco and rubber and other crops,NA,Essential oil extracted from Cymbopogon nardus.
+748,peppermint spearmint,TRUE,"Peppermint, Spearmint",13,tobacco and rubber and other crops,Mentha spp. | Mentha piperita,"Leaves and flowers are used in the perfumery, food and other industries."
+753,essential oils nes,FALSE,Essential oils nes,13,tobacco and rubber and other crops,NA,"Extracted from many plants and used mainly in the perfumery, food and other industries."
+754,pyrethrum dried flowers,TRUE,"Pyrethrum, dried flowers",13,tobacco and rubber and other crops,Chrysanthemum cinerariifolium,"Includes leaves, stems and flowers. For insecticides, fungicides and similar products."
+755,pyrethrum extract,FALSE,Pyrethrum Extract,13,tobacco and rubber and other crops,NA,Obtained from the flowers by extraction using an organic solvent.
+756,pyrethrum marc,FALSE,Pyrethrum Marc,13,tobacco and rubber and other crops,NA,The waste from pyrethrum processing.
+767,cotton lint,FALSE,Cotton Lint,9,fibres of vegetal and animal origin,NA,"Fibres from ginning seed cotton that have not been carded or combed. Trade data also include fibres that have been cleaned, bleached, dyed or rendered absorbent."
+768,cotton carded or combed,FALSE,"Cotton, Carded or Combed",9,fibres of vegetal and animal origin,NA,"Cotton (including garnetted stock and other cotton waste) which has been carded or combed, whether or not further prepared for spinning. May be bleached or dyed."
+769,cotton waste,FALSE,Cotton Waste,9,fibres of vegetal and animal origin,NA,"Waste is produced when cotton is prepared for spinning, or during spinning operations, weaving, knitting, etc., or from garnetting cotton goods."
+770,cotton linters,FALSE,Cotton Linters,9,fibres of vegetal and animal origin,NA,Very short fibres that cover the seeds after ginning and that are very high in cellulose.
+771,flax raw or retted,TRUE,"Flax, raw or retted",9,fibres of vegetal and animal origin,Linum usitatissimum,Flax is cultivated for seed as well as for fibre. The fibre is obtained from the stem of the plant. Data are reported in terms of straw.
+773,flax fibre and tow,FALSE,Flax fibre and tow,9,fibres of vegetal and animal origin,NA,"Broken, scutched, hackled etc. but not spun. Traditionally, FAO has used this commodity to identify production in its raw state; in reality, the primary agricultural product is the commodity 0771, which can either be used for the production of fibre or for other purposes."
+774,flax tow and waste,FALSE,Flax tow and waste,9,fibres of vegetal and animal origin,NA,Includes yarn waste and garnetted stock.
+777,hemp fibre and tow,TRUE,Hemp fibre and tow,9,fibres of vegetal and animal origin,Cannabis sativa,"This plant is cultivated for seed as well as for fibre. The fibre is obtained from the stem of the plant. Trade data include raw, retted, scutched, combed fibre, tow and waste."
+778,kapok fibre,TRUE,Kapok fibre,9,fibres of vegetal and animal origin,Ceiba pentandra,"This plant is cultivated for seed as well as for fibre. Trade data cover only fibres that have been crushed, carded or combed for spinning."
+780,jute,TRUE,Jute,9,fibres of vegetal and animal origin,Corchorus capsularis | Corchorus olitorius,"Trade data cover raw or processed jute (but not spun), tow and waste, yarn waste and garnetted stock and may include jute-like fibres."
+782,jute-like fibres,TRUE,Jute-like fibres,9,fibres of vegetal and animal origin,Abutilon avicennae | Urena lobata | Urena sinuata | Abroma augusta | Hibiscus cannabinus | Hibiscus sabdariffa | Crotalaria juncea,"This definition covers all textile fibres extracted from the stems of dicotyledonous plants, o/t flax, ramie, true hemp and true jute. For trade coverage see 0780."
+788,ramie,TRUE,Ramie,9,fibres of vegetal and animal origin,Boehmeria nivea | Boehmeria tenacissima,Ramie fibre is obtained from the bast of the plant. For trade coverage see 0780
+789,sisal,TRUE,Sisal,9,fibres of vegetal and animal origin,Agave sisalana,"Sisal fibre is obtained from the leaves of the plant. It also is used as an ornamental plant. Trade data cover fibres that are raw, prepared for spinning, and tow and waste, including yarn waste and garnetted stock."
+800,agave fibres nes,TRUE,Agave fibres nes,9,fibres of vegetal and animal origin,Agave foetida | Agave fourcroydes | Agave lecheguilla | Agave cantala | Agave americana | Agave letonae,"See 0789. The leaves of some agave varieties are used for the production of alcoholic beverages, such as aquamiel, mezcal, pulque and tequila."
+809,abaca manila hemp,TRUE,Abaca manila hemp,9,fibres of vegetal and animal origin,Musa textilis,The fibre is obtained from stalks of certain banana trees. For trade coverage see 0789.
+813,coir,TRUE,Coir,9,fibres of vegetal and animal origin,Cocos nucifera,Coir fibre is obtained from the fibrous covering of the mesocarp. For trade coverage see 0789.
+821,fibre crops nes,TRUE,Fibre crops nes,9,fibres of vegetal and animal origin,Lygeum spartum | Stipa tenacissima | Sansevieria spp. | Neoglaziovia variegata | Furcraea macrophylla | Furcraea gigantea | Phormium tenax | Samuela carnerosana,"Other fibres that are not identified separately because of their minor relevance at the international level. Because of their limited local importance, some countries report vegetable fibres under this commodity heading that are classified individually by FAO. The fibre is obtained from the leaves, stalks or fruit of the plant. In instances where the fibrous part is normally used for other purposes, data cover only those fibres intended for spinning. For trade coverage see 0789."
+826,tobacco leaves,TRUE,Tobacco leaves,13,tobacco and rubber and other crops,Nicotiana tabacum,"Unmanufactured dry tobacco, including refuse that is not stemmed or stripped, or is partly or wholly stemmed or stripped."
+828,cigarettes,FALSE,Cigarettes,13,tobacco and rubber and other crops,NA,Includes cigarettes of tobacco substitutes.
+829,cigars and cheroots,FALSE,Cigars and Cheroots,13,tobacco and rubber and other crops,NA,"Includes cigars, cheroots and cigarillos of tobacco substitutes."
+831,tobacco products nes,FALSE,Tobacco Products nes,13,tobacco and rubber and other crops,NA,"Includes smoking, chewing, snuff tobacco, homogenized or compressed tobacco, manufactured tobacco substitutes, tobacco extracts and essences."
+836,natural rubber,TRUE,Natural rubber,13,tobacco and rubber and other crops,Hevea brasiliensis,"The liquid secreted by the rubber tree. Includes stabilized or concentrated latex and prevulcanized rubber latex. In trade figures, liquid weight is converted to dry weight at 60%."
+837,rubber natural (dry),FALSE,"Rubber, Natural (Dry)",13,tobacco and rubber and other crops,NA,"In the form of sheets, crêpes, re-agglomerated granules, free-flowing powders, etc.; includes technically specified natural rubber (TSNR)."
+839,natural gums,TRUE,Natural gums,13,tobacco and rubber and other crops,Manilkara bidentata | Manihot glaziovii | Achras zapota | Parthenium argentatum | Palachium gutta | Dieva costulana,"Extracted from the latex of trees of various species. Although similar to rubber in many ways, natural gums are usually less elastic."
+840,compound feed cattle,FALSE,"Compound Feed, Cattle",11,fodder crops and products,NA,Prepared animal feed designed to provide a balanced diet (complete feed).
+841,compound feed poultry,FALSE,"Compound Feed, Poultry",11,fodder crops and products,NA,See 0840.
+842,compound feed pigs,FALSE,"Compound Feed, Pigs",11,fodder crops and products,NA,See 0840.
+843,pet food,FALSE,Pet Food,11,fodder crops and products,NA,"International trade classifications cover only dog and cat food. FAO trade data also cover food for other pets (i.e. fish, birds, etc.), whenever possible."
+845,compound feed nes,FALSE,Compound Feed nes,11,fodder crops and products,NA,See 0840. See general note in the introduction.
+846,gluten feed and meal,FALSE,Gluten Feed and Meal,11,fodder crops and products,NA,"Generally, by-products of the wet milling of maize. Gluten feed consists of fibres, spent germ and steep liquor. Gluten meal contains endosperm protein fractions that remain following starch recovery (see Group 1)."
+849,feed yeast,FALSE,Feed Yeast,11,fodder crops and products,NA,Inactive dried yeast.
+850,feed supplements,FALSE,Feed Supplements,11,fodder crops and products,NA,Prepared animal feed that supplements the basic farm produced feed with organic or inorganic substances.
+851,non-protein nitrogens,FALSE,Non-Protein Nitrogens,11,fodder crops and products,NA,A mixture of different nutrients or substances that are used in making complete or supplementary feeds.
+852,other concentrates nes,FALSE,Other Concentrates nes,11,fodder crops and products,NA,See 0851.
+853,vitamins,FALSE,Vitamins,11,fodder crops and products,NA,See 0851.
+854,feed additives,FALSE,Feed Additives,11,fodder crops and products,NA,See 0851.
+855,feed minerals,FALSE,Feed Minerals,11,fodder crops and products,NA,See 0851.
+857,hay non leguminous,FALSE,"Hay, non leguminous",11,fodder crops and products,NA,Hay that is mainly from grasses.
+858,hay (clover lucerne etc.),FALSE,"Hay (Clover, Lucerne, etc.)",11,fodder crops and products,NA,Hay from leguminous crops.
+859,hay nes,FALSE,Hay nes,11,fodder crops and products,NA,Hay from unspecified plants.
+862,alfalfa meal and pellets,FALSE,Alfalfa Meal and Pellets,11,fodder crops and products,NA,"Alfalfa (lucerne) dried, whole, cut, chopped, milled, pressed or pelletized."
+866,cattle,TRUE,Cattle,16,livestock,Bos taurus | Bos indicus | subgenus Bibos | Poephagus grunniens,"Animals of the genus listed, regardless of age, sex, or purpose raised. Data are expressed in number of heads."
+867,meat of cattle,FALSE,Meat of cattle,17,products from slaughtered animals,NA,"Meat of bovine animals, fresh, chilled or frozen, with bone in. Common trade names are beef and veal."
+868,offals of cattle edible,FALSE,"Offals of cattle, edible",17,products from slaughtered animals,NA,"Fresh, chilled or frozen."
+869,fat of cattle,FALSE,Fat of cattle,14,vegetable and animal oils and fats,NA,"Unrendered slaughter fats from bovine animals, including edible and inedible fats that are removed in the course of dressing the carcass."
+870,meat of cattle boneless,FALSE,"Meat of cattle, boneless",17,products from slaughtered animals,NA,"Boneless meat of bovine animals, whether fresh, chilled or frozen."
+871,cattle butcher fat,FALSE,"Cattle, Butcher Fat",14,vegetable and animal oils and fats,NA,Unrendered fats that are removed during butchering.
+872,beef and veal dried salted smoked,FALSE,"Beef and Veal, Dried, Salted, Smoked",17,products from slaughtered animals,NA,"Meat of bovine animals, whether salted, in brine, dried or smoked.Includes edible flours and meals."
+873,meat extracts,FALSE,Meat Extracts,17,products from slaughtered animals,NA,Extracts obtained by boiling meat under pressure and concentrating the resulting liquid after the fat has been removed. Includes juices obtained by pressing raw meat. Whenever possible trade data exclude fish extracts.
+874,sausages of beef and veal,FALSE,Sausages of Beef and Veal,17,products from slaughtered animals,NA,"Preparations of meat or offal, whether chopped, minced or of blood.They may be raw, cooked or smoked and contain other ingredients, andare then enclosed in natural or artificial casings."
+875,beef and veal preparations nes,FALSE,Beef and Veal Preparations nes,17,products from slaughtered animals,NA,"Meat and offal (o/t liver) that are boiled, steamed, grilled, fried,roasted or otherwise cooked. Includes prepared meals that contain morethan 20% of meat and offal by weight."
+877,homogenized meat preparations,FALSE,Homogenized Meat Preparations,17,products from slaughtered animals,NA,Preparations used in infant or dietetic food.
+878,liver preparations,FALSE,Liver Preparations,17,products from slaughtered animals,NA,"Liver of any animal, excluding fatty livers of code 1060."
+882,cow milk whole (fresh),FALSE,"Cow milk, whole (fresh)",18,products from live animals,NA,"Production data refer to raw milk containing all its constituents. Trade data normally cover milk from any animal, and refer to milk that is not concentrated, pasteurized, sterilized or other-wise preserved, homogenized or peptonized."
+883,standardized milk,FALSE,Standardized Milk,18,products from live animals,NA,Milk in which the fat content is adjusted to a predetermined value without altering any other constituents.
+885,cream fresh,FALSE,"Cream, Fresh",18,products from live animals,NA,That portion of milk which is rich in milk fat and is separated by skimming or centrifuging.
+886,butter of cow milk,FALSE,Butter of Cow Milk,18,products from live animals,NA,Emulsion of milk fat and water that is obtained by churning cream. Trade data cover butter from the milk of any animal.
+887,ghee from cow milk,FALSE,Ghee from Cow Milk,18,products from live animals,NA,Butter from which the water has been removed. Very common in hot countries. Includes also anhydrous butterfat or butter oil.
+888,skim milk of cows,FALSE,Skim Milk of Cows,18,products from live animals,NA,Milk from which most of the fat has been removed.
+889,whole milk condensed,FALSE,"Whole Milk, Condensed",18,products from live animals,NA,Milk and cream from which water has been partly removed after heat-treating and concentrating. Normally sucrose is added to give the product stability and bacteriological safety.
+890,whey condensed,FALSE,"Whey, Condensed",18,products from live animals,NA,Whey paste.
+891,yoghurt,FALSE,Yoghurt,18,products from live animals,NA,A fermented milk food.
+892,yoghurt concentrated or unconcent,FALSE,"Yoghurt, Concentrated or Unconcent",18,products from live animals,NA,"Includes additives such as sugar, flavouring materials, fruit or cocoa."
+893,buttermilk curdled milk acidified milk,FALSE,"Buttermilk, Curdled Milk, Acidified Milk",18,products from live animals,NA,Residue from butter making. Includes kephir.
+894,whole milk evaporated,FALSE,"Whole Milk, Evaporated",18,products from live animals,NA,Milk and cream from which the water has been partly removed and which has been heat- treated to render it bacteriologically safe and stable.
+895,skim milk evaporated,FALSE,"Skim Milk, Evaporated",18,products from live animals,NA,"Same as 0894, but applied to skim milk."
+896,skim milk condensed,FALSE,"Skim Milk, Condensed",18,products from live animals,NA,"Same as 0889, but applied to skim milk."
+897,dry whole cow milk,FALSE,Dry Whole Cow Milk,18,products from live animals,NA,"Milk and cream from which water has been completely removed by various methods. In form of powder, granules or other solid forms. May contain added sugar or other sweeteners."
+898,dry skim cow milk,FALSE,Dry Skim Cow Milk,18,products from live animals,NA,"Same as 0897, but from skim milk. Normally does not exceed 1.5% fat content."
+899,dry buttermilk,FALSE,Dry Buttermilk,18,products from live animals,NA,No definition available.
+900,dry whey,FALSE,Dry Whey,18,products from live animals,NA,Used in both food and animal feed.
+901,cheese from whole cow milk,FALSE,Cheese from Whole Cow Milk,18,products from live animals,NA,Curd of milk that has been coagulated and separated from whey. May include some skimmed milk.
+903,whey fresh,FALSE,"Whey, Fresh",18,products from live animals,NA,"The liquid part of the milk that remains after the separation of curd in cheese making. Its main food use is in the preparation of whey cheese, whey drinks and fermented whey drinks. The main industrial uses are in the manufacture of lactose, whey paste and dried whey."
+904,cheese from skimmed cow milk,FALSE,Cheese from Skimmed Cow Milk,18,products from live animals,NA,May include some whole milk.
+905,whey cheese,FALSE,Whey Cheese,18,products from live animals,NA,No definition available.
+907,processed cheese,FALSE,Processed Cheese,18,products from live animals,NA,No definition available.
+908,reconstituted milk,FALSE,Reconstituted Milk,18,products from live animals,NA,"Obtained by adding water, fat, etc. to milk powder."
+909,products of natural milk constitue nes,FALSE,"Products of Natural Milk Constitue, nes",18,products from live animals,NA,No definition available.
+910,ice cream and edible ice,FALSE,Ice Cream and Edible Ice,18,products from live animals,NA,"A product with a milk or cream base to which sweeteners, eggs, etc. have been added."
+916,egg albumin,FALSE,Egg Albumin,18,products from live animals,NA,The main protein constituent of egg white.
+917,casein,FALSE,Casein,18,products from live animals,NA,The main protein constituent of milk. Casein is obtained from skimmed milk by precipitation (curdling) with acids or rennet.
+919,cattle hides fresh,FALSE,"Cattle hides, fresh",19,hides and skins,NA,Green hide or skin as removed from the carcass of the animal (adult bovine). Used for production data only.
+920,hides wet-salted (cattle),FALSE,"Hides, Wet-Salted (Cattle)",19,hides and skins,NA,Approximately 80-85% of green weight.
+921,hides dry-salted (cattle),FALSE,"Hides, Dry-Salted (Cattle)",19,hides and skins,NA,"Includes dry and dry-salted, approximately 35% and 55% of green weight, respectively."
+922,hides nes cattle,FALSE,"Hides nes, Cattle",19,hides and skins,NA,"Limed, pickled or otherwise preserved."
+927,skins fresh (calves),FALSE,"Skins, fresh (calves)",19,hides and skins,NA,See 0919. From young bovine animals.
+928,skins wet-salted (calves),FALSE,"Skins, Wet-Salted (Calves)",19,hides and skins,NA,See 0920.
+929,skins dry-salted (calves),FALSE,"Skins, Dry-Salted (Calves)",19,hides and skins,NA,See 0921.
+930,skins nes calves,FALSE,"Skins nes, Calves",19,hides and skins,NA,See 0922.
+946,buffaloes,TRUE,Buffaloes,16,livestock,Bubalus bubalus | Bubalus arnee; Bubalus depressicornis | genus Syncerus | Bison bison | Bison bonasus | NA | NA,See 0866. Excludes wild bisons and buffaloes.
+947,buffalo meat,FALSE,Buffalo meat,17,products from slaughtered animals,NA,"Fresh, chilled or frozen, with bone in or boneless."
+948,offals of buffalo edible,FALSE,"Offals of buffalo, edible",17,products from slaughtered animals,NA,"Fresh, chilled or frozen."
+949,fat of buffalo,FALSE,Fat of buffalo,14,vegetable and animal oils and fats,NA,See 0869.
+951,buffalo milk,FALSE,Buffalo milk,18,products from live animals,NA,See 0882 and derived products.
+952,butter of buffalo milk,FALSE,Butter of Buffalo Milk,18,products from live animals,NA,No definition available.
+953,ghee from buffalo milk,FALSE,"Ghee, from Buffalo Milk",18,products from live animals,NA,No definition available.
+954,skim milk of buffalo,FALSE,Skim Milk of Buffalo,18,products from live animals,NA,No definition available.
+955,cheese of buffalo milk,FALSE,Cheese of Buffalo Milk,18,products from live animals,NA,No definition available.
+957,buffalo hides fresh,FALSE,"Buffalo hides, fresh",19,hides and skins,NA,See 0919. Both adult and young animals.
+958,hides wet-salted (buffalo),FALSE,"Hides, Wet-Salted (Buffalo)",19,hides and skins,NA,See 0920.
+959,hides dry-salted (buffalo),FALSE,"Hides, Dry-Salted (Buffalo)",19,hides and skins,NA,See 0921.
+976,sheep,TRUE,Sheep,16,livestock,Ovis spp.,"See 0866. Includes Uriel, Argali, Bighorn, Karakul and Astrakhan."
+977,meat of sheep,FALSE,Meat of sheep,17,products from slaughtered animals,NA,"Meat of sheep and lamb, whether fresh, chilled or frozen, with bone inor boneless."
+978,offals of sheep edible,FALSE,"Offals of sheep, edible",17,products from slaughtered animals,NA,"Fresh, chilled or frozen."
+979,fat of sheep,FALSE,Fat of sheep,14,vegetable and animal oils and fats,NA,Unrendered slaughter fats of sheep. See 0869.
+982,sheep milk,FALSE,Sheep milk,18,products from live animals,NA,See 0882 and derived products.
+983,butter and ghee of sheep milk,FALSE,Butter and Ghee of Sheep Milk,18,products from live animals,NA,No definition available.
+984,cheese of sheep milk,FALSE,Cheese of Sheep Milk,18,products from live animals,NA,No definition available.
+985,skim sheep milk,FALSE,Skim Sheep Milk,18,products from live animals,NA,No definition available.
+987,wool greasy,FALSE,"Wool, Greasy",9,fibres of vegetal and animal origin,NA,"A natural fibre taken from sheep or lambs. Includes fleece-washed, shorn and pulled wool (from slaughtered animals), but does not include carded or combed wool."
+988,wool degreased,FALSE,"Wool, Degreased",9,fibres of vegetal and animal origin,NA,"Includes scoured and carbonized, but does not include carded or combed wool."
+994,wool grease and lanolin,FALSE,Wool Grease and Lanolin,14,vegetable and animal oils and fats,NA,"Extracted from the soapy water in which wool has been scoured, or from greasy wool by meand of solvents. Lanolin is obtained by purifying wool grease. Includes wool grease olein and stearin."
+995,sheepskins fresh,FALSE,"Sheepskins, fresh",19,hides and skins,NA,See 0919. Both adult and young animals.
+996,skins wet-salted (sheep),FALSE,"Skins, Wet-Salted (Sheep)",19,hides and skins,NA,Sheep and lamb skins without wool. See 0920.
+997,skins dry-salted (sheep),FALSE,"Skins, Dry-Salted (Sheep)",19,hides and skins,NA,Sheep and lamb skins without wool. See 0921.
+998,skins nes sheep,FALSE,"Skins nes, Sheep",19,hides and skins,NA,Sheep and lamb skins without wool. See 0922.
+999,skins with wool sheep,FALSE,"Skins with Wool, Sheep",19,hides and skins,NA,"Sheep and lamb skins (excluding 1002), with wool on, salted, dried, limed, pickled or otherwise preserved."
+1002,karakul skins,FALSE,Karakul skins,19,hides and skins,NA,"Raw skins of Astrakhan, Caracul, Persian or similar lambs."
+1007,wool shoddy,FALSE,"Wool, Shoddy",9,fibres of vegetal and animal origin,NA,"Garnetted stock of wool or of fine or coarse animal hair obtained by garnetting rags or waste of spinning, weaving, knitting etc."
+1008,hair carded combed,FALSE,"Hair, Carded, Combed",9,fibres of vegetal and animal origin,NA,"Wool and fine or coarse animal hair, carded or combed, including combed wool in fragments."
+1009,wool hair waste,FALSE,"Wool, Hair Waste",9,fibres of vegetal and animal origin,NA,Noils of wool or animal hair not garnetted; other waste of wool and animal hair (excluding horsehair) not covered in 1007.
+1010,wool tops,FALSE,Wool Tops,9,fibres of vegetal and animal origin,NA,Slivers consisting of long fibres laid parallel by combing and then wound into balls.
+1016,goats,TRUE,Goats,16,livestock,Capra spp.,"See 0866. Includes Hircus, Ibex, Nubiana, Pyrenaica, Tibetana, Kashmir and Angora."
+1017,goat meat,FALSE,Goat meat,17,products from slaughtered animals,NA,"Meat of goats and kids, whether fresh, chilled or frozen, with bone inor boneless."
+1018,offals of goats edible,FALSE,"Offals of goats, edible",17,products from slaughtered animals,NA,"Fresh, chilled or frozen."
+1019,fat of goats,FALSE,Fat of goats,14,vegetable and animal oils and fats,NA,Unrendered slaughter fats of goats. See 0869.
+1020,goat milk,FALSE,Goat milk,18,products from live animals,NA,See 0882 and derived products.
+1021,cheese of goat milk,FALSE,Cheese of Goat Milk,18,products from live animals,NA,No definition available.
+1022,butter of goat milk,FALSE,Butter of Goat Milk,18,products from live animals,NA,No definition available.
+1023,skim milk of goat,FALSE,Skim Milk of Goat,18,products from live animals,NA,No definition available.
+1025,goatskins fresh,FALSE,"Goatskins, fresh",19,hides and skins,NA,See 0919. Both adult and young animals.
+1026,skins wet-salted (goats),FALSE,"Skins, Wet-Salted (Goats)",19,hides and skins,NA,Includes kids. See 0920.
+1027,skins dry-salted (goats),FALSE,"Skins, Dry-Salted (Goats)",19,hides and skins,NA,Includes kids. See 0921.
+1028,skins nes goats,FALSE,"Skins nes, Goats",19,hides and skins,NA,Includes kids. See 0922.
+1030,fine goat hair,FALSE,Fine goat hair,9,fibres of vegetal and animal origin,NA,"Hair from cashmere, angora (mohair) and similar goats. Excludes carded or combed hair."
+1031,coarse goat hair,FALSE,Coarse goat hair,9,fibres of vegetal and animal origin,NA,Common goat hair. Not carded or combed hair.
+1034,pigs,TRUE,Pigs,16,livestock,Sus domestica | Sus scrofa,See 0866. Excludes non-domesticated wild boars.
+1035,pig meat,FALSE,Pig meat,17,products from slaughtered animals,NA,"Meat, with the bone in, of domestic or wild pigs (e.g. wild boars),whether fresh, chilled or frozen."
+1036,offals of pigs edible,FALSE,"Offals of pigs, edible",17,products from slaughtered animals,NA,"Fresh, chilled or frozen."
+1037,fat of pigs,FALSE,Fat of pigs,14,vegetable and animal oils and fats,NA,Unrendered slaughter fats of pigs. See 0869.
+1038,pork,FALSE,Pork,17,products from slaughtered animals,NA,"Pig meat, excluding butcher fat and bones."
+1039,bacon and ham,FALSE,Bacon and Ham,17,products from slaughtered animals,NA,"Meat of pigs, whether salted, in brine, dried or smoked."
+1040,pig butcher fat,FALSE,"Pig, Butcher Fat",14,vegetable and animal oils and fats,NA,See 0871.
+1041,sausages of pig meat,FALSE,Sausages of Pig Meat,17,products from slaughtered animals,NA,See 0874.
+1042,pig meat preparations,FALSE,Pig Meat Preparations,17,products from slaughtered animals,NA,See 0875.
+1043,lard,FALSE,Lard,14,vegetable and animal oils and fats,NA,Rendered pig fat.
+1044,pigskins fresh,FALSE,"Pigskins, fresh",19,hides and skins,NA,"See 0919. In many countries, pigskins are not removed from the carcasses."
+1045,skins wet-salted (pigs),FALSE,"Skins, Wet-Salted (Pigs)",19,hides and skins,NA,See 0920.
+1046,skins dry-salted (pigs),FALSE,"Skins, Dry-Salted (Pigs)",19,hides and skins,NA,See 0921.
+1047,skins nes pigs,FALSE,"Skins nes, Pigs",19,hides and skins,NA,See 0922.
+1057,chickens,TRUE,Chickens,16,livestock,Gallus domesticus | Numida meleagris,Domesticated birds only. Data are expressed in thousands.
+1058,chicken meat,FALSE,Chicken meat,17,products from slaughtered animals,NA,"Fresh, chilled or frozen. May include all types of poultry meat if national statistics do not report separate data."
+1059,offals and liver of chickens,FALSE,Offals and liver of chickens,17,products from slaughtered animals,NA,"Fresh, chilled or frozen."
+1060,fatty liver preparations,FALSE,Fatty Liver Preparations,17,products from slaughtered animals,NA,"Fatty livers of ducks and geese when cooked, prepared or preserved (e.g. paté)."
+1061,meat canned (poultry),FALSE,"Meat, Canned (Poultry)",17,products from slaughtered animals,NA,Includes meat and offals of poultry. See 0875.
+1062,hen eggs,FALSE,Hen eggs,18,products from live animals,NA,Weight in shell.
+1063,eggs liquid,FALSE,"Eggs, Liquid",18,products from live animals,NA,"Whole eggs, not in the shell, and egg yolks in liquid form that are frozen or otherwise preserved."
+1064,eggs dried,FALSE,"Eggs, Dried",18,products from live animals,NA,"Whole eggs and egg yolks, dried or powdered."
+1065,fat of poultry,FALSE,Fat of poultry,14,vegetable and animal oils and fats,NA,Unrendered poultry fat.
+1066,fat of poultry rendered,FALSE,"Fat of Poultry, Rendered",14,vegetable and animal oils and fats,NA,"Rendered poultry fat, including bone fat and fat obtained from waste."
+1067,hen eggs (number),FALSE,"Hen eggs, (number)",18,products from live animals,NA,No definition available.
+1068,ducks,TRUE,Ducks,16,livestock,Anas spp.,See 1057.
+1069,duck meat,FALSE,Duck meat,17,products from slaughtered animals,NA,"Fresh, chilled or frozen."
+1072,geese,TRUE,Geese,16,livestock,Anser spp.,See 1057.
+1073,goose meat,FALSE,Goose meat,17,products from slaughtered animals,NA,"Fresh, chilled or frozen."
+1074,offals and liver of geese,FALSE,Offals and liver of geese,17,products from slaughtered animals,NA,"Fresh, chilled or frozen, salted or in brine."
+1075,offals and liver of ducks,FALSE,Offals and liver of ducks,17,products from slaughtered animals,NA,"Fresh, chilled or frozen, salted or in brine."
+1079,turkeys,TRUE,Turkeys,16,livestock,Meleagris gallopavo,See 1057.
+1080,turkey meat,FALSE,Turkey meat,17,products from slaughtered animals,NA,"Fresh, chilled or frozen."
+1081,offals and liver of turkey,FALSE,Offals and liver of turkey,17,products from slaughtered animals,NA,No definition available.
+1083,pigeons and other birds,TRUE,Pigeons and other birds,16,livestock,Alectoris rufa | Columba livia | Coturnis spp. | NA | NA,See 1057.
+1089,meat of pigeons and other birds nes,FALSE,Meat of pigeons and other birds nes,17,products from slaughtered animals,NA,"Fresh, chilled or frozen."
+1091,eggs excluding hen eggs,FALSE,"Eggs, excluding hen eggs",18,products from live animals,NA,Weight in shell.
+1092,eggs excluding hen eggs (number),FALSE,"Eggs, excluding hen eggs (number)",18,products from live animals,NA,No definition available.
+1096,horses,TRUE,Horses,16,livestock,Equus caballus,See 0866.
+1097,horse meat,FALSE,Horse meat,17,products from slaughtered animals,NA,"Fresh, chilled or frozen."
+1098,offals of horses,FALSE,Offals of horses,17,products from slaughtered animals,NA,"Fresh, chilled or frozen."
+1100,hair of horses,FALSE,Hair of horses,9,fibres of vegetal and animal origin,NA,Includes hair of the manes and tails of equine and bovine animals and waste therefrom. Hair from flanks included in 1219.
+1102,horse hides fresh,FALSE,"Horse hides, fresh",19,hides and skins,NA,See 0919. Both adult and young animals.
+1103,hides wet-salted (horses),FALSE,"Hides, Wet-Salted (Horses)",19,hides and skins,NA,See 0920. Includes hides of asses and mules.
+1104,hides dry-salted (horses),FALSE,"Hides, Dry-Salted (Horses)",19,hides and skins,NA,See 0921. Includes hides of asses and mules.
+1105,hides nes horses,FALSE,"Hides nes, Horses",19,hides and skins,NA,See 0922. Includes hides of asses and mules.
+1107,asses,TRUE,Asses,16,livestock,Equus asinus,See 0866.
+1108,meat of asses,FALSE,Meat of asses,17,products from slaughtered animals,NA,"Fresh, chilled or frozen."
+1109,hides of asses fresh,FALSE,"Hides of asses, fresh",19,hides and skins,NA,See 0919. Both adult and young animals.
+1110,mules,FALSE,Mules,16,livestock,NA,Includes hinnies. Mules are offspring of a male ass and a female horse (mare); a hinny is the offspring of a female ass and a male horse (stallion). Both are sterile. See 0866.
+1111,meat of mules,FALSE,Meat of mules,17,products from slaughtered animals,NA,"Fresh, chilled or frozen."
+1112,hides of mules fresh,FALSE,"Hides of mules, fresh",19,hides and skins,NA,See 0919. Both adult and young animals.
+1126,camels,TRUE,Camels,16,livestock,Camelus bactrianus | Camelus dromedarius,See 0866.
+1127,meat of camels,FALSE,Meat of camels,17,products from slaughtered animals,NA,"Fresh, chilled or frozen."
+1128,offals of camels edibles,FALSE,"Offals of camels, edibles",17,products from slaughtered animals,NA,"Fresh, chilled or frozen."
+1129,fat of camels,FALSE,Fat of camels,14,vegetable and animal oils and fats,NA,Unrendered slaughter fats.
+1130,camel milk,FALSE,Camel milk,18,products from live animals,NA,See 0882.
+1133,camel hides fresh,FALSE,"Camel hides, fresh",19,hides and skins,NA,See 0919. Both adult and young animals.
+1134,hides wet-salted (camels),FALSE,"Hides, Wet-Salted (Camels)",19,hides and skins,NA,See 0920.
+1135,hides dry-salted (camels),FALSE,"Hides, Dry-Salted (Camels)",19,hides and skins,NA,See 0921.
+1136,hides nes camels,FALSE,"Hides nes, Camels",19,hides and skins,NA,See 0922.
+1140,rabbits,TRUE,Rabbits,16,livestock,Oryctolagus cuniculus,See 0866. May include domesticated hares (Lepus spp.). Data are expressed in thousands.
+1141,rabbit meat,FALSE,Rabbit meat,17,products from slaughtered animals,NA,"Fresh, chilled or frozen. May include hare meat."
+1146,rabbit skins,FALSE,Rabbit skins,19,hides and skins,NA,"See 0919. Both adult and young animals. Trade data include processed skins, including angora."
+1150,other rodents,FALSE,Other rodents,16,livestock,NA,"See 0866. Includes only those used mainly for meat, e.g. Guinea pig. Rodents used mainly for fur skins are included in Code 1169. Data are expressed in thousands."
+1151,meat of other domestic rodents,FALSE,Meat of other domestic rodents,17,products from slaughtered animals,NA,"Fresh, chilled or frozen."
+1157,other camelids,TRUE,Other camelids,16,livestock,glama pacos | peruana | huanacos | vicugna,See 0866.
+1158,meat of other domestic camelids,FALSE,Meat of other domestic camelids,17,products from slaughtered animals,NA,"Fresh, chilled or frozen."
+1160,fat of other camelids,FALSE,Fat of other camelids,14,vegetable and animal oils and fats,NA,Unrendered slaughter fats.
+1163,game meat,FALSE,Game meat,17,products from slaughtered animals,NA,"Meat and offals of wild animals, whether fresh, chilled or frozen."
+1164,meat dried nes,FALSE,"Meat, Dried nes",17,products from slaughtered animals,NA,"Meat, except of bovines and pigs, salted, in brine or smoked."
+1166,meat nes,FALSE,Meat nes,17,products from slaughtered animals,NA,"Including frog legs, marine mammals, etc. Some countries include under this heading meats that are listed above, but which are not reported separately. Fresh, chilled or frozen."
+1167,offals nes,FALSE,Offals nes,17,products from slaughtered animals,NA,"Fresh, chilled or frozen."
+1168,animal oils and fats nes,FALSE,Animal Oils and Fats nes,14,vegetable and animal oils and fats,NA,"Animal oils and fats obtained from other animal species and oils and fats recovered from guts, feet, sweepings, hide trimmings, etc."
+1169,live animals non food nes,FALSE,"Live animals, non food nes",16,livestock,NA,Any animal not raised for food. External trade data also include wild animals.
+1171,live animals nes,FALSE,Live animals nes,16,livestock,NA,"Any other animal grown for meat, eggs, feathers and skins, e.g. ostrich, antelope, deer, reindeer, chamois."
+1172,meat prepared nes,FALSE,"Meat, Prepared nes",17,products from slaughtered animals,NA,"Excludes poultry, swine or bovine meat preparations."
+1173,meat meal,FALSE,Meat Meal,11,fodder crops and products,NA,"Flours, meals and pellets of meat and offal (including of marine mammals); greaves and tankage. Used for feed."
+1174,fish meal,FALSE,Fish Meal,11,fodder crops and products,NA,"Flours, meals and pellets from fish, crustaceans, molluscs or other aquatic invertebrates. Used for feed."
+1175,blood meal,FALSE,Blood Meal,11,fodder crops and products,NA,"Flours, meals and pellets obtained through dehydration of blood. Used for feed."
+1176,snails o/t sea snails,FALSE,Snails o/t sea snails,17,products from slaughtered animals,NA,"Fresh, chilled, frozen, dried, salted or in brine."
+1181,beehives,TRUE,Beehives,16,livestock,Apis mellifica | Apis dorsata | Apis florea | Apis indica,A beehive is an artificial habitation for bees.
+1182,honey,FALSE,Honey,3,sugar crops and sweeteners and derived products,NA,Honey produced by bees (Apis mellifera) or by other insects.
+1183,beeswax,FALSE,Beeswax,18,products from live animals,NA,"The substance bees use to build the hexagonal cells of the combs of beehives. Includes other insect waxes as well, i.e. lac and Chinese wax."
+1185,cocoons reelable,FALSE,"Cocoons, reelable",9,fibres of vegetal and animal origin,NA,"Silkworm cocoons suitable for reeling. Foreign trade data are expressed in silk equivalent, which is 25% of their weight."
+1186,silk raw,FALSE,"Silk, Raw",9,fibres of vegetal and animal origin,NA,Obtained by reeling the filaments from cocoons. Not thrown.
+1187,cocoons unreelable waste,FALSE,"Cocoons Unreelable, Waste",9,fibres of vegetal and animal origin,NA,Include cocoons unsuitable for reeling and silk waste of all kinds. Not carded or combed.
+1195,fur skin,FALSE,Fur skin,19,hides and skins,NA,"High-value raw skins, e.g. mink, fox, beaver."
+1213,hides and skins nes fresh,FALSE,"Hides and skins nes, fresh",19,hides and skins,NA,"See 0919. Both adult and young animals. Includes, among others, chamois, antelope, crocodile and snake."
+1214,hides wet-salted nes,FALSE,"Hides, Wet-Salted nes",19,hides and skins,NA,See 0920.
+1215,hides dry-salted nes,FALSE,"Hides, Dry-Salted nes",19,hides and skins,NA,See 0921.
+1216,hides nes,FALSE,Hides nes,19,hides and skins,NA,See 0922.
+1217,leather used and waste,FALSE,"Leather, Used and Waste",19,hides and skins,NA,"Parings and other waste of leather, leather dust, powder and flour."
+1218,hair fine,FALSE,"Hair, fine",9,fibres of vegetal and animal origin,NA,"Fine animal hair, mainly from alpaca, llama, vicuña, camel and angora rabbit. Excludes carded or combed hair."
+1219,hair coarse nes,FALSE,"Hair, coarse nes",9,fibres of vegetal and animal origin,NA,"Hair from flanks of equines and bovines, as well as hair from other animals, such as dogs and monkeys. Excludes carded or combed hair."
+1221,lard stearine and lard oil,FALSE,Lard Stearine and Lard Oil,14,vegetable and animal oils and fats,NA,"Obtained by pressing lard or tallow (oleo-oil, tallow oil, tallow stearine)."
+1222,degras,FALSE,Degras,14,vegetable and animal oils and fats,NA,A residue from tanning leather that is obtained either by pressing or by extraction with solvents.
+1223,oil from fish and marine mammals,FALSE,Oil from Fish and Marine Mammals,14,vegetable and animal oils and fats,NA,"Fats and oils from fish and marine mammals extracted from the body or liver, whether or not refined, but not chemically modified."
+1225,tallow,FALSE,Tallow,14,vegetable and animal oils and fats,NA,"Rendered fats of animals other than pigs, excluding tallow oil or stearine."
+1232,food preparations nes,FALSE,Food Preparations nes,13,tobacco and rubber and other crops,NA,NA
+1241,liquid margarine,FALSE,Liquid Margarine,14,vegetable and animal oils and fats,NA,See commodity code 1242. Fat content varies from 30 to 70%.
+1242,margarine and shortening,FALSE,Margarine and Shortening,14,vegetable and animal oils and fats,NA,"Margarine is made principally from one or more hydrogenated vegetable or animal fats or oils in which is dispersed an aqueous potion containing milk products, salt, flavouring agents and other additives. Shortening is a product similar to margarine, but with a higher animal fat content. Shortening and compound fats are used primarily for baking and frying. The fat content of margarine and shortening varies from 70 to 90%."
+1243,fat preparations nes,FALSE,Fat Preparations nes,14,vegetable and animal oils and fats,NA,Cooking fats prepared from both vegetable and animal oils and fats. Usually containing 100% fat.
+1259,food waste prep. for feed,FALSE,"Food Waste, Prep. for Feed",11,fodder crops and products,NA,Same coverage as 0653.
+1273,castor oil hydrogenated,FALSE,"Castor Oil, Hydrogenated",14,vegetable and animal oils and fats,NA,"Also called ""opal wax""."
+1274,oils boiled dehydrated etc.,FALSE,"Oils Boiled, Dehydrated, etc.",14,vegetable and animal oils and fats,NA,"Also includes oxidized and sulphurized oils. Animal and vegetable fats and oils whose chemical structure has been modified to improve viscosity, drying ability or other properties."
+1275,hydrogenated oils and fats,FALSE,Hydrogenated Oils and Fats,14,vegetable and animal oils and fats,NA,Animal and vegetable fats and oils that have been hydrogenated to raise their melting point and increase their consistency by transforming unsaturated glycerides into saturated glycerides.
+1276,fatty acids,FALSE,Fatty Acids,14,vegetable and animal oils and fats,NA,Manufactured by the saponification or hydrolysis of natural fats or oils. Including acid oils from refining.
+1277,residues of fatty substances,FALSE,Residues of Fatty Substances,20,other livestock products,NA,Residues resulting from the tratment of fatty substances or animal or vegetable waxes.
+1291,arabic gum,FALSE,Arabic gum,13,tobacco and rubber and other crops,NA,Latex exuded by some acacias.
+1292,other resins,TRUE,Other resins,13,tobacco and rubber and other crops,Copaifera spp. | Astragalus spp. | Boswellia spp. | Commiphora spp. | Myroxilon balsamum | Myroxilon Pereira,"Including lac (resinous substance produced by an insect on several kinds of tropical trees), gums, gum-resins and balsams (vegetable secretions which may solidify on contact with air)."
+1293,crude organic materials nes,FALSE,Crude Organic Materials nes,13,tobacco and rubber and other crops,NA,"This code covers products of two different groups: Group 13 - Tobacco, Rubber and Other Crops, and Group 20 - Other Livestock Products."
+1294,seeds for planting,FALSE,Seeds for Planting,13,tobacco and rubber and other crops,NA,"Seeds, fruits and spores used for sowing. Excludes cereals, oilseeds, pulses and spices, even if intended for sowing."
+1295,spermaceti,FALSE,Spermaceti,14,vegetable and animal oils and fats,NA,Waxy substance extracted from the fat of sperm whales and similar cetaceans.
+1296,vegetable waxes,TRUE,Vegetable waxes,13,tobacco and rubber and other crops,Euphorbia antisyphilitica | Pedilanthus pavonis | Copernicia cerifera | Attalea excelsa | Ceroxylon andicolum,"Vegetable waxes, whether crude or refined, bleached or coloured. Excludes mixtures and chemically modified waxes."
+1309,insecticides total (consumption),FALSE,"Insecticides, total (Consumption)",21,fertilizers,NA,No definition available.
+1310,chlorinated hydrocarbons (consumption),FALSE,Chlorinated Hydrocarbons (Consumption),21,pesticides,NA,No definition available.
+1311,organo-phosphates (consumption),FALSE,Organo-Phosphates (Consumption),21,pesticides,NA,No definition available.
+1312,carbamates insecticides (consumption),FALSE,Carbamates insecticides (Consumption),21,pesticides,NA,No definition available.
+1313,pyrethroids (consumption),FALSE,Pyrethroids (Consumption),21,pesticides,NA,No definition available.
+1314,botanical products and biologicals (consumption),FALSE,Botanical products and biologicals (Consumption),21,pesticides,NA,No definition available.
+1315,other insecticides (consumption),FALSE,Other Insecticides (Consumption),21,pesticides,NA,No definition available.
+1316,mineral oils (consumption),FALSE,Mineral Oils (Consumption),21,pesticides,NA,No definition available.
+1317,dithiocarbamates fungicides seed treatments (consumption),FALSE,Dithiocarbamates fungicides seed treatments (Consumption),21,pesticides,NA,No definition available.
+1318,benzimidazoles fungicides seed treatments (consumption),FALSE,Benzimidazoles fungicides seed treatments (Consumption),21,pesticides,NA,No definition available.
+1319,triazoles diazoles fungicides seed treatments (consumption),FALSE,"Triazoles, diazoles fungicides seed treatments (Consumption)",21,pesticides,NA,No definition available.
+1320,herbicides total,FALSE,"Herbicides, total",21,fertilizers,NA,No definition available.
+1321,phenoxy hormone products (consumption),FALSE,Phenoxy Hormone Products (Consumption),21,pesticides,NA,No definition available.
+1322,triazines (consumption),FALSE,Triazines (Consumption),21,pesticides,NA,No definition available.
+1323,amides (consumption),FALSE,Amides (Consumption),21,pesticides,NA,No definition available.
+1324,carbamates herbicides (consumption),FALSE,Carbamates herbicides (Consumption),21,pesticides,NA,No definition available.
+1325,dinitroanilines (consumption),FALSE,Dinitroanilines (Consumption),21,pesticides,NA,No definition available.
+1326,urea derivates (consumption),FALSE,Urea derivates (Consumption),21,pesticides,NA,No definition available.
+1327,other herbicides (consumption),FALSE,Other Herbicides (Consumption),21,pesticides,NA,No definition available.
+1328,sulfonyl ureas (consumption),FALSE,Sulfonyl Ureas (Consumption),21,pesticides,NA,No definition available.
+1329,bipiridils (consumption),FALSE,Bipiridils (Consumption),21,pesticides,NA,No definition available.
+1330,uracil (consumption),FALSE,Uracil (Consumption),21,pesticides,NA,No definition available.
+1331,fungicides and bactericides total,FALSE,"Fungicides and bactericides, total",21,fertilizers,NA,No definition available.
+1332,inorganics (consumption),FALSE,Inorganics (Consumption),21,pesticides,NA,No definition available.
+1333,dithiocarbamates (consumption),FALSE,Dithiocarbamates (Consumption),21,pesticides,NA,No definition available.
+1334,benzimidazoles (consumption),FALSE,Benzimidazoles (Consumption),21,pesticides,NA,No definition available.
+1335,triazoles diazoles (consumption),FALSE,"Triazoles, Diazoles (Consumption)",21,pesticides,NA,No definition available.
+1336,diazines morpholines (consumption),FALSE,"Diazines, Morpholines (Consumption)",21,pesticides,NA,No definition available.
+1337,other fungicides (consumption),FALSE,Other Fungicides (Consumption),21,pesticides,NA,No definition available.
+1338,botanical products and biologicals fungicides seed treatments (consumption),FALSE,"Botanical products and biologicals, fungicides seed treatments (Consumption)",21,pesticides,NA,No definition available.
+1339,others fungicides seed treatments (consumption),FALSE,"Others, fungicides seed treatments (Consumption)",21,pesticides,NA,No definition available.
+1340,organo-phospates insecticides seed treatments (consumption),FALSE,Organo-phospates insecticides seed treatments (Consumption),21,pesticides,NA,No definition available.
+1341,plant growth regulators (consumption),FALSE,Plant Growth Regulators (Consumption),21,pesticides,NA,No definition available.
+1342,carbamates insecticides seed treatments (consumption),FALSE,Carbamates insecticides seed treatments (Consumption),21,pesticides,NA,No definition available.
+1343,pyrethroids insecticides seed treatments (consumption),FALSE,Pyrethroids insecticides seed treatments (Consumption),21,pesticides,NA,No definition available.
+1344,others insecticides seed treatments (consumption),FALSE,"Others, insecticides seed treatments (Consumption)",21,pesticides,NA,No definition available.
+1345,rodenticides total (consumption),FALSE,"Rodenticides, total (Consumption)",21,fertilizers,NA,No definition available.
+1346,anticoagulants (consumption),FALSE,Anticoagulants (Consumption),21,pesticides,NA,No definition available.
+1347,other rodenticides (consumption),FALSE,Other rodenticides (Consumption),21,pesticides,NA,No definition available.
+1348,cyanide generators (consumption),FALSE,Cyanide generators (Consumption),21,pesticides,NA,No definition available.
+1349,hypercalcaemics (consumption),FALSE,Hypercalcaemics (Consumption),21,pesticides,NA,No definition available.
+1350,narcotics (consumption),FALSE,Narcotics (Consumption),21,pesticides,NA,No definition available.
+1351,disinfectants (consumption),FALSE,Disinfectants (Consumption),21,pesticides,NA,No definition available.
+1352,fungicides seed treatments total (consumption),FALSE,"Fungicides seed treatments, total (Consumption)",21,fertilizers,NA,No definition available.
+1353,insecticides seed treatments total (consumption),FALSE,"Insecticides seed treatments, total (Consumption)",21,fertilizers,NA,No definition available.
+1355,other pesticides nes (consumption),FALSE,Other pesticides nes (Consumption),21,pesticides,NA,No definition available.
+1357,pesticides (trade),FALSE,Pesticides (Trade),21,pesticides,NA,"Value of trade covering insecticides, fungicides, herbicides, disinfectants and others, as described by the Harmonised Coding System (HS) code 3808. Data refer to the value of the trade expressed in 1000 USD"
+1360,nitrogenous fertilizers,FALSE,Nitrogenous fertilizers,22,fertilizers,NA,No definition available.
+1375,phosphate fertilizers,FALSE,Phosphate fertilizers,22,fertilizers,NA,No definition available.
+1386,potash fertilizers,FALSE,Potash fertilizers,22,fertilizers,NA,No definition available.
+1397,fertilizers manufactured nes,FALSE,"Fertilizers Manufactured, nes",22,fertilizers,NA,Mineral or chemical fertilizers not elsewhere specified.
+1398,natural sodium nitrate,FALSE,Natural Sodium Nitrate,22,fertilizers,NA,Chemically obtained product containing sodium nitrate as its essential ingredient. The minimum content of nutrients is 15% N (Nitrogen expressed as nitric nitrogen).
+1399,natural phosphates,FALSE,Natural Phosphates,22,fertilizers,NA,"Products obtained by grinding soft mineral phosphates and containing tricalcium phosphate and calcium carbonate as essential ingredients. The minimum content of nutrients is 25% P2O5(Phosphorus expressed as P2O5 soluble in mineral acids, at least 55% of the declared content of P2O5 being soluble in 2% formic acid)."
+1400,natural potassic salts,FALSE,Natural Potassic Salts,22,fertilizers,NA,"Products obtained from crude potassium salts. The minimum content of nutrients is 10% K2O (Potassium expressed as water-soluble K2O) and 5% MgO (Magnesium in the form of water soluble salts, expressed as magnesium oxide)."
+1401,fertilizers organic,FALSE,"Fertilizers, Organic",22,fertilizers,NA,"Animal or vegetable fertilizers, whether or not mixed together or chemically treated; fertilizers produced by the mixing or chemical treatment of animal or vegetable products."
+1416,insecticides (trade),FALSE,Insecticides (Trade),21,pesticides,NA,Value of trade covering insecticides as described by the Harmonised Coding System (HS) code 3808.10 Data refer to the value of the trade expressed in 1000 USD
+1417,fungicides (trade),FALSE,Fungicides (Trade),21,pesticides,NA,Value of trade covering fungicides as described by the Harmonised Coding System (HS) code 3808.20 Data refer to the value of the trade expressed in 1000 USD
+1418,herbicides (trade),FALSE,Herbicides (Trade),21,pesticides,NA,Value of trade covering herbicides as described by the Harmonised Coding System (HS) code 3808.30. Data refer to the value of the trade expressed in 1000 USD
+1419,disinfectantsetc (trade),FALSE,"Disinfectants,etc (Trade)",21,pesticides,NA,"Value of trade covering disinfectants and others, as described by the Harmonised Coding System (HS) codes 3808.40,90. Data refer to the value of the trade expressed in 1000 USD"
+1422,mercury compounds etc. excl. amalgams spartana (trade),FALSE,Mercury compounds etc. excl. amalgams spartana (Trade),21,pesticides,NA,Quantity and value of trade covering goods described by the Harmonised Coding System (HS) codes 2852. Data refer to quantity of the trade expressed in kilogram of net weight and value of the trade expressed in 1000 USD
+1423,ethylene dichloride (trade),FALSE,Ethylene dichloride (Trade),21,pesticides,NA,Quantity and value of trade covering goods described by the Harmonised Coding System (HS) codes 2903.15. Data refer to the quantity of trade expressed in kilogram of net weight and value of the trade expressed in 1000 USD
+1424,ethylene dibromide (12-dibromoethane) (trade),FALSE,"Ethylene dibromide (1,2-dibromoethane) (Trade)",21,pesticides,NA,Quantity and value of trade covering goods described by the Harmonised Coding System (HS) codes 2903.31. Data refer to the quantity of trade expressed in kilogram of net weight and value of the trade expressed in 1000 USD
+1425,hch (mixed isomers) / lindane (trade),FALSE,HCH (mixed isomers) / Lindane (Trade),21,pesticides,NA,Quantity and value of trade covering goods described by the Harmonised Coding System (HS) codes 2903.51. Data refer to the quantity of trade expressed in kilogram of net weight and value of the trade expressed in 1000 USD
+1426,aldrin chlordane heptachlor (trade),FALSE,"Aldrin, Chlordane, Heptachlor (Trade)",21,pesticides,NA,Quantity and value of trade covering goods described by the Harmonised Coding System (HS) codes 2903.52. Data refer to the quantity of trade expressed in kilogram of net weight and value of trade expressed in 1000 USD
+1427,ddt hexachlorobenzene (trade),FALSE,"DDT, Hexachlorobenzene (Trade)",21,pesticides,NA,Quantity and value of trade covering goods described by the Harmonised Coding System (HS) codes 2903.62. Data refer to the quantity of trade expressed in kilogram of net weight and value of the trade expressed in 1000 USD
+1428,pentachlorophenol (trade),FALSE,Pentachlorophenol (Trade),21,pesticides,NA,Quantity and value of trade covering goods described by the Harmonised Coding System (HS) codes 2908.11. Data refer to the quantity of trade expressed in kilogram of net weight and value of the trade expressed in 1000 USD
+1429,salts of pentachlorophenol (excl 280811),FALSE,Salts of Pentachlorophenol (excl 280811),21,pesticides,NA,Quantity and value of trade covering goods described by the Harmonised Coding System (HS) codes 2908.19. Data refer to the quantity of trade expressed in kilogram of net weight and value of the trade expressed in 1000 USD
+1430,dinoseb and dinoseb salts (trade),FALSE,Dinoseb and dinoseb salts (Trade),21,pesticides,NA,Quantity and value of trade covering goods described by the Harmonised Coding System (HS) codes 2908.91. Data refer to the quantity of trade expressed in kilogram of net weight and value of the trade expressed in 1000 USD
+1431,dnoc and its salts (excl. 290811-290891) (trade),FALSE,DNOC and its salts (excl. 290811-290891) (Trade),21,pesticides,NA,Quantity and value of trade covering goods described by the Harmonised Coding System (HS) codes 2908.99. Data refer to the quantity of trade expressed in kilogram of net weight and value of the trade expressed in 1000 USD
+1432,oxirane (ethylene oxide) (trade),FALSE,Oxirane (ethylene oxide) (Trade),21,pesticides,NA,Quantity and value of trade covering goods described by the Harmonised Coding System (HS) codes 2910.10. Data refer to the quantity of trade expressed in kilogram of net weight and value of the trade expressed in 1000 USD
+1433,dieldrin (trade),FALSE,Dieldrin (Trade),21,pesticides,NA,Quantity and value of trade covering goods described by the Harmonised Coding System (HS) codes 2910.40. Data refer to the quantity of trade expressed in kilogram of net weight and value of the trade expressed in 1000 USD
+1434,dinoseb acetate (trade),FALSE,Dinoseb acetate (Trade),21,pesticides,NA,Quantity and value of trade covering goods described by the Harmonised Coding System (HS) codes 2915.36. Data refer to the quantity of trade expressed in kilogram of net weight and value of the trade expressed in 1000 USD
+1435,binapacryl (trade),FALSE,Binapacryl (Trade),21,pesticides,NA,Quantity and value of trade covering goods described by the Harmonised Coding System (HS) codes 2916.36. Data refer to the quantity of trade expressed in kilogram of net weight and value of the trade expressed in 1000 USD
+1436,chlorobenzilate (trade),FALSE,Chlorobenzilate (Trade),21,pesticides,NA,Quantity and value of trade covering goods described by the Harmonised Coding System (HS) codes 2918.18. Data refer to the quantity of trade expressed in kilogram of net weight and value of the trade expressed in 1000 USD
+1437,245-t and its salts and esters (trade),FALSE,"2,4,5-T and its salts and esters (Trade)",21,pesticides,NA,Quantity and value of trade covering goods described by the Harmonised Coding System (HS) codes 2918.91. Data refer to the quantity of trade expressed in kilogram of net weight and value of the trade expressed in 1000 USD
+1438,parathion & parathion-methyl (trade),FALSE,Parathion & parathion-methyl (Trade),21,pesticides,NA,Quantity and value of trade covering goods described by the Harmonised Coding System (HS) codes 2920.11. Data refer to the quantity of trade expressed in kilogram of net weight and value of the trade expressed in 1000 USD
+1439,fluoroacetamide monocrotophos & phosphamidon (trade),FALSE,"Fluoroacetamide, monocrotophos & phosphamidon (Trade)",21,pesticides,NA,Quantity and value of trade covering goods described by the Harmonised Coding System (HS) codes 2924.12. Data refer to the quantity of trade expressed in kilogram of net weight and value of the trade expressed in 1000 USD
+1440,chlordimeform (trade),FALSE,Chlordimeform (Trade),21,pesticides,NA,Quantity and value of trade covering goods described by the Harmonised Coding System (HS) codes 2925.21. Data refer to the quantity of trade expressed in kilogram of net weight and value of the trade expressed in 1000 USD
+1441,captafol & methamidophos (trade),FALSE,Captafol & methamidophos (Trade),21,pesticides,NA,Quantity and value of trade covering goods described by the Harmonised Coding System (HS) codes 2930.50. Data refer to the quantity of trade expressed in kilogram of net weight and value of the trade expressed in 1000 USD
+1442,hazardous pesticides (trade),FALSE,Hazardous pesticides (Trade),21,pesticides,NA,"Value of trade covering goods as described by Harmonised Coding System (HS) code 3808.50 Subheading 3808.50 covers only goods of heading 38.08, containing one or more of the following substances: aldrin (ISO); binapacryl (ISO); camphechlor (ISO) (toxaphene); captafol (ISO); chlordane (ISO); chlordimeform (ISO); chlorobenzilate (ISO); DDT (ISO) (clofenotane (INN), 1,1,1-trichloro-2,2-bis(p-chlorophenyl)ethane); dieldrin (ISO, INN); dinoseb (ISO), its salts or its esters; ethylene dibromide (ISO) (1,2-dibromoethane); ethylene dichloride (ISO) (1,2-dichloroethane); fluoroacetamide (ISO); heptachlor (ISO); hexachlorobenzene (ISO); 1,2,3,4,5,6-hexachlorocyclohexane (HCH (ISO)), including lindane (ISO, INN); mercury compounds; methamidophos (ISO); monocrotophos (ISO); oxirane (ethylene oxide); parathion (ISO); parathion-methyl (ISO) (methyl-parathion); pentachlorophenol (ISO); phosphamidon (ISO); 2,4,5-T (ISO) (2,4,5-trichlorophenoxyacetic acid), its salts or its esters. Data refer to the value of the trade expressed in 1000 USD"
+1443,insecticides (excl. haz. pest.) (trade),FALSE,Insecticides (excl. Haz. pest.) (Trade),21,pesticides,NA,Value of trade covering insecticides as described by the Harmonised Coding System (HS) code 3808.91 Data refer to the value of the trade expressed in 1000 USD
+1444,fungicides (excl. haz. pest.) (trade),FALSE,Fungicides (excl. Haz. pest.) (Trade),21,pesticides,NA,Value of trade covering fungicides as described by the Harmonised Coding System (HS) code 3808.92 Data refer to the value of the trade expressed in 1000 USD
+1445,herbicides (excl. haz. pest.) (trade),FALSE,Herbicides (excl. Haz. pest.) (Trade),21,pesticides,NA,Value of trade covering herbicides as described by the Harmonised Coding System (HS) code 3808.93. Data refer to the value of the trade expressed in 1000 USD
+1446,disinfectants etc (excl. haz. pest.) (trade),FALSE,"Disinfectants, etc (excl. Haz. pest.) (Trade)",21,pesticides,NA,"Value of trade covering disinfectants and others, as described by the Harmonised Coding System (HS) codes 3808.94,99. Data refer to the value of the trade expressed in 1000 USD"
+2455001,ploughs,FALSE,Ploughs,23,machinery,NA,Ploughs are implements designed to lift and turn soil. Data are expressed in numbers in use in the agricultural sector.
+2455002,seeders,FALSE,Seeders,23,machinery,NA,Seeders are implements for sowing seeds or grain evenly in well-spaced rows at specific depths. Data are expressed in numbers in use in the agricultural sector.
+2455003,manure spreaders and fert. distributors,FALSE,Manure spreaders and Fert. distributors,23,machinery,NA,Manure spreaders and Fertiliser distributors are implements for spreading solid or liquid manure and distributing powder or granular fertilizers. Data are expressed in numbers in use in the agricultural sector.
+2455004,combine harvesters - threshers,FALSE,Combine harvesters - threshers,23,machinery,NA,Combine harvesters - threshers are self-propelled machines that collect and thresh in one operation. Data are expressed in numbers in use in the agricultural sector.
+2455005,balers,FALSE,Balers,23,machinery,NA,"Balers (including pickup balers) are machines that collect grass, hay or straw after it has been cut. They form a round or square bale by compressing the material or tying it with twine wire, or a plastic wrap. Data are expressed in numbers in use in the agricultural sector."
+2455006,root or tuber harvesting machines,FALSE,Root or tuber harvesting machines,23,machinery,NA,Root or tuber harvesting machines are implements used to harvest root and tubers. Data are expressed in numbers in use in the agricultural sector.
+2455007,threshing machines(stakingforage harv.),FALSE,"Threshing machines(staking,forage harv.)",23,machinery,NA,"Threshing machines (staking, forage harvesting) are machines that separate grain from straw. Data are expressed in numbers in use in the agricultural sector."
+2455008,milking machines,FALSE,Milking machines,23,machinery,NA,"Milking machines are used for milking cows, sheep, goats, etc. Data are expressed in numbers in use in the agricultural sector."
+2455009,agricultural tractors total,FALSE,"Agricultural tractors, total",23,machinery,NA,"Agricultural tractors, total generally refer to total wheel, crawler or track-laying type tractors and pedestrian tractors used in agriculture. Data are available for numbers in use in the agricultural sector as of 2000. Data on import and export in value and number are also available as of 1961."
+2455010,pedestrian controlled tractors,FALSE,Pedestrian controlled tractors,23,machinery,NA,"Pedestrian controlled tractors are small tractors equipped with a single driving axle carried on one or two wheels. They are not usually fitted with a seat and the steering is effected by means of two handles. Some types, however, have a one- or two-wheeled rear carriage with a seat for the driver. Data are expressed in numbers in use in the agricultural sector."
+2455011,agricultural tractors,FALSE,Agricultural tractors,23,machinery,NA,Agricultural tractors generally refer to wheel and crawler or track-laying type tractors (excluding garden tractors) used in agriculture. Data are expressed in numbers in use in the agricultural sector.
+2455012,track-laying tractors,FALSE,Track-laying tractors,23,machinery,NA,Track-laying tractors are tractors which travel on steel or rubber or treads. Data are expressed in numbers in use in the agricultural sector.
+2455013,other agricultural tractors,FALSE,Other Agricultural tractors,23,machinery,NA,"Other agricultural tractors include all other agricultural tractors that are not pedestrian controlled or track-lying, e.g. 4-wheel, 6-wheel, etc. Data are expressed in numbers in use in the agricultural sector."
+2455014,harvester and threshers (trade),FALSE,Harvester and threshers (trade),23,machinery,NA,Harvester and threshers refer to total harvesting and threshing machines as described by the Harmonised Coding System (HS) codes 8433 and 8437.10. Data refer to the value of the trade expressed in 1000 USD
+2455015,milking dairy machinery (trade),FALSE,"Milking, dairy machinery (trade)",23,machinery,NA,"Milking, dairy machinery refer to total milking and dairy machines as described by the Harmonised Coding System (HS) code 8434. Data refer to the value of the trade expressed in 1000 USD."
+2455016,soil machinery (trade),FALSE,Soil machinery (trade),23,machinery,NA,Soil machinery refers to total machines described by the Harmonised Coding System (HS) code 8432. Data refer to the value of the trade expressed in 1000 USD.
+2455017,agricultural machinery nes (trade),FALSE,Agricultural machinery nes (trade),23,machinery,NA,Agricultural machinery not else specified (n.e.s.) refer to total Agricultural machines as described by the Harmonised Coding System (HS) codes 8435-8436. Data refer to the value of the trade expressed in 1000 USD
+2510,phosphate rock,FALSE,Phosphate rock,22,fertilizers,NA,Is a natural rock containing one or more calcium phosphate minerals of sufficient purity and quantity as to permit its use directly after grinding or after chemical processing in the manufacture of commercial phosphate fertilizers.
+2814,ammonia anhydrous,FALSE,"Ammonia, anhydrous",22,fertilizers,NA,(NH3) is a material mostly produced by the synthetic process and at standard temperature and pressure is a gas. Fertilizer grade anhydrous ammonia contains about 82% of nitrogen.
+283421,potassium nitrate,FALSE,Potassium nitrate,22,fertilizers,NA,KNONH3H2PO4 can be produced from naturally occurring sodium nitrate and potassium chloride and typically contains 13%N and 45% K2O.
+3102,nitrogen fertilizers (n total nutrients),FALSE,Nitrogen Fertilizers (N total nutrients),22,fertilizers,NA,No definition available.
+310210,urea,FALSE,Urea,22,fertilizers,NA,"CO(NH2)2, is produced from synthetic ammonia and carbon dioxide (CO2) and contains 46% nitrogen in ammoniac form. Urea may be in granular, prilled or crystalline form."
+310221,ammonium sulphate,FALSE,Ammonium sulphate,22,fertilizers,NA,"(NH4)2SO4, is produced by reacting ammonia with sulphuric acid (H2SO4). It is produced as fine white granules or crystals and contains not less than 20.6% nitrogen in ammoniac form."
+310230,ammonium nitrate,FALSE,Ammonium nitrate,22,fertilizers,NA,"(NH4NO3), is produced by neutralizing nitric acid (HNO3) with ammonia (NH3). Ammonium nitrate may be in white or off-white granular or prilled form and coated with a suitable material to prevent absorption of moisture and caking in storage. Pure ammonium nitrate may have a total nitrogen content of about 35%, of which one-half is present as ammoniac nitrogen and the other half as nitrate nitrogen."
+310240,calcium ammonium nitrate,FALSE,Calcium ammonium nitrate,22,fertilizers,NA,"NH4NO3+CaCO3, is produced from ammonium nitrate and finely pulverized calcium carbonate (CACO3). It contains not less than 20.5% and up to 28% of nitrogen, half of which is in the form of ammoniac nitrogen and the other half in the form of nitrate nitrogen. It is produced as white, off-white or grey granules or prills."
+310280,urea and ammonium nitrate solutions,FALSE,Urea and ammonium nitrate solutions,22,fertilizers,NA,Are produced from concentrated solutions of urea and ammonium nitrate by chemical or blending processes.
+3103,phosphate fertilizers (p205 total nutrients),FALSE,Phosphate Fertilizers (P205 total nutrients),22,fertilizers,NA,No definition available.
+310310,superphosphate,FALSE,Superphosphate,22,fertilizers,NA,Superphosphate is a fertilizer produced by the action of concentrated sulfuric acid on powdered phosphate rock.
+31031010,superphosphate above 35%,FALSE,Superphosphate above 35%,22,pesticides,NA,Is produced by the action of sulphuric and phosphoric acids on ground phosphate rock.
+31031090,superphosphate other,FALSE,Superphosphate other,22,pesticides,NA,Is produced by the action of concentrated sulphuric acid on ground phosphate rock.
+3104,potash fertilizers (k20 total nutrients),FALSE,Potash Fertilizers (K20 total nutrients),22,fertilizers,NA,No definition available.
+310420,potassium chloride (muriate of potash),FALSE,Potassium chloride (Muriate of potash),22,fertilizers,NA,"Is refined from mined, low-grade naturally occurring ores as the mineral sylvite and in combination with sodium chloride as sylvinite. Potassium chloride contains from about 48 to 62 % K20."
+310430,potassium sulphate,FALSE,Potassium sulphate,22,fertilizers,NA,Is a white crystalline salt and contains 48 to 52 per cent potash (K20). Potassium sulfate can be extracted from naturally occurring brines or by the decomposition of potassium chloride with sulfuric acid.
+310500,other np compounds,FALSE,Other NP compounds,22,fertilizers,NA,"Can be produced as the result of a chemical reaction of nitric acid on phosphate rock, with or without added ammonia and/or phosphoric and/or sulfuric acid or between sulfuric acid and ammonia. or by simple mechanical mixing or blending. Other NP compounds may also include some AN grades with small amounts of phosphates."
+310510,npk complex <= 10kg,FALSE,NPK complex <= 10kg,22,fertilizers,NA,"Can be produced as the result of a chemical reaction of nitric acid on phosphate rock - the nitrophosphate route, with or without added ammonia and/or phosphoric and/or sulfuric acid or between sulfuric acid and ammonia - the ammoniation route."
+310520,npk complex >10kg,FALSE,NPK complex >10kg,22,fertilizers,NA,"Can be produced as the result of a chemical reaction of nitric acid on phosphate rock - the nitrophosphate route, with or without added ammonia and/or phosphoric and/or sulfuric acid or between sulfuric acid and ammonia - the ammoniation route."
+310530,diammonium phosphate (dap),FALSE,Diammonium phosphate (DAP),22,fertilizers,NA,"(NH4)2HPO4, is produced by evaporating a solution of phosphoric acid with excess of ammonia."
+310540,monoammonium phosphate (map),FALSE,Monoammonium phosphate (MAP),22,fertilizers,NA,"NH4H2PO4, is formed when a solution of phosphoric acid is added to ammonia until the solution is distinctly acid."
+310551,other nitrogen & phosphates compounds,FALSE,Other nitrogen & phosphates compounds,22,fertilizers,NA,"Can be produced as the result of a chemical reaction of nitric acid on phosphate rock, with or without added ammonia and/or phosphoric and/or sulfuric acid or between sulfuric acid and ammonia. or by simple mechanical mixing or blending. Other NP compound may also include some AN grades with small amounts of phosphates."
+310559,other nitrogen & phosphorus compounds,FALSE,Other nitrogen & phosphorus compounds,22,fertilizers,NA,"Can be produced as the result of a chemical reaction of nitric acid on phosphate rock, with or without added ammonia and/or phosphoric and/or sulfuric acid or between sulfuric acid and ammonia. or by simple mechanical mixing or blending. Other NP compound may also include some AN grades with small amounts of phosphates."
+310560,pk compounds,FALSE,PK compounds,22,fertilizers,NA,These comprise mixtures of superphosphate or basic slag or ground phosphate rock with straight potash products. PK compounds produced as a result of a chemical reaction are not produced for fertilizer usage.
+310610,npk complex,FALSE,NPK complex,22,fertilizers,NA,"Can be produced as the result of a chemical reaction of nitric acid on phosphate rock - the nitrophosphate route, with or without added ammonia and/or phosphoric and/or sulfuric acid or between sulfuric acid and ammonia - the ammoniation route."
+310620,npk blends,FALSE,NPK blends,22,fertilizers,NA,Consist of two or more intermediate granular fertilizer materials of matching physical characteristics blended together.
+9999,test,FALSE,test,NA,NA,NA,Test

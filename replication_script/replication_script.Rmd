@@ -1,0 +1,315 @@
+---
+title: "Replication Script"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Replication Script}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Introduction
+
+This document serves to replicate the functionality of `arealDB`.
+
+
+# Download additional data
+
+
+
+
+# The procedure
+
+Now follow chapters on the different steps that would typically be carried out when using `arealDB`.
+
+## Project setup
+
+Before a project can be set up, the required R-packages need to be installed and loaded.
+
+```{r install/load packages}
+# library(devtools)
+# devtools::install_git(url = "https://gitlab.com/luckinet/software/arealDB")
+# install.packages("readr", "magrittr")
+library(arealDB)
+library(readr)
+library(magrittr)
+```
+
+Then the function `setPath()` is used to initiate the project. This should create all directories that do not yet exist.
+
+```{r project setup, include=FALSE}
+setPath(root = "/home/se87kuhe/my_science/r-dev/arealDB/replication_script/data/newProject")
+```
+```{r show project setup, eval=FALSE}
+setPath(root = ".../replication_script/data/newProject")
+```
+
+Moreover, it should create the (empty) inventory files in which metadata will be recorded.
+We can either check this by clicking our way to the root project directory, or by attempting to read the file into R.
+
+```{r check project setup, cache=TRUE}
+read_csv(file = "data/newProject/inv_dataseries.csv", col_types = "icccc")
+
+read_csv(file = "data/newProject/inv_geometries.csv", col_types = "iiiccccDcc")
+
+read_csv(file = "data/newProject/inv_tables.csv", col_types = "iiicDcc")
+```
+
+If your output matches the above shown, it means that `read_csv()` was able to read in the csv-files and that they don't contain any information yet.
+E.g. *`# A tibble: 0 x 7`* means that it is a tibble (which is a special type of table format in R) with zero rows and seven variables.
+
+Next, we create some index and translation tables.
+The first set of tables are concerned with the identifying variable *commodities*, which we create from a slightly modified FAO commodity list (see @FAO2019b for the list and @Ehrmann2019 on how to modify it).
+We read in the table and provide it to the argument `input = ` of `setVariables()` by using the pipe-notation (`%>%`) of the `magrittr` package.
+The input table contains a primary ID, which we specify in `pid = ` and the column `simpleName` contains the target terms.
+
+```{r setup index tables}
+read_csv(file = "data/fao_commodities.csv", 
+         col_types = "iclciccc") %>%
+  setVariables(variable = "commodities", 
+               pid = "faoID", 
+               target = "simpleName")
+
+read_csv(file = "data/newProject/id_commodities.csv", col_types = "iclciccc")
+
+read_csv(file = "data/newProject/tt_commodities.csv", col_types = "cccic")
+```
+
+By reading in the supposedly created object, we can ensure once again, that the operation was successful.
+`setVariables()` has created both, an index table that contains all ancillary information provided by`fao_commodities.csv` and a translation table for the target column `simpleName`.
+
+Likewise, we create a translation table for nation and subnational territory names.
+Here we specify that we merely need a translation table (`type = tt`).
+
+```{r setup translation tables}
+read_csv(file = "data/nation_translations.csv", col_types = "cccDi") %>%
+  setVariables(variable = "nations", 
+               type = "tt", 
+               origin = "origin", 
+               target = "target")
+
+read_csv(file = "data/newProject/tt_nations.csv", col_types = "cccic")
+
+read_csv(file = "data/territory_translations.csv", col_types = "cccDi") %>%
+  setVariables(variable = "territories", 
+               type = "tt", 
+               origin = "origin", 
+               target = "target")
+```
+
+We recognise several entries that have the value `ignore` in the column `target`.
+Those are country names that may occur in a geometry, but are not supposed to be handled by `arealDB`.
+We could, alternatively, provide translations that are not direct translations of the name to another language, but that refer that nation name to another nation name.
+For instance, `Clipperton Island` could be translated to `france` to assign all values that come with this territorial unit to France.
+
+## Data Registration
+
+As a basis we first register the dataseries from which we take data.
+This involves both, geometries and quantitative data.
+
+In all of the registrations the argument `update = TRUE` indicates that the respective inventory tables should in fact be updated.
+This can also be set to `update = FALSE`, for the that you want to run merely a \"simulation\" of registering data, without actually modifying the inventory tables.
+In case of merely simulating registration, the function attempts to do everything it is meant to do but then only return the inventory table entry without adding the entry to the inventory table.
+In case that entry is as you would have expected it, you would set the argument to `TRUE` again.
+
+```{r register data-series}
+regDataseries(name = "gadm",
+              description = "Database of Global Administrative Areas",
+              website = "https://gadm.org/index.html",
+              update = TRUE)
+
+regDataseries(name = "ibge",
+              description = "Instituto Brasileiro de Geografia e Estatistica",
+              website = "https://sidra.ibge.gov.br/tabela/5457",
+              update = TRUE)
+
+regDataseries(name = "usda",
+              description = "US Dept. of Agriculture",
+              website = "https://www.nass.usda.gov/Quick_Stats/Lite/index.php",
+              update = TRUE)
+```
+
+Second, we register geometries before the areal data.
+When later registering also data tables, we will provide both, the dataseries from which the data emerge, and the geometries to which the areal data are related.
+Hence, we must first register geometries.
+
+We register the GADM dataset for the first three administrative levels, or more, if we want to set up a database at the fourth/fifth/... level.
+The function `regGeometry()` needs to be provided with a range of meta-data that become important later in the process. We can take a look at the documentation of this function via `?regGeometry`. Here and in `regTable()`, the argument `archive = ` needs the name of a file from which the data have been extracted. If this is a compressed archive, the name of both, the archive and the file within that archive need to be given, separated by a `|`.
+
+```{r register GADM, cache=TRUE}
+regGeometry(nation = "NAME_0",
+            gSeries = "gadm",
+            level = 1,
+            layer = "level0",
+            nameCol = "NAME_0",
+            archive = "gadm36_levels_gpkg.zip|gadm36_levels.gpkg",
+            update = TRUE)
+
+regGeometry(nation = "NAME_0",
+            gSeries = "gadm",
+            level = 2,
+            layer = "level1",
+            nameCol = "NAME_0|NAME_1",
+            archive = "gadm36_levels_gpkg.zip|gadm36_levels.gpkg",
+            update = TRUE)
+
+regGeometry(nation = "NAME_0",
+            gSeries = "gadm",
+            level = 3,
+            layer = "level2",
+            nameCol = "NAME_0|NAME_1|NAME_2",
+            archive = "gadm36_levels_gpkg.zip|gadm36_levels.gpkg",
+            update = TRUE)
+```
+
+Next, we register geometries that were provided together with the areal data.
+We can not expect that each areal dataset comes with associated geometries, but sometimes we are lucky.
+In those cases we may assume that the agency that provided the areal data has gathered them for the said geometries, so it would be reasonable to register them and relate them later to the respective areal data.
+
+```{r register original geometries, cache=TRUE}
+regGeometry(nation = "Brazil",
+            gSeries = "ibge",
+            level = 2,
+            nameCol = "NM_ESTADO",
+            archive = "br_unidades_da_federacao.zip|BRUFE250GC_SIR.shp",
+            update = TRUE)
+
+regGeometry(nation = "Brazil",
+            gSeries = "ibge",
+            level = 3,
+            nameCol = "NM_MUNICIP",
+            archive = "br_municipios.zip|BRMUE250GC_SIR.shp",
+            update = TRUE)
+```
+
+```{r, include=FALSE, eval=FALSE}
+# little hack that is required to show the output of the tables, which could not
+# happen otherwise, because the previous chunks need to be cached, which doesn't
+# update the tables.
+cen <- readRDS(file = "data/intermediateCensus.rds")
+write_csv(x = cen, path = "newProject/inv_tables.csv")
+geo <- readRDS(file = "data/intermediateGeometries.rds")
+write_csv(x = geo, path = "newProject/inv_geometries.csv")
+```
+
+The areal data of the US agricultural census were not accompanied by geometries and no mention was found that would specify which dataset has been used by this census.
+Hence, we assume that GADM might be a good replacement.
+
+To register the data tables we need to specify a couple more metadata than for geometries.
+For instance, data tables require a data series (`dSeries`) and a geometry series (`gSeries`).
+`subset = ` and `variable = ` need to be specified because the data may be provided in separate tables for subsets such as the commodities produced in a nation, or the territorial unit for which the data are valid.
+Likewise, the data tables may be distinguished for the different variables provided by a data source.
+The same data source may provide tables in different formats, so that more than one \"schema description\" is required to rearrange all tables.
+This is specified by a sequential integer in `algo = `.
+
+```{r register census, cache=TRUE}
+regTable(nation = "Brazil",
+         subset = "soy",
+         dSeries = "ibge", gSeries = "ibge",
+         level = 3,
+         variable = c("harvested_area"),
+         algo = 1,
+         begin = 1990, end = 2017,
+         archive = "tabela5457_harvested.csv",
+         update = TRUE)
+
+regTable(nation = "United States of America",
+         subset = "soy",
+         dSeries = "usda", gSeries = "gadm",
+         level = 3,
+         variable = c("harvested_area"),
+         algo = 1,
+         begin = 1990, end = 2017,
+         archive = "soybean_us_county_1990_2017.csv",
+         update = TRUE)
+```
+
+Eventually, we check again whether the inventory tables have been updated...
+
+```{r show census, cache=TRUE}
+read_csv(file = "data/newProject/inv_dataseries.csv", col_types = "icccc")
+
+read_csv(file = "data/newProject/inv_geometries.csv", col_types = "iiiccccDcc")
+
+read_csv(file = "data/newProject/inv_tables.csv", col_types = "iiicDcc")
+```
+
+... which is the case.
+
+### Data normalisation
+
+After having provided the crucial metadata, normalisation of geometry and data tables can be largely automated.
+Hence, a call of the function `normalise()` determines all files at stage two that have not yet been processed to stage three, and normalises them.
+One can specify subsets via the argument `... = `, in the example below the nations Brazil and United States of America are the only nations that shall be processed.
+
+```{r normalise geometries, cache=TRUE}
+normalise(what = "geometries",
+          nation = c("brazil", "united states"),
+          update = TRUE, verbose = FALSE)
+```
+
+The output informs us about the different steps that have been taken.
+The first three files are the GADM boundaries for the first three administrative levels.
+As those form the basis of a new database, no complex steps are required, the original GADM database is merely dissected into the required nations.
+
+To normalise the data tables, we first have to assess how exactly they are arranged.
+This assessment is documented in the socalled *schema descriptions*, which are shown below.
+The variable name to which the objects are assigned (e.g. `meta_ibge1`) has a meaning and it is important that the system is reproduced for all other schema descriptions you create.
+It reflects the dataseries (`dSeries`) and algorithm (`algo`) that have been defined when the data table has been registered above.
+
+The IBGE data table is organised so that several variables are in wide format (see Supplement [3](#supplement-3---reorganising-and-normalising-messy-tables)).
+The variables `period` and `commodities` are both found in the columns 2 to 29, but in rows 4 and 5, respectively.
+If we were downloading a dataset that contains not only one commodity, it would become more apparent that `commodities` is nested within `period`.
+In that case, row 5 would contain neighbouring columns for each commodity, within each year.
+
+```{r normalise tables 1}
+meta_ibge1 <- 
+  list(clusters = list(top = 4, left = 1, width = NULL, height = NULL,
+                       id = NULL),
+       variables = list(territories =
+                          list(type = "id", name = NULL, form = "long",
+                               row = NULL, col = 1, rel = FALSE),
+                        period =
+                          list(type = "id", name = "year", form = "wide",
+                               row = 4, col = c(2:29), rel = FALSE),
+                        commodities =
+                          list(type = "id", name = NULL, form = "wide",
+                               row = 5, col = c(2:29), rel = FALSE),
+                        harvested =
+                          list(type = "values", unit = "ha", factor = 1,
+                               row = NULL, col = c(2:29), rel = FALSE,
+                               id = NULL, level = NULL)))
+```
+
+The USDA data are already organised in a tidy format, so that this schema description only documents where to find what.
+However, the units in this dataset do not correspond to the units we want to use in our project, so we have to register the target unit and factors to transform the values to that unit.
+
+```{r normalise tables 2}
+meta_usda1 <- 
+  list(clusters = list(top = NULL, left = NULL, width = NULL, height = NULL,
+                       id = NULL),
+       variables = list(territories =
+                          list(type = "id", name = NULL, form = "long",
+                               row = NULL, col = c(6, 10), rel = FALSE),
+                        period =
+                          list(type = "id", name = "year", form = "long",
+                               row = NULL, col = 2, rel = FALSE),
+                        commodities =
+                          list(type = "id", name = NULL, form = "long",
+                               row = NULL, col = 16, rel = FALSE),
+                        harvested =
+                          list(type = "values", unit = "ha", factor = 0.40468564224,
+                               row = NULL, col = 19, rel = FALSE,
+                               id = NULL, level = NULL)))
+```
+
+```{r normalise data 3, cache=TRUE}
+normalise(what = "tables",
+          nation = c("brazil", "united states"),
+          faoID = list(commodities = "simpleName"),
+          update = TRUE, verbose = FALSE)
+```
+
