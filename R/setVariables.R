@@ -98,13 +98,13 @@ setVariables <- function(input = NULL, variable = NULL, type = "both", pid = NUL
       outTT <- tibble(origin = character(),
                       target = character(),
                       source = character(),
-                      date = date(),
-                      tabID = character())
+                      ID = character(),
+                      notes = character())
     } else {
       # otherwise, select the respective columns
       outTT <- input %>%
-        mutate(source = "setVariables()", date = Sys.Date(), tabID = NA_character_) %>%
-        select(origin = !!origin, target = !!target, source, date, tabID)
+        mutate(source = NA_character_, ID = NA_character_, notes = paste0("setVariables_", Sys.Date())) %>%
+        select(origin = !!origin, target = !!target, source, ID, notes)
     }
 
     # if origin was not provided, create the look-up section
@@ -112,7 +112,7 @@ setVariables <- function(input = NULL, variable = NULL, type = "both", pid = NUL
       outTT <- outTT %>%
         mutate(origin = NA_character_,
                source = "original") %>%
-        select(origin, target, source, date, tabID)
+        select(origin, target, source, ID, notes)
     }
 
     # if the variableTT name doesn't contain 'tt' at the beginning, add it.

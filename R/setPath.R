@@ -114,25 +114,15 @@ setPath <- function(root = NULL){
               na = "")
   }
 
-  # and also the translation table for nations and territories
+  # and also the translation table for nations
   if(!testFileExists(x = file.path(root, "tt_nations.csv"))){
     tt_nations <- tibble(origin = NA_character_,
                          target = countries$nation,
                          source = "original",
-                         date = Sys.Date(),
-                         tabID = NA_character_)
+                         ID = NA_character_,
+                         notes = NA_character_)
     write_csv(x = tt_nations,
               path = paste0(root, "/tt_nations.csv"),
-              na = "")
-  }
-  if(!testFileExists(x = file.path(root, "tt_territories.csv"))){
-    tt_territories <- tibble(origin = NA_character_,
-                             target = NA_character_,
-                             source = "original",
-                             date = Sys.Date(),
-                             tabID = NA_character_)
-    write_csv(x = tt_territories,
-              path = paste0(root, "/tt_territories.csv"),
               na = "")
   }
 
