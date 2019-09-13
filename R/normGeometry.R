@@ -128,7 +128,12 @@ normGeometry <- function(input, ..., thresh = 90, update = FALSE, verbose = TRUE
                               envir = newGeom)) %>%
       as.character()
     assertCharacter(x = theNations, min.len = 1, any.missing = FALSE)
-    nations <- unifyNations(unify = theNations, source = newGID, verbose = verbose)
+    nations <- translateTerms(terms = theNations,
+                              index = "tt_nations",
+                              source = list("geoID" = newGID),
+                              verbose = verbose) %>%
+      mutate(target = if_else(target == "ignore", NA_character_, target)) %>%
+      pull(target)
 
   } else{
     severalNations <- FALSE
@@ -155,10 +160,13 @@ normGeometry <- function(input, ..., thresh = 90, update = FALSE, verbose = TRUE
     # unify also the nations with which to subset
     if(any(names(subsets) == "nation")){
       toUnify <- eval(subsets[[which(names(subsets) == "nation")]])
-      unified <- unifyNations(unify = toUnify, source = newGID, verbose = verbose)
+      unified <- translateTerms(terms = toUnify,
+                                index = "tt_nations",
+                                source = list("geoID" = newGID),
+                                verbose = verbose) %>%
+        pull(target)
       subsets[[which(names(subsets) == "nation")]] <- unified
     }
-    subNations <- countries %>%
       filter_at(vars(!!names(subsets)), any_vars(. %in% as.character(subsets[[1]]))) %>%
       pull(nation)
     subNationInd <- which(nations %in% subNations)
@@ -416,6 +424,7 @@ normGeometry <- function(input, ..., thresh = 90, update = FALSE, verbose = TRUE
             mutate(nation = tempNation,
                    name = {if (n() > 0) translateTerms(terms = !!as.symbol(unitCols[length(unitCols)]),
                                                        index = "tt_territories",
+                                                       source = list("geoID" = newGID),
                                                        verbose = FALSE)$target else ""},
                    level = theLevel,
                    tempID = seq_along(!!sym(unitCols[length(unitCols)]))) %>%
@@ -488,6 +497,7 @@ normGeometry <- function(input, ..., thresh = 90, update = FALSE, verbose = TRUE
         } else {
           parentIDs <- tibble(NAME_0 = tempNation, NAME_1 = tempNation)
           sourceGeom$NAME_1 <- tempNation
+          orig_units <- unitCols
           unitCols <- c("NAME_0", "NAME_1")
         }
 
@@ -526,6 +536,10 @@ normGeometry <- function(input, ..., thresh = 90, update = FALSE, verbose = TRUE
           ungroup() %>%
           select(nation = NAME_0, name = !!unitCols[length(unitCols)], level, ahID, geoID, everything(), -xyz) %>%
           mutate(name = tolower(name))
+
+        if(theLevel == 1){
+          unitCols <- orig_units
+        }
       }
 
       if(update){
