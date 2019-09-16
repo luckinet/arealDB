@@ -9,7 +9,6 @@ building:
   stage: build
   script:
     - sudo apt-get install --yes libproj-dev libgeos-dev libgdal-dev gdal-bin libudunits2-dev
-    - R -e 'install.packages("units")'
     - R -e 'remotes::install_deps(dependencies = TRUE)'
     - R -e 'devtools::check()'
 
