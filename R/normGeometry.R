@@ -167,6 +167,7 @@ normGeometry <- function(input, ..., thresh = 90, update = FALSE, verbose = TRUE
         pull(target)
       subsets[[which(names(subsets) == "nation")]] <- unified
     }
+    subNations <- countries %>%
       filter_at(vars(!!names(subsets)), any_vars(. %in% as.character(subsets[[1]]))) %>%
       pull(nation)
     subNationInd <- which(nations %in% subNations)
