@@ -1,4 +1,4 @@
-context("matchAdminUnits")
+context("matchUnits")
 
 test_that("match simple vector of already known units", {
   # this tests whether the function works at its most basic level

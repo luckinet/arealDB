@@ -4,3 +4,4 @@ ToDo.Rmd
 ^\.travis\.yml$
 paper
 replication_script
+^\.gitlab-ci\.yml$
