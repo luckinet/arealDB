@@ -1,3 +1,6 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
 ToDo.Rmd
+^\.travis\.yml$
+paper
+replication_script
