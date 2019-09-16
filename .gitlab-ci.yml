@@ -28,6 +28,7 @@ testing:
     only:
         - master
     script:
+        - sudo apt-get install --yes libproj-dev libgeos-dev libgdal-dev gdal-bin libudunits2-dev
         - Rscript -e 'install.packages(c("DT", "sf", "checkmate"))'
         - Rscript -e 'covr::gitlab(quiet = FALSE)'
     artifacts:
