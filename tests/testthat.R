@@ -1,5 +1,5 @@
 library(testthat)
 library(checkmate)
-library(censusTools)
+library(arealDB)
 
-test_check("censusTools")
+test_check("arealDB")
