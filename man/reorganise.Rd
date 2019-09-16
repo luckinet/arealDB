@@ -13,7 +13,6 @@ reorganise(input = NULL, schema = NULL)
 \code{input}.}
 }
 \description{
-This function takes the output from \code{\link{record}} and rearranges
-columns and rows so that the resulting table has a perfectly rectangular
-format.
+This function takes a disorganised messy table and rearranges columns and
+rows into a tidy dataset that can be sorted into the areal database.
 }
