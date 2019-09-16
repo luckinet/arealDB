@@ -1,7 +1,7 @@
 Package: arealDB
 Type: Package
 Title: Manage areal census and survey data
-Description: This package helps the user to build up harmonised and integrated databases of areal data.
+Description: This package helps the user to build up harmonised databases of areal data..
 Version: 0.1.0
 Authors@R: person("Steffen", "Ehrmann", email = "steffen.ehrmann@idiv.de",
     role = c("aut", "cre"), 
