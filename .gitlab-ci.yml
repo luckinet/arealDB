@@ -11,6 +11,9 @@ building:
     - sudo apt-get install --yes libproj-dev libgeos-dev libgdal-dev gdal-bin libudunits2-dev
     - R -e 'remotes::install_deps(dependencies = TRUE)'
     - R -e 'devtools::check()'
+  cache:
+    paths:
+      -
 
 # To have the coverage percentage appear as a gitlab badge follow these
 # instructions:
@@ -25,7 +28,7 @@ testing:
     only:
         - master
     script:
-        - Rscript -e 'install.packages("DT")'
+        - Rscript -e 'install.packages("DT", "sf", "checkmate")'
         - Rscript -e 'covr::gitlab(quiet = FALSE)'
     artifacts:
         paths:
