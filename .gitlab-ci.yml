@@ -28,7 +28,7 @@ testing:
     only:
         - master
     script:
-        - Rscript -e 'install.packages("DT", "sf", "checkmate")'
+        - Rscript -e 'install.packages(c("DT", "sf", "checkmate"))'
         - Rscript -e 'covr::gitlab(quiet = FALSE)'
     artifacts:
         paths:
