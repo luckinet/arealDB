@@ -13,7 +13,7 @@ building:
     - R -e 'devtools::check()'
   cache:
     paths:
-      -
+      - binaries/
 
 # To have the coverage percentage appear as a gitlab badge follow these
 # instructions:
