@@ -22,31 +22,34 @@ building:
 # Coverage: \d+\.\d+
 
 testing:
-    stage: test
-    allow_failure: true
-    when: on_success
-    only:
-        - master
-    script:
-        - sudo apt-get install --yes libproj-dev libgeos-dev libgdal-dev gdal-bin libudunits2-dev
-        - Rscript -e 'install.packages(c("DT", "sf", "checkmate"))'
-        - Rscript -e 'covr::gitlab(quiet = FALSE)'
-    artifacts:
-        paths:
-            - public
+  stage: test
+  allow_failure: true
+  when: on_success
+  only:
+    - master
+  script:
+    - sudo apt-get install --yes libproj-dev libgeos-dev libgdal-dev gdal-bin libudunits2-dev
+    - Rscript -e 'install.packages(c("DT", "sf", "checkmate"))'
+    - Rscript -e 'covr::gitlab(quiet = FALSE)'
+  artifacts:
+    paths:
+      - public
+  cache:
+    paths:
+      - binaries/
 
 # To produce a code coverage report as a GitLab page see
 # https://about.gitlab.com/2016/11/03/publish-code-coverage-report-with-gitlab-pages/
 
 pages:
-    stage: deploy
-    dependencies:
-        - testing
-    script:
-        - ls
-    artifacts:
-        paths:
-            - public
-        expire_in: 30 days
-    only:
-        - master
+  stage: deploy
+  dependencies:
+    - testing
+  script:
+    - ls
+  artifacts:
+    paths:
+      - public
+    expire_in: 30 days
+  only:
+    - master
