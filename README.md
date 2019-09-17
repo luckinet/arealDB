@@ -2,7 +2,7 @@
 
 <!-- badges: start -->
 [![pipeline status](https://gitlab.com/luckinet/software/arealDB/badges/master/pipeline.svg)](https://gitlab.com/luckinet/software/arealDB/commits/master)
-[![coverage report](https://gitlab.com/luckinet/software/arealDB/badges/master/coverage.svg)](https://gitlab.com/luckinet.gitlab.io/software/arealDB/)
+[![coverage report](https://gitlab.com/luckinet/software/arealDB/badges/master/coverage.svg)](https://gitlab.com/luckinet/software/arealDB/commits/master)
 <!-- badges: end -->
 
 The goal of arealDB is to ...
