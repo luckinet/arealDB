@@ -15,6 +15,8 @@
 
 setPath <- function(root = NULL){
 
+  assertCharacter(x = root, len = 1)
+
   # shitty windows workaround, because a directory may not have a trailing slash
   # for the function "file.exists()" used in assertDirectory()
   lastChar <- substr(x = root, start = nchar(root), stop = nchar(root))
