@@ -1,5 +1,13 @@
 context("matchUnits")
 
+
+test_that("", {
+  path <- system.file("test_datasets", package="arealDB", mustWork = TRUE)
+  setPath(root = paste0(path, "/newDB"))
+
+  unlink(paste0(path, "/newDB"), recursive = TRUE)
+})
+
 test_that("match simple vector of already known units", {
   # this tests whether the function works at its most basic level
   # path <- system.file("test_data", package="DMT", mustWork = TRUE)
