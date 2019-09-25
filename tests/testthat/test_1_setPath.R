@@ -4,13 +4,13 @@ context("setPath")
 
 test_that("path has been added to the global options", {
   path <- system.file("test_datasets", package="arealDB", mustWork = TRUE)
-  setPath(root = paste0(path, "/newProject"))
+  setPath(root = paste0(path, "/newDB"))
 
   out <- getOption("adb_path")
   expect_character(x = out)
-  expect_true(out == paste0(path, "/newProject"))
+  expect_true(out == paste0(path, "/newDB"))
 
-  unlink(x = paste0(path, "/newProject"), recursive = TRUE)
+  unlink(paste0(path, "/newDB"), recursive = TRUE)
 })
 
 test_that("Error if arguments have wrong value", {
