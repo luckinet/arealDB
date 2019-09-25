@@ -5,7 +5,8 @@
 \title{Translate terms}
 \usage{
 translateTerms(terms, index = NULL, source = NULL, strict = FALSE,
-  fuzzy_terms = NULL, fuzzy_dist = 5, verbose = TRUE)
+  fuzzy_terms = NULL, fuzzy_dist = 5, inline = TRUE,
+  verbose = TRUE)
 }
 \arguments{
 \item{terms}{[\code{character(.)}]\cr terms to be translated.}
@@ -24,6 +25,10 @@ fuzzy match should be carried out.}
 
 \item{fuzzy_dist}{[\code{integerish(1)}]\cr the maximum edit-distance for
 which terms of fuzzy-matching should be suggested as match.}
+
+\item{inline}{[\code{logical(1)}]\cr whether or not to edit translations
+inline in R, or in the 'translating.csv' in your database root directory
+(only possible in linux).}
 
 \item{verbose}{[\code{logical(1)}]\cr be verbose about what is happening
 (default \code{TRUE}).}

@@ -12,6 +12,9 @@
 #'   fuzzy match should be carried out.
 #' @param fuzzy_dist [\code{integerish(1)}]\cr the maximum edit-distance for
 #'   which terms of fuzzy-matching should be suggested as match.
+#' @param inline [\code{logical(1)}]\cr whether or not to edit translations
+#'   inline in R, or in the 'translating.csv' in your database root directory
+#'   (only possible in linux).
 #' @param verbose [\code{logical(1)}]\cr be verbose about what is happening
 #'   (default \code{TRUE}).
 #' @return translated \code{terms}.
@@ -33,7 +36,8 @@
 #' @export
 
 translateTerms <- function(terms, index = NULL, source = NULL, strict = FALSE,
-                           fuzzy_terms = NULL, fuzzy_dist = 5, verbose = TRUE){
+                           fuzzy_terms = NULL, fuzzy_dist = 5, inline = TRUE,
+                           verbose = TRUE){
 
   # check validity of arguments
   assertCharacter(x = terms, any.missing = FALSE)
@@ -176,10 +180,12 @@ translateTerms <- function(terms, index = NULL, source = NULL, strict = FALSE,
     toTranslate <- tempOut %>%
       filter(target == "missing")
     write_csv(x = toTranslate, path = translating)
-    if(Sys.info()[['sysname']] == "Linux"){
+    if(Sys.info()[['sysname']] == "Linux" & inline){
       file.edit(translating)
+      done <- readline("\nplease replace the missing values, save the file and press any key to continue.\n")
+    } else {
+      done <- readline(paste0("\nplease edit the column 'target' in '", getOption(x = "adb_path"), "/'translating.csv' and then press any key to continue.\n"))
     }
-    done <- readline("\nplease replace the missing values, save the file and press any key to continue.\n")
 
     newOut <- read_csv(file = translating,
                        col_types = getColTypes(index)) %>%
