@@ -1,6 +1,7 @@
 #' Get the column types of a tibble
 #'
 #' @param input [\code{tibble(1)}]\cr tibble from which to get column types.
+#' @importFrom checkmate assertDataFrame
 #' @importFrom tibble tibble
 #' @importFrom dplyr summarise_all left_join pull
 #' @importFrom tidyr gather
@@ -8,6 +9,8 @@
 #' @export
 
 getColTypes <- function(input = NULL){
+
+  assertDataFrame(x = input)
 
   types <- tibble(col_type = c("character", "integer", "numeric", "double", "logical", "Date"),
                   code = c("c", "i", "n", "d", "l", "D"))
