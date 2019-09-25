@@ -85,7 +85,7 @@ normGeometry <- function(input, ..., thresh = 90, update = FALSE, verbose = TRUE
   assertLogical(x = update, len = 1)
   assertLogical(x = verbose, len = 1)
 
-  # scrutinize file-name (the fields, which are delimited by "_" carry important information)
+  # scrutinize file-name (the fields, which are delimited by "_", carry important information)
   pathStr <- str_split(input, "/")[[1]]
   file_name <- pathStr[length(pathStr)]
   fields <- str_split(file_name, "_")[[1]]
