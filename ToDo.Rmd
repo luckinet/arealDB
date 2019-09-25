@@ -1,22 +1,13 @@
-# test today
-
-- test arg_2_maia
-
-
 # high priority
 
 - update internal data so that tests and examples work again, then test example of translateTerms again
 - matchUnits need examples
-- translateTerms needs return value
-- make sure that new terms are checked against the look-up section of a translation table
 - I still need to assert that the units are actually recorded; my idea would be that data should be recorded at the finest level at which they are reported so that aggregation only happens later, when the model is computed; which may not even be needed for some more advanced models in the future.
-- make sure that the many-to-one translation where a tabID is provided is already implemented?
 
 # medium priority
 
 - check the documentation of all functions
 - make sure that stage1 files are tested for UTF-8 encoding
-- as soon as the paper is published, make some notes in this package as well, for instance to include a more detailed discussion of schema description, ...
 
 # low priority
 
