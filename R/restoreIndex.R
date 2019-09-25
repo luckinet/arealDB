@@ -102,7 +102,7 @@ restoreIndex <- function(pattern = NULL, print = FALSE, select = NULL){
   outName <- paste0(outName[-c(length(outName), length(outName)-1)], collapse = "_")
   if(!print){
     write_csv(x = restored,
-              path = paste0(getOption("adb_path"), outName, ".csv"),
+              path = paste0(getOption("adb_path"), "/", outName, ".csv"),
               na = "")
     message("'", outName, ".csv' has been restored.")
   }
