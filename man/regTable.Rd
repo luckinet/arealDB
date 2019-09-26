@@ -5,9 +5,8 @@
 \title{Register a new areal data table}
 \usage{
 regTable(nation = NULL, subset = NULL, dSeries = NULL,
-  gSeries = NULL, level = NULL, variable = NULL, algo = NULL,
-  begin = NULL, end = NULL, archive = NULL, notes = NULL,
-  update = FALSE)
+  gSeries = NULL, level = NULL, algo = NULL, begin = NULL,
+  end = NULL, archive = NULL, notes = NULL, update = FALSE)
 }
 \arguments{
 \item{nation}{[\code{character(1)}]\cr the nation for which the areal data
@@ -25,8 +24,6 @@ areal data.}
 
 \item{level}{[\code{integerish(1)}]\cr the administrative level at which the
 boundaries are recorded.}
-
-\item{variable}{[\code{character(.)}]\cr the variables included in the file.}
 
 \item{algo}{[\code{character}]\cr a serial number that indicates permutations
 of the areal data dataseries.}
@@ -80,7 +77,6 @@ regTable(nation = "United States of America",
          subset = "soy",
          dSeries = "usda", gSeries = "gadm",
          level = 3,
-         variable = c("harvested_area"),
          algo = 1,
          begin = 1990, end = 2017,
          archive = "soybean_us_county_1990_2017.csv",
