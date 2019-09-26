@@ -46,9 +46,17 @@ regDataseries <- function(name = NULL, description = NULL, website = NULL,
   assertCharacter(x = notes, ignore.case = TRUE, any.missing = FALSE, len = 1, null.ok = TRUE)
   assertLogical(x = update, len = 1)
 
+  # in testing mode?
+  testing <- getOption(x = "adb_testing")
+
   # ask for missing and required arguments
   if(is.null(name)){
-    theName <- readline("please give the dataseries abbreviation: ")
+    message("please type in the dataseries abbreviation: ")
+    if(!testing){
+      theName <- readline()
+    } else {
+      theName <- "name"
+    }
     if(theName == "NA"){
       theName = NA_character_
     }
@@ -57,7 +65,12 @@ regDataseries <- function(name = NULL, description = NULL, website = NULL,
   }
 
   if(is.null(description)){
-    theDescr <- readline("please give the long name or description of the series: ")
+    message("please type in the long name or description of the series: ")
+    if(!testing){
+      theDescr <- readline()
+    } else {
+      theDescr <- "long description"
+    }
     if(theDescr == "NA"){
       theDescr = NA_character_
     }
@@ -66,7 +79,12 @@ regDataseries <- function(name = NULL, description = NULL, website = NULL,
   }
 
   if(is.null(website)){
-    theWebsite <- readline("please give the dataseries website: ")
+    message("please type in the dataseries website: ")
+    if(!testing){
+      theWebsite <- readline()
+    } else {
+      theWebsite <- "https://"
+    }
     if(theWebsite == "NA"){
       theWebsite = NA_character_
     }
@@ -80,7 +98,7 @@ regDataseries <- function(name = NULL, description = NULL, website = NULL,
 
   # construct new documentation
   newDID <- ifelse(length(inv_dataseries$datID)==0, 1, as.integer(max(inv_dataseries$datID)+1))
-  temp <- tibble(datID = newDID,
+  temp <- tibble(datID = as.integer(newDID),
                  name = theName,
                  long_name = theDescr,
                  website = theWebsite,
