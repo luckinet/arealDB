@@ -37,6 +37,9 @@ regDataseries <- function(name = NULL, description = NULL, website = NULL,
   # get tables
   inv_dataseries <- read_csv(paste0(getOption(x = "adb_path"), "/inv_dataseries.csv"), col_types = "icccc")
 
+  # in testing mode?
+  testing <- getOption(x = "adb_testing")
+
   # check validity of arguments
   assertDataFrame(x = inv_dataseries)
   assertNames(x = colnames(inv_dataseries), permutation.of = c("datID", "name", "long_name", "website", "notes"))
@@ -46,18 +49,15 @@ regDataseries <- function(name = NULL, description = NULL, website = NULL,
   assertCharacter(x = notes, ignore.case = TRUE, any.missing = FALSE, len = 1, null.ok = TRUE)
   assertLogical(x = update, len = 1)
 
-  # in testing mode?
-  testing <- getOption(x = "adb_testing")
-
   # ask for missing and required arguments
   if(is.null(name)){
     message("please type in the dataseries abbreviation: ")
     if(!testing){
       theName <- readline()
     } else {
-      theName <- "name"
+      theName <- NA
     }
-    if(theName == "NA"){
+    if(is.na(theName)){
       theName = NA_character_
     }
   } else{
@@ -69,9 +69,9 @@ regDataseries <- function(name = NULL, description = NULL, website = NULL,
     if(!testing){
       theDescr <- readline()
     } else {
-      theDescr <- "long description"
+      theDescr <- NA
     }
-    if(theDescr == "NA"){
+    if(is.na(theDescr)){
       theDescr = NA_character_
     }
   } else{
@@ -83,9 +83,9 @@ regDataseries <- function(name = NULL, description = NULL, website = NULL,
     if(!testing){
       theWebsite <- readline()
     } else {
-      theWebsite <- "https://"
+      theWebsite <- NA
     }
-    if(theWebsite == "NA"){
+    if(is.na(theWebsite)){
       theWebsite = NA_character_
     }
   } else{

@@ -12,7 +12,6 @@
 #'   areal data.
 #' @param level [\code{integerish(1)}]\cr the administrative level at which the
 #'   boundaries are recorded.
-#' @param variable [\code{character(.)}]\cr the variables included in the file.
 #' @param algo [\code{character}]\cr a serial number that indicates permutations
 #'   of the areal data dataseries.
 #' @param begin [\code{integerish(1)}]\cr the date from which on the boundaries
@@ -52,7 +51,6 @@
 #'          subset = "soy",
 #'          dSeries = "usda", gSeries = "gadm",
 #'          level = 3,
-#'          variable = c("harvested_area"),
 #'          algo = 1,
 #'          begin = 1990, end = 2017,
 #'          archive = "soybean_us_county_1990_2017.csv",
@@ -68,8 +66,10 @@
 #' @export
 
 regTable <- function(nation = NULL, subset = NULL, dSeries = NULL, gSeries = NULL,
-                     level = NULL, variable = NULL, algo = NULL, begin = NULL,
-                     end = NULL, archive = NULL, notes = NULL, update = FALSE){
+                     level = NULL, algo = NULL, begin = NULL, end = NULL,
+                     archive = NULL, notes = NULL, update = FALSE){
+
+  # nation = NULL; subset = NULL; dSeries = NULL; gSeries = NULL; level = NULL; algo = NULL; begin = NULL; end = NULL; archive = NULL; notes = NULL; update = FALSE
 
   # set internal paths
   intPaths <- paste0(getOption(x = "adb_path"))
@@ -79,55 +79,147 @@ regTable <- function(nation = NULL, subset = NULL, dSeries = NULL, gSeries = NUL
   inv_dataseries <- read_csv(paste0(intPaths, "/inv_dataseries.csv"), col_types = "icccc")
   inv_geometries <- read_csv(paste0(intPaths, "/inv_geometries.csv"), col_types = "iciccccDcc")
 
-  # create a new data series, if dSeries is not part of the currently known data series names
-  if(!any(inv_dataseries$name %in% dSeries)){
-    stop(paste0("please first create the new data table dataseries '", dSeries, "' via 'regDataseries()'"))
-
-  } else{
-    dataSeries <- inv_dataseries$datID[inv_dataseries$name %in% dSeries]
-  }
-  # create a new geometry series, if gSeries is not part of the currently known geometry series names
-  if(!any(inv_dataseries$name %in% gSeries)){
-    stop(paste0("please first create the new geometry dataseries '", gSeries,"' via 'regDataseries()'"))
-  } else {
-    geomSeries <- inv_dataseries$datID[inv_dataseries$name %in% gSeries]
-  }
+  # in testing mode?
+  testing <- getOption(x = "adb_testing")
 
   # check validity of arguments
-  assertDataFrame(x = inv_tables, ncols = 7)
   assertNames(x = colnames(inv_tables), permutation.of = c("tabID", "datID", "geoID", "source_file", "date", "orig_file", "notes"))
   assertNames(x = colnames(inv_dataseries), permutation.of = c("datID", "name", "long_name", "website", "notes"))
   assertNames(x = colnames(inv_geometries), permutation.of = c("geoID", "datID", "level", "source_file", "layer", "nation_column", "unit_column", "date", "orig_file", "notes"))
   assertCharacter(x = nation, ignore.case = TRUE, any.missing = FALSE, len = 1, null.ok = TRUE)
-  assertIntegerish(x = level, any.missing = FALSE, len = 1)
   assertCharacter(x = subset, any.missing = FALSE, null.ok = TRUE)
+  assertCharacter(x = dSeries, ignore.case = TRUE, any.missing = FALSE, len = 1, null.ok = TRUE)
+  assertCharacter(x = gSeries, ignore.case = TRUE, any.missing = FALSE, len = 1, null.ok = TRUE)
+  assertIntegerish(x = level, any.missing = FALSE, len = 1, null.ok = TRUE)
+  assertIntegerish(x = algo, any.missing = FALSE, len = 1, null.ok = TRUE)
+  assertIntegerish(x = begin, any.missing = FALSE, len = 1, lower = 1900, null.ok = TRUE)
+  assertIntegerish(x = end, any.missing = FALSE, len = 1, upper = as.integer(format(Sys.Date(), "%Y")), null.ok = TRUE)
+  assertCharacter(x = archive, any.missing = FALSE, null.ok = TRUE)
+  assertCharacter(x = notes, ignore.case = TRUE, any.missing = FALSE, len = 1, null.ok = TRUE)
+  assertLogical(x = update, len = 1)
+
+  # ask for missing and required arguments
   if(!is.null(subset)){
     if(grepl(pattern = "_", x = subset)){
       stop("please give a subset that does not contain any '_' characters.")
     }
   }
-  assertCharacter(x = dSeries, ignore.case = TRUE, any.missing = FALSE, len = 1)
-  if(!is.null(dSeries)){
+
+  if(is.null(dSeries)){
+    message("please type in to which data series this table belongs: ")
+    if(!testing){
+      dSeries <- readline()
+    } else {
+      dSeries <- "test"
+    }
+
     if(grepl(pattern = "_", x = dSeries)){
       stop("please give a data series name that does not contain any '_' characters.")
     }
-  }
-  assertCharacter(x = gSeries, ignore.case = TRUE, any.missing = FALSE, len = 1, null.ok = TRUE)
-  if(is.null(gSeries)){
-    gSeries <- dSeries
+
+    if(!any(inv_dataseries$name %in% dSeries)){
+      stop(paste0("please first create the new data table dataseries '", dSeries, "' via 'regDataseries()'"))
+    }
+
+    if(!testing){
+      if(!any(inv_dataseries$name %in% gSeries)){
+        stop(paste0("please first create the new dataseries '", gSeries,"' via 'regDataseries()'"))
+      }
+    } else {
+      dataSeries <- NA_integer_
+    }
+
   } else{
+    dataSeries <- inv_dataseries$datID[inv_dataseries$name %in% dSeries]
+  }
+
+  if(is.null(gSeries)){
+    message("please type in to which geometry series this table belongs: ")
+    if(!testing){
+      gSeries <- readline()
+    } else {
+      gSeries <- "test"
+    }
+
     if(grepl(pattern = "_", x = gSeries)){
       stop("please give a geometry series name that does not contain any '_' characters.")
     }
+
+    if(!testing){
+      if(!any(inv_dataseries$name %in% gSeries)){
+        stop(paste0("please first create the new geometry series '", gSeries,"' via 'regDataseries()'"))
+      }
+    } else {
+      geomSeries <- NA_integer_
+    }
+
+  } else{
+    geomSeries <- inv_dataseries$datID[inv_dataseries$name %in% gSeries]
   }
-  assertCharacter(x = variable, ignore.case = TRUE, any.missing = FALSE)
-  assertSubset(x = variable, choices = c("planted_area", "harvested_area", "production", "yield", "headcount", "animal_units"))
-  assertIntegerish(x = algo, any.missing = FALSE, len = 1)
-  assertIntegerish(x = begin, any.missing = FALSE, len = 1, lower = 1900)
-  assertIntegerish(x = end, any.missing = FALSE, len = 1, upper = as.integer(format(Sys.Date(), "%Y")))
-  assertCharacter(x = archive, any.missing = FALSE)
-  assertCharacter(x = notes, ignore.case = TRUE, any.missing = FALSE, len = 1, null.ok = TRUE)
-  assertLogical(x = update, len = 1)
+
+  if(is.null(level)){
+    message("please type in the administrative level of the units: ")
+    if(!testing){
+      level <- readline()
+    } else {
+      level <- 1
+    }
+    if(is.na(level)){
+      level = NA_integer_
+    }
+  }
+
+  if(is.null(algo)){
+    message("please type in the integer identifying this tables' schema description: ")
+    if(!testing){
+      algo <- readline()
+    } else {
+      algo <- 1
+    }
+    if(is.na(algo)){
+      algo = NA_integer_
+    }
+  }
+
+  if(is.null(begin)){
+    message("please type in the first year in the table: ")
+    if(!testing){
+      begin <- readline()
+    } else {
+      begin <- 1990
+    }
+    if(is.na(begin)){
+      begin = NA_integer_
+    }
+  }
+
+  if(is.null(end)){
+    message("please type in the last year in the table: ")
+    if(!testing){
+      end <- readline()
+    } else {
+      end <- as.integer(format(Sys.Date(), "%Y"))
+    }
+    if(is.na(end)){
+      end =  NA_integer_
+    }
+  }
+
+  if(is.null(archive)){
+    message("please type in the archives' file name: ")
+    if(!testing){
+      archive <- readline()
+    } else {
+      archive <- "example_table.7z"
+    }
+    if(is.na(archive)){
+      archive = NA_character_
+    }
+  }
+
+  if(is.null(notes)){
+    notes = NA_character_
+  }
 
   # determine nation value
   if(!testChoice(x = tolower(nation), choices = countries$nation)){
@@ -141,71 +233,45 @@ regTable <- function(nation = NULL, subset = NULL, dSeries = NULL, gSeries = NUL
       tolower()
   }
 
-  if(is.null(notes)){
-    notes = NA_character_
-  }
-
-  tempDim <- NULL
-  if(any(grep("planted_area", variable, ignore.case = TRUE))){
-    tempDim <- paste0(tempDim, "B")
-  }
-  if(any(grep("harvested_area", variable, ignore.case = TRUE))){
-    tempDim <- paste0(tempDim, "N")
-  }
-  if(any(grep("production", variable, ignore.case = TRUE))){
-    tempDim <- paste0(tempDim, "P")
-  }
-  if(any(grep("yield", variable, ignore.case = TRUE))){
-    tempDim <- paste0(tempDim, "Y")
-  }
-  if(any(grep("headcount", variable, ignore.case = TRUE))){
-    tempDim <- paste0(tempDim, "H")
-  }
-  if(any(grep("animal_units", variable, ignore.case = TRUE))){
-    tempDim <- paste0(tempDim, "U")
-  }
-
   # put together file name and get confirmation that file should exist now
-  fileName <- paste0(theNation, "_", level, "_", subset, "_", dSeries, "_", tempDim, "_", algo, "_", begin, "_", end, ".csv")
+  fileName <- paste0(theNation, "_", level, "_", subset, "_", dSeries, "_", algo, "_", begin, "_", end, ".csv")
+  filePath <- paste0(intPaths, "/adb_tables/stage2/", fileName)
+  filesTrace <- str_split(archive, "\\|")[[1]]
+
   if(any(inv_tables$source_file %in% fileName)){
     return(paste0("'", fileName, "' has already been registered."))
   }
 
   # test whether the archive file is available
-  filesTrace <- str_split(archive, "\\|")[[1]]
   if(!testFileExists(x = paste0(intPaths, "/adb_tables/stage1/", filesTrace[1]), "r")){
-    done <- readline(paste0("... please store the archive '", filesTrace[[1]], "' in './adb_tables/stage1'\n  -> press any key when done: "))
+    message(paste0("... please store the archive '", filesTrace[[1]], "' in './adb_tables/stage1'"))
+    if(!testing){
+      done <- readline(" -> press any key when done: ")
+    }
 
     # make sure that the file is really there
     assertFileExists(x = paste0(intPaths, "/adb_tables/stage1/", filesTrace[1]), "r")
 
     # ... and if it is compressed, whether also the file therein is given that contains the data
     if(testCompressed(x = filesTrace[1]) & length(filesTrace) < 2){
-      theArchiveFile <- readline(paste0("please give the name of the file in ", filesTrace[1]," that contains the table: "))
+      message(paste0("please give the name of the file in ", filesTrace[1]," that contains the table: "))
+      if(!testing){
+        theArchiveFile <- readline()
+      } else {
+        theArchiveFile <- "example_table.csv"
+      }
       archive <- paste0(archive, "|", theArchiveFile)
     }
   }
 
   # test that the file is available
-  filePath <- paste0(intPaths, "/adb_tables/stage2/", fileName)
   if(!testFileExists(x = filePath, "r", extension = "csv")){
-    done <- readline(paste0("... please store the table as '", fileName, "' in './adb_tables/stage2'\n  -> press any key when done: "))
-
+    message(paste0("... please store the table as '", fileName, "' in './adb_tables/stage2'"))
+    if(!testing){
+      done <- readline(" -> press any key when done: ")
+    }
     # make sure that the file is really there
     assertFileExists(x = filePath, "r", extension = "csv")
-  }
-
-  geomSeries <- inv_geometries[inv_geometries$datID %in% geomSeries,] %>%
-    filter(level == !!level) %>%
-    pull("geoID")
-  if(length(geomSeries) == 0){
-    cat(paste0("\nI did not find a geometry series '", gSeries, "' at the requested level, registering one now ...\n"))
-
-    geomSeries <- regGeometry(nation = theNation,
-                              gSeries = gSeries,
-                              level = level,
-                              update = update)
-    geomSeries <- geomSeries$geoID
   }
 
   # put together new census database entry
