@@ -3,7 +3,7 @@ library(checkmate)
 context("regDataseries")
 
 
-test_that("", {
+test_that("a dataseries inventory entry can be produced", {
   path <- system.file("test_datasets", package="arealDB", mustWork = TRUE)
   setPath(root = paste0(path, "/newDB"))
 

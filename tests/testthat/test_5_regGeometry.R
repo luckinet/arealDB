@@ -3,10 +3,56 @@ library(checkmate)
 context("regGeometry")
 
 
-test_that("", {
+test_that("a geometry inventory entry is produced", {
   path <- system.file("test_datasets", package="arealDB", mustWork = TRUE)
   setPath(root = paste0(path, "/newDB"))
+  options(adb_testing = TRUE)
 
+  regDataseries(name = "test",
+                description = "something",
+                website = "https://",
+                update = TRUE)
+  file.copy(from = paste0(path, "/example_geom.7z"),
+            to = paste0(path, "/newDB/adb_geometries/stage1/example_geom.7z"))
+  file.copy(from = paste0(path, "/example_geom.gpkg"),
+            to = paste0(path, "/newDB/adb_geometries/stage2/_1__test.gpkg"))
+
+  output <- regGeometry(nation = "nation",
+                        gSeries = "test",
+                        level = 1,
+                        layer = "example_geom",
+                        nameCol = "units",
+                        archive = "example_geom.7z|example_geom.gpkg",
+                        update = TRUE)
+
+  expect_tibble(x = output, nrows = 1, ncols = 10, col.names = "strict")
+  expect_names(x = names(output), must.include = c("geoID", "datID", "level", "source_file", "layer", "nation_column", "date", "orig_file", "notes"))
+
+  unlink(paste0(path, "/newDB"), recursive = TRUE)
+})
+
+test_that("function asks for details, if not provided", {
+  path <- system.file("test_datasets", package="arealDB", mustWork = TRUE)
+  setPath(root = paste0(path, "/newDB"))
+  options(adb_testing = TRUE)
+
+  regDataseries(name = "test",
+                description = "something",
+                website = "https://",
+                update = TRUE)
+  file.copy(from = paste0(path, "/example_geom.7z"),
+            to = paste0(path, "/newDB/adb_geometries/stage1/example_geom.7z"))
+  file.copy(from = paste0(path, "/example_geom.gpkg"),
+            to = paste0(path, "/newDB/adb_geometries/stage2/arg_1__test.gpkg"))
+
+  expect_message(object = regGeometry())
+  output <- capture_messages(code = regGeometry())
+  expect_character(x = output, len = 5, any.missing = FALSE, unique = TRUE)
+  expect_equal(object = output[1], expected = "please type in either a nation or the name of the column that contains nation names: \n")
+  expect_equal(object = output[2], expected = "please type in the name of the column that contains unit names: \n")
+  expect_equal(object = output[3], expected = "please type in to which series the geometry belongs: \n")
+  expect_equal(object = output[4], expected = "please type in the administrative level of the units: \n")
+  expect_equal(object = output[5], expected = "please type in the archives' file name: \n")
 
   unlink(paste0(path, "/newDB"), recursive = TRUE)
 })
@@ -14,7 +60,18 @@ test_that("", {
 test_that("Error if arguments have wrong value", {
   path <- system.file("test_datasets", package="arealDB", mustWork = TRUE)
   setPath(root = paste0(path, "/newDB"))
+  options(adb_testing = TRUE)
 
+  regDataseries(name = "test",
+                description = "something",
+                website = "https://",
+                update = TRUE)
+  file.copy(from = paste0(path, "/example_geom.7z"),
+            to = paste0(path, "/newDB/adb_geometries/stage1/example_geom.7z"))
+  file.copy(from = paste0(path, "/example_geom.gpkg"),
+            to = paste0(path, "/newDB/adb_geometries/stage2/arg_1__gadm.gpkg"))
+
+  expect_error(regGeometry(update = 1))
 
   unlink(paste0(path, "/newDB"), recursive = TRUE)
 })
