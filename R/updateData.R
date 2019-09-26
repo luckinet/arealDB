@@ -62,6 +62,5 @@ updateData <- function(table = NULL, nations = NULL, file = NULL){
 
   # push to sql-database
 
-
 }
 

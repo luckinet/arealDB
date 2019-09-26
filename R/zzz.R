@@ -8,3 +8,7 @@ globalVariables(c(
   "terms", "toClean", "unit", "year", "years", "yield", "tabID", "source_area",
   "overlap", "tempID", "key", "val", "rn", "values", "ID"
 ))
+
+.onAttach <- function(libname, pkgname){
+  options(adb_testing = FALSE)
+}
