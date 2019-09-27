@@ -1,8 +1,97 @@
+library(sf)
+library(testthat)
+library(checkmate)
 context("normGeometry")
 
 test_that("", {
   path <- system.file("test_datasets", package="arealDB", mustWork = TRUE)
   setPath(root = paste0(path, "/newDB"))
+  options(adb_testing = TRUE)
+
+  regDataseries(name = "gadm",
+                description = "Database of Global Administrative Areas",
+                website = "https://gadm.org/index.html",
+                update = TRUE)
+  regDataseries(name = "maia",
+                description = "ministerio de agricultura ganaderia y pesca",
+                website = "http://datosestimaciones.magyp.gob.ar",
+                update = TRUE)
+  file.copy(from = paste0(path, "/example_geom.7z"),
+            to = paste0(path, "/newDB/adb_geometries/stage1/example_geom.7z"))
+  file.copy(from = paste0(path, "/example_geom1.gpkg"),
+            to = paste0(path, "/newDB/adb_geometries/stage2/_1__gadm.gpkg"))
+  file.copy(from = paste0(path, "/example_geom2.gpkg"),
+            to = paste0(path, "/newDB/adb_geometries/stage2/_2__gadm.gpkg"))
+  file.copy(from = paste0(path, "/example_geom3.gpkg"),
+            to = paste0(path, "/newDB/adb_geometries/stage2/_3__gadm.gpkg"))
+  file.copy(from = paste0(path, "/example_geom3.gpkg"),
+            to = paste0(path, "/newDB/adb_geometries/stage2/_3__maia.gpkg"))
+
+  # set up three levels of polygons ----
+  regGeometry(nation = "NAME_0",
+              gSeries = "gadm",
+              level = 1,
+              layer = "example_geom1",
+              nameCol = "NAME_0",
+              archive = "example_geom.7z|example_geom1.gpkg",
+              update = TRUE)
+  output <- normGeometry(input = paste0(path, "/newDB/adb_geometries/stage2/_1__gadm.gpkg"), update = TRUE)
+  expect_tibble(x = output, nrows = 1, ncols = 10, col.names = "strict")
+  expect_names(x = names(output), must.include = c("geoID", "datID", "level", "source_file", "layer", "nation_column", "unit_column", "date", "orig_file"))
+  expect_file_exists(x = paste0(path, "/newDB/adb_geometries/stage2/processed/_1__gadm.gpkg"))
+
+  regGeometry(nation = "NAME_0",
+              gSeries = "gadm",
+              level = 2,
+              layer = "example_geom2",
+              nameCol = "NAME_0|NAME_1",
+              archive = "example_geom.7z|example_geom2.gpkg",
+              update = TRUE)
+  output <- normGeometry(input = paste0(path, "/newDB/adb_geometries/stage2/_2__gadm.gpkg"), update = TRUE)
+  expect_tibble(x = output, nrows = 1, ncols = 10, col.names = "strict")
+  expect_names(x = names(output), must.include = c("geoID", "datID", "level", "source_file", "layer", "nation_column", "unit_column", "date", "orig_file"))
+  expect_file_exists(x = paste0(path, "/newDB/adb_geometries/stage2/processed/_2__gadm.gpkg"))
+
+  regGeometry(nation = "NAME_0",
+              gSeries = "gadm",
+              level = 3,
+              layer = "example_geom3",
+              nameCol = "NAME_0|NAME_1|NAME_2",
+              archive = "example_geom.7z|example_geom3.gpkg",
+              update = TRUE)
+  output <- normGeometry(input = paste0(path, "/newDB/adb_geometries/stage2/_3__gadm.gpkg"), update = TRUE)
+  expect_tibble(x = output, nrows = 1, ncols = 10, col.names = "strict")
+  expect_names(x = names(output), must.include = c("geoID", "datID", "level", "source_file", "layer", "nation_column", "unit_column", "date", "orig_file"))
+  expect_file_exists(x = paste0(path, "/newDB/adb_geometries/stage2/processed/_3__gadm.gpkg"))
+
+  # also include a second dataset, that has to be attached to al3 ----
+  regGeometry(nation = "NAME_0",
+              gSeries = "maia",
+              level = 3,
+              layer = "example_geom4",
+              nameCol = "NAME_0|NAME_1|NAME_2",
+              archive = "example_geom.7z|example_geom4.gpkg",
+              update = TRUE)
+  output <- normGeometry(input = paste0(path, "/newDB/adb_geometries/stage2/_3__maia.gpkg"), update = TRUE)
+  expect_tibble(x = output, nrows = 1, ncols = 10, col.names = "strict")
+  expect_names(x = names(output), must.include = c("geoID", "datID", "level", "source_file", "layer", "nation_column", "unit_column", "date", "orig_file"))
+  expect_file_exists(x = paste0(path, "/newDB/adb_geometries/stage2/processed/_3__maia.gpkg"))
+
+  # test whether the resulting file is "correct" ----
+  final <- st_read(dsn = paste0(path, "/newDB/adb_geometries/stage3/argentina.gpkg"), layer = "level_1")
+  expect_class(x = final, classes = c("sf"))
+  expect_data_frame(x = final, nrows = 1, ncols = 7)
+  expect_names(x = names(final), identical.to = c("nation", "name", "level", "ahID", "geoID", "al1_id", "geom"))
+
+  final <- st_read(dsn = paste0(path, "/newDB/adb_geometries/stage3/argentina.gpkg"), layer = "level_2")
+  expect_class(x = final, classes = c("sf"))
+  expect_data_frame(x = final, nrows = 4, ncols = 8)
+  expect_names(x = names(final), identical.to = c("nation", "name", "level", "ahID", "geoID", "al1_id", "al2_id", "geom"))
+
+  final <- st_read(dsn = paste0(path, "/newDB/adb_geometries/stage3/argentina.gpkg"), layer = "level_3")
+  expect_class(x = final, classes = c("sf"))
+  expect_data_frame(x = final, nrows = 6, ncols = 9)
+  expect_names(x = names(final), identical.to = c("nation", "name", "level", "ahID", "geoID", "al1_id", "al2_id", "al3_id", "geom"))
 
   unlink(paste0(path, "/newDB"), recursive = TRUE)
 })
