@@ -123,7 +123,7 @@ regGeometry <- function(nation = NULL, subset = NULL, gSeries = NULL, level = NU
     if(!testing){
       gSeries <- readline()
     } else {
-      gSeries <- "test"
+      gSeries <- "gadm"
     }
 
     if(grepl(pattern = "_", x = gSeries)){
@@ -197,7 +197,6 @@ regGeometry <- function(nation = NULL, subset = NULL, gSeries = NULL, level = NU
     theGeometry <- read_sf(dsn = filePath,
                            stringsAsFactors = FALSE)
     assertChoice(x = nation, choices = colnames(theGeometry))
-    assertChoice(x = nameCol, choices = colnames(theGeometry))
   }
 
   # test whether the archive file is available

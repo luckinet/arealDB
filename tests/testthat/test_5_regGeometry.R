@@ -8,21 +8,21 @@ test_that("a geometry inventory entry is produced", {
   setPath(root = paste0(path, "/newDB"))
   options(adb_testing = TRUE)
 
-  regDataseries(name = "test",
-                description = "something",
-                website = "https://",
+  regDataseries(name = "gadm",
+                description = "Database of Global Administrative Areas",
+                website = "https://gadm.org/index.html",
                 update = TRUE)
   file.copy(from = paste0(path, "/example_geom.7z"),
             to = paste0(path, "/newDB/adb_geometries/stage1/example_geom.7z"))
-  file.copy(from = paste0(path, "/example_geom.gpkg"),
-            to = paste0(path, "/newDB/adb_geometries/stage2/_1__test.gpkg"))
+  file.copy(from = paste0(path, "/example_geom1.gpkg"),
+            to = paste0(path, "/newDB/adb_geometries/stage2/_1__gadm.gpkg"))
 
-  output <- regGeometry(nation = "nation",
-                        gSeries = "test",
+  output <- regGeometry(nation = "NAME_0",
+                        gSeries = "gadm",
                         level = 1,
-                        layer = "example_geom",
-                        nameCol = "units",
-                        archive = "example_geom.7z|example_geom.gpkg",
+                        layer = "example_geom1",
+                        nameCol = "NAME_0",
+                        archive = "example_geom.7z|example_geom1.gpkg",
                         update = TRUE)
 
   expect_tibble(x = output, nrows = 1, ncols = 10, col.names = "strict")
@@ -36,14 +36,14 @@ test_that("function asks for details, if not provided", {
   setPath(root = paste0(path, "/newDB"))
   options(adb_testing = TRUE)
 
-  regDataseries(name = "test",
-                description = "something",
-                website = "https://",
+  regDataseries(name = "gadm",
+                description = "Database of Global Administrative Areas",
+                website = "https://gadm.org/index.html",
                 update = TRUE)
   file.copy(from = paste0(path, "/example_geom.7z"),
             to = paste0(path, "/newDB/adb_geometries/stage1/example_geom.7z"))
-  file.copy(from = paste0(path, "/example_geom.gpkg"),
-            to = paste0(path, "/newDB/adb_geometries/stage2/arg_1__test.gpkg"))
+  file.copy(from = paste0(path, "/example_geom1.gpkg"),
+            to = paste0(path, "/newDB/adb_geometries/stage2/arg_1__gadm.gpkg"))
 
   expect_message(object = regGeometry())
   output <- capture_messages(code = regGeometry())
@@ -62,9 +62,9 @@ test_that("Error if arguments have wrong value", {
   setPath(root = paste0(path, "/newDB"))
   options(adb_testing = TRUE)
 
-  regDataseries(name = "test",
-                description = "something",
-                website = "https://",
+  regDataseries(name = "gadm",
+                description = "Database of Global Administrative Areas",
+                website = "https://gadm.org/index.html",
                 update = TRUE)
   file.copy(from = paste0(path, "/example_geom.7z"),
             to = paste0(path, "/newDB/adb_geometries/stage1/example_geom.7z"))

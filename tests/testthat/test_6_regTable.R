@@ -8,18 +8,22 @@ test_that("a table inventory entry is produced", {
   setPath(root = paste0(path, "/newDB"))
   options(adb_testing = TRUE)
 
-  regDataseries(name = "test",
-                description = "something",
-                website = "https://",
+  regDataseries(name = "gadm",
+                description = "Database of Global Administrative Areas",
+                website = "https://gadm.org/index.html",
+                update = TRUE)
+  regDataseries(name = "maia",
+                description = "ministerio de agricultura ganaderia y pesca",
+                website = "http://datosestimaciones.magyp.gob.ar",
                 update = TRUE)
   file.copy(from = paste0(path, "/example_table.7z"),
             to = paste0(path, "/newDB/adb_tables/stage1/example_table.7z"))
   file.copy(from = paste0(path, "/example_table.csv"),
-            to = paste0(path, "/newDB/adb_tables/stage2/arg_1_soyMaize_test_1_1990_2017.csv"))
+            to = paste0(path, "/newDB/adb_tables/stage2/arg_1_soyMaize_maia_1_1990_2017.csv"))
 
   output <- regTable(nation = "Argentina",
                      subset = "soyMaize",
-                     dSeries = "test", gSeries = "test",
+                     dSeries = "maia", gSeries = "gadm",
                      level = 1,
                      algo = 1,
                      begin = 1990, end = 2017,
@@ -37,14 +41,18 @@ test_that("function asks for details, if not provided", {
   setPath(root = paste0(path, "/newDB"))
   options(adb_testing = TRUE)
 
-  regDataseries(name = "test",
-                description = "something",
-                website = "https://",
+  regDataseries(name = "gadm",
+                description = "Database of Global Administrative Areas",
+                website = "https://gadm.org/index.html",
+                update = TRUE)
+  regDataseries(name = "maia",
+                description = "ministerio de agricultura ganaderia y pesca",
+                website = "http://datosestimaciones.magyp.gob.ar",
                 update = TRUE)
   file.copy(from = paste0(path, "/example_table.7z"),
             to = paste0(path, "/newDB/adb_tables/stage1/example_table.7z"))
   file.copy(from = paste0(path, "/example_table.csv"),
-            to = paste0(path, "/newDB/adb_tables/stage2/_1__test_1_1990_2019.csv"))
+            to = paste0(path, "/newDB/adb_tables/stage2/_1__maia_1_1990_2019.csv"))
 
   expect_message(object = regTable())
   output <- capture_messages(code = regTable())
@@ -65,9 +73,9 @@ test_that("Error if arguments have wrong value", {
   setPath(root = paste0(path, "/newDB"))
   options(adb_testing = TRUE)
 
-  regDataseries(name = "test",
-                description = "something",
-                website = "https://",
+  regDataseries(name = "gadm",
+                description = "Database of Global Administrative Areas",
+                website = "https://gadm.org/index.html",
                 update = TRUE)
   file.copy(from = paste0(path, "/example_table.7z"),
             to = paste0(path, "/newDB/adb_tables/stage1/example_table.7z"))

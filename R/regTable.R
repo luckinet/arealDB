@@ -110,7 +110,7 @@ regTable <- function(nation = NULL, subset = NULL, dSeries = NULL, gSeries = NUL
     if(!testing){
       dSeries <- readline()
     } else {
-      dSeries <- "test"
+      dSeries <- "maia"
     }
 
     if(grepl(pattern = "_", x = dSeries)){
@@ -138,7 +138,7 @@ regTable <- function(nation = NULL, subset = NULL, dSeries = NULL, gSeries = NUL
     if(!testing){
       gSeries <- readline()
     } else {
-      gSeries <- "test"
+      gSeries <- "gadm"
     }
 
     if(grepl(pattern = "_", x = gSeries)){
