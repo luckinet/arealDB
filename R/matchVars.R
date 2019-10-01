@@ -68,7 +68,7 @@ matchVars <- function(input = NULL, source = NULL, ..., keepOrig = FALSE){
 
     # translate the terms
     theTerms <- translateTerms(terms = unique(inputTerms),
-                               source = source,
+                               source = list("tabID" = source),
                                index = paste0("tt_", varName))
 
     # get the matching terms
