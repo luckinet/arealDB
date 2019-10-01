@@ -105,7 +105,8 @@ translateTerms <- function(terms, index = NULL, source = NULL, strict = FALSE,
       if(any(temp$target != "missing")){
         temp <- temp %>%
           filter(temp$target != "missing") %>%
-          mutate(source = sourceName,
+          mutate(origin = terms[i],
+                 source = sourceName,
                  ID = sourceVal) %>%
           select(-notes) %>%
           unique() %>%
