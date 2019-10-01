@@ -35,7 +35,7 @@
 #'
 #'   Every areal data dataseries (\code{dSeries}) may come as a slight
 #'   permutation of a particular table arrangement. The function
-#'   \code{\link{normalise}} expects internally a schema description (a list
+#'   \code{\link{normTable}} expects internally a schema description (a list
 #'   that describes the position of the data components) for each data table,
 #'   which is saved as \code{paste0("meta_", dSeries, TAB_NUMBER)}. A template
 #'   thereof, and documentation on how to set them up, comes as the object
