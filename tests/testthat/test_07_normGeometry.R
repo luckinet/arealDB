@@ -3,7 +3,7 @@ library(testthat)
 library(checkmate)
 context("normGeometry")
 
-test_that("", {
+test_that("geometries can be normalised", {
   path <- system.file("test_datasets", package="arealDB", mustWork = TRUE)
   setPath(root = paste0(path, "/newDB"))
   options(adb_testing = TRUE)
