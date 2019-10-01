@@ -4,8 +4,7 @@
 \alias{normTable}
 \title{Normalise data tables}
 \usage{
-normTable(input, ..., keepOrig = TRUE, update = FALSE,
-  verbose = TRUE)
+normTable(input, ..., update = FALSE, verbose = TRUE)
 }
 \arguments{
 \item{input}{[\code{character(1)}]\cr path of the file to normalise.}
@@ -13,9 +12,6 @@ normTable(input, ..., keepOrig = TRUE, update = FALSE,
 \item{...}{[\code{list(.)}]\cr matching lists that capture the variables by
 which to match and the new column names containing the resulting ID; see
 Details.}
-
-\item{keepOrig}{[\code{logical(1)}]\cr whether or not to keep not only the
-IDs but also the original terms for which IDs have been derived.}
 
 \item{update}{[\code{logical(1)}]\cr whether or not the physical files should
 be updated (\code{TRUE}) or the function should merely return the new
