@@ -54,62 +54,80 @@
 
 normTable <- function(input, ..., keepOrig = TRUE, update = FALSE, verbose = TRUE){
 
+  # set internal paths
+  intPaths <- paste0(getOption(x = "adb_path"))
+
+  if(is.null(input)){
+    input <- list.files(path = paste0(intPaths, "/adb_tables/stage2"), full.names = TRUE)
+  } else {
+    assertFileExists(x = input, access = "r")
+  }
+
   # get objects
   inv_tables <- read_csv(paste0(getOption(x = "adb_path"), "/inv_tables.csv"), col_types = "iiiccDcc")
   vars <- exprs(..., .named = TRUE)
 
   # check validity of arguments
   assertNames(x = colnames(inv_tables), permutation.of = c("tabID", "datID", "geoID", "source_file", "schema", "date", "orig_file", "notes"))
-  assertFileExists(x = input, access = "r")
   assertLogical(x = update, len = 1)
   assertLogical(x = verbose, len = 1)
   assertList(x = vars)
 
-  # scrutinize file-name (the fields, which are delimited by "_" carry important information)
-  pathStr <- str_split(input, "/")[[1]]
-  file_name <- pathStr[length(pathStr)]
-  fields <- str_split(file_name, "_")[[1]]
-  algorithm = get(paste0("meta_", fields[4], "_", fields[5]))
-  if(!exists(x = "algorithm")){
-    stop(paste0("please create the schema desciption '", algorithm, "' for the file '", file_name, "'.\n  --> See '?meta_default' for details"))
-  }
+  for(i in seq_along(input)){
 
-  # get some variables
-  tabID <- ifelse(length(inv_tables$tabID) == 0, 1,
-                  inv_tables$tabID[grep(pattern = file_name, x = inv_tables$source_file)])
-  geoID <- ifelse(length(inv_tables$geoID) == 0, 1,
-                  inv_tables$geoID[grep(pattern = file_name, x = inv_tables$source_file)])
+    thisInput <- input[i]
 
-  out <- read_csv(input, col_names = FALSE) %>%
-    reorganise(schema = algorithm) %>%
-    mutate(id = seq_along(year),
-           tabID = tabID,
-           geoID = geoID) %>%
-    matchUnits(source = geoID, keepOrig = keepOrig)
+    # scrutinize file-name (the fields, which are delimited by "_" carry important information)
+    pathStr <- str_split(input, "/")[[1]]
+    file_name <- pathStr[length(pathStr)]
+    fields <- str_split(file_name, "_")[[1]]
 
-  # if a matching list for other variables is defined, match those
-  if(length(vars) != 0){
-    out <- out %>%
-      matchVars(source = tabID, vars, keepOrig = keepOrig)
-  }
+    if(!file_name %in% inv_tables$source_file){
+      next
+    }
 
-  # in case the user wants to update, update the data table
-  if(update){
+    algorithm = get(paste0("meta_", fields[4], "_", fields[5]))
+    if(!exists(x = "algorithm")){
+      stop(paste0("please create the schema desciption '", algorithm, "' for the file '", file_name, "'.\n  --> See '?meta_default' for details"))
+    }
 
-    theNations <- out %>%
-      filter(!is.na(ahID)) %>%
-      pull(al1_alt) %>%
-      unique() #%>%
+    # get some variables
+    tabID <- ifelse(length(inv_tables$tabID) == 0, 1,
+                    inv_tables$tabID[grep(pattern = file_name, x = inv_tables$source_file)])
+    geoID <- ifelse(length(inv_tables$geoID) == 0, 1,
+                    inv_tables$geoID[grep(pattern = file_name, x = inv_tables$source_file)])
+
+    out <- read_csv(input, col_names = FALSE) %>%
+      reorganise(schema = algorithm) %>%
+      mutate(id = seq_along(year),
+             tabID = tabID,
+             geoID = geoID) %>%
+      matchUnits(source = geoID, keepOrig = keepOrig)
+
+    # if a matching list for other variables is defined, match those
+    if(length(vars) != 0){
+      out <- out %>%
+        matchVars(source = tabID, vars, keepOrig = keepOrig)
+    }
+
+    # in case the user wants to update, update the data table
+    if(update){
+
+      theNations <- out %>%
+        filter(!is.na(ahID)) %>%
+        pull(al1_alt) %>%
+        unique() #%>%
       # unifyNations()
 
-    out <- out %>%
-      select(-al1_alt)
+      out <- out %>%
+        select(-al1_alt)
 
-    updateData(table = out, nations = theNations, file = pathStr)
+      updateData(table = out, nations = theNations, file = pathStr)
 
-  } else{
-    out <- out %>%
-      select(-al1_alt)
+    } else{
+      out <- out %>%
+        select(-al1_alt)
+    }
   }
 
 }
