@@ -4,7 +4,8 @@
 \alias{normGeometry}
 \title{Normalise geometries}
 \usage{
-normGeometry(input, ..., thresh = 90, update = FALSE, verbose = TRUE)
+normGeometry(input = NULL, ..., thresh = 90, update = FALSE,
+  verbose = TRUE)
 }
 \arguments{
 \item{input}{[\code{character(1)}]\cr path of the file to normalise.}
