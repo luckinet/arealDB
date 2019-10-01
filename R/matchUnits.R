@@ -48,8 +48,13 @@ matchUnits <- function(input = NULL, source = NULL, keepOrig = FALSE){
   outhIDs <- NULL
   for(i in seq_along(nations)){
     rawNation <- nations[i]
-    cleanNation <- unifyNations(unify = rawNation, verbose = FALSE)
-    cleanNation <- translateTerms(terms = rawNation, verbose = FALSE)
+    # cleanNation <- unifyNations(unify = rawNation, verbose = FALSE)
+    cleanNation <- translateTerms(terms = rawNation,
+                                  source = list("geoID" = source),
+                                  index = "tt_nations",
+                                  inline = FALSE,
+                                  verbose = FALSE) %>%
+      pull(target)
 
     if(is.na(cleanNation)){
       message(paste0("\n--> ! skipping ", rawNation, " because it does not match in 'tt_nations.csv'."))
