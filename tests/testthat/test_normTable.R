@@ -84,6 +84,7 @@ test_that("", {
               nameCol = "NAME_0|NAME_1|NAME_2",
               archive = "example_geom.7z|example_geom4.gpkg",
               update = TRUE)
+  normGeometry(nation = "argentina", update = TRUE)
 
   # output <- normTable(input = paste0(path, "/newDB/adb_tables/stage2/arg_1_soyMaize_maia_1_1990_2017.csv"))
 

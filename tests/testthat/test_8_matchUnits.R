@@ -84,12 +84,23 @@ test_that("", {
               nameCol = "NAME_0|NAME_1|NAME_2",
               archive = "example_geom.7z|example_geom4.gpkg",
               update = TRUE)
-  normalise(what = "geometries",
-            update = TRUE, verbose = FALSE)
+  normGeometry(nation = "argentina", update = TRUE)
 
+  input <- read_csv(file = paste0(path, "/newDB/adb_tables/stage2/arg_1_soyMaize_maia_1_1990_2017.csv"),
+                    col_names = FALSE) %>%
+    reorganise(schema = meta_maia_1) %>%
+    mutate(id = seq_along(year),
+           tabID = 1,
+           geoID = 1)
+  output <- matchUnits(input = input, source = 1)
 
+  expect_tibble(x = output, nrows = 56, ncols = 8, col.names = "strict")
+  expect_names(x = names(output), permutation.of = c("year", "commodities", "harvested", "production", "id", "tabID", "geoID", "ahID"))
 
+  output <- matchUnits(input = input, source = 1, keepOrig = TRUE)
 
+  expect_tibble(x = output, nrows = 56, ncols = 9, col.names = "strict")
+  expect_names(x = names(output), permutation.of = c("al1_alt", "year", "commodities", "harvested", "production", "id", "tabID", "geoID", "ahID"))
 
   unlink(paste0(path, "/newDB"), recursive = TRUE)
 })
