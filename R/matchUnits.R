@@ -79,14 +79,15 @@ matchUnits <- function(input = NULL, source = NULL, keepOrig = FALSE){
     for(j in seq_along(layers$name)){
       theGeom <- read_sf(dsn = paste0(intPaths, "stage3/", cleanNation, ".gpkg"),
                          layer = sort(layers$name)[j],
-                         stringsAsFactors = FALSE)
-      geometries <- rbind(geometries, theGeom)
+                         stringsAsFactors = FALSE) %>%
+        as_tibble() %>%
+        select(-geom)
+      geometries <- bind_rows(geometries, theGeom)
     }
 
     # ... and select only unique rows of all 'al*_id'
     temp <- geometries %>%
       select(name, starts_with("al"))
-    st_geometry(temp) <- NULL
     geometries <- geometries %>%
       filter(!duplicated(temp))
 
@@ -189,8 +190,8 @@ matchUnits <- function(input = NULL, source = NULL, keepOrig = FALSE){
   }
 
   for(i in seq_along(adminLvls)){
-    pos <- which(colnames(out) == adminLvls[[i]])
-    colnames(out)[pos] <- paste0(names(adminLvls)[i], "_alt")
+    pos <- which(colnames(out) == adminLvls[i])
+    colnames(out)[pos] <- paste0(adminLvls[i], "_alt")
   }
 
   if(!keepOrig){
