@@ -16,7 +16,7 @@ test_that("", {
                 update = TRUE)
   file.copy(from = paste0(path, "/example_table.7z"),
             to = paste0(path, "/newDB/adb_tables/stage1/example_table.7z"))
-  file.copy(from = paste0(path, "/example_table.csv"),
+  file.copy(from = paste0(path, "/example_table1.csv"),
             to = paste0(path, "/newDB/adb_tables/stage2/arg_1_soyMaize_maia_1_1990_2017.csv"))
   file.copy(from = paste0(path, "/example_geom.7z"),
             to = paste0(path, "/newDB/adb_geometries/stage1/example_geom.7z"))

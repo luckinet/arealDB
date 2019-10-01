@@ -18,8 +18,10 @@ test_that("a table inventory entry is produced", {
                 update = TRUE)
   file.copy(from = paste0(path, "/example_table.7z"),
             to = paste0(path, "/newDB/adb_tables/stage1/example_table.7z"))
-  file.copy(from = paste0(path, "/example_table.csv"),
+  file.copy(from = paste0(path, "/example_table1.csv"),
             to = paste0(path, "/newDB/adb_tables/stage2/arg_1_soyMaize_maia_1_1990_2017.csv"))
+  file.copy(from = paste0(path, "/example_table2.csv"),
+            to = paste0(path, "/newDB/adb_tables/stage2/arg_2_soyMaize_maia_1_1990_2017.csv"))
 
   meta_maia_1 <<- list(clusters = list(top = NULL, left = NULL, width = NULL, height = NULL,
                                       id = NULL),
@@ -46,7 +48,7 @@ test_that("a table inventory entry is produced", {
                      dSeries = "maia", gSeries = "gadm",
                      level = 1,
                      begin = 1990, end = 2017,
-                     archive = "example_table.7z|example_table.csv",
+                     archive = "example_table.7z|example_table1.csv",
                      update = TRUE)
 
   expect_tibble(x = output, nrows = 1, ncols = 8, col.names = "strict")
@@ -71,7 +73,7 @@ test_that("function asks for details, if not provided", {
                 update = TRUE)
   file.copy(from = paste0(path, "/example_table.7z"),
             to = paste0(path, "/newDB/adb_tables/stage1/example_table.7z"))
-  file.copy(from = paste0(path, "/example_table.csv"),
+  file.copy(from = paste0(path, "/example_table1.csv"),
             to = paste0(path, "/newDB/adb_tables/stage2/_1__maia_1_1990_2019.csv"))
 
   expect_message(object = regTable())
