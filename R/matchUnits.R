@@ -126,13 +126,13 @@ matchUnits <- function(input = NULL, source = NULL, keepOrig = FALSE){
 
         # ... translate them to the default unit names
         theParents <- translateTerms(terms = unique(inputUnits[[1]]),
-                                     source = source,
+                                     source = list("geoID" = source),
                                      index = "tt_territories",
                                      fuzzy_terms = unique(parentSubset$name),
                                      verbose = FALSE)
         theParents <- unique(theParents)
         theUnits <- translateTerms(terms = unique(inputUnits[[2]]),
-                                   source = source,
+                                   source = list("geoID" = source),
                                    index = "tt_territories",
                                    fuzzy_terms = unique(unitSubset$name))
         theUnits <- unique(theUnits)
@@ -184,7 +184,7 @@ matchUnits <- function(input = NULL, source = NULL, keepOrig = FALSE){
 
     hIDJoin <- outputUnits %>%
       filter(level %in% max(levels)) %>%
-      select(matches("_alt"), ahID)
+      select(contains("_alt"), ahID)
 
     outhIDs <- bind_rows(outhIDs, hIDJoin)
   }
