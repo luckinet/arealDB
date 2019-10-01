@@ -5,8 +5,6 @@
 #' @param ... [\code{list(.)}]\cr matching lists that capture the variables by
 #'   which to match and the new column names containing the resulting ID; see
 #'   Details.
-#' @param keepOrig [\code{logical(1)}]\cr whether or not to keep not only the
-#'   IDs but also the original terms for which IDs have been derived.
 #' @param update [\code{logical(1)}]\cr whether or not the physical files should
 #'   be updated (\code{TRUE}) or the function should merely return the new
 #'   object (\code{FALSE} default).
@@ -52,7 +50,7 @@
 #' @importFrom tidyselect everything
 #' @export
 
-normTable <- function(input, ..., keepOrig = TRUE, update = FALSE, verbose = TRUE){
+normTable <- function(input, ..., update = FALSE, verbose = TRUE){
 
   # set internal paths
   intPaths <- paste0(getOption(x = "adb_path"))
@@ -102,12 +100,12 @@ normTable <- function(input, ..., keepOrig = TRUE, update = FALSE, verbose = TRU
       mutate(id = seq_along(year),
              tabID = tabID,
              geoID = geoID) %>%
-      matchUnits(source = geoID, keepOrig = keepOrig)
+      matchUnits(source = geoID, keepOrig = TRUE)
 
     # if a matching list for other variables is defined, match those
     if(length(vars) != 0){
       out <- out %>%
-        matchVars(source = tabID, vars, keepOrig = keepOrig)
+        matchVars(source = tabID, ..., keepOrig = TRUE)
     }
 
     # in case the user wants to update, update the data table
@@ -116,13 +114,12 @@ normTable <- function(input, ..., keepOrig = TRUE, update = FALSE, verbose = TRU
       theNations <- out %>%
         filter(!is.na(ahID)) %>%
         pull(al1_alt) %>%
-        unique() #%>%
-      # unifyNations()
+        unique()
 
       out <- out %>%
-        select(-al1_alt)
+        select(id, tabID, geoID, ahID, everything())
 
-      updateData(table = out, nations = theNations, file = pathStr)
+      updateData(table = out, nations = theNations, file = input)
 
     } else{
       out <- out %>%
