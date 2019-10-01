@@ -33,8 +33,8 @@ updateData <- function(table = NULL, nations = NULL, file = NULL){
     message("\n--> Updating table of '", nations[i], "'.")
 
     tempTable <- table %>%
-      filter(nation == nations[i]) %>%
-      select(-nation)
+      filter(al1_alt == nations[i]) %>%
+      select(-al1_alt)
 
     # append output to previous file
     if(file.exists(paste0(targetDir, nations[i], ".csv"))){
