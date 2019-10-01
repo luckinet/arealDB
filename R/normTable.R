@@ -55,11 +55,11 @@
 normTable <- function(input, ..., keepOrig = TRUE, update = FALSE, verbose = TRUE){
 
   # get objects
-  inv_tables <- read_csv(paste0(getOption(x = "adb_path"), "/inv_tables.csv"), col_types = "iiicDcc")
+  inv_tables <- read_csv(paste0(getOption(x = "adb_path"), "/inv_tables.csv"), col_types = "iiiccDcc")
   vars <- exprs(..., .named = TRUE)
 
   # check validity of arguments
-  assertNames(x = colnames(inv_tables), permutation.of = c("tabID", "datID", "geoID", "source_file", "date", "orig_file", "notes"))
+  assertNames(x = colnames(inv_tables), permutation.of = c("tabID", "datID", "geoID", "source_file", "schema", "date", "orig_file", "notes"))
   assertFileExists(x = input, access = "r")
   assertLogical(x = update, len = 1)
   assertLogical(x = verbose, len = 1)
@@ -69,9 +69,9 @@ normTable <- function(input, ..., keepOrig = TRUE, update = FALSE, verbose = TRU
   pathStr <- str_split(input, "/")[[1]]
   file_name <- pathStr[length(pathStr)]
   fields <- str_split(file_name, "_")[[1]]
-  algorithm = paste0("meta_", fields[4], fields[6])
-  if(!exists(algorithm)){
-    stop(paste0("please create the meta data object '", algorithm, "' for the file '", file_name, "'.\n  --> See '?record' for details"))
+  algorithm = get(paste0("meta_", fields[4], "_", fields[5]))
+  if(!exists(x = "algorithm")){
+    stop(paste0("please create the schema desciption '", algorithm, "' for the file '", file_name, "'.\n  --> See '?meta_default' for details"))
   }
 
   # get some variables

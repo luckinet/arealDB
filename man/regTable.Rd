@@ -5,8 +5,8 @@
 \title{Register a new areal data table}
 \usage{
 regTable(nation = NULL, subset = NULL, dSeries = NULL,
-  gSeries = NULL, level = NULL, algo = NULL, begin = NULL,
-  end = NULL, archive = NULL, notes = NULL, update = FALSE)
+  gSeries = NULL, level = NULL, begin = NULL, end = NULL,
+  archive = NULL, notes = NULL, update = FALSE)
 }
 \arguments{
 \item{nation}{[\code{character(1)}]\cr the nation for which the areal data
@@ -24,9 +24,6 @@ areal data.}
 
 \item{level}{[\code{integerish(1)}]\cr the administrative level at which the
 boundaries are recorded.}
-
-\item{algo}{[\code{character}]\cr a serial number that indicates permutations
-of the areal data dataseries.}
 
 \item{begin}{[\code{integerish(1)}]\cr the date from which on the boundaries
 are valid.}
@@ -52,21 +49,21 @@ This function registers a new areal data table into the geospatial database.
 \details{
 When processing areal data tables, carry out the following steps:
   \enumerate{ \item Determine the \code{nation}, administrative \code{level},
-  a \code{subset} (if applicable), the \code{dataseries} of the areal data
-  and of the geometry and an \code{algo}rithm (if applicable), and provide
-  them as arguments to this function. \item Provide a \code{begin} and
-  \code{end} date for the areal data. \item Run the function. \item (Re)Save
-  the table with the following properties: \itemize{\item Format: csv \item
-  Encoding: UTF-8 \item File name: What is provided as message by this
-  function \item make sure that the file is not modified or reshaped. This
-  will happen during data normalisation via the schema description, which
-  expects the original table.} \item Confirm that you have saved the file.}
+  a \code{subset} (if applicable) and the \code{dataseries} of the areal data
+  and of the geometry, and provide them as arguments to this function. \item
+  Provide a \code{begin} and \code{end} date for the areal data. \item Run
+  the function. \item (Re)Save the table with the following properties:
+  \itemize{\item Format: csv \item Encoding: UTF-8 \item File name: What is
+  provided as message by this function \item make sure that the file is not
+  modified or reshaped. This will happen during data normalisation via the
+  schema description, which expects the original table.} \item Confirm that
+  you have saved the file.}
 
   Every areal data dataseries (\code{dSeries}) may come as a slight
   permutation of a particular table arrangement. The function
   \code{\link{normalise}} expects internally a schema description (a list
   that describes the position of the data components) for each data table,
-  which is saved as \code{paste0("meta_", dSeries, algo)}. A template
+  which is saved as \code{paste0("meta_", dSeries, TAB_NUMBER)}. A template
   thereof, and documentation on how to set them up, comes as the object
   \code{\link{meta_default}} with \code{arealDB}.
 }
@@ -77,7 +74,6 @@ regTable(nation = "United States of America",
          subset = "soy",
          dSeries = "usda", gSeries = "gadm",
          level = 3,
-         algo = 1,
          begin = 1990, end = 2017,
          archive = "soybean_us_county_1990_2017.csv",
          update = TRUE)

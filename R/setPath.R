@@ -46,6 +46,9 @@ setPath <- function(root = NULL){
   if(!testDirectory(x = file.path(root, "adb_tables", "meta"), access = "rw")){
     dir.create(file.path(root, "adb_tables", "meta"))
   }
+  if(!testDirectory(x = file.path(root, "adb_tables", "meta", "schemas"), access = "rw")){
+    dir.create(file.path(root, "adb_tables", "meta", "schemas"))
+  }
   if(!testDirectory(x = file.path(root, "adb_tables", "stage1"), access = "rw")){
     dir.create(file.path(root, "adb_tables", "stage1"))
   }
@@ -93,6 +96,7 @@ setPath <- function(root = NULL){
                      geoID = integer(),
                      datID = integer(),
                      source_file = character(),
+                     schema = character(),
                      date = date(),
                      orig_file = character(),
                      notes = character())

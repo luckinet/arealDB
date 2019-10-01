@@ -12,8 +12,6 @@
 #'   areal data.
 #' @param level [\code{integerish(1)}]\cr the administrative level at which the
 #'   boundaries are recorded.
-#' @param algo [\code{character}]\cr a serial number that indicates permutations
-#'   of the areal data dataseries.
 #' @param begin [\code{integerish(1)}]\cr the date from which on the boundaries
 #'   are valid.
 #' @param end [\code{integerish(1)}]\cr the date until which the boundaries are
@@ -25,21 +23,21 @@
 #'   should be updated.
 #' @details When processing areal data tables, carry out the following steps:
 #'   \enumerate{ \item Determine the \code{nation}, administrative \code{level},
-#'   a \code{subset} (if applicable), the \code{dataseries} of the areal data
-#'   and of the geometry and an \code{algo}rithm (if applicable), and provide
-#'   them as arguments to this function. \item Provide a \code{begin} and
-#'   \code{end} date for the areal data. \item Run the function. \item (Re)Save
-#'   the table with the following properties: \itemize{\item Format: csv \item
-#'   Encoding: UTF-8 \item File name: What is provided as message by this
-#'   function \item make sure that the file is not modified or reshaped. This
-#'   will happen during data normalisation via the schema description, which
-#'   expects the original table.} \item Confirm that you have saved the file.}
+#'   a \code{subset} (if applicable) and the \code{dataseries} of the areal data
+#'   and of the geometry, and provide them as arguments to this function. \item
+#'   Provide a \code{begin} and \code{end} date for the areal data. \item Run
+#'   the function. \item (Re)Save the table with the following properties:
+#'   \itemize{\item Format: csv \item Encoding: UTF-8 \item File name: What is
+#'   provided as message by this function \item make sure that the file is not
+#'   modified or reshaped. This will happen during data normalisation via the
+#'   schema description, which expects the original table.} \item Confirm that
+#'   you have saved the file.}
 #'
 #'   Every areal data dataseries (\code{dSeries}) may come as a slight
 #'   permutation of a particular table arrangement. The function
 #'   \code{\link{normalise}} expects internally a schema description (a list
 #'   that describes the position of the data components) for each data table,
-#'   which is saved as \code{paste0("meta_", dSeries, algo)}. A template
+#'   which is saved as \code{paste0("meta_", dSeries, TAB_NUMBER)}. A template
 #'   thereof, and documentation on how to set them up, comes as the object
 #'   \code{\link{meta_default}} with \code{arealDB}.
 #' @return Returns the entry that is appended to 'inv_tables.csv' in case
@@ -51,12 +49,11 @@
 #'          subset = "soy",
 #'          dSeries = "usda", gSeries = "gadm",
 #'          level = 3,
-#'          algo = 1,
 #'          begin = 1990, end = 2017,
 #'          archive = "soybean_us_county_1990_2017.csv",
 #'          update = TRUE)
 #' }
-#' @importFrom readr read_csv
+#' @importFrom readr read_csv write_rds
 #' @importFrom checkmate assertDataFrame assertNames assertCharacter
 #'   assertIntegerish assertSubset assertLogical testChoice assertChoice
 #'   assertFileExists
@@ -66,24 +63,27 @@
 #' @export
 
 regTable <- function(nation = NULL, subset = NULL, dSeries = NULL, gSeries = NULL,
-                     level = NULL, algo = NULL, begin = NULL, end = NULL,
-                     archive = NULL, notes = NULL, update = FALSE){
+                     level = NULL, begin = NULL, end = NULL, archive = NULL,
+                     notes = NULL, update = FALSE){
 
-  # nation = NULL; subset = NULL; dSeries = NULL; gSeries = NULL; level = NULL; algo = NULL; begin = NULL; end = NULL; archive = NULL; notes = NULL; update = FALSE
+  # nation = NULL; subset = NULL; dSeries = NULL; gSeries = NULL; level = NULL; begin = NULL; end = NULL; archive = NULL; notes = NULL; update = FALSE
 
   # set internal paths
   intPaths <- paste0(getOption(x = "adb_path"))
 
   # get tables
-  inv_tables <- read_csv(paste0(intPaths, "/inv_tables.csv"), col_types = "iiicDcc")
+  inv_tables <- read_csv(paste0(intPaths, "/inv_tables.csv"), col_types = "iiiccDcc")
   inv_dataseries <- read_csv(paste0(intPaths, "/inv_dataseries.csv"), col_types = "icccc")
   inv_geometries <- read_csv(paste0(intPaths, "/inv_geometries.csv"), col_types = "iciccccDcc")
+
+  # make new tabID
+  newTID <- ifelse(length(inv_tables$tabID)==0, 1, as.integer(max(inv_tables$tabID)+1))
 
   # in testing mode?
   testing <- getOption(x = "adb_testing")
 
   # check validity of arguments
-  assertNames(x = colnames(inv_tables), permutation.of = c("tabID", "datID", "geoID", "source_file", "date", "orig_file", "notes"))
+  assertNames(x = colnames(inv_tables), permutation.of = c("tabID", "datID", "geoID", "source_file", "schema", "date", "orig_file", "notes"))
   assertNames(x = colnames(inv_dataseries), permutation.of = c("datID", "name", "long_name", "website", "notes"))
   assertNames(x = colnames(inv_geometries), permutation.of = c("geoID", "datID", "level", "source_file", "layer", "nation_column", "unit_column", "date", "orig_file", "notes"))
   assertCharacter(x = nation, ignore.case = TRUE, any.missing = FALSE, len = 1, null.ok = TRUE)
@@ -91,7 +91,6 @@ regTable <- function(nation = NULL, subset = NULL, dSeries = NULL, gSeries = NUL
   assertCharacter(x = dSeries, ignore.case = TRUE, any.missing = FALSE, len = 1, null.ok = TRUE)
   assertCharacter(x = gSeries, ignore.case = TRUE, any.missing = FALSE, len = 1, null.ok = TRUE)
   assertIntegerish(x = level, any.missing = FALSE, len = 1, null.ok = TRUE)
-  assertIntegerish(x = algo, any.missing = FALSE, len = 1, null.ok = TRUE)
   assertIntegerish(x = begin, any.missing = FALSE, len = 1, lower = 1900, null.ok = TRUE)
   assertIntegerish(x = end, any.missing = FALSE, len = 1, upper = as.integer(format(Sys.Date(), "%Y")), null.ok = TRUE)
   assertCharacter(x = archive, any.missing = FALSE, null.ok = TRUE)
@@ -169,18 +168,6 @@ regTable <- function(nation = NULL, subset = NULL, dSeries = NULL, gSeries = NUL
     }
   }
 
-  if(is.null(algo)){
-    message("please type in the integer identifying this tables' schema description: ")
-    if(!testing){
-      algo <- readline()
-    } else {
-      algo <- 1
-    }
-    if(is.na(algo)){
-      algo = NA_integer_
-    }
-  }
-
   if(is.null(begin)){
     message("please type in the first year in the table: ")
     if(!testing){
@@ -234,7 +221,7 @@ regTable <- function(nation = NULL, subset = NULL, dSeries = NULL, gSeries = NUL
   }
 
   # put together file name and get confirmation that file should exist now
-  fileName <- paste0(theNation, "_", level, "_", subset, "_", dSeries, "_", algo, "_", begin, "_", end, ".csv")
+  fileName <- paste0(theNation, "_", level, "_", subset, "_", dSeries, "_", newTID, "_", begin, "_", end, ".csv")
   filePath <- paste0(intPaths, "/adb_tables/stage2/", fileName)
   filesTrace <- str_split(archive, "\\|")[[1]]
 
@@ -274,12 +261,27 @@ regTable <- function(nation = NULL, subset = NULL, dSeries = NULL, gSeries = NUL
     assertFileExists(x = filePath, "r", extension = "csv")
   }
 
+  # make a schema description
+  theSchemaName <- paste0("meta_", dSeries, "_", newTID)
+  if(!testFileExists(x = theSchemaName, "r", extension = "rds")){
+    message(paste0("... please make the schema description '", theSchemaName, "'."))
+    if(!testing){
+      done <- readline(" -> press any key when done: ")
+    }
+  }
+  if(exists(x = theSchemaName)){
+    theSchema <- get(eval(expr = theSchemaName))
+    # make sure that the file is really there
+    assertList(x = theSchema, len = 2)
+    write_rds(x = theSchema, path = paste0(intPaths, "/adb_tables/meta/schemas/", theSchemaName, ".rds"))
+  }
+
   # put together new census database entry
-  newCID <- ifelse(length(inv_tables$tabID)==0, 1, as.integer(max(inv_tables$tabID)+1))
-  doc <- tibble(tabID = newCID,
+  doc <- tibble(tabID = newTID,
                 geoID = geomSeries,
                 datID = dataSeries,
                 source_file = fileName,
+                schema = theSchemaName,
                 date = Sys.Date(),
                 orig_file = archive,
                 notes = notes)
