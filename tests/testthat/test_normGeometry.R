@@ -25,7 +25,7 @@ test_that("", {
   file.copy(from = paste0(path, "/example_geom3.gpkg"),
             to = paste0(path, "/newDB/adb_geometries/stage2/_3__gadm.gpkg"))
   file.copy(from = paste0(path, "/example_geom3.gpkg"),
-            to = paste0(path, "/newDB/adb_geometries/stage2/_3__maia.gpkg"))
+            to = paste0(path, "/newDB/adb_geometries/stage2/arg_3__maia.gpkg"))
 
   # set up three levels of polygons ----
   regGeometry(nation = "NAME_0",
@@ -65,17 +65,16 @@ test_that("", {
   expect_file_exists(x = paste0(path, "/newDB/adb_geometries/stage2/processed/_3__gadm.gpkg"))
 
   # also include a second dataset, that has to be attached to al3 ----
-  regGeometry(nation = "NAME_0",
+  regGeometry(nation = "argentina",
               gSeries = "maia",
               level = 3,
               layer = "example_geom4",
               nameCol = "NAME_0|NAME_1|NAME_2",
               archive = "example_geom.7z|example_geom4.gpkg",
               update = TRUE)
-  output <- normGeometry(input = paste0(path, "/newDB/adb_geometries/stage2/_3__maia.gpkg"), update = TRUE)
+  output <- normGeometry(input = paste0(path, "/newDB/adb_geometries/stage2/arg_3__maia.gpkg"), nation = "argentina", update = TRUE)
   expect_tibble(x = output, nrows = 1, ncols = 10, col.names = "strict")
   expect_names(x = names(output), must.include = c("geoID", "datID", "level", "source_file", "layer", "nation_column", "unit_column", "date", "orig_file"))
-  expect_file_exists(x = paste0(path, "/newDB/adb_geometries/stage2/processed/_3__maia.gpkg"))
 
   # test whether the resulting file is "correct" ----
   final <- st_read(dsn = paste0(path, "/newDB/adb_geometries/stage3/argentina.gpkg"), layer = "level_1")

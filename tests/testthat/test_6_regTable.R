@@ -21,17 +21,37 @@ test_that("a table inventory entry is produced", {
   file.copy(from = paste0(path, "/example_table.csv"),
             to = paste0(path, "/newDB/adb_tables/stage2/arg_1_soyMaize_maia_1_1990_2017.csv"))
 
+  meta_maia_1 <<- list(clusters = list(top = NULL, left = NULL, width = NULL, height = NULL,
+                                      id = NULL),
+                      variables = list(territories =
+                                         list(type = "id", name = "al1", form = "long",
+                                              row = NULL, col = 1, rel = FALSE),
+                                       period =
+                                         list(type = "id", name = "year", form = "long",
+                                              row = NULL, col = 2, rel = FALSE),
+                                       commodities =
+                                         list(type = "id", name = NULL, form = "long",
+                                              row = NULL, col = 3, rel = FALSE),
+                                       harvested =
+                                         list(type = "values", unit = "ha", factor = 1,
+                                              row = NULL, col = 4, rel = FALSE,
+                                              id = NULL, level = NULL),
+                                       production =
+                                         list(type = "values", unit = "t", factor = 1,
+                                              row = NULL, col = 5, rel = FALSE,
+                                              id = NULL, level = NULL)))
+
   output <- regTable(nation = "Argentina",
                      subset = "soyMaize",
                      dSeries = "maia", gSeries = "gadm",
                      level = 1,
-                     algo = 1,
                      begin = 1990, end = 2017,
                      archive = "example_table.7z|example_table.csv",
                      update = TRUE)
 
-  expect_tibble(x = output, nrows = 1, ncols = 7, col.names = "strict")
-  expect_names(x = names(output), must.include = c("tabID", "geoID", "datID", "source_file", "date", "orig_file", "notes"))
+  expect_tibble(x = output, nrows = 1, ncols = 8, col.names = "strict")
+  expect_names(x = names(output), must.include = c("tabID", "geoID", "datID", "source_file", "schema", "date", "orig_file", "notes"))
+  expect_file_exists(x = paste0(path, "/newDB/adb_tables/meta/schemas/meta_maia_1.rds"))
 
   unlink(paste0(path, "/newDB"), recursive = TRUE)
 })
@@ -60,10 +80,10 @@ test_that("function asks for details, if not provided", {
   expect_equal(object = output[1], expected = "please type in to which data series this table belongs: \n")
   expect_equal(object = output[2], expected = "please type in to which geometry series this table belongs: \n")
   expect_equal(object = output[3], expected = "please type in the administrative level of the units: \n")
-  expect_equal(object = output[4], expected = "please type in the integer identifying this tables' schema description: \n")
-  expect_equal(object = output[5], expected = "please type in the first year in the table: \n")
-  expect_equal(object = output[6], expected = "please type in the last year in the table: \n")
-  expect_equal(object = output[7], expected = "please type in the archives' file name: \n")
+  expect_equal(object = output[4], expected = "please type in the first year in the table: \n")
+  expect_equal(object = output[5], expected = "please type in the last year in the table: \n")
+  expect_equal(object = output[6], expected = "please type in the archives' file name: \n")
+  expect_equal(object = output[7], expected = "... please make the schema description 'meta_maia_1'.\n")
 
   unlink(paste0(path, "/newDB"), recursive = TRUE)
 })
