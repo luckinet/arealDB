@@ -1,8 +1,12 @@
+library(testthat)
+library(checkmate)
 context("matchVars")
 
 test_that("", {
   path <- system.file("test_datasets", package = "arealDB", mustWork = TRUE)
   setPath(root = paste0(path, "/newDB"))
+  territories <- read_csv(file = paste0(path, "/id_units.csv"), col_types = "icc")
+  setVariables(input = territories, variable = "territories", pid = "anID", target = "names")
   comm <- read_csv(file = paste0(path, "/id_commodities.csv"), col_types = "iccc")
   setVariables(input = comm, variable = "commodities", pid = "faoID", target = "simpleName")
   options(adb_testing = TRUE)
@@ -27,7 +31,7 @@ test_that("", {
             to = paste0(path, "/newDB/adb_geometries/stage2/_2__gadm.gpkg"))
   file.copy(from = paste0(path, "/example_geom3.gpkg"),
             to = paste0(path, "/newDB/adb_geometries/stage2/_3__gadm.gpkg"))
-  file.copy(from = paste0(path, "/example_geom3.gpkg"),
+  file.copy(from = paste0(path, "/example_geom4.gpkg"),
             to = paste0(path, "/newDB/adb_geometries/stage2/arg_3__maia.gpkg"))
 
   meta_maia_1 <- list(clusters = list(top = NULL, left = NULL, width = NULL, height = NULL,

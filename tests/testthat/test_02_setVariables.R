@@ -10,7 +10,7 @@ test_that("setting an imported table works", {
   input <- read_csv(file = paste0(path, "/id_units.csv"), col_types = "icc")
   output <- setVariables(input = input, variable = "territories", pid = "anID", target = "names")
 
-  expect_tibble(x = output, nrows = 10, col.names = "strict")
+  expect_tibble(x = output, nrows = 11, col.names = "strict")
   expect_names(names(output), must.include = c("anID", "target", "descr"))
   expect_names(list.files(path = paste0(path, "/newDB")), must.include = c("id_territories.csv", "tt_territories.csv"))
 

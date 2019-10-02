@@ -4,6 +4,8 @@ context("normTable")
 test_that("tables can be normalised (without matched variables)", {
   path <- system.file("test_datasets", package = "arealDB", mustWork = TRUE)
   setPath(root = paste0(path, "/newDB"))
+  territories <- read_csv(file = paste0(path, "/id_units.csv"), col_types = "icc")
+  setVariables(input = territories, variable = "territories", pid = "anID", target = "names")
   options(adb_testing = TRUE)
 
   regDataseries(name = "gadm",
@@ -26,7 +28,7 @@ test_that("tables can be normalised (without matched variables)", {
             to = paste0(path, "/newDB/adb_geometries/stage2/_2__gadm.gpkg"))
   file.copy(from = paste0(path, "/example_geom3.gpkg"),
             to = paste0(path, "/newDB/adb_geometries/stage2/_3__gadm.gpkg"))
-  file.copy(from = paste0(path, "/example_geom3.gpkg"),
+  file.copy(from = paste0(path, "/example_geom4.gpkg"),
             to = paste0(path, "/newDB/adb_geometries/stage2/arg_3__maia.gpkg"))
 
   meta_maia_1 <- list(clusters = list(top = NULL, left = NULL, width = NULL, height = NULL,
@@ -128,7 +130,7 @@ test_that("tables can be normalised (with matched variables)", {
             to = paste0(path, "/newDB/adb_geometries/stage2/_2__gadm.gpkg"))
   file.copy(from = paste0(path, "/example_geom3.gpkg"),
             to = paste0(path, "/newDB/adb_geometries/stage2/_3__gadm.gpkg"))
-  file.copy(from = paste0(path, "/example_geom3.gpkg"),
+  file.copy(from = paste0(path, "/example_geom4.gpkg"),
             to = paste0(path, "/newDB/adb_geometries/stage2/arg_3__maia.gpkg"))
 
   meta_maia_1 <- list(clusters = list(top = NULL, left = NULL, width = NULL, height = NULL,
