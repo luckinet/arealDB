@@ -6,8 +6,8 @@
 #'   by \code{nation}, \code{continent}, \code{region}, \code{subregion} or
 #'   \code{un_member = TRUE/FALSE}. Valid values can be found in the object
 #'   \code{\link{countries}}.
-#' @param thresh [\code{integerish(1)}]\cr the threshold of percentage of
-#'   overlap above which to consider two territorial units "the same".
+#' @param thresh [\code{integerish(1)}]\cr the deviation of percentage of
+#'   overlap above which to consider two territorial units "different".
 #' @param update [\code{logical(1)}]\cr whether or not the physical files should
 #'   be updated (\code{TRUE}) or the function should merely return the new
 #'   object (\code{FALSE} default).
@@ -55,7 +55,7 @@
 #'   assertCharacter assertChoice testFileExists
 #' @importFrom dplyr filter distinct select mutate rowwise filter_at vars
 #'   all_vars pull group_by arrange summarise mutate_if rename n if_else
-#' @importFrom rlang sym
+#' @importFrom rlang sym exprs
 #' @importFrom readr read_csv
 #' @importFrom sf st_layers read_sf st_write st_join st_buffer st_equals st_sf
 #'   st_transform st_crs st_geometry_type st_area st_intersection
@@ -65,7 +65,7 @@
 #' @importFrom tidyselect starts_with
 #' @export
 
-normGeometry <- function(input = NULL, ..., thresh = 90, update = FALSE, verbose = TRUE){
+normGeometry <- function(input = NULL, ..., thresh = 10, update = FALSE, verbose = TRUE){
 
   # set internal paths
   intPaths <- paste0(getOption(x = "adb_path"))
@@ -284,39 +284,35 @@ normGeometry <- function(input = NULL, ..., thresh = 90, update = FALSE, verbose
           }
 
           # determine the spatial overlap
-          message("    Determining spatial overlap with source geometries")
-          overlapTarget <- suppressMessages(suppressWarnings(
-            sourceGeom %>%
-              mutate(source_area = st_area(.)) %>%
-              st_buffer(dist = 0) %>% # is needed sometimes to clarify "self-intersection" problems: https://gis.stackexchange.com/questions/163445/getting-topologyexception-input-geom-1-is-invalid-which-is-due-to-self-intersec
-              st_intersection(y = targetGeom) %>%
-              mutate(overlap = as.numeric(st_area(.)/source_area*100)) %>%
-              as_tibble() %>%
-              select(-geom, -source_area) %>%
-              group_by(.dots = unitCols) %>%
-              filter(overlap == max(overlap)) %>%
-              ungroup()
-          ))
+          message("    Joining target and source geometries")
+          targetGeom <- targetGeom %>%
+            mutate(target_area = st_area(.))
 
-          wipGeom <- sourceGeom %>%
-            as_tibble() %>%
-            left_join(overlapTarget) %>%
-            mutate(overlap = if_else(is.na(overlap), 0, overlap)) %>%
-            st_sf()
+          validGeom <- suppressWarnings(sourceGeom %>%
+            st_buffer(dist = 0) %>% # is needed sometimes to clarify "self-intersection" problems: https://gis.stackexchange.com/questions/163445/getting-topologyexception-input-geom-1-is-invalid-which-is-due-to-self-intersec
+            st_intersection(y = targetGeom) %>%
+            mutate(area = st_area(.)) %>%
+            group_by(.dots = unitCols) %>%
+            mutate(source_area = sum(area),
+                   deviation = source_area/target_area*100 - 100) %>%
+            filter(area == max(area)) %>%
+            mutate(valid = abs(deviation) < thresh) %>%
+            ungroup() %>%
+            select(-target_area, -area, -source_area, -deviation))
+
+          targetGeom <- targetGeom %>%
+            select(-target_area)
 
           # get valid geoms that have an overlap larger than the threshold
-          message("    Joining target and source geometries")
-          validOverlap <- wipGeom$overlap > thresh
-
-          validUnits <- wipGeom %>%
-            filter(validOverlap) %>%
+          validUnits <- validGeom %>%
+            filter(valid) %>%
             mutate(geoID = newGID) %>%
-            select(-!!unitCols, -overlap)
+            select(-valid, -!!unitCols)
 
           # get geoms that are invalid because their overlap is smaller than
           # threshold
-          invalidUnits <- wipGeom %>%
-            filter(!validOverlap)
+          invalidUnits <- sourceGeom %>%
+            filter(!validGeom$valid)
 
           newCols <- names(targetGeom)
           newCols <- newCols[-which(newCols %in% c("geom", "nation", unitCols))]
@@ -430,7 +426,7 @@ normGeometry <- function(input = NULL, ..., thresh = 90, update = FALSE, verbose
           suppressMessages(
             newUnits <- invalidUnits %>%
               as_tibble() %>%
-              select(-ahID, -geoID, -level, -name, -starts_with("al"), -overlap)  %>%
+              select(-ahID, -geoID, -level, -name, -starts_with("al"))  %>%
               mutate_if(is.character, tolower) %>%
               left_join(prevIDs) %>%
               left_join(prevUnits) %>%
@@ -562,7 +558,7 @@ normGeometry <- function(input = NULL, ..., thresh = 90, update = FALSE, verbose
           st_write(obj = outGeom,
                    dsn = paste0(intPaths, "/adb_geometries/stage3/", tempNation, ".gpkg"),
                    layer = paste0("level_", theLevel),
-                   layer_options = "OVERWRITE=yes",
+                   delete_layer = TRUE,
                    quiet = TRUE)
         }
       }
