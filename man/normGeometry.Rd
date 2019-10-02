@@ -4,7 +4,7 @@
 \alias{normGeometry}
 \title{Normalise geometries}
 \usage{
-normGeometry(input = NULL, ..., thresh = 90, update = FALSE,
+normGeometry(input = NULL, ..., thresh = 10, update = FALSE,
   verbose = TRUE)
 }
 \arguments{
@@ -15,8 +15,8 @@ by \code{nation}, \code{continent}, \code{region}, \code{subregion} or
 \code{un_member = TRUE/FALSE}. Valid values can be found in the object
 \code{\link{countries}}.}
 
-\item{thresh}{[\code{integerish(1)}]\cr the threshold of percentage of
-overlap above which to consider two territorial units "the same".}
+\item{thresh}{[\code{integerish(1)}]\cr the deviation of percentage of
+overlap above which to consider two territorial units "different".}
 
 \item{update}{[\code{logical(1)}]\cr whether or not the physical files should
 be updated (\code{TRUE}) or the function should merely return the new
