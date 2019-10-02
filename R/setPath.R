@@ -46,7 +46,7 @@ setPath <- function(root = NULL){
   if(!testDirectory(x = file.path(root, "adb_tables", "meta"), access = "rw")){
     dir.create(file.path(root, "adb_tables", "meta"))
   }
-  if(!testDirectory(x = file.path(root, "adb_tables", "meta", "schemas"), access = "rw")){
+   if(!testDirectory(x = file.path(root, "adb_tables", "meta", "schemas"), access = "rw")){
     dir.create(file.path(root, "adb_tables", "meta", "schemas"))
   }
   if(!testDirectory(x = file.path(root, "adb_tables", "stage1"), access = "rw")){
@@ -84,8 +84,10 @@ setPath <- function(root = NULL){
   if(!testFileExists(x = file.path(root, "inv_dataseries.csv"))){
     dataseries <- tibble(datID = integer(),
                          name = character(),
-                         long_name = character(),
-                         website = character(),
+                         description = character(),
+                         homepage = character(),
+                         licence_link = character(),
+                         licence_path = character(),
                          notes = character())
     write_csv(x = dataseries,
               path = paste0(root, "/inv_dataseries.csv"),
@@ -97,8 +99,13 @@ setPath <- function(root = NULL){
                      datID = integer(),
                      source_file = character(),
                      schema = character(),
-                     date = date(),
                      orig_file = character(),
+                     orig_link = character(),
+                     download_date = date(),
+                     next_update = date(),
+                     update_frequency = character(),
+                     metadata_link = character(),
+                     metadata_path = character(),
                      notes = character())
     write_csv(x = census,
               path = paste0(root, "/inv_tables.csv"),
@@ -112,8 +119,11 @@ setPath <- function(root = NULL){
                          layer = character(),
                          nation_column = character(),
                          unit_column = character(),
-                         date = date(),
-                         orig_file = character(),
+                         orig_file = character(),                         
+                         orig_link = character(),
+                         download_date = date(),
+                         next_update = date(),
+                         update_frequency = character(),
                          notes = character())
     write_csv(x = geometries,
               path = paste0(root, "/inv_geometries.csv"),
