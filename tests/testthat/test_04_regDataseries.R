@@ -36,7 +36,7 @@ test_that("function asks for details, if not provided", {
   expect_equal(object = output[1], expected = "please type in the dataseries abbreviation: \n")
   expect_equal(object = output[2], expected = "please type in the long name or description of the series: \n")
   expect_equal(object = output[3], expected = "please type in the dataseries homepage: \n")
-  expect_equal(object = output[4], expected = "please type in the link to the dataseries licence: \n")
+  expect_equal(object = output[4], expected = "please type in the weblink to the dataseries licence: \n")
   expect_equal(object = output[5], expected = "please type in the path to the local folder where the licence is stored: \n")
 
   unlink(paste0(path, "/newDB"), recursive = TRUE)

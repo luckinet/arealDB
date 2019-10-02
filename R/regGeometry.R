@@ -17,6 +17,15 @@
 #'   Examples.
 #' @param archive [\code{character(1)}]\cr the original file (perhaps a *.zip)
 #'   from which the geometry emerges.
+#' @param archiveLink [\code{character(1)}]\cr download-link of the archive
+#' @param nextUpdate [\code{character(1)}]\cr when does the geometry dataset gets
+#'   updated the next time (format resricted to: YYYY-MM-DD).
+#' @param updateFrequency [\code{character(1)}]\cr does the dataset gets updated in 
+#'   a regular fashion? The provided options (which include irregular), are taken 
+#'   from ISO 19115 «CodeList» MD_MaintenanceFrequencyCode. The allowed option are:
+#'   "geoID", "datID", "level", "source_file", "layer", "nation_column", "unit_column", 
+#'   "orig_file", "orig_link", "download_date", "next_update", "update_frequency", 
+#'   "notes".
 #' @param notes [\code{character(1)}]\cr optional notes that are assigned to all
 #'   features of this geometry.
 #' @param update [\code{logical(1)}]\cr whether or not the file
@@ -64,29 +73,35 @@
 #' @export
 
 regGeometry <- function(nation = NULL, subset = NULL, gSeries = NULL, level = NULL,
-                        layer = NULL, nameCol = NULL, archive = NULL, notes = NULL,
+                        layer = NULL, nameCol = NULL, archive = NULL, archiveLink = NULL, 
+                        nextUpdate = NULL, updateFrequency = NULL, notes = NULL,
                         update = FALSE){
-
-  # ation = NULL; subset = NULL; gSeries = NULL; level = NULL; layer = NULL; nameCol = NULL; archive = NULL; notes = NULL; update = FALSE
 
   # set internal paths
   intPaths <- paste0(getOption(x = "adb_path"))
 
   # get tables
-  inv_geometries <- read_csv(paste0(intPaths, "/inv_geometries.csv"), col_types = "iciccccDcc")
-  inv_dataseries <- read_csv(paste0(intPaths, "/inv_dataseries.csv"), col_types = "icccc")
+  inv_geometries <- read_csv(paste0(intPaths, "/inv_geometries.csv"), col_types = "iiiccccccDDcc")
+  inv_dataseries <- read_csv(paste0(intPaths, "/inv_dataseries.csv"), col_types = "icccccc")
 
   # in testing mode?
   testing <- getOption(x = "adb_testing")
 
   # check validity of arguments
-  assertNames(x = colnames(inv_geometries), permutation.of = c("geoID", "datID", "level", "source_file", "layer", "nation_column", "unit_column", "date", "orig_file", "notes"))
+  assertNames(x = colnames(inv_geometries), 
+              permutation.of = c("geoID", "datID", "level", "source_file", "layer", 
+              "nation_column", "unit_column", "orig_file", "orig_link", "download_date",
+              "next_update", "update_frequency", "notes"))
   assertCharacter(x = nation, ignore.case = TRUE, any.missing = FALSE, len = 1, null.ok = TRUE)
   assertCharacter(x = subset, any.missing = FALSE, null.ok = TRUE)
   assertCharacter(x = gSeries, ignore.case = TRUE, any.missing = FALSE, len = 1, null.ok = TRUE)
   assertIntegerish(x = level, any.missing = FALSE, len = 1, lower = 1, null.ok = TRUE)
   assertCharacter(x = layer, any.missing = FALSE, null.ok = TRUE)
   assertCharacter(x = archive, any.missing = FALSE, null.ok = TRUE)
+  assertCharacter(x = archiveLink, any.missing = FALSE, null.ok = TRUE)
+  # maybe assertDate
+  assertCharacter(x = nextUpdate, any.missing = FALSE, null.ok = TRUE)
+  assertCharacter(x = updateFrequency, any.missing = FALSE, null.ok = TRUE)
   assertCharacter(x = notes, ignore.case = TRUE, any.missing = FALSE, len = 1, null.ok = TRUE)
   assertLogical(x = update, len = 1)
 
@@ -164,6 +179,58 @@ regGeometry <- function(nation = NULL, subset = NULL, gSeries = NULL, level = NU
       archive = NA_character_
     }
   }
+
+  if(is.null(archiveLink)){
+    message("please type in the weblink from which the archive was downloaded: ")
+    if(!testing){
+      archiveLink <- readline()
+    } else {
+      archiveLink <- "https://gadm.org/downloads/example_geom.7z.html"
+    }
+    if(is.na(archiveLink)){
+      archiveLink = NA_character_
+    }
+  }
+
+  if(is.null(nextUpdate)){
+    message("please type in when the geometry gets its next update (YYYY-MM-DD): ")
+    if(!testing){
+      nextUpdate <- as.Date(readline(), "%Y-%m-%d")
+    } else {
+      nextUpdate <- as.Date("2019-10-01", "%Y-%m-%d")
+    }
+    if(is.na(nextUpdate)){
+      # this might fail, there is no NA_Date_
+      nextUpdate = NA_character_
+    }
+  }
+
+  if(is.null(updateFrequency)){
+    message(paste("please type in the frequency in which the geometry gets updated ", 
+      "(select one of: continual, daily, weekly, fortnightly, quarterly, ",
+      "biannually, annually, asNeeded, irregular, notPlanned, unknown, ",
+      "periodic, semimonthly, biennially): "))
+    if(!testing){
+      updateFrequency <- readline()
+      while(!is.element(updateFrequency, c("continual", "daily","weekly", 
+            "fortnightly", "quarterly", "biannually", "annually", "asNeeded", 
+            "irregular", "notPlanned", "unknown", "periodic", "semimonthly", 
+            "biennially"))){
+              # test missing
+              message(paste("input none of: continual, daily, weekly, fortnightly, ",
+              "quarterly, biannually, annually, asNeeded, irregular, notPlanned, ",
+              "unknown, periodic, semimonthly, biennially. please repeat: "))
+              updateFrequency <- readline()
+            }
+    } else {
+      updateFrequency <- "quarterly"
+    }
+    if(is.na(updateFrequency)){
+      # this might fail, there is no NA_Date_
+      # also, it should be impossible to land here
+      updateFrequency = NA_character_
+    }
+  }  
 
   if(is.null(notes)){
     notes = NA_character_
@@ -258,8 +325,11 @@ regGeometry <- function(nation = NULL, subset = NULL, gSeries = NULL, level = NU
                 layer = layer,
                 nation_column = nation,
                 unit_column = nameCol,
-                date = Sys.Date(),
                 orig_file = archive,
+                orig_link = archiveLink,
+                download_date = Sys.Date(),
+                next_update = nextUpdate,
+                update_frequency = updateFrequency,
                 notes = notes)
 
   if(update){
