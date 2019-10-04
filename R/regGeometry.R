@@ -17,7 +17,7 @@
 #'   Examples.
 #' @param archive [\code{character(1)}]\cr the original file (perhaps a *.zip)
 #'   from which the geometry emerges.
-#' @param archiveLink [\code{character(1)}]\cr download-link of the archive
+#' @param archiveLink [\code{character(1)}]\cr download-link of the archive.
 #' @param nextUpdate [\code{character(1)}]\cr when does the geometry dataset gets
 #'   updated the next time (format resricted to: YYYY-MM-DD).
 #' @param updateFrequency [\code{character(1)}]\cr does the dataset gets updated in 
