@@ -48,6 +48,7 @@
 #' @importFrom readr read_csv
 #' @importFrom stringr str_split
 #' @importFrom tidyselect everything
+#' @importFrom utils read.csv
 #' @export
 
 normTable <- function(input = NULL, ..., update = FALSE, verbose = TRUE){
