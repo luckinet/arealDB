@@ -388,7 +388,7 @@ reorganise <- function(input = NULL, schema = NULL){
     }
 
     # spread long identifying variables
-    if(!is.null(spreadVars)){
+    if(!is.null(spreadVars) & all(spreadVars %in% colnames(temp))){
       temp <- temp %>%
         spread(spreadVars, value = "values")
       if(any(spreadVars %in% varNames)){
