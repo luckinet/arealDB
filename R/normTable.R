@@ -50,7 +50,7 @@
 #' @importFrom tidyselect everything
 #' @export
 
-normTable <- function(input, ..., update = FALSE, verbose = TRUE){
+normTable <- function(input = NULL, ..., update = FALSE, verbose = TRUE){
 
   # set internal paths
   intPaths <- paste0(getOption(x = "adb_path"))
@@ -76,7 +76,7 @@ normTable <- function(input, ..., update = FALSE, verbose = TRUE){
     thisInput <- input[i]
 
     # scrutinize file-name (the fields, which are delimited by "_" carry important information)
-    pathStr <- str_split(input, "/")[[1]]
+    pathStr <- str_split(thisInput, "/")[[1]]
     file_name <- pathStr[length(pathStr)]
     fields <- str_split(file_name, "_")[[1]]
 
@@ -95,7 +95,8 @@ normTable <- function(input, ..., update = FALSE, verbose = TRUE){
     geoID <- ifelse(length(inv_tables$geoID) == 0, 1,
                     inv_tables$geoID[grep(pattern = file_name, x = inv_tables$source_file)])
 
-    out <- read_csv(input, col_names = FALSE) %>%
+    out <- read.csv(file = thisInput, header = FALSE, as.is = TRUE) %>%
+      as_tibble() %>% #read_csv(thisInput, col_names = FALSE) %>%
       reorganise(schema = algorithm) %>%
       mutate(id = seq_along(year),
              tabID = tabID,
@@ -119,7 +120,7 @@ normTable <- function(input, ..., update = FALSE, verbose = TRUE){
       out <- out %>%
         select(id, tabID, geoID, ahID, everything())
 
-      updateData(table = out, nations = theNations, file = input)
+      updateData(table = out, nations = theNations, file = thisInput)
 
     } else{
       out <- out %>%
