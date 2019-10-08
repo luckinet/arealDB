@@ -183,9 +183,11 @@ translateTerms <- function(terms, index = NULL, source = NULL, strict = FALSE,
     write_csv(x = toTranslate, path = translating)
     if(Sys.info()[['sysname']] == "Linux" & inline){
       file.edit(translating)
-      done <- readline("\nplease replace the missing values, save the file and press any key to continue.\n")
+      message("please replace the missing values and save the file")
+      done <- readline(" -> press any key when done: ")
     } else {
-      done <- readline(paste0("\nplease edit the column 'target' in '", getOption(x = "adb_path"), "/'translating.csv' and then press any key to continue.\n"))
+      message("please edit the column 'target' in '", getOption(x = "adb_path"), "/'translating.csv'")
+      done <- readline(" -> press any key when done: ")
     }
 
     newOut <- read_csv(file = translating,
