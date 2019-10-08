@@ -263,13 +263,13 @@ regTable <- function(nation = NULL, subset = NULL, dSeries = NULL, gSeries = NUL
 
   # make a schema description
   theSchemaName <- paste0("meta_", dSeries, "_", newTID)
-  if(!testFileExists(x = theSchemaName, "r", extension = "rds")){
-    message(paste0("... please make the schema description '", theSchemaName, "'."))
-    if(!testing){
-      done <- readline(" -> press any key when done: ")
+  if(!exists(x = theSchemaName)){
+    if(!testFileExists(x = paste0(intPaths, "/adb_tables/meta/schemas/", theSchemaName, ".rds"), access = "r", extension = "rds")){
+      stop(paste0("please first make a schema description '", theSchemaName, ".rds' available in '/adb_tables/meta/schemas/'."))
+    } else {
+      theSchema <- readRDS(file = paste0(intPaths, "/adb_tables/meta/schemas/", theSchemaName, ".rds"))
     }
-  }
-  if(exists(x = theSchemaName)){
+  } else {
     theSchema <- get(eval(expr = theSchemaName))
     # make sure that the file is really there
     assertList(x = theSchema, len = 2)
