@@ -35,16 +35,16 @@ test_that("", {
             to = paste0(path, "/newDB/adb_geometries/stage2/arg_3__maia.gpkg"))
 
   meta_maia_1 <- list(clusters = list(top = NULL, left = NULL, width = NULL, height = NULL,
-                                      id = NULL),
+                                      id = NULL, header = TRUE),
                       variables = list(territories =
                                          list(type = "id", name = "al1", form = "long",
-                                              row = NULL, col = 1, rel = FALSE),
+                                              row = NULL, col = 1, split = NULL, rel = FALSE),
                                        period =
                                          list(type = "id", name = "year", form = "long",
-                                              row = NULL, col = 2, rel = FALSE),
+                                              row = NULL, col = 2, split = NULL, rel = FALSE),
                                        commodities =
                                          list(type = "id", name = NULL, form = "long",
-                                              row = NULL, col = 3, rel = FALSE),
+                                              row = NULL, col = 3, split = NULL, rel = FALSE),
                                        harvested =
                                          list(type = "values", unit = "ha", factor = 1,
                                               row = NULL, col = 4, rel = FALSE,
@@ -119,3 +119,4 @@ test_that("", {
 test_that("Error if arguments have wrong value", {
 
 })
+

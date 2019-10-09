@@ -38,7 +38,7 @@ test_that("units are matched", {
             to = paste0(path, "/newDB/adb_geometries/stage2/arg_3__maia.gpkg"))
 
   meta_maia_1 <<- list(clusters = list(top = NULL, left = NULL, width = NULL, height = NULL,
-                                       id = NULL),
+                                       id = NULL, header = TRUE),
                        variables = list(territories =
                                           list(type = "id", name = "al1", form = "long",
                                                row = NULL, col = 1, split = NULL, rel = FALSE),
@@ -57,7 +57,7 @@ test_that("units are matched", {
                                                row = NULL, col = 5, rel = FALSE,
                                                id = NULL, level = NULL)))
   meta_maia_2 <<- list(clusters = list(top = NULL, left = NULL, width = NULL, height = NULL,
-                                       id = NULL),
+                                       id = NULL, header = TRUE),
                        variables = list(territories =
                                           list(type = "id", name = "al1", form = "long",
                                                row = NULL, col = 1, split = NULL, rel = FALSE),

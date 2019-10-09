@@ -7,7 +7,7 @@ context("reorganise")
 
 test_that("recognise several vertical clusters of otherwise tidy data", {
   schema <- list(clusters = list(top = c(2, 9), left = 1, width = NULL, height = NULL,
-                                   id = "territories"),
+                                   id = "territories", header = FALSE),
                    variables = list(territories =
                                       list(type = "id", name = NULL, form = "long",
                                            row = NULL, col = 1, split = NULL, rel = FALSE),
@@ -41,7 +41,7 @@ test_that("recognise several vertical clusters of otherwise tidy data", {
 
 test_that("recognise several horizontal clusters of otherwise tidy data", {
   schema <- list(clusters = list(top = 2, left = c(2, 5), width = NULL, height = NULL,
-                                id = "territories"),
+                                id = "territories", header = FALSE),
                 variables = list(territories =
                                    list(type = "id", name = NULL, form = "wide",
                                         row = 2, col = c(2, 5), split = NULL, rel = FALSE),
@@ -75,7 +75,7 @@ test_that("recognise several horizontal clusters of otherwise tidy data", {
 
 test_that("rename variables, in already tidy table", {
   schema <- list(clusters = list(top = NULL, left = NULL, width = NULL, height = NULL,
-                                id = NULL),
+                                id = NULL, header = TRUE),
                 variables = list(territories =
                                    list(type = "id", name = NULL, form = "long",
                                         row = NULL, col = 1, split = NULL, rel = FALSE),
@@ -109,7 +109,7 @@ test_that("rename variables, in already tidy table", {
 
 test_that("spread long table", {
   schema <- list(clusters = list(top = NULL, left = NULL, width = NULL, height = NULL,
-                                id = NULL),
+                                id = NULL, header = TRUE),
                 variables = list(territories =
                                    list(type = "id", name = NULL, form = "long",
                                         row = NULL, col = 1, split = NULL, rel = FALSE),
@@ -143,7 +143,7 @@ test_that("spread long table", {
 
 test_that("bring wide identifying variable into long form", {
   schema <- list(clusters = list(top = NULL, left = NULL, width = NULL, height = NULL,
-                                id = NULL),
+                                id = NULL, header = FALSE),
                 variables = list(territories =
                                    list(type = "id", name = NULL, form = "long",
                                         row = NULL, col = 1, split = NULL, rel = FALSE),
@@ -177,7 +177,7 @@ test_that("bring wide identifying variable into long form", {
 
 test_that("bring wide identifying variable into long form and spread long table", {
   schema <- list(clusters = list(top = NULL, left = NULL, width = NULL, height = NULL,
-                                id = NULL),
+                                id = NULL, header = TRUE),
                 variables = list(territories =
                                    list(type = "id", name = NULL, form = "long",
                                         row = NULL, col = 1, split = NULL, rel = FALSE),
@@ -211,7 +211,7 @@ test_that("bring wide identifying variable into long form and spread long table"
 
 test_that("bring several wide identifying variables into long form", {
   schema <- list(clusters = list(top = NULL, left = NULL, width = NULL, height = NULL,
-                               id = NULL),
+                               id = NULL, header = FALSE),
                variables = list(territories =
                                   list(type = "id", name = NULL, form = "long",
                                        row = NULL, col = 1, split = NULL, rel = FALSE),
@@ -248,7 +248,7 @@ test_that("bring several wide identifying variables into long form", {
 
 test_that("split a column that contains several variables in an already tidy table", {
   schema <- list(clusters = list(top = NULL, left = NULL, width = NULL, height = NULL,
-                                  id = NULL),
+                                  id = NULL, header = TRUE),
                   variables = list(territories =
                                      list(type = "id", name = NULL, form = "long",
                                           row = NULL, col = 1, split = NULL, rel = FALSE),
@@ -283,3 +283,4 @@ test_that("split a column that contains several variables in an already tidy tab
 test_that("Error if arguments have wrong value", {
 
 })
+
