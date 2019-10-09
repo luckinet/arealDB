@@ -70,6 +70,7 @@ reorganise <- function(input = NULL, schema = NULL){
   clusters <- schema$clusters
   variables <- schema$variables
   origNames <- names(variables)
+  assertNames(x = names(clusters), permutation.of = c("top", "left", "width", "height", "id", "header"))
 
   # 1. clusters -----
   # set cluster start if it is NULL
@@ -104,6 +105,7 @@ reorganise <- function(input = NULL, schema = NULL){
   for(i in seq_along(variables)){
     varProp <- variables[[i]]
     varName <- names(variables)[i]
+    assertNames(x = names(varProp), must.include = "type")
 
     # determine splitting variables
     if(!is.null(varProp$split)){
@@ -114,6 +116,8 @@ reorganise <- function(input = NULL, schema = NULL){
 
     # get meta data on identifying variables
     if(varProp$type == "id"){
+      assertNames(x = names(varProp), permutation.of = c("type", "name", "form", "row", "col", "split", "rel"), .var.name = varName)
+
       sortVars <- c(sortVars, i)
       if(!is.null(varProp$name)){
         varName <- varProp$name
@@ -130,6 +134,8 @@ reorganise <- function(input = NULL, schema = NULL){
 
     # get values variables
     if(varProp$type == "values"){
+      assertNames(x = names(varProp), permutation.of = c("type", "unit", "factor", "row", "col", "rel", "id", "level"), .var.name = varName)
+
       if(!is.null(varProp$level)){
         varName <- varProp$level
         names(variables)[i] <- varName
@@ -209,7 +215,7 @@ reorganise <- function(input = NULL, schema = NULL){
     }
     variables[[i]] <- varProp
   }
-  tidyCols <- sort(tidyCols)
+  # tidyCols <- sort(tidyCols)
 
   # combine variable names, outNames is needed because
   varNames <- clustNames <- c(idVars, valVars)
@@ -233,7 +239,7 @@ reorganise <- function(input = NULL, schema = NULL){
     validRows <- rep(TRUE, dim(input)[1])
     validRows[-clusterRows] <- FALSE
     if(nClusters > 1){
-      temptidyCols <- tidyCols[clusterCols]
+      temptidyCols <- sort(tidyCols)[clusterCols]
       temptidyCols <- temptidyCols - min(temptidyCols)+1
     } else {
       temptidyCols <- tidyCols
@@ -379,15 +385,9 @@ reorganise <- function(input = NULL, schema = NULL){
         select(temptidyCols)
     }
 
-    # manage column names
+    # find column names
     if(is.null(newNames)){
-      if(all(temp[1,] == origNames)){
-        # if the column names are exactly the same as the first row, set the names
-        # and remove the first row
-        temp <- temp %>%
-          slice(-1)
-        newNames <- clustNames
-      } else if(!is.null(mergeRows)){
+      if(!is.null(mergeRows)){
         # if there are rows to merge, set column names from those.
         newNames <- temp %>%
           t() %>%
@@ -402,16 +402,21 @@ reorganise <- function(input = NULL, schema = NULL){
         # column names
         newNames <- temp %>%
           slice(1)
-        temp <- temp %>%
-          slice(-1)
       } else {
         newNames <- clustNames
       }
     }
     colnames(temp) <- newNames
 
+    # remove header, if it is included
+    if(clusters$header){
+      temp <- temp %>%
+        slice(-1)
+    }
+
     # # split id-columns that have a split expression
     if(!is.null(splitVars)){
+
       for(i in seq_along(splitVars)){
         theSplit <- splitVars[[length(splitVars)+1 - i]]
         theExpr <- paste0("(", theSplit$split, ")")
@@ -425,6 +430,24 @@ reorganise <- function(input = NULL, schema = NULL){
 
     # gather all gather variables
     if(any(toGather)){
+
+      # fix 'toGather' in case splitVars exist
+      if(!is.null(splitVars)){
+        cols <- sapply(seq_along(splitVars), function(x){
+          splitVars[[x]]$col
+        })
+        cols <- as.data.frame(table(cols))
+        tempGather <- as.list(toGather)
+
+        toGather <- unlist(lapply(seq_along(tempGather), function(x){
+          if(any(x == cols$cols)){
+            rep(tempGather[[x]], cols$Freq)
+          } else {
+            tempGather[[x]]
+          }
+        }))
+      }
+
       temp <- temp %>%
         gather(key, values, -!!colnames(temp)[!toGather])
 
