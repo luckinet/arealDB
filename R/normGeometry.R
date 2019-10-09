@@ -142,7 +142,7 @@ normGeometry <- function(input = NULL, ..., thresh = 10, update = FALSE){
       nations <- translateTerms(terms = theNations,
                                 index = "tt_territories",
                                 source = list("geoID" = newGID),
-                                verbose = TRUE) %>%
+                                verbose = FALSE) %>%
         mutate(target = if_else(target == "ignore", NA_character_, target)) %>%
         pull(target)
 
@@ -174,7 +174,7 @@ normGeometry <- function(input = NULL, ..., thresh = 10, update = FALSE){
         unified <- translateTerms(terms = toUnify,
                                   index = "tt_territories",
                                   source = list("geoID" = newGID),
-                                  verbose = TRUE) %>%
+                                  verbose = FALSE) %>%
           pull(target)
         subsets[[which(names(subsets) == "nation")]] <- unified
       }

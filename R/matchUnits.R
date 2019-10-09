@@ -134,7 +134,8 @@ matchUnits <- function(input = NULL, source = NULL, keepOrig = FALSE){
         theUnits <- translateTerms(terms = unique(inputUnits[[2]]),
                                    source = list("geoID" = source),
                                    index = "tt_territories",
-                                   fuzzy_terms = unique(unitSubset$name))
+                                   fuzzy_terms = unique(unitSubset$name),
+                                   verbose = FALSE)
         theUnits <- unique(theUnits)
 
         # ... join with 'inputUnits' to get the standard names into it
