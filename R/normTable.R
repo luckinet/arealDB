@@ -8,8 +8,6 @@
 #' @param update [\code{logical(1)}]\cr whether or not the physical files should
 #'   be updated (\code{TRUE}) or the function should merely return the new
 #'   object (\code{FALSE} default).
-#' @param verbose [\code{logical(1)}]\cr be verbose about what is happening
-#'   (default \code{TRUE}).
 #' @details Arguments in \code{...} are so-called matching lists that indicate
 #'   with which target column variables shall be matched and which value should
 #'   be used as target ID.
@@ -39,7 +37,7 @@
 #'
 #' normTable(input = ".../adb_tables/stage2/dataTable.csv",
 #'           faoID = list(commodities = "simpleName"),
-#'           update = TRUE, verbose = FALSE)
+#'           update = TRUE)
 #' }
 #' @importFrom checkmate assertDataFrame assertNames assertFileExists
 #'   assertIntegerish assertLogical
@@ -51,7 +49,7 @@
 #' @importFrom utils read.csv
 #' @export
 
-normTable <- function(input = NULL, ..., update = FALSE, verbose = TRUE){
+normTable <- function(input = NULL, ..., update = FALSE){
 
   # set internal paths
   intPaths <- paste0(getOption(x = "adb_path"))
@@ -69,7 +67,6 @@ normTable <- function(input = NULL, ..., update = FALSE, verbose = TRUE){
   # check validity of arguments
   assertNames(x = colnames(inv_tables), permutation.of = c("tabID", "datID", "geoID", "source_file", "schema", "date", "orig_file", "notes"))
   assertLogical(x = update, len = 1)
-  assertLogical(x = verbose, len = 1)
   assertList(x = vars)
 
   for(i in seq_along(input)){
@@ -96,9 +93,22 @@ normTable <- function(input = NULL, ..., update = FALSE, verbose = TRUE){
     geoID <- ifelse(length(inv_tables$geoID) == 0, 1,
                     inv_tables$geoID[grep(pattern = file_name, x = inv_tables$source_file)])
 
-    out <- read.csv(file = thisInput, header = FALSE, as.is = TRUE) %>%
-      as_tibble() %>% #read_csv(thisInput, col_names = FALSE) %>%
+    temp <- read.csv(file = thisInput, header = FALSE, as.is = TRUE) %>%
+      as_tibble() %>%
       reorganise(schema = algorithm) %>%
+      filter_at(vars(starts_with("al")), all_vars(!is.na(.)))
+
+    # make al1 if it doesn't extist
+    if(!"al1" %in% names(temp)){
+      if(length(fields[1]) == 0){
+        stop("the data table '", file_name, "' seems to include several nations but no column for nations (al1).\n Is the schema description correct?")
+      } else {
+        temp$al1 <- countries$nation[countries$iso_a3 == toupper(fields[1])]
+        temp <- temp %>% select(al1, everything())
+      }
+    }
+
+    out <- temp %>%
       mutate(id = seq_along(year),
              tabID = tabID,
              geoID = geoID) %>%
@@ -107,7 +117,7 @@ normTable <- function(input = NULL, ..., update = FALSE, verbose = TRUE){
     # if a matching list for other variables is defined, match those
     if(length(vars) != 0){
       out <- out %>%
-        matchVars(source = tabID, ..., keepOrig = TRUE)
+        matchVars(source = tabID, ..., keepOrig = FALSE)
     }
 
     # in case the user wants to update, update the data table
@@ -125,7 +135,8 @@ normTable <- function(input = NULL, ..., update = FALSE, verbose = TRUE){
 
     } else{
       out <- out %>%
-        select(-al1_alt)
+        select(-starts_with("al"))
+      return(out)
     }
   }
 
