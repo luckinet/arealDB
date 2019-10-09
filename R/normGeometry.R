@@ -11,8 +11,6 @@
 #' @param update [\code{logical(1)}]\cr whether or not the physical files should
 #'   be updated (\code{TRUE}) or the function should merely return the new
 #'   object (\code{FALSE} default).
-#' @param verbose [\code{logical(1)}]\cr be verbose about what is happening
-#'   (default \code{TRUE}).
 #' @details To normalise geometries, this function proceeds as follows:
 #'   \enumerate{ \item Read in \code{input} and extract initial metadata from
 #'   the file name. \item Loop through every nation that shall be processed and
@@ -48,7 +46,7 @@
 #'
 #' normGeometry(input = ".../adb_geometries/stage2/geometry.gpkg",
 #'              nation = c("united states"),
-#'              update = TRUE, verbose = FALSE)
+#'              update = TRUE)
 #'
 #' }
 #' @importFrom checkmate assertFileExists assertIntegerish assertLogical
@@ -65,7 +63,7 @@
 #' @importFrom tidyselect starts_with
 #' @export
 
-normGeometry <- function(input = NULL, ..., thresh = 10, update = FALSE, verbose = TRUE){
+normGeometry <- function(input = NULL, ..., thresh = 10, update = FALSE){
 
   # set internal paths
   intPaths <- paste0(getOption(x = "adb_path"))
@@ -88,7 +86,6 @@ normGeometry <- function(input = NULL, ..., thresh = 10, update = FALSE, verbose
   assertList(x = subsets)
   assertIntegerish(x = thresh, any.missing = FALSE)
   assertLogical(x = update, len = 1)
-  assertLogical(x = verbose, len = 1)
 
   outLut <- NULL
   for(i in seq_along(input)){
@@ -145,7 +142,7 @@ normGeometry <- function(input = NULL, ..., thresh = 10, update = FALSE, verbose
       nations <- translateTerms(terms = theNations,
                                 index = "tt_territories",
                                 source = list("geoID" = newGID),
-                                verbose = verbose) %>%
+                                verbose = TRUE) %>%
         mutate(target = if_else(target == "ignore", NA_character_, target)) %>%
         pull(target)
 
@@ -177,7 +174,7 @@ normGeometry <- function(input = NULL, ..., thresh = 10, update = FALSE, verbose
         unified <- translateTerms(terms = toUnify,
                                   index = "tt_territories",
                                   source = list("geoID" = newGID),
-                                  verbose = verbose) %>%
+                                  verbose = TRUE) %>%
           pull(target)
         subsets[[which(names(subsets) == "nation")]] <- unified
       }
