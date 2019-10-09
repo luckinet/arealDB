@@ -1,7 +1,11 @@
+library(testthat)
+library(readr)
+library(magrittr)
+library(checkmate)
 context("matchUnits")
 
 
-test_that("", {
+test_that("units are matched", {
   path <- system.file("test_datasets", package = "arealDB", mustWork = TRUE)
   setPath(root = paste0(path, "/newDB"))
   territories <- read_csv(file = paste0(path, "/id_units.csv"), col_types = "icc")
@@ -37,13 +41,13 @@ test_that("", {
                                        id = NULL),
                        variables = list(territories =
                                           list(type = "id", name = "al1", form = "long",
-                                               row = NULL, col = 1, rel = FALSE),
+                                               row = NULL, col = 1, split = NULL, rel = FALSE),
                                         period =
                                           list(type = "id", name = "year", form = "long",
-                                               row = NULL, col = 2, rel = FALSE),
+                                               row = NULL, col = 2, split = NULL, rel = FALSE),
                                         commodities =
                                           list(type = "id", name = NULL, form = "long",
-                                               row = NULL, col = 3, rel = FALSE),
+                                               row = NULL, col = 3, split = NULL, rel = FALSE),
                                         harvested =
                                           list(type = "values", unit = "ha", factor = 1,
                                                row = NULL, col = 4, rel = FALSE,
@@ -56,23 +60,23 @@ test_that("", {
                                        id = NULL),
                        variables = list(territories =
                                           list(type = "id", name = "al1", form = "long",
-                                               row = NULL, col = 1, rel = FALSE),
+                                               row = NULL, col = 1, split = NULL, rel = FALSE),
                                         province =
                                           list(type = "id", name = "al2", form = "long",
-                                               row = NULL, col = 2, rel = FALSE),
+                                               row = NULL, col = 2, split = NULL, rel = FALSE),
                                         period =
                                           list(type = "id", name = "year", form = "long",
-                                               row = NULL, col = 3, rel = FALSE),
+                                               row = NULL, col = 3, split = NULL, rel = FALSE),
                                         commodities =
                                           list(type = "id", name = NULL, form = "long",
-                                               row = NULL, col = 4, rel = FALSE),
+                                               row = NULL, col = 4, split = NULL, rel = FALSE),
                                         harvested =
                                           list(type = "values", unit = "ha", factor = 1,
                                                row = NULL, col = 5, rel = FALSE,
                                                id = NULL, level = NULL),
                                         production =
                                           list(type = "values", unit = "t", factor = 1,
-                                               row = NULL, col = 5, rel = FALSE,
+                                               row = NULL, col = 6, rel = FALSE,
                                                id = NULL, level = NULL)))
 
   regTable(nation = "Argentina",

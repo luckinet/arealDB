@@ -1,3 +1,7 @@
+library(testthat)
+library(readr)
+library(magrittr)
+library(checkmate)
 context("normTable")
 
 
@@ -198,8 +202,8 @@ test_that("tables can be normalised (with matched variables)", {
   # test whether the resulting file is "correct" ----
   final <- read_csv(file = paste0(path, "/newDB/adb_tables/stage3/Argentina.csv"))
   expect_tibble(x = final, types = c("double", "double", "double", "character", "double", "character", "double", "double", "double"))
-  expect_data_frame(x = final, nrows = 56, ncols = 9)
-  expect_names(x = names(final), identical.to = c("id", "tabID", "geoID", "ahID", "year", "commodities", "harvested", "production", "faoID"))
+  expect_data_frame(x = final, nrows = 56, ncols = 8)
+  expect_names(x = names(final), identical.to = c("id", "tabID", "geoID", "ahID", "year", "harvested", "production", "faoID"))
 
   unlink(paste0(path, "/newDB"), recursive = TRUE)
 })
