@@ -4,7 +4,7 @@
 \alias{normTable}
 \title{Normalise data tables}
 \usage{
-normTable(input = NULL, ..., update = FALSE, verbose = TRUE)
+normTable(input = NULL, ..., update = FALSE)
 }
 \arguments{
 \item{input}{[\code{character(1)}]\cr path of the file to normalise.}
@@ -16,9 +16,6 @@ Details.}
 \item{update}{[\code{logical(1)}]\cr whether or not the physical files should
 be updated (\code{TRUE}) or the function should merely return the new
 object (\code{FALSE} default).}
-
-\item{verbose}{[\code{logical(1)}]\cr be verbose about what is happening
-(default \code{TRUE}).}
 }
 \value{
 This function integrates unprocessed data tables at stage two into
@@ -55,7 +52,7 @@ Arguments in \code{...} are so-called matching lists that indicate
 
 normTable(input = ".../adb_tables/stage2/dataTable.csv",
           faoID = list(commodities = "simpleName"),
-          update = TRUE, verbose = FALSE)
+          update = TRUE)
 }
 }
 \seealso{
