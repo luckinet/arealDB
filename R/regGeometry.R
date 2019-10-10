@@ -20,11 +20,11 @@
 #' @param archiveLink [\code{character(1)}]\cr download-link of the archive.
 #' @param nextUpdate [\code{character(1)}]\cr when does the geometry dataset gets
 #'   updated the next time (format resricted to: YYYY-MM-DD).
-#' @param updateFrequency [\code{character(1)}]\cr does the dataset gets updated in 
-#'   a regular fashion? The provided options (which include irregular), are taken 
+#' @param updateFrequency [\code{character(1)}]\cr does the dataset gets updated in
+#'   a regular fashion? The provided options (which include irregular), are taken
 #'   from ISO 19115 «CodeList» MD_MaintenanceFrequencyCode. The allowed option are:
-#'   "geoID", "datID", "level", "source_file", "layer", "nation_column", "unit_column", 
-#'   "orig_file", "orig_link", "download_date", "next_update", "update_frequency", 
+#'   "geoID", "datID", "level", "source_file", "layer", "nation_column", "unit_column",
+#'   "orig_file", "orig_link", "download_date", "next_update", "update_frequency",
 #'   "notes".
 #' @param notes [\code{character(1)}]\cr optional notes that are assigned to all
 #'   features of this geometry.
@@ -73,7 +73,7 @@
 #' @export
 
 regGeometry <- function(nation = NULL, subset = NULL, gSeries = NULL, level = NULL,
-                        layer = NULL, nameCol = NULL, archive = NULL, archiveLink = NULL, 
+                        layer = NULL, nameCol = NULL, archive = NULL, archiveLink = NULL,
                         nextUpdate = NULL, updateFrequency = NULL, notes = NULL,
                         update = FALSE){
 
@@ -88,8 +88,8 @@ regGeometry <- function(nation = NULL, subset = NULL, gSeries = NULL, level = NU
   testing <- getOption(x = "adb_testing")
 
   # check validity of arguments
-  assertNames(x = colnames(inv_geometries), 
-              permutation.of = c("geoID", "datID", "level", "source_file", "layer", 
+  assertNames(x = colnames(inv_geometries),
+              permutation.of = c("geoID", "datID", "level", "source_file", "layer",
               "nation_column", "unit_column", "orig_file", "orig_link", "download_date",
               "next_update", "update_frequency", "notes"))
   assertCharacter(x = nation, ignore.case = TRUE, any.missing = FALSE, len = 1, null.ok = TRUE)
@@ -180,62 +180,6 @@ regGeometry <- function(nation = NULL, subset = NULL, gSeries = NULL, level = NU
     }
   }
 
-  if(is.null(archiveLink)){
-    message("please type in the weblink from which the archive was downloaded: ")
-    if(!testing){
-      archiveLink <- readline()
-    } else {
-      archiveLink <- "https://gadm.org/downloads/example_geom.7z.html"
-    }
-    if(is.na(archiveLink)){
-      archiveLink = NA_character_
-    }
-  }
-
-  if(is.null(nextUpdate)){
-    message("please type in when the geometry gets its next update (YYYY-MM-DD): ")
-    if(!testing){
-      nextUpdate <- as.Date(readline(), "%Y-%m-%d")
-    } else {
-      nextUpdate <- as.Date("2019-10-01", "%Y-%m-%d")
-    }
-    if(is.na(nextUpdate)){
-      # this might fail, there is no NA_Date_
-      nextUpdate = NA_character_
-    }
-  }
-
-  if(is.null(updateFrequency)){
-    message(paste("please type in the frequency in which the geometry gets updated ", 
-      "(select one of: continual, daily, weekly, fortnightly, quarterly, ",
-      "biannually, annually, asNeeded, irregular, notPlanned, unknown, ",
-      "periodic, semimonthly, biennially): "))
-    if(!testing){
-      updateFrequency <- readline()
-      while(!is.element(updateFrequency, c("continual", "daily","weekly", 
-            "fortnightly", "quarterly", "biannually", "annually", "asNeeded", 
-            "irregular", "notPlanned", "unknown", "periodic", "semimonthly", 
-            "biennially"))){
-              # test missing
-              message(paste("input none of: continual, daily, weekly, fortnightly, ",
-              "quarterly, biannually, annually, asNeeded, irregular, notPlanned, ",
-              "unknown, periodic, semimonthly, biennially. please repeat: "))
-              updateFrequency <- readline()
-            }
-    } else {
-      updateFrequency <- "quarterly"
-    }
-    if(is.na(updateFrequency)){
-      # this might fail, there is no NA_Date_
-      # also, it should be impossible to land here
-      updateFrequency = NA_character_
-    }
-  }  
-
-  if(is.null(notes)){
-    notes = NA_character_
-  }
-
   # determine nation value
   if(!testChoice(x = tolower(nation), choices = countries$nation)){
     theNation <- NULL
@@ -258,12 +202,58 @@ regGeometry <- function(nation = NULL, subset = NULL, gSeries = NULL, level = NU
     return(paste0("'", fileName, "' has already been registered."))
   }
 
-  # to check that what has been given in 'nation' and 'nameCol' is in fact a
-  # column in the geometry, load it
-  if(is.null(theNation)){
-    theGeometry <- read_sf(dsn = filePath,
-                           stringsAsFactors = FALSE)
-    assertChoice(x = nation, choices = colnames(theGeometry))
+  if(is.null(archiveLink)){
+    message("please type in the weblink from which the archive was downloaded: ")
+    if(!testing){
+      archiveLink <- readline()
+    } else {
+      archiveLink <- "https://gadm.org/downloads/example_geom.7z.html"
+    }
+    if(is.na(archiveLink)){
+      archiveLink = NA_character_
+    }
+  }
+
+  if(is.null(updateFrequency)){
+    message(paste("please type in the frequency in which the table gets updated \n -> select one of: continual, daily, weekly, fortnightly, quarterly, biannually, annually, asNeeded, irregular, notPlanned, unknown, periodic, semimonthly, biennially: "))
+    if(!testing){
+      updateFrequency <- readline()
+      while(!is.element(updateFrequency,
+                        c("continual", "daily","weekly", "fortnightly",
+                          "quarterly", "biannually", "annually", "asNeeded",
+                          "irregular", "notPlanned", "unknown", "periodic",
+                          "semimonthly", "biennially"))){
+        # test missing
+        message(paste(" -> input none of: continual, daily, weekly, fortnightly, quarterly, biannually, annually, asNeeded, irregular, notPlanned, unknown, periodic, semimonthly, biennially \n
+                      please repeat: "))
+        updateFrequency <- readline()
+      }
+    } else {
+      updateFrequency <- "quarterly"
+    }
+    if(is.na(updateFrequency)){
+      updateFrequency = as.Date(NA)
+    }
+  }
+
+  if(is.null(nextUpdate)){
+    if(updateFrequency %in% c("asNeeded", "notPlanned", "unknown")){
+      nextUpdate <- as.Date(NA)
+    } else {
+      message("please type in when the geometry gets its next update (YYYY-MM-DD): ")
+      if(!testing){
+        nextUpdate <- as.Date(readline(), "%Y-%m-%d")
+      } else {
+        nextUpdate <- as.Date("2019-10-01", "%Y-%m-%d")
+      }
+    }
+    if(is.na(nextUpdate)){
+      nextUpdate = as.Date(NA)
+    }
+  }
+
+  if(is.null(notes)){
+    notes = NA_character_
   }
 
   # test whether the archive file is available
@@ -297,6 +287,14 @@ regGeometry <- function(nation = NULL, subset = NULL, gSeries = NULL, level = NU
 
     # make sure that the file is really there
     assertFileExists(x = filePath, access = "r", extension = "gpkg")
+  }
+
+  # to check that what has been given in 'nation' and 'nameCol' is in fact a
+  # column in the geometry, load it
+  if(is.null(theNation)){
+    theGeometry <- read_sf(dsn = filePath,
+                           stringsAsFactors = FALSE)
+    assertChoice(x = nation, choices = colnames(theGeometry))
   }
 
   # determine which layers exist and ask the user which to chose, if none is

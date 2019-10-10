@@ -21,15 +21,15 @@
 #' @param archiveLink [\code{character(1)}] download-link of the archive.
 #' @param nextUpdate [\code{character(1)}]\cr when does the geometry dataset gets
 #'   updated the next time (format resricted to: YYYY-MM-DD).
-#' @param updateFrequency [\code{character(1)}]\cr does the dataset gets updated in 
-#'   a regular fashion? The provided options (which include irregular), are taken 
+#' @param updateFrequency [\code{character(1)}]\cr does the dataset gets updated in
+#'   a regular fashion? The provided options (which include irregular), are taken
 #'   from ISO 19115 «CodeList» MD_MaintenanceFrequencyCode. The allowed option are:
-#'   "geoID", "datID", "level", "source_file", "layer", "nation_column", "unit_column", 
-#'   "orig_file", "orig_link", "download_date", "next_update", "update_frequency", 
+#'   "geoID", "datID", "level", "source_file", "layer", "nation_column", "unit_column",
+#'   "orig_file", "orig_link", "download_date", "next_update", "update_frequency",
 #'   "notes".
 #' @param metadataLink [\code{character(1)}]\cr if there is already metadata existing:
 #'   link to the metadataset .
-#' @param metadataPath [\code{character(1)}]\cr if a existing metadataset was downloaded 
+#' @param metadataPath [\code{character(1)}]\cr if a existing metadataset was downloaded
 #'   along the data: the path where it is stored locally.
 #' @param notes [\code{character(1)}]\cr optional notes.
 #' @param update [\code{logical(1)}]\cr whether or not the file 'inv_tables.csv'
@@ -78,7 +78,7 @@
 regTable <- function(nation = NULL, subset = NULL, dSeries = NULL, gSeries = NULL,
                      level = NULL, begin = NULL, end = NULL, archive = NULL,
                      archiveLink = NULL, nextUpdate = NULL, updateFrequency = NULL,
-                     metadataLink = NULL, metadataPath = NULL, notes = NULL, 
+                     metadataLink = NULL, metadataPath = NULL, notes = NULL,
                      update = FALSE){
 
   # set internal paths
@@ -96,15 +96,15 @@ regTable <- function(nation = NULL, subset = NULL, dSeries = NULL, gSeries = NUL
   testing <- getOption(x = "adb_testing")
 
   # check validity of arguments
-  assertNames(x = colnames(inv_tables), 
-              permutation.of = c("tabID", "datID", "geoID", "source_file", "schema", 
-              "orig_file", "orig_link", "download_date", "next_update", 
+  assertNames(x = colnames(inv_tables),
+              permutation.of = c("tabID", "datID", "geoID", "source_file", "schema",
+              "orig_file", "orig_link", "download_date", "next_update",
               "update_frequency", "metadata_link", "metadata_path", "notes"))
-  assertNames(x = colnames(inv_dataseries), 
-              permutation.of = c("datID", "name", "description", "homepage", 
+  assertNames(x = colnames(inv_dataseries),
+              permutation.of = c("datID", "name", "description", "homepage",
               "licence_link", "licence_path", "notes"))
-  assertNames(x = colnames(inv_geometries), 
-              permutation.of = c("geoID", "datID", "level", "source_file", "layer", 
+  assertNames(x = colnames(inv_geometries),
+              permutation.of = c("geoID", "datID", "level", "source_file", "layer",
               "nation_column", "unit_column", "orig_file", "orig_link", "download_date",
               "next_update", "update_frequency", "notes"))
   assertCharacter(x = nation, ignore.case = TRUE, any.missing = FALSE, len = 1, null.ok = TRUE)
@@ -230,88 +230,6 @@ regTable <- function(nation = NULL, subset = NULL, dSeries = NULL, gSeries = NUL
     }
   }
 
-    if(is.null(archiveLink)){
-    message("please type in the weblink from which the archive was downloaded: ")
-    if(!testing){
-      archiveLink <- readline()
-    } else {
-      archiveLink <- "https://gadm.org/downloads/example_geom.7z.html"
-    }
-    if(is.na(archiveLink)){
-      archiveLink = NA_character_
-    }
-  }
-
-  if(is.null(nextUpdate)){
-    message("please type in when the table gets its next update (YYYY-MM-DD): ")
-    if(!testing){
-      nextUpdate <- as.Date(readline(), "%Y-%m-%d")
-    } else {
-      nextUpdate <- as.Date("2019-10-01", "%Y-%m-%d")
-    }
-    if(is.na(nextUpdate)){
-      # this might fail, there is no NA_Date_
-      nextUpdate = NA_character_
-    }
-  }
-
-  if(is.null(updateFrequency)){
-    message(paste("please type in the frequency in which the table gets updated ", 
-      "(select one of: continual, daily, weekly, fortnightly, quarterly, ",
-      "biannually, annually, asNeeded, irregular, notPlanned, unknown, ",
-      "periodic, semimonthly, biennially): "))
-    if(!testing){
-      updateFrequency <- readline()
-      while(!is.element(updateFrequency, c("continual", "daily","weekly", 
-            "fortnightly", "quarterly", "biannually", "annually", "asNeeded", 
-            "irregular", "notPlanned", "unknown", "periodic", "semimonthly", 
-            "biennially"))){
-              # test missing
-              message(paste("input none of: continual, daily, weekly, fortnightly, ",
-              "quarterly, biannually, annually, asNeeded, irregular, notPlanned, ",
-              "unknown, periodic, semimonthly, biennially. please repeat: "))
-              updateFrequency <- readline()
-            }
-    } else {
-      updateFrequency <- "quarterly"
-    }
-    if(is.na(updateFrequency)){
-      # this might fail, there is no NA_Date_
-      # also, it should be impossible to land here
-      updateFrequency = NA_character_
-    }
-  }
-
-  if(is.null(metadataLink)){
-    message(paste("if there is already metadata available: please type in the weblink ",
-            "to the metadataset: "))
-    if(!testing){
-      metadataLink <- readline()
-    } else {
-      metadataLink <- "https://ec.europa.eu/eurostat/de/table1/metadata"
-    }
-    if(is.na(metadataLink)){
-      metadataLink = NA_character_
-    }
-  }
-
-  if(is.null(metadataPath)){
-    message(paste("if there was an existing metadataset dwonloaded: please type in the ",
-                  "local path to the metadataset: "))
-    if(!testing){
-      metadataPath <- readline()
-    } else {
-      metadataPath <- "C:/Users/arue/Projects/GeoKur/Luckinet/census/table1_meta.txt"
-    }
-    if(is.na(metadataLink)){
-      metadataPath = NA_character_
-    }
-  }
-
-  if(is.null(notes)){
-    notes = NA_character_
-  }
-
   # determine nation value
   if(!testChoice(x = tolower(nation), choices = countries$nation)){
     theNation <- NULL
@@ -329,8 +247,89 @@ regTable <- function(nation = NULL, subset = NULL, dSeries = NULL, gSeries = NUL
   filePath <- paste0(intPaths, "/adb_tables/stage2/", fileName)
   filesTrace <- str_split(archive, "\\|")[[1]]
 
-  if(any(inv_tables$source_file %in% fileName)){
-    return(paste0("'", fileName, "' has already been registered."))
+  if(any(inv_tables$orig_file %in% archive)){
+    return(paste0("'", inv_tables$source_file[inv_tables$orig_file %in% archive], "' has already been registered."))
+  }
+
+  if(is.null(archiveLink)){
+    message("please type in the weblink from which the archive was downloaded: ")
+    if(!testing){
+      archiveLink <- readline()
+    } else {
+      archiveLink <- "https://gadm.org/downloads/example_geom.7z.html"
+    }
+    if(is.na(archiveLink)){
+      archiveLink = NA_character_
+    }
+  }
+
+  if(is.null(updateFrequency)){
+    message(paste("please type in the frequency in which the table gets updated \n -> select one of: continual, daily, weekly, fortnightly, quarterly, biannually, annually, asNeeded, irregular, notPlanned, unknown, periodic, semimonthly, biennially: "))
+    if(!testing){
+      updateFrequency <- readline()
+      while(!is.element(updateFrequency,
+                        c("continual", "daily","weekly", "fortnightly",
+                          "quarterly", "biannually", "annually", "asNeeded",
+                          "irregular", "notPlanned", "unknown", "periodic",
+                          "semimonthly", "biennially"))){
+        # test missing
+        message(paste(" -> input none of: continual, daily, weekly, fortnightly, quarterly, biannually, annually, asNeeded, irregular, notPlanned, unknown, periodic, semimonthly, biennially \n
+                      please repeat: "))
+        updateFrequency <- readline()
+      }
+    } else {
+      updateFrequency <- "quarterly"
+    }
+    if(is.na(updateFrequency)){
+      # this might fail, there is no NA_Date_
+      # also, it should be impossible to land here
+      updateFrequency = as.Date(NA)
+    }
+  }
+
+  if(is.null(nextUpdate)){
+    if(updateFrequency %in% c("asNeeded", "notPlanned", "unknown")){
+      nextUpdate <- as.Date(NA)
+    } else {
+      message("please type in when the table gets its next update (YYYY-MM-DD): ")
+      if(!testing){
+        nextUpdate <- as.Date(readline(), "%Y-%m-%d")
+      } else {
+        nextUpdate <- as.Date("2019-10-01", "%Y-%m-%d")
+      }
+      if(is.na(nextUpdate)){
+        # this might fail, there is no NA_Date_
+        nextUpdate = as.Date(NA)
+      }
+    }
+  }
+
+  if(is.null(metadataLink)){
+    message(paste("if there is already metadata available:\n -> type in the weblink to the metadataset: "))
+    if(!testing){
+      metadataLink <- readline()
+    } else {
+      metadataLink <- "https://ec.europa.eu/eurostat/de/table1/metadata"
+    }
+    if(is.na(metadataLink)){
+      metadataLink = NA_character_
+    }
+  }
+
+  if(is.null(metadataPath)){
+    message(paste("if there was an existing metadataset downloaded:\n -> type in the local path to the metadataset: "))
+    if(!testing){
+      metadataPath <- readline()
+    } else {
+      metadataPath <- "C:/Users/arue/Projects/GeoKur/Luckinet/census/table1_meta.txt"
+    }
+    if(is.na(metadataLink)){
+      metadataPath = NA_character_
+    }
+  }
+
+  if(is.null(notes)){
+    notes = NA_character_
   }
 
   # test whether the archive file is available
@@ -367,17 +366,14 @@ regTable <- function(nation = NULL, subset = NULL, dSeries = NULL, gSeries = NUL
 
   # make a schema description
   theSchemaName <- paste0("meta_", dSeries, "_", newTID)
-  if(!testFileExists(x = theSchemaName, "r", extension = "rds")){
-    message(paste0("... please make the schema description '", theSchemaName, "'."))
-    if(!testing){
-      done <- readline(" -> press any key when done: ")
-    }
-  }
   if(exists(x = theSchemaName)){
     theSchema <- get(eval(expr = theSchemaName))
     # make sure that the file is really there
     assertList(x = theSchema, len = 2)
     write_rds(x = theSchema, path = paste0(intPaths, "/adb_tables/meta/schemas/", theSchemaName, ".rds"))
+  }
+  if(!testFileExists(x = paste0(intPaths, "/adb_tables/meta/schemas/", theSchemaName, ".rds"), "r", extension = "rds")){
+    stop(paste0("-> please make the schema description '", theSchemaName, "' and rerun this function."))
   }
 
   # put together new census database entry
