@@ -36,3 +36,6 @@ vignettes/*.pdf
 rsconnect/inst/doc
 replication_script/data/newProject
 .Rproj.user
+inst/doc
+doc
+Meta
