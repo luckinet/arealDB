@@ -4,8 +4,9 @@
 \alias{regDataseries}
 \title{Register a new dataseries}
 \usage{
-regDataseries(name = NULL, description = NULL, website = NULL,
-  notes = NULL, update = FALSE)
+regDataseries(name = NULL, description = NULL, homepage = NULL,
+  licence_link = NULL, licence_path = NULL, notes = NULL,
+  update = FALSE)
 }
 \arguments{
 \item{name}{[\code{character(1)}]\cr the dataseries abbreviation.}
@@ -13,8 +14,14 @@ regDataseries(name = NULL, description = NULL, website = NULL,
 \item{description}{[\code{character(1)}]\cr the "long name" or "brief
 description" of the dataseries.}
 
-\item{website}{[\code{character(1)}]\cr a website where the dataseries or
-additional information can be found.}
+\item{homepage}{[\code{character(1)}]\cr the homepage of the data provider 
+where the dataseries or additional information can be found.}
+
+\item{licence_link}{[\code{character(1)}]\cr link to the licence or the webpage
+from which the licence was copied}
+
+\item{licence_path}{[\code{character(1)}]\cr path to the local file in with the 
+licence text is stored}
 
 \item{notes}{[\code{character(1)}]\cr optional notes.}
 
@@ -34,12 +41,10 @@ into the geospatial database
 
 regDataseries(name = "gadm",
               description = "Database of Global Administrative Areas",
-              website = "https://gadm.org/index.html",
+              homepage = "https://gadm.org/index.html",
+              licence_link = "https://gadm.org/license.html",
+              licence_path = "C:/Users/arue/Projects/GeoKur/Luckinet/licenceFiles/licence.txt",
               update = TRUE)
 
-regDataseries(name = "usda",
-              description = "US Dept. of Agriculture",
-              website = "https://www.nass.usda.gov/Quick_Stats/Lite/index.php",
-              update = TRUE)
 }
 }
