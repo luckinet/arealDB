@@ -8,7 +8,7 @@ stages:
 building:
   stage: build
   script:
-    - sudo apt-get install --yes libproj-dev libgeos-dev libgdal-dev gdal-bin libudunits2-dev
+    - sudo apt-get install --yes libproj-dev libgeos-dev libgdal-dev gdal-bin libudunits2-dev qpdf
     - R -e 'remotes::install_deps(dependencies = TRUE)'
     - R -e 'devtools::check()'
   cache:
@@ -28,7 +28,7 @@ testing:
   only:
     - master
   script:
-    - sudo apt-get install --yes libproj-dev libgeos-dev libgdal-dev gdal-bin libudunits2-dev
+    - sudo apt-get install --yes libproj-dev libgeos-dev libgdal-dev gdal-bin libudunits2-dev qpdf
     - Rscript -e 'install.packages(c("DT", "sf", "checkmate"))'
     - Rscript -e 'covr::gitlab(quiet = FALSE)'
   artifacts:
