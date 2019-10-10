@@ -29,8 +29,8 @@ test_that("a geometry inventory entry is produced", {
                         update = TRUE)
 
   expect_tibble(x = output, nrows = 1, ncols = 13, col.names = "strict")
-  expect_names(x = names(output), must.include = c("geoID", "datID", "level", "source_file", 
-                        "layer", "nation_column", "unit_column", "orig_file", "orig_link", 
+  expect_names(x = names(output), must.include = c("geoID", "datID", "level", "source_file",
+                        "layer", "nation_column", "unit_column", "orig_file", "orig_link",
                         "download_date", "next_update", "update_frequency", "notes"))
 
   unlink(paste0(path, "/newDB"), recursive = TRUE)
@@ -59,11 +59,8 @@ test_that("function asks for details, if not provided", {
   expect_equal(object = output[4], expected = "please type in the administrative level of the units: \n")
   expect_equal(object = output[5], expected = "please type in the archives' file name: \n")
   expect_equal(object = output[6], expected = "please type in the weblink from which the archive was downloaded: \n")
-  expect_equal(object = output[7], expected = "please type in when the geometry gets its next update (YYYY-MM-DD): \n")
-  expect_equal(object = output[8], expected = paste("please type in the frequency in which the geometry gets updated ", 
-                                              "(select one of: continual, daily, weekly, fortnightly, quarterly, ",
-                                              "biannually, annually, asNeeded, irregular, notPlanned, unknown, ",
-                                              "periodic, semimonthly, biennially): \n"))
+  expect_equal(object = output[7], expected = "please type in the frequency in which the table gets updated \n -> select one of: continual, daily, weekly, fortnightly, quarterly, biannually, annually, asNeeded, irregular, notPlanned, unknown, periodic, semimonthly, biennially: \n")
+  expect_equal(object = output[8], expected = "please type in when the geometry gets its next update (YYYY-MM-DD): \n")
 
   unlink(paste0(path, "/newDB"), recursive = TRUE)
 })
