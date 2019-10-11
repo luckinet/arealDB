@@ -13,16 +13,18 @@ Depends:
 License: GPL-3 + file LICENSE
 Encoding: UTF-8
 LazyData: true
-Imports: checkmate,
-  dplyr,
-  magrittr,
-  readr,
-  rlang,
-  sf,
-  stringr,
-  tibble,
-  tidyr,
-  tidyselect
+Imports: 
+    checkmate,
+    dplyr,
+    magrittr,
+    readr,
+    rlang,
+    sf,
+    stringr,
+    tibble,
+    tidyr,
+    tidyselect
+Remotes: gitlab::luckinet/software/rectr
 Suggests: 
     testthat,
     knitr,
