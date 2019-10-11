@@ -51,13 +51,13 @@ matchUnits <- function(input = NULL, source = NULL, keepOrig = FALSE){
     # cleanNation <- unifyNations(unify = rawNation, verbose = FALSE)
     cleanNation <- translateTerms(terms = rawNation,
                                   source = list("geoID" = source),
-                                  index = "tt_nations",
+                                  index = "tt_territories",
                                   inline = FALSE,
                                   verbose = FALSE) %>%
       pull(target)
 
     if(is.na(cleanNation)){
-      message(paste0("\n--> ! skipping ", rawNation, " because it does not match in 'tt_nations.csv'."))
+      message(paste0("\n--> ! skipping ", rawNation, " because it does not match in 'tt_territories.csv'."))
       next
     }
 
@@ -134,7 +134,8 @@ matchUnits <- function(input = NULL, source = NULL, keepOrig = FALSE){
         theUnits <- translateTerms(terms = unique(inputUnits[[2]]),
                                    source = list("geoID" = source),
                                    index = "tt_territories",
-                                   fuzzy_terms = unique(unitSubset$name))
+                                   fuzzy_terms = unique(unitSubset$name),
+                                   verbose = FALSE)
         theUnits <- unique(theUnits)
 
         # ... join with 'inputUnits' to get the standard names into it

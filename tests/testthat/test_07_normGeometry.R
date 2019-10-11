@@ -6,6 +6,8 @@ context("normGeometry")
 test_that("geometries can be normalised", {
   path <- system.file("test_datasets", package="arealDB", mustWork = TRUE)
   setPath(root = paste0(path, "/newDB"))
+  territories <- read_csv(file = paste0(path, "/id_units.csv"), col_types = "icc")
+  setVariables(input = territories, variable = "territories", pid = "anID", target = "names")
   options(adb_testing = TRUE)
 
   regDataseries(name = "gadm",
@@ -28,7 +30,7 @@ test_that("geometries can be normalised", {
             to = paste0(path, "/newDB/adb_geometries/stage2/_2__gadm.gpkg"))
   file.copy(from = paste0(path, "/example_geom3.gpkg"),
             to = paste0(path, "/newDB/adb_geometries/stage2/_3__gadm.gpkg"))
-  file.copy(from = paste0(path, "/example_geom3.gpkg"),
+  file.copy(from = paste0(path, "/example_geom4.gpkg"),
             to = paste0(path, "/newDB/adb_geometries/stage2/arg_3__maia.gpkg"))
 
   # set up three levels of polygons ----
@@ -113,7 +115,7 @@ test_that("geometries can be normalised", {
 
   final <- st_read(dsn = paste0(path, "/newDB/adb_geometries/stage3/argentina.gpkg"), layer = "level_3")
   expect_class(x = final, classes = c("sf"))
-  expect_data_frame(x = final, nrows = 6, ncols = 9)
+  expect_data_frame(x = final, nrows = 12, ncols = 9)
   expect_names(x = names(final), identical.to = c("nation", "name", "level", "ahID", "geoID", "al1_id", "al2_id", "al3_id", "geom"))
 
   unlink(paste0(path, "/newDB"), recursive = TRUE)

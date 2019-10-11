@@ -4,8 +4,7 @@
 \alias{normGeometry}
 \title{Normalise geometries}
 \usage{
-normGeometry(input = NULL, ..., thresh = 90, update = FALSE,
-  verbose = TRUE)
+normGeometry(input = NULL, ..., thresh = 10, update = FALSE)
 }
 \arguments{
 \item{input}{[\code{character(1)}]\cr path of the file to normalise.}
@@ -15,15 +14,12 @@ by \code{nation}, \code{continent}, \code{region}, \code{subregion} or
 \code{un_member = TRUE/FALSE}. Valid values can be found in the object
 \code{\link{countries}}.}
 
-\item{thresh}{[\code{integerish(1)}]\cr the threshold of percentage of
-overlap above which to consider two territorial units "the same".}
+\item{thresh}{[\code{integerish(1)}]\cr the deviation of percentage of
+overlap above which to consider two territorial units "different".}
 
 \item{update}{[\code{logical(1)}]\cr whether or not the physical files should
 be updated (\code{TRUE}) or the function should merely return the new
 object (\code{FALSE} default).}
-
-\item{verbose}{[\code{logical(1)}]\cr be verbose about what is happening
-(default \code{TRUE}).}
 }
 \value{
 This function integrates unprocessed geometries at stage two into the
@@ -66,7 +62,7 @@ To normalise geometries, this function proceeds as follows:
 
 normGeometry(input = ".../adb_geometries/stage2/geometry.gpkg",
              nation = c("united states"),
-             update = TRUE, verbose = FALSE)
+             update = TRUE)
 
 }
 }

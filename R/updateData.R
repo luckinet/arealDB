@@ -34,7 +34,7 @@ updateData <- function(table = NULL, nations = NULL, file = NULL){
 
     tempTable <- table %>%
       filter(al1_alt == nations[i]) %>%
-      select(-al1_alt)
+      select(-starts_with("al"))
 
     # append output to previous file
     if(file.exists(paste0(targetDir, nations[i], ".csv"))){

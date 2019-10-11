@@ -1,8 +1,8 @@
 Package: arealDB
 Type: Package
 Title: Harmonise and integrate heterogeneous areal data
-Description: This package helps the user to build up harmonised databases of areal data.
-Version: 0.1.0
+Description: Helps the user to build up harmonised databases of areal data.
+Version: 0.2.1
 Authors@R: person("Steffen", "Ehrmann", email = "steffen.ehrmann@idiv.de",
     role = c("aut", "cre"), 
     comment = c(ORCID = "0000-0002-2958-0796"))

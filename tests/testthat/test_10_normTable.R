@@ -1,9 +1,15 @@
+library(testthat)
+library(readr)
+library(magrittr)
+library(checkmate)
 context("normTable")
 
 
 test_that("tables can be normalised (without matched variables)", {
   path <- system.file("test_datasets", package = "arealDB", mustWork = TRUE)
   setPath(root = paste0(path, "/newDB"))
+  territories <- read_csv(file = paste0(path, "/id_units.csv"), col_types = "icc")
+  setVariables(input = territories, variable = "territories", pid = "anID", target = "names")
   options(adb_testing = TRUE)
 
   regDataseries(name = "gadm",
@@ -30,7 +36,7 @@ test_that("tables can be normalised (without matched variables)", {
             to = paste0(path, "/newDB/adb_geometries/stage2/_2__gadm.gpkg"))
   file.copy(from = paste0(path, "/example_geom3.gpkg"),
             to = paste0(path, "/newDB/adb_geometries/stage2/_3__gadm.gpkg"))
-  file.copy(from = paste0(path, "/example_geom3.gpkg"),
+  file.copy(from = paste0(path, "/example_geom4.gpkg"),
             to = paste0(path, "/newDB/adb_geometries/stage2/arg_3__maia.gpkg"))
 
   meta_maia_1 <- list(clusters = list(top = NULL, left = NULL, width = NULL, height = NULL,
@@ -153,7 +159,7 @@ test_that("tables can be normalised (with matched variables)", {
             to = paste0(path, "/newDB/adb_geometries/stage2/_2__gadm.gpkg"))
   file.copy(from = paste0(path, "/example_geom3.gpkg"),
             to = paste0(path, "/newDB/adb_geometries/stage2/_3__gadm.gpkg"))
-  file.copy(from = paste0(path, "/example_geom3.gpkg"),
+  file.copy(from = paste0(path, "/example_geom4.gpkg"),
             to = paste0(path, "/newDB/adb_geometries/stage2/arg_3__maia.gpkg"))
 
   meta_maia_1 <- list(clusters = list(top = NULL, left = NULL, width = NULL, height = NULL,
@@ -238,8 +244,8 @@ test_that("tables can be normalised (with matched variables)", {
   # test whether the resulting file is "correct" ----
   final <- read_csv(file = paste0(path, "/newDB/adb_tables/stage3/Argentina.csv"))
   expect_tibble(x = final, types = c("double", "double", "double", "character", "double", "character", "double", "double", "double"))
-  expect_data_frame(x = final, nrows = 56, ncols = 9)
-  expect_names(x = names(final), identical.to = c("id", "tabID", "geoID", "ahID", "year", "commodities", "harvested", "production", "faoID"))
+  expect_data_frame(x = final, nrows = 56, ncols = 8)
+  expect_names(x = names(final), identical.to = c("id", "tabID", "geoID", "ahID", "year", "harvested", "production", "faoID"))
 
   unlink(paste0(path, "/newDB"), recursive = TRUE)
 })

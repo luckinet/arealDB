@@ -6,13 +6,11 @@
 #'   by \code{nation}, \code{continent}, \code{region}, \code{subregion} or
 #'   \code{un_member = TRUE/FALSE}. Valid values can be found in the object
 #'   \code{\link{countries}}.
-#' @param thresh [\code{integerish(1)}]\cr the threshold of percentage of
-#'   overlap above which to consider two territorial units "the same".
+#' @param thresh [\code{integerish(1)}]\cr the deviation of percentage of
+#'   overlap above which to consider two territorial units "different".
 #' @param update [\code{logical(1)}]\cr whether or not the physical files should
 #'   be updated (\code{TRUE}) or the function should merely return the new
 #'   object (\code{FALSE} default).
-#' @param verbose [\code{logical(1)}]\cr be verbose about what is happening
-#'   (default \code{TRUE}).
 #' @details To normalise geometries, this function proceeds as follows:
 #'   \enumerate{ \item Read in \code{input} and extract initial metadata from
 #'   the file name. \item Loop through every nation that shall be processed and
@@ -48,14 +46,14 @@
 #'
 #' normGeometry(input = ".../adb_geometries/stage2/geometry.gpkg",
 #'              nation = c("united states"),
-#'              update = TRUE, verbose = FALSE)
+#'              update = TRUE)
 #'
 #' }
 #' @importFrom checkmate assertFileExists assertIntegerish assertLogical
 #'   assertCharacter assertChoice testFileExists
 #' @importFrom dplyr filter distinct select mutate rowwise filter_at vars
 #'   all_vars pull group_by arrange summarise mutate_if rename n if_else
-#' @importFrom rlang sym
+#' @importFrom rlang sym exprs
 #' @importFrom readr read_csv
 #' @importFrom sf st_layers read_sf st_write st_join st_buffer st_equals st_sf
 #'   st_transform st_crs st_geometry_type st_area st_intersection
@@ -65,7 +63,7 @@
 #' @importFrom tidyselect starts_with
 #' @export
 
-normGeometry <- function(input = NULL, ..., thresh = 90, update = FALSE, verbose = TRUE){
+normGeometry <- function(input = NULL, ..., thresh = 10, update = FALSE){
 
   # set internal paths
   intPaths <- paste0(getOption(x = "adb_path"))
@@ -90,7 +88,6 @@ normGeometry <- function(input = NULL, ..., thresh = 90, update = FALSE, verbose
   assertList(x = subsets)
   assertIntegerish(x = thresh, any.missing = FALSE)
   assertLogical(x = update, len = 1)
-  assertLogical(x = verbose, len = 1)
 
   outLut <- NULL
   for(i in seq_along(input)){
@@ -145,9 +142,9 @@ normGeometry <- function(input = NULL, ..., thresh = 90, update = FALSE, verbose
         as.character()
       assertCharacter(x = theNations, min.len = 1, any.missing = FALSE)
       nations <- translateTerms(terms = theNations,
-                                index = "tt_nations",
+                                index = "tt_territories",
                                 source = list("geoID" = newGID),
-                                verbose = verbose) %>%
+                                verbose = FALSE) %>%
         mutate(target = if_else(target == "ignore", NA_character_, target)) %>%
         pull(target)
 
@@ -177,9 +174,9 @@ normGeometry <- function(input = NULL, ..., thresh = 90, update = FALSE, verbose
       if(any(names(subsets) == "nation")){
         toUnify <- eval(subsets[[which(names(subsets) == "nation")]])
         unified <- translateTerms(terms = toUnify,
-                                  index = "tt_nations",
+                                  index = "tt_territories",
                                   source = list("geoID" = newGID),
-                                  verbose = verbose) %>%
+                                  verbose = FALSE) %>%
           pull(target)
         subsets[[which(names(subsets) == "nation")]] <- unified
       }
@@ -203,16 +200,16 @@ normGeometry <- function(input = NULL, ..., thresh = 90, update = FALSE, verbose
     } else {
 
       # then we loop through all nations
-      for(i in seq_along(nations)){
+      for(j in seq_along(nations)){
 
-        tempNation <- nations[i]
+        tempNation <- nations[j]
         nationID <- as.integer(countries$ahID[countries$nation == tempNation])
         message(paste0(" -> processing '", tempNation, "' ..."))
 
         # create a geom specifically for the recent nation
         if(severalNations){
           sourceGeom <- newGeom %>%
-            filter_at(vars(nationCol), all_vars(. %in% theNations[i])) %>%
+            filter_at(vars(nationCol), all_vars(. %in% theNations[j])) %>%
             select(unitCols)
           assertChoice(x = natCol, choices = names(sourceGeom), .var.name = "names(nation_column)")
         } else{
@@ -277,7 +274,7 @@ normGeometry <- function(input = NULL, ..., thresh = 90, update = FALSE, verbose
           }
 
           # test whether/which of the new features are already (spatially) in the target
-          # Geom and stop if all of them are there already.
+          # geom and stop if all of them are there already.
           message("    Checking for exact spatial matches")
           equals <- unlist(st_equals(sourceGeom, targetGeom))
           if(length(equals) == dim(sourceGeom)[1]){
@@ -286,47 +283,48 @@ normGeometry <- function(input = NULL, ..., thresh = 90, update = FALSE, verbose
           }
 
           # determine the spatial overlap
-          message("    Determining spatial overlap with source geometries")
-          overlapTarget <- suppressMessages(suppressWarnings(
-            sourceGeom %>%
-              mutate(source_area = st_area(.)) %>%
-              st_buffer(dist = 0) %>% # is needed sometimes to clarify "self-intersection" problems: https://gis.stackexchange.com/questions/163445/getting-topologyexception-input-geom-1-is-invalid-which-is-due-to-self-intersec
-              st_intersection(y = targetGeom) %>%
-              mutate(overlap = as.numeric(st_area(.)/source_area*100)) %>%
-              as_tibble() %>%
-              select(-geom, -source_area) %>%
-              group_by(.dots = unitCols) %>%
-              filter(overlap == max(overlap)) %>%
-              ungroup()
-          ))
+          message("    Joining target and source geometries")
+          targetGeom <- targetGeom %>%
+            mutate(target_area = as.numeric(st_area(.)))
 
-          wipGeom <- sourceGeom %>%
-            as_tibble() %>%
-            left_join(overlapTarget) %>%
-            mutate(overlap = if_else(is.na(overlap), 0, overlap)) %>%
-            st_sf()
+          validGeom <- suppressWarnings(suppressMessages(
+            sourceGeom %>%
+              st_buffer(dist = 0) %>% # is needed sometimes to clarify "self-intersection" problems: https://gis.stackexchange.com/questions/163445/getting-topologyexception-input-geom-1-is-invalid-which-is-due-to-self-intersec
+              mutate(running = seq_along(geom)) %>%
+              st_intersection(y = targetGeom) %>%
+              mutate(area = st_area(.)) %>%
+              group_by(running) %>%
+              mutate(source_area = sum(area),
+                     deviation = source_area/target_area*100 - 100) %>%
+              filter(area == max(area)) %>%
+              mutate(valid = abs(deviation) < thresh) %>%
+              ungroup() %>%
+              select(-running, -target_area, -area, -source_area, -deviation)
+            ))
+
+          targetGeom <- targetGeom %>%
+            select(-target_area)
 
           # get valid geoms that have an overlap larger than the threshold
-          message("    Joining target and source geometries")
-          validOverlap <- wipGeom$overlap > thresh
-
-          validUnits <- wipGeom %>%
-            filter(validOverlap) %>%
+          validUnits <- validGeom %>%
+            filter(valid) %>%
             mutate(geoID = newGID) %>%
-            select(-!!unitCols, -overlap)
+            select(-valid, -!!unitCols)
 
           # get geoms that are invalid because their overlap is smaller than
           # threshold
-          invalidUnits <- wipGeom %>%
-            filter(!validOverlap)
+          invalidUnits <- sourceGeom %>%
+            filter(!validGeom$valid)
 
-          newCols <- names(targetGeom)
-          newCols <- newCols[-which(newCols %in% c("geom", "nation", unitCols))]
-          if(dim(invalidUnits)[1] > 0){
-            invalidUnits[, newCols] <- NA_character_
-          }
-          invalidUnits <- invalidUnits %>%
-            mutate(level = as.integer(level),
+          newCols <- names(targetGeom)[-which(names(targetGeom) %in% names(invalidUnits))]
+
+          tempUnits <- as_tibble(matrix(nrow = dim(invalidUnits)[1], ncol = length(newCols)), .name_repair = "minimal")
+          colnames(tempUnits) <- newCols
+
+          invalidUnits <- bind_cols(invalidUnits, tempUnits) %>%
+            mutate(nation = tempNation,
+                   name = as.character(name),
+                   level = as.integer(theLevel),
                    ahID = as.integer(ahID),
                    geoID = as.integer(geoID),
                    nation = tempNation) %>%
@@ -432,7 +430,7 @@ normGeometry <- function(input = NULL, ..., thresh = 90, update = FALSE, verbose
           suppressMessages(
             newUnits <- invalidUnits %>%
               as_tibble() %>%
-              select(-ahID, -geoID, -level, -name, -starts_with("al"), -overlap)  %>%
+              select(-ahID, -geoID, -level, -name, -starts_with("al"))  %>%
               mutate_if(is.character, tolower) %>%
               left_join(prevIDs) %>%
               left_join(prevUnits) %>%
@@ -564,7 +562,7 @@ normGeometry <- function(input = NULL, ..., thresh = 90, update = FALSE, verbose
           st_write(obj = outGeom,
                    dsn = paste0(intPaths, "/adb_geometries/stage3/", tempNation, ".gpkg"),
                    layer = paste0("level_", theLevel),
-                   layer_options = "OVERWRITE=yes",
+                   delete_layer = TRUE,
                    quiet = TRUE)
         }
       }

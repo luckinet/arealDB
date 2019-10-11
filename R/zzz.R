@@ -6,7 +6,8 @@ globalVariables(c(
   "idParent", "idUnit", "inCountry", "iso_a3", "level", "myNat", "n", "name",
   "nation", "notes", "origin", "parent", "production", "target", "tempFuzz",
   "terms", "toClean", "unit", "year", "years", "yield", "tabID", "source_area",
-  "overlap", "tempID", "key", "val", "rn", "values", "ID"
+  "overlap", "tempID", "key", "val", "rn", "values", "ID", "area", "deviation",
+  "target_area", "valid", "running"
 ))
 
 .onAttach <- function(libname, pkgname){

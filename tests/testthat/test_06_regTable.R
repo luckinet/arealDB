@@ -95,6 +95,26 @@ test_that("function asks for details, if not provided", {
   file.copy(from = paste0(path, "/example_table1.csv"),
             to = paste0(path, "/newDB/adb_tables/stage2/_1__maia_1_1990_2019.csv"))
 
+  meta_maia_1 <<- list(clusters = list(top = NULL, left = NULL, width = NULL, height = NULL,
+                                       id = NULL),
+                       variables = list(territories =
+                                          list(type = "id", name = "al1", form = "long",
+                                               row = NULL, col = 1, rel = FALSE),
+                                        period =
+                                          list(type = "id", name = "year", form = "long",
+                                               row = NULL, col = 2, rel = FALSE),
+                                        commodities =
+                                          list(type = "id", name = NULL, form = "long",
+                                               row = NULL, col = 3, rel = FALSE),
+                                        harvested =
+                                          list(type = "values", unit = "ha", factor = 1,
+                                               row = NULL, col = 4, rel = FALSE,
+                                               id = NULL, level = NULL),
+                                        production =
+                                          list(type = "values", unit = "t", factor = 1,
+                                               row = NULL, col = 5, rel = FALSE,
+                                               id = NULL, level = NULL)))
+
   expect_message(object = regTable())
   output <- capture_messages(code = regTable())
   expect_character(x = output, len = 11, any.missing = FALSE, unique = TRUE)
@@ -129,6 +149,7 @@ test_that("Error if arguments have wrong value", {
   file.copy(from = paste0(path, "/example_table.csv"),
             to = paste0(path, "/newDB/adb_tables/stage2/arg_1_soyMaize_test_1_1990_2017.csv"))
 
+  expect_error(regTable())
   expect_error(regTable(update = 1))
 
   unlink(paste0(path, "/newDB"), recursive = TRUE)
