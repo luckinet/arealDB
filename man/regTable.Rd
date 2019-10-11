@@ -6,7 +6,9 @@
 \usage{
 regTable(nation = NULL, subset = NULL, dSeries = NULL,
   gSeries = NULL, level = NULL, begin = NULL, end = NULL,
-  archive = NULL, notes = NULL, update = FALSE)
+  archive = NULL, archiveLink = NULL, nextUpdate = NULL,
+  updateFrequency = NULL, metadataLink = NULL, metadataPath = NULL,
+  notes = NULL, update = FALSE)
 }
 \arguments{
 \item{nation}{[\code{character(1)}]\cr the nation for which the areal data
@@ -33,6 +35,24 @@ valid.}
 
 \item{archive}{[\code{character(1)}]\cr the original file from which the
 boundaries emerge.}
+
+\item{archiveLink}{[\code{character(1)}] download-link of the archive.}
+
+\item{nextUpdate}{[\code{character(1)}]\cr when does the geometry dataset gets
+updated the next time (format resricted to: YYYY-MM-DD).}
+
+\item{updateFrequency}{[\code{character(1)}]\cr does the dataset gets updated in
+a regular fashion? The provided options (which include irregular), are taken
+from ISO 19115 «CodeList» MD_MaintenanceFrequencyCode. The allowed option are:
+"geoID", "datID", "level", "source_file", "layer", "nation_column", "unit_column",
+"orig_file", "orig_link", "download_date", "next_update", "update_frequency",
+"notes".}
+
+\item{metadataLink}{[\code{character(1)}]\cr if there is already metadata existing:
+link to the metadataset .}
+
+\item{metadataPath}{[\code{character(1)}]\cr if a existing metadataset was downloaded
+along the data: the path where it is stored locally.}
 
 \item{notes}{[\code{character(1)}]\cr optional notes.}
 

@@ -79,10 +79,12 @@ normGeometry <- function(input = NULL, ..., thresh = 10, update = FALSE){
   moveFile <- TRUE
 
   # get tables
-  inv_geometries <- read_csv(paste0(intPaths, "/inv_geometries.csv"), col_types = "iciccccDcc")
+  inv_geometries <- read_csv(paste0(intPaths, "/inv_geometries.csv"), col_types = "iiiccccccDDcc")
 
   # check validity of arguments
-  assertNames(x = colnames(inv_geometries), permutation.of = c("geoID", "datID", "level", "source_file", "layer", "nation_column", "unit_column", "date", "orig_file", "notes"))
+  assertNames(x = colnames(inv_geometries), permutation.of = c("geoID", "datID", "level", "source_file", 
+                        "layer", "nation_column", "unit_column", "orig_file", "orig_link", 
+                        "download_date", "next_update", "update_frequency", "notes"))
   assertList(x = subsets)
   assertIntegerish(x = thresh, any.missing = FALSE)
   assertLogical(x = update, len = 1)

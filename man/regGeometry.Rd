@@ -6,6 +6,7 @@
 \usage{
 regGeometry(nation = NULL, subset = NULL, gSeries = NULL,
   level = NULL, layer = NULL, nameCol = NULL, archive = NULL,
+  archiveLink = NULL, nextUpdate = NULL, updateFrequency = NULL,
   notes = NULL, update = FALSE)
 }
 \arguments{
@@ -30,6 +31,18 @@ Examples.}
 
 \item{archive}{[\code{character(1)}]\cr the original file (perhaps a *.zip)
 from which the geometry emerges.}
+
+\item{archiveLink}{[\code{character(1)}]\cr download-link of the archive.}
+
+\item{nextUpdate}{[\code{character(1)}]\cr when does the geometry dataset gets
+updated the next time (format resricted to: YYYY-MM-DD).}
+
+\item{updateFrequency}{[\code{character(1)}]\cr does the dataset gets updated in
+a regular fashion? The provided options (which include irregular), are taken
+from ISO 19115 «CodeList» MD_MaintenanceFrequencyCode. The allowed option are:
+"geoID", "datID", "level", "source_file", "layer", "nation_column", "unit_column",
+"orig_file", "orig_link", "download_date", "next_update", "update_frequency",
+"notes".}
 
 \item{notes}{[\code{character(1)}]\cr optional notes that are assigned to all
 features of this geometry.}

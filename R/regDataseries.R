@@ -5,8 +5,12 @@
 #' @param name [\code{character(1)}]\cr the dataseries abbreviation.
 #' @param description [\code{character(1)}]\cr the "long name" or "brief
 #'   description" of the dataseries.
-#' @param website [\code{character(1)}]\cr a website where the dataseries or
-#'   additional information can be found.
+#' @param homepage [\code{character(1)}]\cr the homepage of the data provider 
+#'   where the dataseries or additional information can be found.
+#' @param licence_link [\code{character(1)}]\cr link to the licence or the webpage
+#'   from which the licence was copied
+#' @param licence_path [\code{character(1)}]\cr path to the local file in with the 
+#'   licence text is stored 
 #' @param notes [\code{character(1)}]\cr optional notes.
 #' @param update [\code{logical(1)}]\cr whether or not the file
 #'   'inv_dataseries.csv' should be updated.
@@ -17,13 +21,11 @@
 #'
 #' regDataseries(name = "gadm",
 #'               description = "Database of Global Administrative Areas",
-#'               website = "https://gadm.org/index.html",
+#'               homepage = "https://gadm.org/index.html",
+#'               licence_link = "https://gadm.org/license.html",
+#'               licence_path = "C:/Users/arue/Projects/GeoKur/Luckinet/licenceFiles/licence.txt",
 #'               update = TRUE)
 #'
-#' regDataseries(name = "usda",
-#'               description = "US Dept. of Agriculture",
-#'               website = "https://www.nass.usda.gov/Quick_Stats/Lite/index.php",
-#'               update = TRUE)
 #' }
 #' @importFrom readr read_csv
 #' @importFrom checkmate assertDataFrame assertNames assertCharacter
@@ -31,21 +33,23 @@
 #' @importFrom tibble tibble
 #' @export
 
-regDataseries <- function(name = NULL, description = NULL, website = NULL,
-                          notes = NULL, update = FALSE){
+regDataseries <- function(name = NULL, description = NULL, homepage = NULL, licence_link = NULL,
+                          licence_path = NULL, notes = NULL, update = FALSE){
 
   # get tables
-  inv_dataseries <- read_csv(paste0(getOption(x = "adb_path"), "/inv_dataseries.csv"), col_types = "icccc")
+  inv_dataseries <- read_csv(paste0(getOption(x = "adb_path"), "/inv_dataseries.csv"), col_types = "icccccc")
 
   # in testing mode?
   testing <- getOption(x = "adb_testing")
 
   # check validity of arguments
   assertDataFrame(x = inv_dataseries)
-  assertNames(x = colnames(inv_dataseries), permutation.of = c("datID", "name", "long_name", "website", "notes"))
+  assertNames(x = colnames(inv_dataseries), permutation.of = c("datID", "name", "description", "homepage", "licence_link", "licence_path", "notes"))
   assertCharacter(x = name, ignore.case = TRUE, any.missing = FALSE, len = 1, null.ok = TRUE)
   assertCharacter(x = description, ignore.case = TRUE, any.missing = FALSE, len = 1, null.ok = TRUE)
-  assertCharacter(x = website, ignore.case = TRUE, any.missing = FALSE, len = 1, null.ok = TRUE)
+  assertCharacter(x = homepage, ignore.case = TRUE, any.missing = FALSE, len = 1, null.ok = TRUE)
+  assertCharacter(x = licence_link, ignore.case = TRUE, any.missing = FALSE, len = 1, null.ok = TRUE)
+  assertCharacter(x = licence_path, ignore.case = TRUE, any.missing = FALSE, len = 1, null.ok = TRUE)
   assertCharacter(x = notes, ignore.case = TRUE, any.missing = FALSE, len = 1, null.ok = TRUE)
   assertLogical(x = update, len = 1)
 
@@ -67,29 +71,57 @@ regDataseries <- function(name = NULL, description = NULL, website = NULL,
   if(is.null(description)){
     message("please type in the long name or description of the series: ")
     if(!testing){
-      theDescr <- readline()
+      theDescription <- readline()
     } else {
-      theDescr <- NA
+      theDescription <- NA
     }
-    if(is.na(theDescr)){
-      theDescr = NA_character_
+    if(is.na(theDescription)){
+      theDescription = NA_character_
     }
   } else{
-    theDescr <- description
+    theDescription <- description
   }
 
-  if(is.null(website)){
-    message("please type in the dataseries website: ")
+  if(is.null(homepage)){
+    message("please type in the dataseries homepage: ")
     if(!testing){
-      theWebsite <- readline()
+      theHomepage <- readline()
     } else {
-      theWebsite <- NA
+      theHomepage <- NA
     }
-    if(is.na(theWebsite)){
-      theWebsite = NA_character_
+    if(is.na(theHomepage)){
+      theHomepage = NA_character_
     }
   } else{
-    theWebsite <- website
+    theHomepage <- homepage
+  }
+
+  if(is.null(licence_link)){
+    message("please type in the weblink to the dataseries licence: ")
+    if(!testing){
+      theLicence_link <- readline()
+    } else {
+      theLicence_link <- NA
+    }
+    if(is.na(theLicence_link)){
+      theLicence_link = NA_character_
+    }
+  } else{
+    theLicence_link <- licence_link
+  }
+
+  if(is.null(licence_path)){
+    message("please type in the path to the local folder where the licence is stored: ")
+    if(!testing){
+      theLicence_path <- readline()
+    } else {
+      theLicence_path <- NA
+    }
+    if(is.na(theLicence_path)){
+      theLicence_path = NA_character_
+    }
+  } else{
+    theLicence_path <- licence_path
   }
 
   if(is.null(notes)){
@@ -100,8 +132,10 @@ regDataseries <- function(name = NULL, description = NULL, website = NULL,
   newDID <- ifelse(length(inv_dataseries$datID)==0, 1, as.integer(max(inv_dataseries$datID)+1))
   temp <- tibble(datID = as.integer(newDID),
                  name = theName,
-                 long_name = theDescr,
-                 website = theWebsite,
+                 description = theDescription,
+                 homepage = theHomepage,
+                 licence_link = theLicence_link,
+                 licence_path = theLicence_path,
                  notes = notes)
   if(update){
     # in case the user wants to update, attach the new information to the table inv_dataseries.csv

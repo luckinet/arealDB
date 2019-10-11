@@ -13,11 +13,15 @@ test_that("", {
 
   regDataseries(name = "gadm",
                 description = "Database of Global Administrative Areas",
-                website = "https://gadm.org/index.html",
+                homepage = "https://gadm.org/index.html",
+                licence_link = "https://gadm.org/license.html",
+                licence_path = "C:/Users/arue/Projects/GeoKur/Luckinet/licenceFiles/licence.txt",
                 update = TRUE)
   regDataseries(name = "maia",
                 description = "ministerio de agricultura ganaderia y pesca",
-                website = "http://datosestimaciones.magyp.gob.ar",
+                homepage = "http://datosestimaciones.magyp.gob.ar",                
+                licence_link = "http://datosestimaciones.magyp.gob.ar/license.html",
+                licence_path = "C:/Users/arue/Projects/GeoKur/Luckinet/licenceFiles/licence2.txt",
                 update = TRUE)
   file.copy(from = paste0(path, "/example_table.7z"),
             to = paste0(path, "/newDB/adb_tables/stage1/example_table.7z"))
@@ -60,6 +64,11 @@ test_that("", {
            level = 1,
            begin = 1990, end = 2017,
            archive = "example_table.7z|example_table.csv",
+           archiveLink = "https://ec.europa.eu/eurostat/de/table",
+           nextUpdate = "2019-10-01",
+           updateFrequency = "quarterly",    
+           metadataLink = "https://ec.europa.eu/eurostat/de/table/metadata",
+           metadataPath = "C:/Users/arue/Projects/GeoKur/Luckinet/census/table_meta.txt",
            update = TRUE)
   regGeometry(nation = "NAME_0",
               gSeries = "gadm",
@@ -67,13 +76,18 @@ test_that("", {
               layer = "example_geom1",
               nameCol = "NAME_0",
               archive = "example_geom.7z|example_geom1.gpkg",
+              archiveLink = "https://gadm.org/downloads/example_geom.7z.html",
+              nextUpdate = "2019-10-01",
+              updateFrequency = "quarterly",
               update = TRUE)
   regGeometry(nation = "NAME_0",
               gSeries = "gadm",
               level = 2,
               layer = "example_geom2",
               nameCol = "NAME_0|NAME_1",
-              archive = "example_geom.7z|example_geom2.gpkg",
+              archive = "example_geom.7z|example_geom2.gpkg",archiveLink = "https://gadm.org/downloads/example_geom.7z.html",
+              nextUpdate = "2019-10-01",
+              updateFrequency = "quarterly",
               update = TRUE)
   regGeometry(nation = "NAME_0",
               gSeries = "gadm",
@@ -81,6 +95,9 @@ test_that("", {
               layer = "example_geom3",
               nameCol = "NAME_0|NAME_1|NAME_2",
               archive = "example_geom.7z|example_geom3.gpkg",
+              archiveLink = "https://gadm.org/downloads/example_geom.7z.html",
+              nextUpdate = "2019-10-01",
+              updateFrequency = "quarterly",
               update = TRUE)
   regGeometry(nation = "argentina",
               gSeries = "maia",
@@ -88,6 +105,9 @@ test_that("", {
               layer = "example_geom4",
               nameCol = "NAME_0|NAME_1|NAME_2",
               archive = "example_geom.7z|example_geom4.gpkg",
+              archiveLink = "https://gadm.org/downloads/example_geom.7z.html",
+              nextUpdate = "2019-10-01",
+              updateFrequency = "quarterly",
               update = TRUE)
   normGeometry(nation = "argentina", update = TRUE)
 

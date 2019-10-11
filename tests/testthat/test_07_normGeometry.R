@@ -12,11 +12,15 @@ test_that("geometries can be normalised", {
 
   regDataseries(name = "gadm",
                 description = "Database of Global Administrative Areas",
-                website = "https://gadm.org/index.html",
+                homepage = "https://gadm.org/index.html",
+                licence_link = "https://gadm.org/license.html",
+                licence_path = "C:/Users/arue/Projects/GeoKur/Luckinet/licenceFiles/licence.txt",
                 update = TRUE)
   regDataseries(name = "maia",
                 description = "ministerio de agricultura ganaderia y pesca",
-                website = "http://datosestimaciones.magyp.gob.ar",
+                homepage = "http://datosestimaciones.magyp.gob.ar",                
+                licence_link = "http://datosestimaciones.magyp.gob.ar/license.html",
+                licence_path = "C:/Users/arue/Projects/GeoKur/Luckinet/licenceFiles/licence2.txt",
                 update = TRUE)
   file.copy(from = paste0(path, "/example_geom.7z"),
             to = paste0(path, "/newDB/adb_geometries/stage1/example_geom.7z"))
@@ -36,10 +40,15 @@ test_that("geometries can be normalised", {
               layer = "example_geom1",
               nameCol = "NAME_0",
               archive = "example_geom.7z|example_geom1.gpkg",
+              archiveLink = "https://gadm.org/downloads/example_geom.7z.html",
+              nextUpdate = "2019-10-01",
+              updateFrequency = "quarterly",
               update = TRUE)
   output <- normGeometry(input = paste0(path, "/newDB/adb_geometries/stage2/_1__gadm.gpkg"), update = TRUE)
-  expect_tibble(x = output, nrows = 1, ncols = 10, col.names = "strict")
-  expect_names(x = names(output), must.include = c("geoID", "datID", "level", "source_file", "layer", "nation_column", "unit_column", "date", "orig_file"))
+  expect_tibble(x = output, nrows = 1, ncols = 13, col.names = "strict")
+  expect_names(x = names(output), must.include = c("geoID", "datID", "level", "source_file", 
+                        "layer", "nation_column", "unit_column", "orig_file", "orig_link", 
+                        "download_date", "next_update", "update_frequency", "notes"))
   expect_file_exists(x = paste0(path, "/newDB/adb_geometries/stage2/processed/_1__gadm.gpkg"))
 
   regGeometry(nation = "NAME_0",
@@ -48,10 +57,15 @@ test_that("geometries can be normalised", {
               layer = "example_geom2",
               nameCol = "NAME_0|NAME_1",
               archive = "example_geom.7z|example_geom2.gpkg",
+              archiveLink = "https://gadm.org/downloads/example_geom.7z.html",
+              nextUpdate = "2019-10-01",
+              updateFrequency = "quarterly",
               update = TRUE)
   output <- normGeometry(input = paste0(path, "/newDB/adb_geometries/stage2/_2__gadm.gpkg"), update = TRUE)
-  expect_tibble(x = output, nrows = 1, ncols = 10, col.names = "strict")
-  expect_names(x = names(output), must.include = c("geoID", "datID", "level", "source_file", "layer", "nation_column", "unit_column", "date", "orig_file"))
+  expect_tibble(x = output, nrows = 1, ncols = 13, col.names = "strict")
+  expect_names(x = names(output), must.include = c("geoID", "datID", "level", "source_file", 
+                        "layer", "nation_column", "unit_column", "orig_file", "orig_link", 
+                        "download_date", "next_update", "update_frequency", "notes"))
   expect_file_exists(x = paste0(path, "/newDB/adb_geometries/stage2/processed/_2__gadm.gpkg"))
 
   regGeometry(nation = "NAME_0",
@@ -60,10 +74,15 @@ test_that("geometries can be normalised", {
               layer = "example_geom3",
               nameCol = "NAME_0|NAME_1|NAME_2",
               archive = "example_geom.7z|example_geom3.gpkg",
+              archiveLink = "https://gadm.org/downloads/example_geom.7z.html",
+              nextUpdate = "2019-10-01",
+              updateFrequency = "quarterly",
               update = TRUE)
   output <- normGeometry(input = paste0(path, "/newDB/adb_geometries/stage2/_3__gadm.gpkg"), update = TRUE)
-  expect_tibble(x = output, nrows = 1, ncols = 10, col.names = "strict")
-  expect_names(x = names(output), must.include = c("geoID", "datID", "level", "source_file", "layer", "nation_column", "unit_column", "date", "orig_file"))
+  expect_tibble(x = output, nrows = 1, ncols = 13, col.names = "strict")
+  expect_names(x = names(output), must.include = c("geoID", "datID", "level", "source_file", 
+                        "layer", "nation_column", "unit_column", "orig_file", "orig_link", 
+                        "download_date", "next_update", "update_frequency", "notes"))
   expect_file_exists(x = paste0(path, "/newDB/adb_geometries/stage2/processed/_3__gadm.gpkg"))
 
   # also include a second dataset, that has to be attached to al3 ----
@@ -73,10 +92,15 @@ test_that("geometries can be normalised", {
               layer = "example_geom4",
               nameCol = "NAME_0|NAME_1|NAME_2",
               archive = "example_geom.7z|example_geom4.gpkg",
+              archiveLink = "https://gadm.org/downloads/example_geom.7z.html",
+              nextUpdate = "2019-10-01",
+              updateFrequency = "quarterly",
               update = TRUE)
   output <- normGeometry(input = paste0(path, "/newDB/adb_geometries/stage2/arg_3__maia.gpkg"), nation = "argentina", update = TRUE)
-  expect_tibble(x = output, nrows = 1, ncols = 10, col.names = "strict")
-  expect_names(x = names(output), must.include = c("geoID", "datID", "level", "source_file", "layer", "nation_column", "unit_column", "date", "orig_file"))
+  expect_tibble(x = output, nrows = 1, ncols = 13, col.names = "strict")
+  expect_names(x = names(output), must.include = c("geoID", "datID", "level", "source_file", 
+                        "layer", "nation_column", "unit_column", "orig_file", "orig_link", 
+                        "download_date", "next_update", "update_frequency", "notes"))
 
   # test whether the resulting file is "correct" ----
   final <- st_read(dsn = paste0(path, "/newDB/adb_geometries/stage3/argentina.gpkg"), layer = "level_1")

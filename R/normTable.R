@@ -61,11 +61,14 @@ normTable <- function(input = NULL, ..., update = FALSE){
   }
 
   # get objects
-  inv_tables <- read_csv(paste0(getOption(x = "adb_path"), "/inv_tables.csv"), col_types = "iiiccDcc")
+  inv_tables <- read_csv(paste0(getOption(x = "adb_path"), "/inv_tables.csv"), col_types = "iiiccccDDcccc")
   vars <- exprs(..., .named = TRUE)
 
   # check validity of arguments
-  assertNames(x = colnames(inv_tables), permutation.of = c("tabID", "datID", "geoID", "source_file", "schema", "date", "orig_file", "notes"))
+  assertNames(x = colnames(inv_tables), permutation.of = c("tabID", "geoID", "datID", "source_file", 
+                                  "schema", "orig_file", "orig_link", "download_date", 
+                                  "next_update", "update_frequency", "metadata_link", 
+                                  "metadata_path", "notes"))
   assertLogical(x = update, len = 1)
   assertList(x = vars)
 
