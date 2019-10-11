@@ -52,7 +52,7 @@
 #' @importFrom checkmate assertFileExists assertIntegerish assertLogical
 #'   assertCharacter assertChoice testFileExists
 #' @importFrom dplyr filter distinct select mutate rowwise filter_at vars
-#'   all_vars pull group_by arrange summarise mutate_if rename n if_else
+#'   all_vars pull group_by arrange summarise mutate_if rename n if_else ungroup
 #' @importFrom rlang sym exprs
 #' @importFrom readr read_csv
 #' @importFrom sf st_layers read_sf st_write st_join st_buffer st_equals st_sf
@@ -82,8 +82,8 @@ normGeometry <- function(input = NULL, ..., thresh = 10, update = FALSE){
   inv_geometries <- read_csv(paste0(intPaths, "/inv_geometries.csv"), col_types = "iiiccccccDDcc")
 
   # check validity of arguments
-  assertNames(x = colnames(inv_geometries), permutation.of = c("geoID", "datID", "level", "source_file", 
-                        "layer", "nation_column", "unit_column", "orig_file", "orig_link", 
+  assertNames(x = colnames(inv_geometries), permutation.of = c("geoID", "datID", "level", "source_file",
+                        "layer", "nation_column", "unit_column", "orig_file", "orig_link",
                         "download_date", "next_update", "update_frequency", "notes"))
   assertList(x = subsets)
   assertIntegerish(x = thresh, any.missing = FALSE)

@@ -23,7 +23,8 @@ Imports:
     stringr,
     tibble,
     tidyr,
-    tidyselect
+    tidyselect,
+    rectr
 Remotes: gitlab::luckinet/software/rectr
 Suggests: 
     testthat,

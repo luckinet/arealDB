@@ -18,7 +18,7 @@
 #' @importFrom checkmate assertCharacter assertIntegerish assertList
 #'   assertDataFrame
 #' @importFrom dplyr filter pull mutate mutate_at bind_rows bind_cols vars
-#'   any_vars all_vars
+#'   any_vars all_vars ungroup
 #' @importFrom magrittr %>%
 #' @importFrom rlang exprs :=
 #' @importFrom sf st_geometry<- read_sf
