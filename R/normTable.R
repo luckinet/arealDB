@@ -22,13 +22,11 @@
 #'   \item Read in \code{input} and extract initial metadata from the file name.
 #'   \item Employ the function \code{\link{reorganise}} to reshape \code{input}
 #'   according to the #'   respective schema description (see
-#'   \code{\link{meta_default}}).
-#'   \item Match the territorial units in \code{input} via the
-#'   \code{\link{matchUnits}}.
-#'   \item If \code{...} has been provided with variables to match, those are
-#'   matched via \code{\link{matchVars}}. \item Harmonise territorial unit
-#'   names. \item If \code{update = TRUE}, store the processed data table at
-#'   stage three.}
+#'   \code{\link{meta_default}}). \item Match the territorial units in
+#'   \code{input} via the \code{\link{matchUnits}}. \item If \code{...} has been
+#'   provided with variables to match, those are matched via
+#'   \code{\link{matchVars}}. \item Harmonise territorial unit names. \item If
+#'   \code{update = TRUE}, store the processed data table at stage three.}
 #' @family normalisers
 #' @return This function integrates unprocessed data tables at stage two into
 #'   the geospatial database.
@@ -39,8 +37,8 @@
 #'           faoID = list(commodities = "simpleName"),
 #'           update = TRUE)
 #' }
-#' @importFrom checkmate assertDataFrame assertNames assertFileExists
-#'   assertIntegerish assertLogical
+#' @importFrom checkmate assertNames assertFileExists assertLogical
+#' @importFrom rectr reorganise
 #' @importFrom dplyr mutate select pull
 #' @importFrom magrittr %>%
 #' @importFrom readr read_csv
@@ -65,9 +63,9 @@ normTable <- function(input = NULL, ..., update = FALSE){
   vars <- exprs(..., .named = TRUE)
 
   # check validity of arguments
-  assertNames(x = colnames(inv_tables), permutation.of = c("tabID", "geoID", "datID", "source_file", 
-                                  "schema", "orig_file", "orig_link", "download_date", 
-                                  "next_update", "update_frequency", "metadata_link", 
+  assertNames(x = colnames(inv_tables), permutation.of = c("tabID", "geoID", "datID", "source_file",
+                                  "schema", "orig_file", "orig_link", "download_date",
+                                  "next_update", "update_frequency", "metadata_link",
                                   "metadata_path", "notes"))
   assertLogical(x = update, len = 1)
   assertList(x = vars)
