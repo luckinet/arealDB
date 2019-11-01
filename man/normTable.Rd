@@ -37,9 +37,9 @@ Arguments in \code{...} are so-called matching lists that indicate
 
   To normalise data tables, this function proceeds as follows: \enumerate{
   \item Read in \code{input} and extract initial metadata from the file name.
-  \item Employ the function \code{\link{reorganise}} to reshape \code{input}
-  according to the #'   respective schema description (see
-  \code{\link{meta_default}}). \item Match the territorial units in
+  \item Employ the function \code{rectr::\link{reorganise}} to reshape
+  \code{input} according to the respective schema description (see
+  \code{rectr::\link{schema_default}}). \item Match the territorial units in
   \code{input} via the \code{\link{matchUnits}}. \item If \code{...} has been
   provided with variables to match, those are matched via
   \code{\link{matchVars}}. \item Harmonise territorial unit names. \item If
