@@ -16,21 +16,23 @@
 #'   are valid.
 #' @param end [\code{integerish(1)}]\cr the date until which the boundaries are
 #'   valid.
+#' @param schema [\code{list(1)}]\cr the schema description of the table to read
+#'   in (must have been placed in the global environment before calling it here.
 #' @param archive [\code{character(1)}]\cr the original file from which the
 #'   boundaries emerge.
 #' @param archiveLink [\code{character(1)}] download-link of the archive.
-#' @param nextUpdate [\code{character(1)}]\cr when does the geometry dataset gets
-#'   updated the next time (format resricted to: YYYY-MM-DD).
-#' @param updateFrequency [\code{character(1)}]\cr does the dataset gets updated in
-#'   a regular fashion? The provided options (which include irregular), are taken
-#'   from ISO 19115 «CodeList» MD_MaintenanceFrequencyCode. The allowed option are:
-#'   "geoID", "datID", "level", "source_file", "layer", "nation_column", "unit_column",
-#'   "orig_file", "orig_link", "download_date", "next_update", "update_frequency",
-#'   "notes".
-#' @param metadataLink [\code{character(1)}]\cr if there is already metadata existing:
-#'   link to the metadataset .
-#' @param metadataPath [\code{character(1)}]\cr if a existing metadataset was downloaded
-#'   along the data: the path where it is stored locally.
+#' @param nextUpdate [\code{character(1)}]\cr when does the geometry dataset
+#'   gets updated the next time (format resricted to: YYYY-MM-DD).
+#' @param updateFrequency [\code{character(1)}]\cr does the dataset gets updated
+#'   in a regular fashion? The provided options (which include irregular), are
+#'   taken from ISO 19115 «CodeList» MD_MaintenanceFrequencyCode. The allowed
+#'   option are: "geoID", "datID", "level", "source_file", "layer",
+#'   "nation_column", "unit_column", "orig_file", "orig_link", "download_date",
+#'   "next_update", "update_frequency", "notes".
+#' @param metadataLink [\code{character(1)}]\cr if there is already metadata
+#'   existing: link to the metadataset .
+#' @param metadataPath [\code{character(1)}]\cr if a existing metadataset was
+#'   downloaded along the data: the path where it is stored locally.
 #' @param notes [\code{character(1)}]\cr optional notes.
 #' @param update [\code{logical(1)}]\cr whether or not the file 'inv_tables.csv'
 #'   should be updated.
@@ -52,7 +54,7 @@
 #'   that describes the position of the data components) for each data table,
 #'   which is saved as \code{paste0("meta_", dSeries, TAB_NUMBER)}. A template
 #'   thereof, and documentation on how to set them up, comes as the object
-#'   \code{\link{meta_default}} with \code{arealDB}.
+#'   \code{rectr::\link{schema_default}} with \code{arealDB}.
 #' @return Returns the entry that is appended to 'inv_tables.csv' in case
 #'   \code{update = TRUE}.
 #' @examples
@@ -76,10 +78,10 @@
 #' @export
 
 regTable <- function(nation = NULL, subset = NULL, dSeries = NULL, gSeries = NULL,
-                     level = NULL, begin = NULL, end = NULL, archive = NULL,
-                     archiveLink = NULL, nextUpdate = NULL, updateFrequency = NULL,
-                     metadataLink = NULL, metadataPath = NULL, notes = NULL,
-                     update = FALSE){
+                     level = NULL, begin = NULL, end = NULL, schema = NULL,
+                     archive = NULL, archiveLink = NULL, nextUpdate = NULL,
+                     updateFrequency = NULL, metadataLink = NULL,
+                     metadataPath = NULL, notes = NULL, update = FALSE){
 
   # set internal paths
   intPaths <- paste0(getOption(x = "adb_path"))
@@ -114,6 +116,7 @@ regTable <- function(nation = NULL, subset = NULL, dSeries = NULL, gSeries = NUL
   assertIntegerish(x = level, any.missing = FALSE, len = 1, null.ok = TRUE)
   assertIntegerish(x = begin, any.missing = FALSE, len = 1, lower = 1900, null.ok = TRUE)
   assertIntegerish(x = end, any.missing = FALSE, len = 1, upper = as.integer(format(Sys.Date(), "%Y")), null.ok = TRUE)
+  assertList(x = schema, any.missing = FALSE, null.ok = TRUE)
   assertCharacter(x = archive, any.missing = FALSE, null.ok = TRUE)
   assertCharacter(x = archiveLink, any.missing = FALSE, null.ok = TRUE)
   assertCharacter(x = nextUpdate, any.missing = FALSE, null.ok = TRUE)
@@ -218,6 +221,25 @@ regTable <- function(nation = NULL, subset = NULL, dSeries = NULL, gSeries = NUL
     }
   }
 
+  if(is.null(schema)){
+    message("please provide the schema description for this table: ")
+    if(!testing){
+      schema <- readline()
+    } else {
+      schema <- rectr::schema_default
+    }
+    if(length(schema) < 1){
+      schema = NA_character_
+    }
+  }
+
+  # make a schema description
+  theSchemaName <- paste0("schema_", newTID)
+  # make sure that the file is really there
+  assertList(x = schema, len = 2)
+  assertNames(x = names(schema), identical.to = c("clusters", "variables"))
+  write_rds(x = schema, path = paste0(intPaths, "/adb_tables/meta/schemas/", theSchemaName, ".rds"))
+
   if(is.null(archive)){
     message("please type in the archives' file name: ")
     if(!testing){
@@ -243,12 +265,12 @@ regTable <- function(nation = NULL, subset = NULL, dSeries = NULL, gSeries = NUL
   }
 
   # put together file name and get confirmation that file should exist now
-  fileName <- paste0(theNation, "_", level, "_", subset, "_", dSeries, "_", newTID, "_", begin, "_", end, ".csv")
+  fileName <- paste0(theNation, "_", level, "_", subset, "_", begin, "_", end, "_", dSeries, ".csv")
   filePath <- paste0(intPaths, "/adb_tables/stage2/", fileName)
-  filesTrace <- str_split(archive, "\\|")[[1]]
+  fileArchive <- str_split(archive, "\\|")[[1]]
 
-  if(any(inv_tables$orig_file %in% archive)){
-    return(paste0("'", inv_tables$source_file[inv_tables$orig_file %in% archive], "' has already been registered."))
+  if(any(inv_tables$source_file %in% fileName) & !update){
+    return(paste0("'", fileName, "' has already been registered."))
   }
 
   if(is.null(archiveLink)){
@@ -333,18 +355,18 @@ regTable <- function(nation = NULL, subset = NULL, dSeries = NULL, gSeries = NUL
   }
 
   # test whether the archive file is available
-  if(!testFileExists(x = paste0(intPaths, "/adb_tables/stage1/", filesTrace[1]), "r")){
-    message(paste0("... please store the archive '", filesTrace[[1]], "' in './adb_tables/stage1'"))
+  if(!testFileExists(x = paste0(intPaths, "/adb_tables/stage1/", fileArchive[1]), "r")){
+    message(paste0("... please store the archive '", fileArchive[[1]], "' in './adb_tables/stage1'"))
     if(!testing){
       done <- readline(" -> press any key when done: ")
     }
 
     # make sure that the file is really there
-    assertFileExists(x = paste0(intPaths, "/adb_tables/stage1/", filesTrace[1]), "r")
+    assertFileExists(x = paste0(intPaths, "/adb_tables/stage1/", fileArchive[1]), "r")
 
     # ... and if it is compressed, whether also the file therein is given that contains the data
-    if(testCompressed(x = filesTrace[1]) & length(filesTrace) < 2){
-      message(paste0("please give the name of the file in ", filesTrace[1]," that contains the table: "))
+    if(testCompressed(x = fileArchive[1]) & length(fileArchive) < 2){
+      message(paste0("please give the name of the file in ", fileArchive[1]," that contains the table: "))
       if(!testing){
         theArchiveFile <- readline()
       } else {
@@ -362,18 +384,6 @@ regTable <- function(nation = NULL, subset = NULL, dSeries = NULL, gSeries = NUL
     }
     # make sure that the file is really there
     assertFileExists(x = filePath, "r", extension = "csv")
-  }
-
-  # make a schema description
-  theSchemaName <- paste0("meta_", dSeries, "_", newTID)
-  if(exists(x = theSchemaName)){
-    theSchema <- get(eval(expr = theSchemaName))
-    # make sure that the file is really there
-    assertList(x = theSchema, len = 2)
-    write_rds(x = theSchema, path = paste0(intPaths, "/adb_tables/meta/schemas/", theSchemaName, ".rds"))
-  }
-  if(!testFileExists(x = paste0(intPaths, "/adb_tables/meta/schemas/", theSchemaName, ".rds"), "r", extension = "rds")){
-    stop(paste0("-> please make the schema description '", theSchemaName, "' and rerun this function."))
   }
 
   # put together new census database entry
