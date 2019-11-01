@@ -198,7 +198,7 @@ regGeometry <- function(nation = NULL, subset = NULL, gSeries = NULL, level = NU
   filePath <- paste0(intPaths, "/adb_geometries/stage2/", fileName)
   filesTrace <- str_split(archive, "\\|")[[1]]
 
-  if(any(inv_geometries$source_file %in% fileName)){
+  if(any(inv_geometries$source_file %in% fileName) & !update){
     return(paste0("'", fileName, "' has already been registered."))
   }
 
@@ -215,9 +215,9 @@ regGeometry <- function(nation = NULL, subset = NULL, gSeries = NULL, level = NU
   }
 
   if(is.null(updateFrequency)){
-    message(paste("please type in the frequency in which the table gets updated \n -> select one of: continual, daily, weekly, fortnightly, quarterly, biannually, annually, asNeeded, irregular, notPlanned, unknown, periodic, semimonthly, biennially: "))
+    message(paste("please type in the frequency in which the table gets updated ..."))
     if(!testing){
-      updateFrequency <- readline()
+      updateFrequency <- readline(" -> select one of: continual, daily, weekly, fortnightly, quarterly, biannually, annually, asNeeded, irregular, notPlanned, unknown, periodic, semimonthly, biennially: ")
       while(!is.element(updateFrequency,
                         c("continual", "daily","weekly", "fortnightly",
                           "quarterly", "biannually", "annually", "asNeeded",
