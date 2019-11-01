@@ -20,9 +20,9 @@
 #'
 #'   To normalise data tables, this function proceeds as follows: \enumerate{
 #'   \item Read in \code{input} and extract initial metadata from the file name.
-#'   \item Employ the function \code{\link{reorganise}} to reshape \code{input}
-#'   according to the #'   respective schema description (see
-#'   \code{\link{meta_default}}). \item Match the territorial units in
+#'   \item Employ the function \code{rectr::\link{reorganise}} to reshape
+#'   \code{input} according to the respective schema description (see
+#'   \code{rectr::\link{schema_default}}). \item Match the territorial units in
 #'   \code{input} via the \code{\link{matchUnits}}. \item If \code{...} has been
 #'   provided with variables to match, those are matched via
 #'   \code{\link{matchVars}}. \item Harmonise territorial unit names. \item If
@@ -83,7 +83,7 @@ normTable <- function(input = NULL, ..., update = FALSE){
       next
     }
 
-    algorithm = get(paste0("meta_", fields[4], "_", fields[5]))
+    algorithm = readRDS(file = paste0(intPaths, "/adb_tables/meta/schemas/", inv_tables$schema, ".rds"))
     if(!exists(x = "algorithm")){
       stop(paste0("please create the schema desciption '", algorithm, "' for the file '", file_name, "'.\n  --> See '?meta_default' for details"))
     }
