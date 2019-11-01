@@ -2,6 +2,7 @@ library(testthat)
 library(readr)
 library(magrittr)
 library(checkmate)
+library(rectr)
 context("matchUnits")
 
 
@@ -20,16 +21,16 @@ test_that("units are matched", {
                 update = TRUE)
   regDataseries(name = "maia",
                 description = "ministerio de agricultura ganaderia y pesca",
-                homepage = "http://datosestimaciones.magyp.gob.ar",                
+                homepage = "http://datosestimaciones.magyp.gob.ar",
                 licence_link = "http://datosestimaciones.magyp.gob.ar/license.html",
                 licence_path = "C:/Users/arue/Projects/GeoKur/Luckinet/licenceFiles/licence2.txt",
                 update = TRUE)
   file.copy(from = paste0(path, "/example_table.7z"),
             to = paste0(path, "/newDB/adb_tables/stage1/example_table.7z"))
   file.copy(from = paste0(path, "/example_table1.csv"),
-            to = paste0(path, "/newDB/adb_tables/stage2/arg_1_soyMaize_maia_1_1990_2017.csv"))
+            to = paste0(path, "/newDB/adb_tables/stage2/arg_1_soyMaize_1990_2017_maia.csv"))
   file.copy(from = paste0(path, "/example_table2.csv"),
-            to = paste0(path, "/newDB/adb_tables/stage2/arg_2_soyMaize_maia_2_1990_2017.csv"))
+            to = paste0(path, "/newDB/adb_tables/stage2/arg_2_soyMaize_1990_2017_maia.csv"))
   file.copy(from = paste0(path, "/example_geom.7z"),
             to = paste0(path, "/newDB/adb_geometries/stage1/example_geom.7z"))
   file.copy(from = paste0(path, "/example_geom1.gpkg"),
@@ -43,45 +44,45 @@ test_that("units are matched", {
 
   meta_maia_1 <<- list(clusters = list(top = NULL, left = NULL, width = NULL, height = NULL,
                                        id = NULL, header = TRUE),
-                       variables = list(territories =
-                                          list(type = "id", name = "al1", form = "long",
-                                               row = NULL, col = 1, split = NULL, rel = FALSE),
-                                        period =
-                                          list(type = "id", name = "year", form = "long",
-                                               row = NULL, col = 2, split = NULL, rel = FALSE),
+                       variables = list(al1 =
+                                          list(type = "id", name = "territories", split = NULL,
+                                               row = NULL, col = 1, rel = FALSE),
+                                        year =
+                                          list(type = "id", name = "period", split = NULL,
+                                               row = NULL, col = 2, rel = FALSE),
                                         commodities =
-                                          list(type = "id", name = NULL, form = "long",
-                                               row = NULL, col = 3, split = NULL, rel = FALSE),
+                                          list(type = "id", name = NULL, split = NULL,
+                                               row = NULL, col = 3, rel = FALSE),
                                         harvested =
                                           list(type = "values", unit = "ha", factor = 1,
                                                row = NULL, col = 4, rel = FALSE,
-                                               id = NULL, level = NULL),
+                                               key = NULL, value = NULL),
                                         production =
                                           list(type = "values", unit = "t", factor = 1,
                                                row = NULL, col = 5, rel = FALSE,
-                                               id = NULL, level = NULL)))
+                                               key = NULL, value = NULL)))
   meta_maia_2 <<- list(clusters = list(top = NULL, left = NULL, width = NULL, height = NULL,
                                        id = NULL, header = TRUE),
-                       variables = list(territories =
-                                          list(type = "id", name = "al1", form = "long",
-                                               row = NULL, col = 1, split = NULL, rel = FALSE),
-                                        province =
-                                          list(type = "id", name = "al2", form = "long",
-                                               row = NULL, col = 2, split = NULL, rel = FALSE),
-                                        period =
-                                          list(type = "id", name = "year", form = "long",
-                                               row = NULL, col = 3, split = NULL, rel = FALSE),
+                       variables = list(al1 =
+                                          list(type = "id", name = "territories", split = NULL,
+                                               row = NULL, col = 1, rel = FALSE),
+                                        al2 =
+                                          list(type = "id", name = "province", split = NULL,
+                                               row = NULL, col = 2, rel = FALSE),
+                                        year =
+                                          list(type = "id", name = "period", split = NULL,
+                                               row = NULL, col = 3, rel = FALSE),
                                         commodities =
-                                          list(type = "id", name = NULL, form = "long",
-                                               row = NULL, col = 4, split = NULL, rel = FALSE),
+                                          list(type = "id", name = NULL, split = NULL,
+                                               row = NULL, col = 4, rel = FALSE),
                                         harvested =
                                           list(type = "values", unit = "ha", factor = 1,
                                                row = NULL, col = 5, rel = FALSE,
-                                               id = NULL, level = NULL),
+                                               key = NULL, value = NULL),
                                         production =
                                           list(type = "values", unit = "t", factor = 1,
                                                row = NULL, col = 6, rel = FALSE,
-                                               id = NULL, level = NULL)))
+                                               key = NULL, value = NULL)))
 
   regTable(nation = "Argentina",
            subset = "soyMaize",
@@ -91,9 +92,9 @@ test_that("units are matched", {
            archive = "example_table.7z|example_table1.csv",
            archiveLink = "https://ec.europa.eu/eurostat/de/table1",
            nextUpdate = "2019-10-01",
-           updateFrequency = "quarterly",    
+           updateFrequency = "quarterly",
            metadataLink = "https://ec.europa.eu/eurostat/de/table1/metadata",
-           metadataPath = "C:/Users/arue/Projects/GeoKur/Luckinet/census/table1_meta.txt",           
+           metadataPath = "C:/Users/arue/Projects/GeoKur/Luckinet/census/table1_meta.txt",
            update = TRUE)
   regTable(nation = "Argentina",
            subset = "soyMaize",
@@ -103,7 +104,7 @@ test_that("units are matched", {
            archive = "example_table.7z|example_table2.csv",
            archiveLink = "https://ec.europa.eu/eurostat/de/table2",
            nextUpdate = "2019-10-01",
-           updateFrequency = "quarterly",    
+           updateFrequency = "quarterly",
            metadataLink = "https://ec.europa.eu/eurostat/de/table2/metadata",
            metadataPath = "C:/Users/arue/Projects/GeoKur/Luckinet/census/table2_meta.txt",
            update = TRUE)
@@ -150,7 +151,7 @@ test_that("units are matched", {
   normGeometry(nation = "argentina", update = TRUE)
 
   # test for a table that only has values at the first administrative level
-  input <- read_csv(file = paste0(path, "/newDB/adb_tables/stage2/arg_1_soyMaize_maia_1_1990_2017.csv"),
+  input <- read_csv(file = paste0(path, "/newDB/adb_tables/stage2/arg_1_soyMaize_1990_2017_maia.csv"),
                     col_names = FALSE) %>%
     reorganise(schema = meta_maia_1) %>%
     mutate(id = seq_along(year),
@@ -168,7 +169,7 @@ test_that("units are matched", {
   expect_names(x = names(output), permutation.of = c("al1_alt", "year", "commodities", "harvested", "production", "id", "tabID", "geoID", "ahID"))
 
   # test for a table that has values at the second administrative level
-  input <- read_csv(file = paste0(path, "/newDB/adb_tables/stage2/arg_2_soyMaize_maia_2_1990_2017.csv"),
+  input <- read_csv(file = paste0(path, "/newDB/adb_tables/stage2/arg_2_soyMaize_1990_2017_maia.csv"),
                     col_names = FALSE) %>%
     reorganise(schema = meta_maia_2) %>%
     mutate(id = seq_along(year),

@@ -24,9 +24,9 @@ test_that("a table inventory entry is produced", {
   file.copy(from = paste0(path, "/example_table.7z"),
             to = paste0(path, "/newDB/adb_tables/stage1/example_table.7z"))
   file.copy(from = paste0(path, "/example_table1.csv"),
-            to = paste0(path, "/newDB/adb_tables/stage2/arg_1_soyMaize_maia_1_1990_2017.csv"))
+            to = paste0(path, "/newDB/adb_tables/stage2/arg_1_soyMaize_1990_2017_maia.csv"))
   file.copy(from = paste0(path, "/example_table2.csv"),
-            to = paste0(path, "/newDB/adb_tables/stage2/arg_2_soyMaize_maia_1_1990_2017.csv"))
+            to = paste0(path, "/newDB/adb_tables/stage2/arg_2_soyMaize_1990_2017_maia.csv"))
 
   meta_maia_1 <<- list(clusters = list(top = NULL, left = NULL, width = NULL, height = NULL,
                                       id = NULL),
@@ -53,6 +53,7 @@ test_that("a table inventory entry is produced", {
                      dSeries = "maia",
                      gSeries = "gadm",
                      level = 1,
+                     schema = meta_maia_1,
                      begin = 1990,
                      end = 2017,
                      archive = "example_table.7z|example_table1.csv",
@@ -68,7 +69,7 @@ test_that("a table inventory entry is produced", {
                                   "schema", "orig_file", "orig_link", "download_date",
                                   "next_update", "update_frequency", "metadata_link",
                                   "metadata_path", "notes"))
-  expect_file_exists(x = paste0(path, "/newDB/adb_tables/meta/schemas/meta_maia_1.rds"))
+  expect_file_exists(x = paste0(path, "/newDB/adb_tables/meta/schemas/schema_1.rds"))
 
   unlink(paste0(path, "/newDB"), recursive = TRUE)
 })
@@ -93,7 +94,7 @@ test_that("function asks for details, if not provided", {
   file.copy(from = paste0(path, "/example_table.7z"),
             to = paste0(path, "/newDB/adb_tables/stage1/example_table.7z"))
   file.copy(from = paste0(path, "/example_table1.csv"),
-            to = paste0(path, "/newDB/adb_tables/stage2/_1__maia_1_1990_2019.csv"))
+            to = paste0(path, "/newDB/adb_tables/stage2/_1__1990_2019_maia.csv"))
 
   meta_maia_1 <<- list(clusters = list(top = NULL, left = NULL, width = NULL, height = NULL,
                                        id = NULL),
@@ -117,18 +118,19 @@ test_that("function asks for details, if not provided", {
 
   expect_message(object = regTable())
   output <- capture_messages(code = regTable())
-  expect_character(x = output, len = 11, any.missing = FALSE, unique = TRUE)
+  expect_character(x = output, len = 12, any.missing = FALSE, unique = TRUE)
   expect_equal(object = output[1], expected = "please type in to which data series this table belongs: \n")
   expect_equal(object = output[2], expected = "please type in to which geometry series this table belongs: \n")
   expect_equal(object = output[3], expected = "please type in the administrative level of the units: \n")
   expect_equal(object = output[4], expected = "please type in the first year in the table: \n")
   expect_equal(object = output[5], expected = "please type in the last year in the table: \n")
-  expect_equal(object = output[6], expected = "please type in the archives' file name: \n")
-  expect_equal(object = output[7], expected = "please type in the weblink from which the archive was downloaded: \n")
-  expect_equal(object = output[8], expected = "please type in the frequency in which the table gets updated \n -> select one of: continual, daily, weekly, fortnightly, quarterly, biannually, annually, asNeeded, irregular, notPlanned, unknown, periodic, semimonthly, biennially: \n")
-  expect_equal(object = output[9], expected = "please type in when the table gets its next update (YYYY-MM-DD): \n")
-  expect_equal(object = output[10], expected = "if there is already metadata available:\n -> type in the weblink to the metadataset: \n")
-  expect_equal(object = output[11], expected = "if there was an existing metadataset downloaded:\n -> type in the local path to the metadataset: \n")
+  expect_equal(object = output[6], expected = "please provide the schema description for this table: \n")
+  expect_equal(object = output[7], expected = "please type in the archives' file name: \n")
+  expect_equal(object = output[8], expected = "please type in the weblink from which the archive was downloaded: \n")
+  expect_equal(object = output[9], expected = "please type in the frequency in which the table gets updated \n -> select one of: continual, daily, weekly, fortnightly, quarterly, biannually, annually, asNeeded, irregular, notPlanned, unknown, periodic, semimonthly, biennially: \n")
+  expect_equal(object = output[10], expected = "please type in when the table gets its next update (YYYY-MM-DD): \n")
+  expect_equal(object = output[11], expected = "if there is already metadata available:\n -> type in the weblink to the metadataset: \n")
+  expect_equal(object = output[12], expected = "if there was an existing metadataset downloaded:\n -> type in the local path to the metadataset: \n")
 
   unlink(paste0(path, "/newDB"), recursive = TRUE)
 })
@@ -146,8 +148,8 @@ test_that("Error if arguments have wrong value", {
                 update = TRUE)
   file.copy(from = paste0(path, "/example_table.7z"),
             to = paste0(path, "/newDB/adb_tables/stage1/example_table.7z"))
-  file.copy(from = paste0(path, "/example_table.csv"),
-            to = paste0(path, "/newDB/adb_tables/stage2/arg_1_soyMaize_test_1_1990_2017.csv"))
+  file.copy(from = paste0(path, "/example_table1.csv"),
+            to = paste0(path, "/newDB/adb_tables/stage2/arg_1_soyMaize_1990_2017_maia.csv"))
 
   expect_error(regTable())
   expect_error(regTable(update = 1))

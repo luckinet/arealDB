@@ -59,7 +59,7 @@ test_that("function asks for details, if not provided", {
   expect_equal(object = output[4], expected = "please type in the administrative level of the units: \n")
   expect_equal(object = output[5], expected = "please type in the archives' file name: \n")
   expect_equal(object = output[6], expected = "please type in the weblink from which the archive was downloaded: \n")
-  expect_equal(object = output[7], expected = "please type in the frequency in which the table gets updated \n -> select one of: continual, daily, weekly, fortnightly, quarterly, biannually, annually, asNeeded, irregular, notPlanned, unknown, periodic, semimonthly, biennially: \n")
+  expect_equal(object = output[7], expected = "please type in the frequency in which the table gets updated ...\n")
   expect_equal(object = output[8], expected = "please type in when the geometry gets its next update (YYYY-MM-DD): \n")
 
   unlink(paste0(path, "/newDB"), recursive = TRUE)

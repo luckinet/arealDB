@@ -20,14 +20,14 @@ test_that("tables can be normalised (without matched variables)", {
                 update = TRUE)
   regDataseries(name = "maia",
                 description = "ministerio de agricultura ganaderia y pesca",
-                homepage = "http://datosestimaciones.magyp.gob.ar",                
+                homepage = "http://datosestimaciones.magyp.gob.ar",
                 licence_link = "http://datosestimaciones.magyp.gob.ar/license.html",
                 licence_path = "C:/Users/arue/Projects/GeoKur/Luckinet/licenceFiles/licence2.txt",
                 update = TRUE)
   file.copy(from = paste0(path, "/example_table.7z"),
             to = paste0(path, "/newDB/adb_tables/stage1/example_table.7z"))
   file.copy(from = paste0(path, "/example_table1.csv"),
-            to = paste0(path, "/newDB/adb_tables/stage2/arg_1_soyMaize_maia_1_1990_2017.csv"))
+            to = paste0(path, "/newDB/adb_tables/stage2/arg_1_soyMaize_1990_2017_maia.csv"))
   file.copy(from = paste0(path, "/example_geom.7z"),
             to = paste0(path, "/newDB/adb_geometries/stage1/example_geom.7z"))
   file.copy(from = paste0(path, "/example_geom1.gpkg"),
@@ -40,34 +40,35 @@ test_that("tables can be normalised (without matched variables)", {
             to = paste0(path, "/newDB/adb_geometries/stage2/arg_3__maia.gpkg"))
 
   meta_maia_1 <- list(clusters = list(top = NULL, left = NULL, width = NULL, height = NULL,
-                                      id = NULL),
-                      variables = list(territories =
-                                         list(type = "id", name = "al1", form = "long",
+                                      id = NULL, header = TRUE),
+                      variables = list(al1 =
+                                         list(type = "id", name = "territories", split = NULL,
                                               row = NULL, col = 1, rel = FALSE),
-                                       period =
-                                         list(type = "id", name = "year", form = "long",
+                                       year =
+                                         list(type = "id", name = "period", split = NULL,
                                               row = NULL, col = 2, rel = FALSE),
                                        commodities =
-                                         list(type = "id", name = NULL, form = "long",
+                                         list(type = "id", name = NULL, split = NULL,
                                               row = NULL, col = 3, rel = FALSE),
                                        harvested =
                                          list(type = "values", unit = "ha", factor = 1,
                                               row = NULL, col = 4, rel = FALSE,
-                                              id = NULL, level = NULL),
+                                              key = NULL, value = NULL),
                                        production =
                                          list(type = "values", unit = "t", factor = 1,
                                               row = NULL, col = 5, rel = FALSE,
-                                              id = NULL, level = NULL)))
+                                              key = NULL, value = NULL)))
 
   regTable(nation = "Argentina",
            subset = "soyMaize",
            dSeries = "maia", gSeries = "gadm",
+           schema = meta_maia_1,
            level = 1,
            begin = 1990, end = 2017,
            archive = "example_table.7z|example_table.csv",
            archiveLink = "https://ec.europa.eu/eurostat/de/table",
            nextUpdate = "2019-10-01",
-           updateFrequency = "quarterly",    
+           updateFrequency = "quarterly",
            metadataLink = "https://ec.europa.eu/eurostat/de/table/metadata",
            metadataPath = "C:/Users/arue/Projects/GeoKur/Luckinet/census/table_meta.txt",
            update = TRUE)
@@ -113,9 +114,9 @@ test_that("tables can be normalised (without matched variables)", {
               update = TRUE)
   normGeometry(nation = "argentina", update = TRUE)
 
-  output <- normTable(input = paste0(path, "/newDB/adb_tables/stage2/arg_1_soyMaize_maia_1_1990_2017.csv"),
+  output <- normTable(input = paste0(path, "/newDB/adb_tables/stage2/arg_1_soyMaize_1990_2017_maia.csv"),
                       update = TRUE)
-  expect_file_exists(x = paste0(path, "/newDB/adb_tables/stage2/processed/arg_1_soyMaize_maia_1_1990_2017.csv"))
+  expect_file_exists(x = paste0(path, "/newDB/adb_tables/stage2/processed/arg_1_soyMaize_1990_2017_maia.csv"))
 
   # test whether the resulting file is "correct" ----
   final <- read_csv(file = paste0(path, "/newDB/adb_tables/stage3/Argentina.csv"))
@@ -143,14 +144,14 @@ test_that("tables can be normalised (with matched variables)", {
                 update = TRUE)
   regDataseries(name = "maia",
                 description = "ministerio de agricultura ganaderia y pesca",
-                homepage = "http://datosestimaciones.magyp.gob.ar",                
+                homepage = "http://datosestimaciones.magyp.gob.ar",
                 licence_link = "http://datosestimaciones.magyp.gob.ar/license.html",
                 licence_path = "C:/Users/arue/Projects/GeoKur/Luckinet/licenceFiles/licence2.txt",
                 update = TRUE)
   file.copy(from = paste0(path, "/example_table.7z"),
             to = paste0(path, "/newDB/adb_tables/stage1/example_table.7z"))
   file.copy(from = paste0(path, "/example_table1.csv"),
-            to = paste0(path, "/newDB/adb_tables/stage2/arg_1_soyMaize_maia_1_1990_2017.csv"))
+            to = paste0(path, "/newDB/adb_tables/stage2/arg_1_soyMaize_1990_2017_maia.csv"))
   file.copy(from = paste0(path, "/example_geom.7z"),
             to = paste0(path, "/newDB/adb_geometries/stage1/example_geom.7z"))
   file.copy(from = paste0(path, "/example_geom1.gpkg"),
@@ -163,34 +164,35 @@ test_that("tables can be normalised (with matched variables)", {
             to = paste0(path, "/newDB/adb_geometries/stage2/arg_3__maia.gpkg"))
 
   meta_maia_1 <- list(clusters = list(top = NULL, left = NULL, width = NULL, height = NULL,
-                                      id = NULL),
-                      variables = list(territories =
-                                         list(type = "id", name = "al1", form = "long",
+                                      id = NULL, header = TRUE),
+                      variables = list(al1 =
+                                         list(type = "id", name = "territories", split = NULL,
                                               row = NULL, col = 1, rel = FALSE),
-                                       period =
-                                         list(type = "id", name = "year", form = "long",
+                                       year =
+                                         list(type = "id", name = "period", split = NULL,
                                               row = NULL, col = 2, rel = FALSE),
                                        commodities =
-                                         list(type = "id", name = NULL, form = "long",
+                                         list(type = "id", name = NULL, split = NULL,
                                               row = NULL, col = 3, rel = FALSE),
                                        harvested =
                                          list(type = "values", unit = "ha", factor = 1,
                                               row = NULL, col = 4, rel = FALSE,
-                                              id = NULL, level = NULL),
+                                              key = NULL, value = NULL),
                                        production =
                                          list(type = "values", unit = "t", factor = 1,
                                               row = NULL, col = 5, rel = FALSE,
-                                              id = NULL, level = NULL)))
+                                              key = NULL, value = NULL)))
 
   regTable(nation = "Argentina",
            subset = "soyMaize",
            dSeries = "maia", gSeries = "gadm",
+           schema = meta_maia_1,
            level = 1,
            begin = 1990, end = 2017,
            archive = "example_table.7z|example_table.csv",
            archiveLink = "https://ec.europa.eu/eurostat/de/table",
            nextUpdate = "2019-10-01",
-           updateFrequency = "quarterly",    
+           updateFrequency = "quarterly",
            metadataLink = "https://ec.europa.eu/eurostat/de/table/metadata",
            metadataPath = "C:/Users/arue/Projects/GeoKur/Luckinet/census/table_meta.txt",
            update = TRUE)
@@ -236,10 +238,10 @@ test_that("tables can be normalised (with matched variables)", {
               update = TRUE)
   normGeometry(nation = "argentina", update = TRUE)
 
-  output <- normTable(input = paste0(path, "/newDB/adb_tables/stage2/arg_1_soyMaize_maia_1_1990_2017.csv"),
+  output <- normTable(input = paste0(path, "/newDB/adb_tables/stage2/arg_1_soyMaize_1990_2017_maia.csv"),
                       faoID = list(commodities = "target"),
                       update = TRUE)
-  expect_file_exists(x = paste0(path, "/newDB/adb_tables/stage2/processed/arg_1_soyMaize_maia_1_1990_2017.csv"))
+  expect_file_exists(x = paste0(path, "/newDB/adb_tables/stage2/processed/arg_1_soyMaize_1990_2017_maia.csv"))
 
   # test whether the resulting file is "correct" ----
   final <- read_csv(file = paste0(path, "/newDB/adb_tables/stage3/Argentina.csv"))
