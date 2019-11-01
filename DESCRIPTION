@@ -2,10 +2,15 @@ Package: arealDB
 Type: Package
 Title: Harmonise and integrate heterogeneous areal data
 Description: Helps the user to build up harmonised databases of areal data.
-Version: 0.2.2
-Authors@R: person("Steffen", "Ehrmann", email = "steffen.ehrmann@idiv.de",
-    role = c("aut", "cre"), 
-    comment = c(ORCID = "0000-0002-2958-0796"))
+Version: 0.2.3
+Authors@R: c(
+    person("Steffen", "Ehrmann", 
+           email = "steffen.ehrmann@idiv.de", 
+           role = c("aut", "cre"), 
+           comment = c(ORCID = "0000-0002-2958-0796")),
+    person("Arne", "Rümmler", 
+           email = "arne.ruemmler@tu-dresden.de", 
+           role = c("aut")))
 URL: https://gitlab.com/luckinet/software/arealDB
 BugReports: https://gitlab.com/luckinet/software/arealDB/issues
 Depends:
