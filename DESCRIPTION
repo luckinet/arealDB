@@ -2,7 +2,7 @@ Package: arealDB
 Type: Package
 Title: Harmonise and integrate heterogeneous areal data
 Description: Helps the user to build up harmonised databases of areal data.
-Version: 0.2.3
+Version: 0.2.4
 Authors@R: c(
     person("Steffen", "Ehrmann", 
            email = "steffen.ehrmann@idiv.de", 
@@ -29,8 +29,8 @@ Imports:
     tibble,
     tidyr,
     tidyselect,
-    rectr
-Remotes: gitlab::luckinet/software/rectr
+    rectifyr
+Remotes: gitlab::luckinet/software/rectifyr
 Suggests: 
     testthat,
     knitr,
