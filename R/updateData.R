@@ -19,31 +19,28 @@ updateData <- function(table = NULL, nations = NULL, file = NULL){
   assertCharacter(x = nations)
   assertFileExists(x = file, access = "rw")
 
-  if(length(nations) > 1){
-    table <- table %>%
-      left_join(countries[c("nation", "ahID")], by = "ahID")
-  }
+  # if(length(nations) > 1){
+  #   table <- table %>%
+  #     left_join(countries[c("nation", "ahID")], by = "ahID")
+  # }
 
   # get some paths
   targetDir <- paste0(getOption(x = "adb_path"), "/adb_tables/stage3/")
   archive <- paste0(getOption(x = "adb_path"), "/adb_tables/stage2/processed")
 
+  message("\n--> Updating tables.")
+
   for(i in seq_along(nations)){
 
-    message("\n--> Updating table of '", nations[i], "'.")
+    # message("--> Updating table of '", nations[i], "'.")
 
     tempTable <- table %>%
-      filter(al1_alt == nations[i]) %>%
+      filter(al1_name == nations[i]) %>%
       select(-starts_with("al"))
 
     # append output to previous file
     if(file.exists(paste0(targetDir, nations[i], ".csv"))){
-      tempData <- read_csv(file = paste0(targetDir, "/", nations[i], ".csv"),
-                           col_types = cols(headcount = col_number(),
-                                            planted_area = col_number(),
-                                            harvested_area = col_number(),
-                                            production = col_number(),
-                                            yield = col_number()))
+      tempData <- read_csv(file = paste0(targetDir, "/", nations[i], ".csv"), col_types = "dddcddd")
       out <- full_join(tempData, tempTable) %>%
         arrange(id) %>%
         mutate(id = seq_along(id))
