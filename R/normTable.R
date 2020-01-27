@@ -5,6 +5,8 @@
 #' @param ... [\code{list(.)}]\cr matching lists that capture the variables by
 #'   which to match and the new column names containing the resulting ID; see
 #'   Details.
+#' @param pattern [\code{character(1)}]\cr an optional regular expression. Only
+#'   dataset names which match the regular expression will be returned.
 #' @param update [\code{logical(1)}]\cr whether or not the physical files should
 #'   be updated (\code{TRUE}) or the function should merely return the new
 #'   object (\code{FALSE} default).
@@ -20,9 +22,9 @@
 #'
 #'   To normalise data tables, this function proceeds as follows: \enumerate{
 #'   \item Read in \code{input} and extract initial metadata from the file name.
-#'   \item Employ the function \code{rectr::\link{reorganise}} to reshape
+#'   \item Employ the function \code{rectifyr::\link{reorganise}} to reshape
 #'   \code{input} according to the respective schema description (see
-#'   \code{rectr::\link{schema_default}}). \item Match the territorial units in
+#'   \code{rectifyr::\link{schema_default}}). \item Match the territorial units in
 #'   \code{input} via the \code{\link{matchUnits}}. \item If \code{...} has been
 #'   provided with variables to match, those are matched via
 #'   \code{\link{matchVars}}. \item Harmonise territorial unit names. \item If
@@ -38,7 +40,7 @@
 #'           update = TRUE)
 #' }
 #' @importFrom checkmate assertNames assertFileExists assertLogical
-#' @importFrom rectr reorganise
+#' @importFrom rectifyr reorganise
 #' @importFrom dplyr mutate select pull
 #' @importFrom magrittr %>%
 #' @importFrom readr read_csv
@@ -47,26 +49,27 @@
 #' @importFrom utils read.csv
 #' @export
 
-normTable <- function(input = NULL, ..., update = FALSE){
+normTable <- function(input = NULL, ..., pattern = NULL, update = FALSE){
 
   # set internal paths
   intPaths <- paste0(getOption(x = "adb_path"))
 
   if(is.null(input)){
-    input <- list.files(path = paste0(intPaths, "/adb_tables/stage2"), full.names = TRUE)
+    input <- list.files(path = paste0(intPaths, "/adb_tables/stage2"), full.names = TRUE, pattern = pattern)
   } else {
     assertFileExists(x = input, access = "r")
   }
 
   # get objects
-  inv_tables <- read_csv(paste0(getOption(x = "adb_path"), "/inv_tables.csv"), col_types = "iiiccccDDcccc")
+  inv_tables <- read_csv(paste0(intPaths, "/inv_tables.csv"), col_types = "iiiccccDccccc")
+  inv_geometries <- read_csv(paste0(intPaths, "/inv_geometries.csv"), col_types = "iiiccccccDDcc")
   vars <- exprs(..., .named = TRUE)
 
   # check validity of arguments
   assertNames(x = colnames(inv_tables), permutation.of = c("tabID", "geoID", "datID", "source_file",
-                                  "schema", "orig_file", "orig_link", "download_date",
-                                  "next_update", "update_frequency", "metadata_link",
-                                  "metadata_path", "notes"))
+                                                           "schema", "orig_file", "orig_link", "download_date",
+                                                           "next_update", "update_frequency", "metadata_link",
+                                                           "metadata_path", "notes"))
   assertLogical(x = update, len = 1)
   assertList(x = vars)
 
@@ -83,7 +86,7 @@ normTable <- function(input = NULL, ..., update = FALSE){
       next
     }
 
-    algorithm = readRDS(file = paste0(intPaths, "/adb_tables/meta/schemas/", inv_tables$schema, ".rds"))
+    algorithm = readRDS(file = paste0(intPaths, "/adb_tables/meta/schemas/", inv_tables$schema[inv_tables$source_file == file_name], ".rds"))
     if(!exists(x = "algorithm")){
       stop(paste0("please create the schema desciption '", algorithm, "' for the file '", file_name, "'.\n  --> See '?meta_default' for details"))
     }
@@ -113,10 +116,11 @@ normTable <- function(input = NULL, ..., update = FALSE){
       mutate(id = seq_along(year),
              tabID = tabID,
              geoID = geoID) %>%
-      matchUnits(source = geoID, keepOrig = TRUE)
+      matchUnits(source = tabID, keepOrig = TRUE)
 
     # if a matching list for other variables is defined, match those
     if(length(vars) != 0){
+      message()
       out <- out %>%
         matchVars(source = tabID, ..., keepOrig = FALSE)
     }
@@ -126,11 +130,12 @@ normTable <- function(input = NULL, ..., update = FALSE){
 
       theNations <- out %>%
         filter(!is.na(ahID)) %>%
-        pull(al1_alt) %>%
+        pull(al1_name) %>%
         unique()
 
       out <- out %>%
-        select(id, tabID, geoID, ahID, everything())
+        select(id, tabID, geoID, ahID, everything()) %>%
+        mutate(year = as.numeric(year))
 
       updateData(table = out, nations = theNations, file = thisInput)
 
