@@ -1,4 +1,5 @@
 library(testthat)
+library(rectifyr)
 library(readr)
 library(magrittr)
 library(checkmate)
@@ -39,29 +40,30 @@ test_that("tables can be normalised (without matched variables)", {
   file.copy(from = paste0(path, "/example_geom4.gpkg"),
             to = paste0(path, "/newDB/adb_geometries/stage2/arg_3__maia.gpkg"))
 
-  meta_maia_1 <- list(clusters = list(top = NULL, left = NULL, width = NULL, height = NULL,
-                                      id = NULL, header = TRUE),
-                      variables = list(al1 =
-                                         list(type = "id", name = "territories", split = NULL,
-                                              row = NULL, col = 1, rel = FALSE),
-                                       year =
-                                         list(type = "id", name = "period", split = NULL,
-                                              row = NULL, col = 2, rel = FALSE),
-                                       commodities =
-                                         list(type = "id", name = NULL, split = NULL,
-                                              row = NULL, col = 3, rel = FALSE),
-                                       harvested =
-                                         list(type = "values", unit = "ha", factor = 1,
-                                              row = NULL, col = 4, rel = FALSE,
-                                              key = NULL, value = NULL),
-                                       production =
-                                         list(type = "values", unit = "t", factor = 1,
-                                              row = NULL, col = 5, rel = FALSE,
-                                              key = NULL, value = NULL)))
+  meta_maia_1 <- makeSchema(
+    list(clusters = list(top = NULL, left = NULL, width = NULL, height = NULL,
+                         id = NULL, header = TRUE),
+         variables = list(al1 =
+                            list(type = "id", name = "territories", split = NULL,
+                                 row = NULL, col = 1, rel = FALSE),
+                          year =
+                            list(type = "id", name = "period", split = NULL,
+                                 row = NULL, col = 2, rel = FALSE),
+                          commodities =
+                            list(type = "id", name = NULL, split = NULL,
+                                 row = NULL, col = 3, rel = FALSE),
+                          harvested =
+                            list(type = "values", unit = "ha", factor = 1,
+                                 row = NULL, col = 4, rel = FALSE,
+                                 key = NULL, value = NULL),
+                          production =
+                            list(type = "values", unit = "t", factor = 1,
+                                 row = NULL, col = 5, rel = FALSE,
+                                 key = NULL, value = NULL))))
 
-  regTable(nation = "Argentina",
-           subset = "soyMaize",
-           dSeries = "maia", gSeries = "gadm",
+    regTable(nation = "Argentina",
+             subset = "soyMaize",
+             dSeries = "maia", gSeries = "gadm",
            schema = meta_maia_1,
            level = 1,
            begin = 1990, end = 2017,
@@ -119,7 +121,7 @@ test_that("tables can be normalised (without matched variables)", {
   expect_file_exists(x = paste0(path, "/newDB/adb_tables/stage2/processed/arg_1_soyMaize_1990_2017_maia.csv"))
 
   # test whether the resulting file is "correct" ----
-  final <- read_csv(file = paste0(path, "/newDB/adb_tables/stage3/Argentina.csv"))
+  final <- read_csv(file = paste0(path, "/newDB/adb_tables/stage3/argentina.csv"))
   expect_tibble(x = final, types = c("double", "double", "double", "character", "double", "character", "double", "double"))
   expect_data_frame(x = final, nrows = 56, ncols = 8)
   expect_names(x = names(final), identical.to = c("id", "tabID", "geoID", "ahID", "year", "commodities", "harvested", "production"))
@@ -163,25 +165,26 @@ test_that("tables can be normalised (with matched variables)", {
   file.copy(from = paste0(path, "/example_geom4.gpkg"),
             to = paste0(path, "/newDB/adb_geometries/stage2/arg_3__maia.gpkg"))
 
-  meta_maia_1 <- list(clusters = list(top = NULL, left = NULL, width = NULL, height = NULL,
-                                      id = NULL, header = TRUE),
-                      variables = list(al1 =
-                                         list(type = "id", name = "territories", split = NULL,
-                                              row = NULL, col = 1, rel = FALSE),
-                                       year =
-                                         list(type = "id", name = "period", split = NULL,
-                                              row = NULL, col = 2, rel = FALSE),
-                                       commodities =
-                                         list(type = "id", name = NULL, split = NULL,
-                                              row = NULL, col = 3, rel = FALSE),
-                                       harvested =
-                                         list(type = "values", unit = "ha", factor = 1,
-                                              row = NULL, col = 4, rel = FALSE,
-                                              key = NULL, value = NULL),
-                                       production =
-                                         list(type = "values", unit = "t", factor = 1,
-                                              row = NULL, col = 5, rel = FALSE,
-                                              key = NULL, value = NULL)))
+  meta_maia_1 <- makeSchema(
+    list(clusters = list(top = NULL, left = NULL, width = NULL, height = NULL,
+                         id = NULL, header = TRUE),
+         variables = list(al1 =
+                            list(type = "id", name = "territories", split = NULL,
+                                 row = NULL, col = 1, rel = FALSE),
+                          year =
+                            list(type = "id", name = "period", split = NULL,
+                                 row = NULL, col = 2, rel = FALSE),
+                          commodities =
+                            list(type = "id", name = NULL, split = NULL,
+                                 row = NULL, col = 3, rel = FALSE),
+                          harvested =
+                            list(type = "values", unit = "ha", factor = 1,
+                                 row = NULL, col = 4, rel = FALSE,
+                                 key = NULL, value = NULL),
+                          production =
+                            list(type = "values", unit = "t", factor = 1,
+                                 row = NULL, col = 5, rel = FALSE,
+                                 key = NULL, value = NULL))))
 
   regTable(nation = "Argentina",
            subset = "soyMaize",
@@ -244,14 +247,10 @@ test_that("tables can be normalised (with matched variables)", {
   expect_file_exists(x = paste0(path, "/newDB/adb_tables/stage2/processed/arg_1_soyMaize_1990_2017_maia.csv"))
 
   # test whether the resulting file is "correct" ----
-  final <- read_csv(file = paste0(path, "/newDB/adb_tables/stage3/Argentina.csv"))
+  final <- read_csv(file = paste0(path, "/newDB/adb_tables/stage3/argentina.csv"))
   expect_tibble(x = final, types = c("double", "double", "double", "character", "double", "character", "double", "double", "double"))
   expect_data_frame(x = final, nrows = 56, ncols = 8)
   expect_names(x = names(final), identical.to = c("id", "tabID", "geoID", "ahID", "year", "harvested", "production", "faoID"))
 
   unlink(paste0(path, "/newDB"), recursive = TRUE)
-})
-
-test_that("Error if arguments have wrong value", {
-
 })

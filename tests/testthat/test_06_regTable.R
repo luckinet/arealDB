@@ -1,5 +1,6 @@
 library(testthat)
 library(checkmate)
+library(rectifyr)
 context("regTable")
 
 
@@ -28,25 +29,26 @@ test_that("a table inventory entry is produced", {
   file.copy(from = paste0(path, "/example_table2.csv"),
             to = paste0(path, "/newDB/adb_tables/stage2/arg_2_soyMaize_1990_2017_maia.csv"))
 
-  meta_maia_1 <<- list(clusters = list(top = NULL, left = NULL, width = NULL, height = NULL,
-                                      id = NULL),
-                      variables = list(territories =
-                                         list(type = "id", name = "al1", form = "long",
-                                              row = NULL, col = 1, rel = FALSE),
-                                       period =
-                                         list(type = "id", name = "year", form = "long",
-                                              row = NULL, col = 2, rel = FALSE),
-                                       commodities =
-                                         list(type = "id", name = NULL, form = "long",
-                                              row = NULL, col = 3, rel = FALSE),
-                                       harvested =
-                                         list(type = "values", unit = "ha", factor = 1,
-                                              row = NULL, col = 4, rel = FALSE,
-                                              id = NULL, level = NULL),
-                                       production =
-                                         list(type = "values", unit = "t", factor = 1,
-                                              row = NULL, col = 5, rel = FALSE,
-                                              id = NULL, level = NULL)))
+  meta_maia_1 <- makeSchema(
+    list(clusters = list(top = NULL, left = NULL, width = NULL, height = NULL,
+                         id = NULL, header = FALSE),
+         variables = list(territories =
+                            list(type = "id", name = "al1", split = NULL,
+                                 row = NULL, col = 1, rel = FALSE),
+                          period =
+                            list(type = "id", name = "year", split = NULL,
+                                 row = NULL, col = 2, rel = FALSE),
+                          commodities =
+                            list(type = "id", name = NULL, split = NULL,
+                                 row = NULL, col = 3, rel = FALSE),
+                          harvested =
+                            list(type = "values", unit = "ha", factor = 1,
+                                 row = NULL, col = 4, rel = FALSE,
+                                 key = NULL, value = NULL),
+                          production =
+                            list(type = "values", unit = "t", factor = 1,
+                                 row = NULL, col = 5, rel = FALSE,
+                                 key = NULL, value = NULL))))
 
   output <- regTable(nation = "Argentina",
                      subset = "soyMaize",
@@ -96,25 +98,26 @@ test_that("function asks for details, if not provided", {
   file.copy(from = paste0(path, "/example_table1.csv"),
             to = paste0(path, "/newDB/adb_tables/stage2/_1__1990_2019_maia.csv"))
 
-  meta_maia_1 <<- list(clusters = list(top = NULL, left = NULL, width = NULL, height = NULL,
-                                       id = NULL),
-                       variables = list(territories =
-                                          list(type = "id", name = "al1", form = "long",
-                                               row = NULL, col = 1, rel = FALSE),
-                                        period =
-                                          list(type = "id", name = "year", form = "long",
-                                               row = NULL, col = 2, rel = FALSE),
-                                        commodities =
-                                          list(type = "id", name = NULL, form = "long",
-                                               row = NULL, col = 3, rel = FALSE),
-                                        harvested =
-                                          list(type = "values", unit = "ha", factor = 1,
-                                               row = NULL, col = 4, rel = FALSE,
-                                               id = NULL, level = NULL),
-                                        production =
-                                          list(type = "values", unit = "t", factor = 1,
-                                               row = NULL, col = 5, rel = FALSE,
-                                               id = NULL, level = NULL)))
+  meta_maia_1 <- makeSchema(
+    list(clusters = list(top = NULL, left = NULL, width = NULL, height = NULL,
+                         id = NULL, header = FALSE),
+         variables = list(territories =
+                            list(type = "id", name = "al1", split = NULL,
+                                 row = NULL, col = 1, rel = FALSE),
+                          period =
+                            list(type = "id", name = "year", split = NULL,
+                                 row = NULL, col = 2, rel = FALSE),
+                          commodities =
+                            list(type = "id", name = NULL, split = NULL,
+                                 row = NULL, col = 3, rel = FALSE),
+                          harvested =
+                            list(type = "values", unit = "ha", factor = 1,
+                                 row = NULL, col = 4, rel = FALSE,
+                                 key = NULL, value = NULL),
+                          production =
+                            list(type = "values", unit = "t", factor = 1,
+                                 row = NULL, col = 5, rel = FALSE,
+                                 key = NULL, value = NULL))))
 
   expect_message(object = regTable())
   output <- capture_messages(code = regTable())

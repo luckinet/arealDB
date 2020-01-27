@@ -18,7 +18,7 @@ test_that("geometries can be normalised", {
                 update = TRUE)
   regDataseries(name = "maia",
                 description = "ministerio de agricultura ganaderia y pesca",
-                homepage = "http://datosestimaciones.magyp.gob.ar",                
+                homepage = "http://datosestimaciones.magyp.gob.ar",
                 licence_link = "http://datosestimaciones.magyp.gob.ar/license.html",
                 licence_path = "C:/Users/arue/Projects/GeoKur/Luckinet/licenceFiles/licence2.txt",
                 update = TRUE)
@@ -46,8 +46,8 @@ test_that("geometries can be normalised", {
               update = TRUE)
   output <- normGeometry(input = paste0(path, "/newDB/adb_geometries/stage2/_1__gadm.gpkg"), update = TRUE)
   expect_tibble(x = output, nrows = 1, ncols = 13, col.names = "strict")
-  expect_names(x = names(output), must.include = c("geoID", "datID", "level", "source_file", 
-                        "layer", "nation_column", "unit_column", "orig_file", "orig_link", 
+  expect_names(x = names(output), must.include = c("geoID", "datID", "level", "source_file",
+                        "layer", "nation_column", "unit_column", "orig_file", "orig_link",
                         "download_date", "next_update", "update_frequency", "notes"))
   expect_file_exists(x = paste0(path, "/newDB/adb_geometries/stage2/processed/_1__gadm.gpkg"))
 
@@ -63,8 +63,8 @@ test_that("geometries can be normalised", {
               update = TRUE)
   output <- normGeometry(input = paste0(path, "/newDB/adb_geometries/stage2/_2__gadm.gpkg"), update = TRUE)
   expect_tibble(x = output, nrows = 1, ncols = 13, col.names = "strict")
-  expect_names(x = names(output), must.include = c("geoID", "datID", "level", "source_file", 
-                        "layer", "nation_column", "unit_column", "orig_file", "orig_link", 
+  expect_names(x = names(output), must.include = c("geoID", "datID", "level", "source_file",
+                        "layer", "nation_column", "unit_column", "orig_file", "orig_link",
                         "download_date", "next_update", "update_frequency", "notes"))
   expect_file_exists(x = paste0(path, "/newDB/adb_geometries/stage2/processed/_2__gadm.gpkg"))
 
@@ -80,8 +80,8 @@ test_that("geometries can be normalised", {
               update = TRUE)
   output <- normGeometry(input = paste0(path, "/newDB/adb_geometries/stage2/_3__gadm.gpkg"), update = TRUE)
   expect_tibble(x = output, nrows = 1, ncols = 13, col.names = "strict")
-  expect_names(x = names(output), must.include = c("geoID", "datID", "level", "source_file", 
-                        "layer", "nation_column", "unit_column", "orig_file", "orig_link", 
+  expect_names(x = names(output), must.include = c("geoID", "datID", "level", "source_file",
+                        "layer", "nation_column", "unit_column", "orig_file", "orig_link",
                         "download_date", "next_update", "update_frequency", "notes"))
   expect_file_exists(x = paste0(path, "/newDB/adb_geometries/stage2/processed/_3__gadm.gpkg"))
 
@@ -98,8 +98,8 @@ test_that("geometries can be normalised", {
               update = TRUE)
   output <- normGeometry(input = paste0(path, "/newDB/adb_geometries/stage2/arg_3__maia.gpkg"), nation = "argentina", update = TRUE)
   expect_tibble(x = output, nrows = 1, ncols = 13, col.names = "strict")
-  expect_names(x = names(output), must.include = c("geoID", "datID", "level", "source_file", 
-                        "layer", "nation_column", "unit_column", "orig_file", "orig_link", 
+  expect_names(x = names(output), must.include = c("geoID", "datID", "level", "source_file",
+                        "layer", "nation_column", "unit_column", "orig_file", "orig_link",
                         "download_date", "next_update", "update_frequency", "notes"))
 
   # test whether the resulting file is "correct" ----
@@ -119,8 +119,4 @@ test_that("geometries can be normalised", {
   expect_names(x = names(final), identical.to = c("nation", "name", "level", "ahID", "geoID", "al1_id", "al2_id", "al3_id", "geom"))
 
   unlink(paste0(path, "/newDB"), recursive = TRUE)
-})
-
-test_that("Error if arguments have wrong value", {
-
 })
