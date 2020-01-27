@@ -25,7 +25,7 @@
 #' @importFrom stats setNames
 #' @importFrom tibble tibble
 #' @importFrom tidyselect matches everything contains
-#' @importFrom utils txtProgressBar setTxtProgressBar
+#' @importFrom utils tail txtProgressBar setTxtProgressBar
 #' @export
 
 matchUnits <- function(input = NULL, source = NULL, keepOrig = FALSE){
@@ -44,26 +44,32 @@ matchUnits <- function(input = NULL, source = NULL, keepOrig = FALSE){
   adminLvls <- names(input)[grepl(pattern = "al", x = names(input))]
 
   # to manage the workload, split up input according to nations ("al1")
-  nations <- unique(eval(parse(text = "al1"), envir = input))
-  outhIDs <- NULL
-  for(i in seq_along(nations)){
-    rawNation <- nations[i]
-    # cleanNation <- unifyNations(unify = rawNation, verbose = FALSE)
-    cleanNation <- translateTerms(terms = rawNation,
-                                  source = list("geoID" = source),
-                                  index = "tt_territories",
-                                  inline = FALSE,
-                                  verbose = FALSE) %>%
-      pull(target)
+  theNations <- unique(eval(parse(text = "al1"), envir = input))
+  nations <- translateTerms(terms = theNations,
+                            source = list("tabID" = source),
+                            index = "tt_territories",
+                            inline = FALSE,
+                            verbose = FALSE) %>%
+    filter(!target %in% "ignore")
 
-    if(is.na(cleanNation)){
-      message(paste0("\n--> ! skipping ", rawNation, " because it does not match in 'tt_territories.csv'."))
-      next
-    }
+  # test whether there is a file to match with, by the nation name
+  availableNations <- list.files(path = paste0(intPaths, "stage3"), full.names = TRUE) %>%
+    str_split(pattern = "/")
+  availableNations <- sapply(seq_along(availableNations), function(x){
+    temp <- availableNations[[x]]
+    str_split(tail(temp, 1), "[.]")[[1]][1]
+  })
+
+  outhIDs <- NULL
+  message("--> Matching geometries of ...")
+  for(i in seq_along(nations$target)){
+    recentNation <- nations[i,]
+
+    message("    ... '", recentNation$target, "'")
 
     # make an input subset for the current nation ...
     inputSbst <- input %>%
-      filter(al1 == rawNation)
+      filter(al1 == recentNation$origin)
 
     # ... extract and find the unique combinations of the respective columns,
     # this asserts that only administrative units nested in their parents are
@@ -73,11 +79,10 @@ matchUnits <- function(input = NULL, source = NULL, keepOrig = FALSE){
       unique()
 
     # load the nation geometries ...
-    layers <- st_layers(dsn = paste0(intPaths, "stage3/", cleanNation, ".gpkg"))
+    layers <- st_layers(dsn = paste0(intPaths, "stage3/", recentNation$target, ".gpkg"))
     geometries <- NULL
-    message("\n--> Matching geometries of '", cleanNation, "'.")
     for(j in seq_along(layers$name)){
-      theGeom <- read_sf(dsn = paste0(intPaths, "stage3/", cleanNation, ".gpkg"),
+      theGeom <- read_sf(dsn = paste0(intPaths, "stage3/", recentNation$target, ".gpkg"),
                          layer = sort(layers$name)[j],
                          stringsAsFactors = FALSE) %>%
         as_tibble() %>%
@@ -102,9 +107,9 @@ matchUnits <- function(input = NULL, source = NULL, keepOrig = FALSE){
       if(j == 1){
         if(length(adminLvls) == 1){
           outputUnits <- outputUnits %>%
-            filter(name == cleanNation) %>%
+            filter(name == recentNation$target) %>%
             as_tibble() %>%
-            mutate(al1_alt = rawNation) %>%
+            mutate(al1_alt = recentNation$origin) %>%
             select(al1 = name, al1_alt, level, ahID)
         } else{
           next
@@ -126,13 +131,13 @@ matchUnits <- function(input = NULL, source = NULL, keepOrig = FALSE){
 
         # ... translate them to the default unit names
         theParents <- translateTerms(terms = unique(inputUnits[[1]]),
-                                     source = list("geoID" = source),
+                                     source = list("tabID" = source),
                                      index = "tt_territories",
                                      fuzzy_terms = unique(parentSubset$name),
                                      verbose = FALSE)
         theParents <- unique(theParents)
         theUnits <- translateTerms(terms = unique(inputUnits[[2]]),
-                                   source = list("geoID" = source),
+                                   source = list("tabID" = source),
                                    index = "tt_territories",
                                    fuzzy_terms = unique(unitSubset$name),
                                    verbose = FALSE)
@@ -185,7 +190,7 @@ matchUnits <- function(input = NULL, source = NULL, keepOrig = FALSE){
 
     hIDJoin <- outputUnits %>%
       filter(level %in% max(levels)) %>%
-      select(contains("_alt"), ahID)
+      select(starts_with("al"), ahID)
 
     outhIDs <- bind_rows(outhIDs, hIDJoin)
   }
@@ -198,10 +203,11 @@ matchUnits <- function(input = NULL, source = NULL, keepOrig = FALSE){
   if(!keepOrig){
     out <- out %>%
       left_join(outhIDs) %>%
-      select(-contains("_alt"))
+      select(-starts_with("al"))
   } else{
     out <- out %>%
-      left_join(outhIDs)
+      left_join(outhIDs) %>%
+      select(-contains("_alt"))
   }
 
   return(out)
