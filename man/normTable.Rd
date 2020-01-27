@@ -4,7 +4,7 @@
 \alias{normTable}
 \title{Normalise data tables}
 \usage{
-normTable(input = NULL, ..., update = FALSE)
+normTable(input = NULL, ..., pattern = NULL, update = FALSE)
 }
 \arguments{
 \item{input}{[\code{character(1)}]\cr path of the file to normalise.}
@@ -12,6 +12,9 @@ normTable(input = NULL, ..., update = FALSE)
 \item{...}{[\code{list(.)}]\cr matching lists that capture the variables by
 which to match and the new column names containing the resulting ID; see
 Details.}
+
+\item{pattern}{[\code{character(1)}]\cr an optional regular expression. Only
+dataset names which match the regular expression will be returned.}
 
 \item{update}{[\code{logical(1)}]\cr whether or not the physical files should
 be updated (\code{TRUE}) or the function should merely return the new
@@ -37,9 +40,9 @@ Arguments in \code{...} are so-called matching lists that indicate
 
   To normalise data tables, this function proceeds as follows: \enumerate{
   \item Read in \code{input} and extract initial metadata from the file name.
-  \item Employ the function \code{rectr::\link{reorganise}} to reshape
+  \item Employ the function \code{rectifyr::\link{reorganise}} to reshape
   \code{input} according to the respective schema description (see
-  \code{rectr::\link{schema_default}}). \item Match the territorial units in
+  \code{rectifyr::\link{schema_default}}). \item Match the territorial units in
   \code{input} via the \code{\link{matchUnits}}. \item If \code{...} has been
   provided with variables to match, those are matched via
   \code{\link{matchVars}}. \item Harmonise territorial unit names. \item If

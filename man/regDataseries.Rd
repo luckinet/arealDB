@@ -14,14 +14,14 @@ regDataseries(name = NULL, description = NULL, homepage = NULL,
 \item{description}{[\code{character(1)}]\cr the "long name" or "brief
 description" of the dataseries.}
 
-\item{homepage}{[\code{character(1)}]\cr the homepage of the data provider 
+\item{homepage}{[\code{character(1)}]\cr the homepage of the data provider
 where the dataseries or additional information can be found.}
 
 \item{licence_link}{[\code{character(1)}]\cr link to the licence or the webpage
-from which the licence was copied}
+from which the licence was copied.}
 
-\item{licence_path}{[\code{character(1)}]\cr path to the local file in with the 
-licence text is stored}
+\item{licence_path}{[\code{character(1)}]\cr path to the local file in with the
+licence text is stored.}
 
 \item{notes}{[\code{character(1)}]\cr optional notes.}
 
@@ -34,7 +34,7 @@ Returns the entry that is appended to 'inv_dataseries.csv' in case
 }
 \description{
 This function registers a new dataseries of both, geometries or areal data
-into the geospatial database
+into the geospatial database.
 }
 \examples{
 \dontrun{

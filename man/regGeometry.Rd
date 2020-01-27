@@ -7,7 +7,7 @@
 regGeometry(nation = NULL, subset = NULL, gSeries = NULL,
   level = NULL, layer = NULL, nameCol = NULL, archive = NULL,
   archiveLink = NULL, nextUpdate = NULL, updateFrequency = NULL,
-  notes = NULL, update = FALSE)
+  notes = NULL, update = FALSE, overwrite = FALSE)
 }
 \arguments{
 \item{nation}{[\code{character(1)}]\cr either the nation name or the column
@@ -34,21 +34,25 @@ from which the geometry emerges.}
 
 \item{archiveLink}{[\code{character(1)}]\cr download-link of the archive.}
 
-\item{nextUpdate}{[\code{character(1)}]\cr when does the geometry dataset gets
-updated the next time (format resricted to: YYYY-MM-DD).}
+\item{nextUpdate}{[\code{character(1)}]\cr value describing the next
+anticipated update of this dataset (in YYYY-MM-DD format).}
 
-\item{updateFrequency}{[\code{character(1)}]\cr does the dataset gets updated in
-a regular fashion? The provided options (which include irregular), are taken
-from ISO 19115 «CodeList» MD_MaintenanceFrequencyCode. The allowed option are:
-"geoID", "datID", "level", "source_file", "layer", "nation_column", "unit_column",
-"orig_file", "orig_link", "download_date", "next_update", "update_frequency",
-"notes".}
+\item{updateFrequency}{[\code{character(1)}]\cr value describing the
+frequency in which the dataset is updated, according to the
+\href{https://geo-ide.noaa.gov/wiki/index.php?title=ISO_19115_and_19115-2_CodeList_Dictionaries#MD_MaintenanceFrequencyCode}{ISO
+ 19115 Codelist, MD_MaintenanceFrequencyCode}. Possible values are:
+'continual', 'daily', 'weekly', 'fortnightly', 'quarterly', 'biannually',
+'annually', 'asNeeded', 'irregular', 'notPlanned', 'unknown', 'periodic',
+'semimonthly', 'biennially'.}
 
 \item{notes}{[\code{character(1)}]\cr optional notes that are assigned to all
 features of this geometry.}
 
 \item{update}{[\code{logical(1)}]\cr whether or not the file
 'inv_geometries.csv' should be updated (\code{TRUE}).}
+
+\item{overwrite}{[\code{logical(1)}]\cr whether or not the geometry to
+register shall overwrite a potentially already existing older version.}
 }
 \value{
 Returns the entry that is appended to 'inv_geometries.csv' in case
@@ -61,13 +65,13 @@ geospatial database.
 \details{
 When processing geometries to which areal data shall be linked
   linked, carry out the following steps: \enumerate{ \item Determine the
-  \code{nation}, a \code{subset} (if applicable),
-  the dataseries of the geometry and the administrative \code{level}, and
-  provide them as arguments to this function. \item Run the function. \item
-  Export the shapefile with the following properties: \itemize{ \item Format:
-  GeoPackage \item File name: What is provided as message by this function
-  \item CRS: EPSG:4326 - WGS 84 \item make sure that 'all fields are
-  exported'} \item Confirm that you have saved the file.}
+  \code{nation}, a \code{subset} (if applicable), the dataseries of the
+  geometry and the administrative \code{level}, and provide them as arguments
+  to this function. \item Run the function. \item Export the shapefile with
+  the following properties: \itemize{ \item Format: GeoPackage \item File
+  name: What is provided as message by this function \item CRS: EPSG:4326 -
+  WGS 84 \item make sure that 'all fields are exported'} \item Confirm that
+  you have saved the file.}
 }
 \examples{
 \dontrun{

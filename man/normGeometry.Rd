@@ -4,22 +4,29 @@
 \alias{normGeometry}
 \title{Normalise geometries}
 \usage{
-normGeometry(input = NULL, ..., thresh = 10, update = FALSE)
+normGeometry(input = NULL, ..., thresh = 10, outType = "gpkg",
+  pattern = NULL, update = FALSE)
 }
 \arguments{
 \item{input}{[\code{character(1)}]\cr path of the file to normalise.}
 
 \item{...}{[\code{character(.)}]\cr a subset of administrative units as given
 by \code{nation}, \code{continent}, \code{region}, \code{subregion} or
-\code{un_member = TRUE/FALSE}. Valid values can be found in the object
-\code{\link{countries}}.}
+\code{un_member = TRUE/FALSE}. Valid values are the column names of the
+object \code{\link{countries}}.}
 
 \item{thresh}{[\code{integerish(1)}]\cr the deviation of percentage of
 overlap above which to consider two territorial units "different".}
 
+\item{outType}{[\code{character(1)}]\cr the output file-type, see
+\code{\link{st_drivers}} for a list.}
+
+\item{pattern}{[\code{character(1)}]\cr an optional regular expression. Only
+dataset names which match the regular expression will be returned.}
+
 \item{update}{[\code{logical(1)}]\cr whether or not the physical files should
-be updated (\code{TRUE}) or the function should merely return the new
-object (\code{FALSE} default).}
+be updated (\code{TRUE}) or the function should merely return the geometry
+inventory of the handled files (\code{FALSE} default).}
 }
 \value{
 This function integrates unprocessed geometries at stage two into the
@@ -36,32 +43,40 @@ To normalise geometries, this function proceeds as follows:
   provided as a list of simple feature POLYGONS, they are dissolved into a
   single MULTIPOLYGON per nation. \item In case the nation to which a
   geometry belongs has not yet been created at stage three, the following
-  steps are carried out: \enumerate{ \item Check whether initial GADM
-  geometries of the required level are registered and normalised, and stop if
-  this is not the case. \item Extract the full hierarchy of all territorial
-  units that are part of the geometry. \item Match all territorial units of
-  the geometry within their respective parents with the hierarchy table of
-  the GADM geometries. \item Reconstruct ahID from the intermediate spatial
-  objects and from the metadata. } \item In case the nation to which the
-  geometry belongs has already been created at stage three, the following
-  steps are carried out: \enumerate{ \item Check whether the new geometries
-  have the same coordinate reference system as the already existing database
-  and reproject if this is not the case. \item Check whether all new
-  geometries are already exactly matched spatially and stop if that is the
-  case. \item Carry out a spatial join (via \code{sf::st_join(... largest =
-  TRUE)}). \item Match all territorial units of the geometry within their
-  respective parents with the previous hierarchy table. \item For all units
-  that did match, reconstruct ahID from the intermediate spatial objects and
-  from the metadata. \item For all units that did not match, rebuild metadata
-  and a new ahID. } \item If update = TRUE, store the processed geometry at
-  stage three.} \item Move the geometry to the folder '/processed', if it is
-  fully processed.}
+  steps are carried out: \enumerate{ \item Check whether the recent dataset
+  is GADM, to build the initial administrative hiearchy from GADM geometries,
+  and stop if this is not the case. \item Extract the full hierarchy of all
+  territorial units that are part of the geometry. \item Reconstruct ahID
+  from the intermediate spatial objects and from the metadata. } \item In
+  case the nation to which the geometry belongs has already been created, the
+  following steps are carried out: \enumerate{ \item Check whether the new
+  geometries have the same coordinate reference system as the already
+  existing database and reproject if this is not the case. \item Check
+  whether all new geometries are already exactly matched spatially and stop
+  if that is the case. \item Check whether the new geometries are all within
+  the already defined parents, and save those that are not as a new geometry,
+  that needs to be treated seperately. \item Calculate spatial overlap and
+  distinguish the geometries into those that overlap with more and less than
+  \code{thresh}. \item For all units that did match, copy ahID from the
+  geometries they overlap with. \item For all units that did not match,
+  rebuild metadata and a new ahID. } \item If update = TRUE, store the
+  processed geometry at stage three.} \item Move the geometry to the folder
+  '/processed', if it is fully processed.}
 }
 \examples{
 \dontrun{
 
-normGeometry(input = ".../adb_geometries/stage2/geometry.gpkg",
-             nation = c("united states"),
+# 1. set up a basis dataset from GADM
+normGeoemtry(pattern = "gadm",
+             update = TRUE)
+
+# 2. normalise a specific dataset
+normGeometry(input = ".../adb_geometries/stage2/europe.gpkg",
+             nation = c("estonia"),
+             update = TRUE)
+
+# 3. or normalise all remaining files
+normGeometry(nation = c("estonia"),
              update = TRUE)
 
 }

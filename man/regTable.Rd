@@ -8,7 +8,8 @@ regTable(nation = NULL, subset = NULL, dSeries = NULL,
   gSeries = NULL, level = NULL, begin = NULL, end = NULL,
   schema = NULL, archive = NULL, archiveLink = NULL,
   nextUpdate = NULL, updateFrequency = NULL, metadataLink = NULL,
-  metadataPath = NULL, notes = NULL, update = FALSE)
+  metadataPath = NULL, notes = NULL, update = FALSE,
+  overwrite = FALSE)
 }
 \arguments{
 \item{nation}{[\code{character(1)}]\cr the nation for which the areal data
@@ -44,12 +45,13 @@ boundaries emerge.}
 \item{nextUpdate}{[\code{character(1)}]\cr when does the geometry dataset
 gets updated the next time (format resricted to: YYYY-MM-DD).}
 
-\item{updateFrequency}{[\code{character(1)}]\cr does the dataset gets updated
-in a regular fashion? The provided options (which include irregular), are
-taken from ISO 19115 «CodeList» MD_MaintenanceFrequencyCode. The allowed
-option are: "geoID", "datID", "level", "source_file", "layer",
-"nation_column", "unit_column", "orig_file", "orig_link", "download_date",
-"next_update", "update_frequency", "notes".}
+\item{updateFrequency}{[\code{character(1)}]\cr value describing the
+frequency in which the dataset is updated, according to the
+\href{https://geo-ide.noaa.gov/wiki/index.php?title=ISO_19115_and_19115-2_CodeList_Dictionaries#MD_MaintenanceFrequencyCode}{ISO
+19115 Codelist, MD_MaintenanceFrequencyCode}. Possible values are:
+'continual', 'daily', 'weekly', 'fortnightly', 'quarterly', 'biannually',
+'annually', 'asNeeded', 'irregular', 'notPlanned', 'unknown', 'periodic',
+'semimonthly', 'biennially'.}
 
 \item{metadataLink}{[\code{character(1)}]\cr if there is already metadata
 existing: link to the metadataset .}
@@ -61,6 +63,9 @@ downloaded along the data: the path where it is stored locally.}
 
 \item{update}{[\code{logical(1)}]\cr whether or not the file 'inv_tables.csv'
 should be updated.}
+
+\item{overwrite}{[\code{logical(1)}]\cr whether or not the geometry to
+register shall overwrite a potentially already existing older version.}
 }
 \value{
 Returns the entry that is appended to 'inv_tables.csv' in case
@@ -88,7 +93,7 @@ When processing areal data tables, carry out the following steps:
   that describes the position of the data components) for each data table,
   which is saved as \code{paste0("meta_", dSeries, TAB_NUMBER)}. A template
   thereof, and documentation on how to set them up, comes as the object
-  \code{rectr::\link{schema_default}} with \code{arealDB}.
+  \code{rectifyr::\link{schema_default}} with \code{arealDB}.
 }
 \examples{
 \dontrun{
