@@ -50,12 +50,15 @@ matchVars <- function(input = NULL, source = NULL, ..., keepOrig = FALSE){
   assertList(x = vars)
   assertLogical(x = keepOrig)
 
+  message("--> Matching variables of ...'")
   for(i in seq_along(vars)){
 
     targetVar <- names(vars)[i]
     toMatch <- eval(vars[[i]])
     varName <- names(toMatch)
     targetName <- toMatch[[1]]
+
+    message("    ... '", targetVar, "'")
 
     # get tables
     id_temp <- suppressMessages(read_csv(paste0(getOption("adb_path"), "/id_", varName, ".csv")))
