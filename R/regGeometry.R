@@ -18,27 +18,30 @@
 #' @param archive [\code{character(1)}]\cr the original file (perhaps a *.zip)
 #'   from which the geometry emerges.
 #' @param archiveLink [\code{character(1)}]\cr download-link of the archive.
-#' @param nextUpdate [\code{character(1)}]\cr when does the geometry dataset gets
-#'   updated the next time (format resricted to: YYYY-MM-DD).
-#' @param updateFrequency [\code{character(1)}]\cr does the dataset gets updated in
-#'   a regular fashion? The provided options (which include irregular), are taken
-#'   from ISO 19115 «CodeList» MD_MaintenanceFrequencyCode. The allowed option are:
-#'   "geoID", "datID", "level", "source_file", "layer", "nation_column", "unit_column",
-#'   "orig_file", "orig_link", "download_date", "next_update", "update_frequency",
-#'   "notes".
+#' @param nextUpdate [\code{character(1)}]\cr value describing the next
+#'   anticipated update of this dataset (in YYYY-MM-DD format).
+#' @param updateFrequency [\code{character(1)}]\cr value describing the
+#'   frequency in which the dataset is updated, according to the
+#'   \href{https://geo-ide.noaa.gov/wiki/index.php?title=ISO_19115_and_19115-2_CodeList_Dictionaries#MD_MaintenanceFrequencyCode}{ISO
+#'    19115 Codelist, MD_MaintenanceFrequencyCode}. Possible values are:
+#'   'continual', 'daily', 'weekly', 'fortnightly', 'quarterly', 'biannually',
+#'   'annually', 'asNeeded', 'irregular', 'notPlanned', 'unknown', 'periodic',
+#'   'semimonthly', 'biennially'.
 #' @param notes [\code{character(1)}]\cr optional notes that are assigned to all
 #'   features of this geometry.
 #' @param update [\code{logical(1)}]\cr whether or not the file
 #'   'inv_geometries.csv' should be updated (\code{TRUE}).
+#' @param overwrite [\code{logical(1)}]\cr whether or not the geometry to
+#'   register shall overwrite a potentially already existing older version.
 #' @details When processing geometries to which areal data shall be linked
 #'   linked, carry out the following steps: \enumerate{ \item Determine the
-#'   \code{nation}, a \code{subset} (if applicable),
-#'   the dataseries of the geometry and the administrative \code{level}, and
-#'   provide them as arguments to this function. \item Run the function. \item
-#'   Export the shapefile with the following properties: \itemize{ \item Format:
-#'   GeoPackage \item File name: What is provided as message by this function
-#'   \item CRS: EPSG:4326 - WGS 84 \item make sure that 'all fields are
-#'   exported'} \item Confirm that you have saved the file.}
+#'   \code{nation}, a \code{subset} (if applicable), the dataseries of the
+#'   geometry and the administrative \code{level}, and provide them as arguments
+#'   to this function. \item Run the function. \item Export the shapefile with
+#'   the following properties: \itemize{ \item Format: GeoPackage \item File
+#'   name: What is provided as message by this function \item CRS: EPSG:4326 -
+#'   WGS 84 \item make sure that 'all fields are exported'} \item Confirm that
+#'   you have saved the file.}
 #' @return Returns the entry that is appended to 'inv_geometries.csv' in case
 #'   \code{update = TRUE}.
 #' @examples
@@ -75,14 +78,18 @@
 regGeometry <- function(nation = NULL, subset = NULL, gSeries = NULL, level = NULL,
                         layer = NULL, nameCol = NULL, archive = NULL, archiveLink = NULL,
                         nextUpdate = NULL, updateFrequency = NULL, notes = NULL,
-                        update = FALSE){
+                        update = FALSE, overwrite = FALSE){
 
   # set internal paths
   intPaths <- paste0(getOption(x = "adb_path"))
 
   # get tables
-  inv_geometries <- read_csv(paste0(intPaths, "/inv_geometries.csv"), col_types = "iiiccccccDDcc")
   inv_dataseries <- read_csv(paste0(intPaths, "/inv_dataseries.csv"), col_types = "icccccc")
+  inv_geometries <- read_csv(paste0(intPaths, "/inv_geometries.csv"), col_types = "iiiccccccDccc")
+
+   if(dim(inv_dataseries)[1] == 0){
+    stop("'inv_dataseries.csv' does not contain any entries!")
+  }
 
   # in testing mode?
   testing <- getOption(x = "adb_testing")
@@ -90,8 +97,8 @@ regGeometry <- function(nation = NULL, subset = NULL, gSeries = NULL, level = NU
   # check validity of arguments
   assertNames(x = colnames(inv_geometries),
               permutation.of = c("geoID", "datID", "level", "source_file", "layer",
-              "nation_column", "unit_column", "orig_file", "orig_link", "download_date",
-              "next_update", "update_frequency", "notes"))
+                                 "nation_column", "unit_column", "orig_file", "orig_link", "download_date",
+                                 "next_update", "update_frequency", "notes"))
   assertCharacter(x = nation, ignore.case = TRUE, any.missing = FALSE, len = 1, null.ok = TRUE)
   assertCharacter(x = subset, any.missing = FALSE, null.ok = TRUE)
   assertCharacter(x = gSeries, ignore.case = TRUE, any.missing = FALSE, len = 1, null.ok = TRUE)
@@ -154,6 +161,9 @@ regGeometry <- function(nation = NULL, subset = NULL, gSeries = NULL, level = NU
     }
   } else{
     dataSeries <- inv_dataseries$datID[inv_dataseries$name %in% gSeries]
+    if(length(dataSeries) < 1){
+      stop(paste0("please first create the new geometry series '", gSeries,"' via 'regDataseries()'"))
+    }
   }
 
   if(is.null(level)){
@@ -198,7 +208,7 @@ regGeometry <- function(nation = NULL, subset = NULL, gSeries = NULL, level = NU
   filePath <- paste0(intPaths, "/adb_geometries/stage2/", fileName)
   filesTrace <- str_split(archive, "\\|")[[1]]
 
-  if(any(inv_geometries$source_file %in% fileName) & !update){
+  if(any(inv_geometries$source_file %in% fileName) & !overwrite){
     return(paste0("'", fileName, "' has already been registered."))
   }
 
@@ -279,14 +289,15 @@ regGeometry <- function(nation = NULL, subset = NULL, gSeries = NULL, level = NU
   }
 
   # test whether the geometry file is available
-  if(!testFileExists(x = filePath, access = "r", extension = "gpkg")){
-    message(paste0("... please store the geometry as '", fileName, "' in './adb_geometries/stage2'"))
-    if(!testing){
-      done <- readline(" -> press any key when done: ")
+  if(update){
+    if(!testFileExists(x = filePath, access = "r", extension = "gpkg")){
+      message(paste0("... please store the geometry as '", fileName, "' in './adb_geometries/stage2'"))
+      if(!testing){
+        done <- readline(" -> press any key when done: ")
+      }
+      # make sure that the file is really there
+      assertFileExists(x = filePath, access = "r", extension = "gpkg")
     }
-
-    # make sure that the file is really there
-    assertFileExists(x = filePath, access = "r", extension = "gpkg")
   }
 
   # to check that what has been given in 'nation' and 'nameCol' is in fact a
@@ -314,28 +325,31 @@ regGeometry <- function(nation = NULL, subset = NULL, gSeries = NULL, level = NU
     layer <- layers$name
   }
 
-  # construct new documentation
-  newGID <- ifelse(length(inv_geometries$geoID)==0, 1, as.integer(max(inv_geometries$geoID)+1))
-  doc <- tibble(geoID = newGID,
-                datID = dataSeries,
-                level = level,
-                source_file = fileName,
-                layer = layer,
-                nation_column = nation,
-                unit_column = nameCol,
-                orig_file = archive,
-                orig_link = archiveLink,
-                download_date = Sys.Date(),
-                next_update = nextUpdate,
-                update_frequency = updateFrequency,
-                notes = notes)
+
 
   if(update){
+    # construct new documentation
+    newGID <- ifelse(length(inv_geometries$geoID)==0, 1, as.integer(max(inv_geometries$geoID)+1))
+    doc <- tibble(geoID = newGID,
+                  datID = dataSeries,
+                  level = level,
+                  source_file = fileName,
+                  layer = layer,
+                  nation_column = nation,
+                  unit_column = nameCol,
+                  orig_file = archive,
+                  orig_link = archiveLink,
+                  download_date = Sys.Date(),
+                  next_update = nextUpdate,
+                  update_frequency = updateFrequency,
+                  notes = notes)
     if(!any(inv_geometries$source_file %in% fileName)){
       # in case the user wants to update, attach the new information to the table
       # inv_geometries.csv
       updateTable(index = doc, name = "inv_geometries")
     }
+    return(doc)
+  } else {
+    message(paste0("... please store the geometry as '", fileName, "' in './adb_geometries/stage2'"))
   }
-  return(doc)
 }

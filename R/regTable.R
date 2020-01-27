@@ -23,12 +23,13 @@
 #' @param archiveLink [\code{character(1)}] download-link of the archive.
 #' @param nextUpdate [\code{character(1)}]\cr when does the geometry dataset
 #'   gets updated the next time (format resricted to: YYYY-MM-DD).
-#' @param updateFrequency [\code{character(1)}]\cr does the dataset gets updated
-#'   in a regular fashion? The provided options (which include irregular), are
-#'   taken from ISO 19115 «CodeList» MD_MaintenanceFrequencyCode. The allowed
-#'   option are: "geoID", "datID", "level", "source_file", "layer",
-#'   "nation_column", "unit_column", "orig_file", "orig_link", "download_date",
-#'   "next_update", "update_frequency", "notes".
+#' @param updateFrequency [\code{character(1)}]\cr value describing the
+#'   frequency in which the dataset is updated, according to the
+#'   \href{https://geo-ide.noaa.gov/wiki/index.php?title=ISO_19115_and_19115-2_CodeList_Dictionaries#MD_MaintenanceFrequencyCode}{ISO
+#'   19115 Codelist, MD_MaintenanceFrequencyCode}. Possible values are:
+#'   'continual', 'daily', 'weekly', 'fortnightly', 'quarterly', 'biannually',
+#'   'annually', 'asNeeded', 'irregular', 'notPlanned', 'unknown', 'periodic',
+#'   'semimonthly', 'biennially'.
 #' @param metadataLink [\code{character(1)}]\cr if there is already metadata
 #'   existing: link to the metadataset .
 #' @param metadataPath [\code{character(1)}]\cr if a existing metadataset was
@@ -36,6 +37,8 @@
 #' @param notes [\code{character(1)}]\cr optional notes.
 #' @param update [\code{logical(1)}]\cr whether or not the file 'inv_tables.csv'
 #'   should be updated.
+#' @param overwrite [\code{logical(1)}]\cr whether or not the geometry to
+#'   register shall overwrite a potentially already existing older version.
 #' @details When processing areal data tables, carry out the following steps:
 #'   \enumerate{ \item Determine the \code{nation}, administrative \code{level},
 #'   a \code{subset} (if applicable) and the \code{dataseries} of the areal data
@@ -54,7 +57,7 @@
 #'   that describes the position of the data components) for each data table,
 #'   which is saved as \code{paste0("meta_", dSeries, TAB_NUMBER)}. A template
 #'   thereof, and documentation on how to set them up, comes as the object
-#'   \code{rectr::\link{schema_default}} with \code{arealDB}.
+#'   \code{rectifyr::\link{schema_default}} with \code{arealDB}.
 #' @return Returns the entry that is appended to 'inv_tables.csv' in case
 #'   \code{update = TRUE}.
 #' @examples
@@ -68,10 +71,10 @@
 #'          archive = "soybean_us_county_1990_2017.csv",
 #'          update = TRUE)
 #' }
-#' @importFrom readr read_csv write_rds
+#' @importFrom readr read_csv write_rds guess_encoding
 #' @importFrom checkmate assertDataFrame assertNames assertCharacter
 #'   assertIntegerish assertSubset assertLogical testChoice assertChoice
-#'   assertFileExists
+#'   assertFileExists assertClass assertTRUE
 #' @importFrom dplyr filter distinct
 #' @importFrom stringr str_split
 #' @importFrom tibble tibble
@@ -80,16 +83,22 @@
 regTable <- function(nation = NULL, subset = NULL, dSeries = NULL, gSeries = NULL,
                      level = NULL, begin = NULL, end = NULL, schema = NULL,
                      archive = NULL, archiveLink = NULL, nextUpdate = NULL,
-                     updateFrequency = NULL, metadataLink = NULL,
-                     metadataPath = NULL, notes = NULL, update = FALSE){
+                     updateFrequency = NULL, metadataLink = NULL, metadataPath = NULL,
+                     notes = NULL, update = FALSE, overwrite = FALSE){
 
   # set internal paths
   intPaths <- paste0(getOption(x = "adb_path"))
 
   # get tables
-  inv_tables <- read_csv(paste0(intPaths, "/inv_tables.csv"), col_types = "iiiccccDDcccc")
+  inv_tables <- read_csv(paste0(intPaths, "/inv_tables.csv"), col_types = "iiiccccDccccc")
   inv_dataseries <- read_csv(paste0(intPaths, "/inv_dataseries.csv"), col_types = "icccccc")
   inv_geometries <- read_csv(paste0(intPaths, "/inv_geometries.csv"), col_types = "iiiccccccDDcc")
+
+   if(dim(inv_dataseries)[1] == 0){
+    stop("'inv_dataseries.csv' does not contain any entries!")
+  } else if(dim(inv_geometries)[1] == 0){
+    stop("'inv_geometries.csv' does not contain any entries!")
+  }
 
   # make new tabID
   newTID <- ifelse(length(inv_tables$tabID)==0, 1, as.integer(max(inv_tables$tabID)+1))
@@ -100,15 +109,15 @@ regTable <- function(nation = NULL, subset = NULL, dSeries = NULL, gSeries = NUL
   # check validity of arguments
   assertNames(x = colnames(inv_tables),
               permutation.of = c("tabID", "datID", "geoID", "source_file", "schema",
-              "orig_file", "orig_link", "download_date", "next_update",
-              "update_frequency", "metadata_link", "metadata_path", "notes"))
+                                 "orig_file", "orig_link", "download_date", "next_update",
+                                 "update_frequency", "metadata_link", "metadata_path", "notes"))
   assertNames(x = colnames(inv_dataseries),
               permutation.of = c("datID", "name", "description", "homepage",
-              "licence_link", "licence_path", "notes"))
+                                 "licence_link", "licence_path", "notes"))
   assertNames(x = colnames(inv_geometries),
               permutation.of = c("geoID", "datID", "level", "source_file", "layer",
-              "nation_column", "unit_column", "orig_file", "orig_link", "download_date",
-              "next_update", "update_frequency", "notes"))
+                                 "nation_column", "unit_column", "orig_file", "orig_link", "download_date",
+                                 "next_update", "update_frequency", "notes"))
   assertCharacter(x = nation, ignore.case = TRUE, any.missing = FALSE, len = 1, null.ok = TRUE)
   assertCharacter(x = subset, any.missing = FALSE, null.ok = TRUE)
   assertCharacter(x = dSeries, ignore.case = TRUE, any.missing = FALSE, len = 1, null.ok = TRUE)
@@ -116,7 +125,7 @@ regTable <- function(nation = NULL, subset = NULL, dSeries = NULL, gSeries = NUL
   assertIntegerish(x = level, any.missing = FALSE, len = 1, null.ok = TRUE)
   assertIntegerish(x = begin, any.missing = FALSE, len = 1, lower = 1900, null.ok = TRUE)
   assertIntegerish(x = end, any.missing = FALSE, len = 1, upper = as.integer(format(Sys.Date(), "%Y")), null.ok = TRUE)
-  assertList(x = schema, any.missing = FALSE, null.ok = TRUE)
+  assertClass(x = schema, classes = "schema", null.ok = TRUE)
   assertCharacter(x = archive, any.missing = FALSE, null.ok = TRUE)
   assertCharacter(x = archiveLink, any.missing = FALSE, null.ok = TRUE)
   assertCharacter(x = nextUpdate, any.missing = FALSE, null.ok = TRUE)
@@ -145,10 +154,6 @@ regTable <- function(nation = NULL, subset = NULL, dSeries = NULL, gSeries = NUL
       stop("please give a data series name that does not contain any '_' characters.")
     }
 
-    if(!any(inv_dataseries$name %in% dSeries)){
-      stop(paste0("please first create the new data table dataseries '", dSeries, "' via 'regDataseries()'"))
-    }
-
     if(!testing){
       if(!any(inv_dataseries$name %in% gSeries)){
         stop(paste0("please first create the new dataseries '", gSeries,"' via 'regDataseries()'"))
@@ -158,6 +163,9 @@ regTable <- function(nation = NULL, subset = NULL, dSeries = NULL, gSeries = NUL
     }
 
   } else{
+    if(!any(inv_dataseries$name %in% dSeries)){
+      stop(paste0("please first create the new data table dataseries '", dSeries, "' via 'regDataseries()'"))
+    }
     dataSeries <- inv_dataseries$datID[inv_dataseries$name %in% dSeries]
   }
 
@@ -182,7 +190,11 @@ regTable <- function(nation = NULL, subset = NULL, dSeries = NULL, gSeries = NUL
     }
 
   } else{
-    geomSeries <- inv_dataseries$datID[inv_dataseries$name %in% gSeries]
+    tempDatID <- inv_dataseries$datID[inv_dataseries$name %in% gSeries]
+    geomSeries <- inv_geometries$geoID[inv_geometries$datID %in% tempDatID & inv_geometries$level == level]
+    if(length(geomSeries) < 1){
+      stop(paste0("please first register geometries of geometry series '", gSeries,"' via 'regGeometries()'"))
+    }
   }
 
   if(is.null(level)){
@@ -226,7 +238,7 @@ regTable <- function(nation = NULL, subset = NULL, dSeries = NULL, gSeries = NUL
     if(!testing){
       schema <- readline()
     } else {
-      schema <- rectr::schema_default
+      schema <- rectifyr::schema_default
     }
     if(length(schema) < 1){
       schema = NA_character_
@@ -236,8 +248,6 @@ regTable <- function(nation = NULL, subset = NULL, dSeries = NULL, gSeries = NUL
   # make a schema description
   theSchemaName <- paste0("schema_", newTID)
   # make sure that the file is really there
-  assertList(x = schema, len = 2)
-  assertNames(x = names(schema), identical.to = c("clusters", "variables"))
   write_rds(x = schema, path = paste0(intPaths, "/adb_tables/meta/schemas/", theSchemaName, ".rds"))
 
   if(is.null(archive)){
@@ -269,7 +279,7 @@ regTable <- function(nation = NULL, subset = NULL, dSeries = NULL, gSeries = NUL
   filePath <- paste0(intPaths, "/adb_tables/stage2/", fileName)
   fileArchive <- str_split(archive, "\\|")[[1]]
 
-  if(any(inv_tables$source_file %in% fileName) & !update){
+  if(any(inv_tables$source_file %in% fileName) & !overwrite){
     return(paste0("'", fileName, "' has already been registered."))
   }
 
@@ -295,7 +305,7 @@ regTable <- function(nation = NULL, subset = NULL, dSeries = NULL, gSeries = NUL
                           "irregular", "notPlanned", "unknown", "periodic",
                           "semimonthly", "biennially"))){
         # test missing
-        message(paste(" -> input none of: continual, daily, weekly, fortnightly, quarterly, biannually, annually, asNeeded, irregular, notPlanned, unknown, periodic, semimonthly, biennially \n
+        message(paste(" -> input one of: continual, daily, weekly, fortnightly, quarterly, biannually, annually, asNeeded, irregular, notPlanned, unknown, periodic, semimonthly, biennially \n
                       please repeat: "))
         updateFrequency <- readline()
       }
@@ -377,36 +387,39 @@ regTable <- function(nation = NULL, subset = NULL, dSeries = NULL, gSeries = NUL
   }
 
   # test that the file is available
-  if(!testFileExists(x = filePath, "r", extension = "csv")){
-    message(paste0("... please store the table as '", fileName, "' in './adb_tables/stage2'"))
-    if(!testing){
-      done <- readline(" -> press any key when done: ")
+  if(update){
+    if(!testFileExists(x = filePath, "r", extension = "csv")){
+      message(paste0("... please store the table as '", fileName, "' with utf-8 encoding in './adb_tables/stage2'"))
+      if(!testing){
+        done <- readline(" -> press any key when done: ")
+      }
+      # make sure that the file is really there
+      assertFileExists(x = filePath, "r", extension = "csv")
     }
-    # make sure that the file is really there
-    assertFileExists(x = filePath, "r", extension = "csv")
   }
 
-  # put together new census database entry
-  doc <- tibble(tabID = newTID,
-                geoID = geomSeries,
-                datID = dataSeries,
-                source_file = fileName,
-                schema = theSchemaName,
-                orig_file = archive,
-                orig_link = archiveLink,
-                download_date = Sys.Date(),
-                next_update = nextUpdate,
-                update_frequency = updateFrequency,
-                metadata_link = metadataLink,
-                metadata_path = metadataPath,
-                notes = notes)
-
   if(update){
+    # put together new census database entry
+    doc <- tibble(tabID = newTID,
+                  geoID = geomSeries,
+                  datID = dataSeries,
+                  source_file = fileName,
+                  schema = theSchemaName,
+                  orig_file = archive,
+                  orig_link = archiveLink,
+                  download_date = Sys.Date(),
+                  next_update = nextUpdate,
+                  update_frequency = updateFrequency,
+                  metadata_link = metadataLink,
+                  metadata_path = metadataPath,
+                  notes = notes)
     if(!any(inv_tables$source_file %in% fileName)){
       # in case the user wants to update, attach the new information to the table inv_sourceData.csv
       updateTable(index = doc, name = "inv_tables")
     }
+    return(doc)
+  } else {
+    message(paste0("... please store the table as '", fileName, "' with utf-8 encoding in './adb_tables/stage2'"))
   }
-  return(doc)
 
 }

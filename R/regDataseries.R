@@ -1,16 +1,16 @@
 #' Register a new dataseries
 #'
 #' This function registers a new dataseries of both, geometries or areal data
-#' into the geospatial database
+#' into the geospatial database.
 #' @param name [\code{character(1)}]\cr the dataseries abbreviation.
 #' @param description [\code{character(1)}]\cr the "long name" or "brief
 #'   description" of the dataseries.
-#' @param homepage [\code{character(1)}]\cr the homepage of the data provider 
+#' @param homepage [\code{character(1)}]\cr the homepage of the data provider
 #'   where the dataseries or additional information can be found.
 #' @param licence_link [\code{character(1)}]\cr link to the licence or the webpage
-#'   from which the licence was copied
-#' @param licence_path [\code{character(1)}]\cr path to the local file in with the 
-#'   licence text is stored 
+#'   from which the licence was copied.
+#' @param licence_path [\code{character(1)}]\cr path to the local file in with the
+#'   licence text is stored.
 #' @param notes [\code{character(1)}]\cr optional notes.
 #' @param update [\code{logical(1)}]\cr whether or not the file
 #'   'inv_dataseries.csv' should be updated.
