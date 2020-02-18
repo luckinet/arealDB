@@ -183,7 +183,7 @@ regTable <- function(nation = NULL, subset = NULL, dSeries = NULL, gSeries = NUL
 
     if(!testing){
       if(!any(inv_dataseries$name %in% gSeries)){
-        stop(paste0("please first create the new geometry series '", gSeries,"' via 'regDataseries()'"))
+        stop(paste0("! please first create the new geometry series '", gSeries,"' via 'regDataseries()' !"))
       }
     } else {
       geomSeries <- NA_integer_
@@ -193,7 +193,7 @@ regTable <- function(nation = NULL, subset = NULL, dSeries = NULL, gSeries = NUL
     tempDatID <- inv_dataseries$datID[inv_dataseries$name %in% gSeries]
     geomSeries <- inv_geometries$geoID[inv_geometries$datID %in% tempDatID & inv_geometries$level == level]
     if(length(geomSeries) < 1){
-      stop(paste0("please first register geometries of geometry series '", gSeries,"' via 'regGeometries()'"))
+      stop(paste0("! please first register geometries of the series '", gSeries,"' via 'regGeometries()' !"))
     }
   }
 
@@ -245,11 +245,6 @@ regTable <- function(nation = NULL, subset = NULL, dSeries = NULL, gSeries = NUL
     }
   }
 
-  # make a schema description
-  theSchemaName <- paste0("schema_", newTID)
-  # make sure that the file is really there
-  write_rds(x = schema, path = paste0(intPaths, "/adb_tables/meta/schemas/", theSchemaName, ".rds"))
-
   if(is.null(archive)){
     message("please type in the archives' file name: ")
     if(!testing){
@@ -279,9 +274,18 @@ regTable <- function(nation = NULL, subset = NULL, dSeries = NULL, gSeries = NUL
   filePath <- paste0(intPaths, "/adb_tables/stage2/", fileName)
   fileArchive <- str_split(archive, "\\|")[[1]]
 
-  if(any(inv_tables$source_file %in% fileName) & !overwrite){
-    return(paste0("'", fileName, "' has already been registered."))
+  if(any(inv_tables$source_file %in% fileName)){
+    if(overwrite){
+      theSchemaName <- inv_tables$schema[inv_tables$source_file == fileName]
+    } else {
+      return(paste0("'", fileName, "' has already been registered."))
+    }
+  } else {
+    theSchemaName <- paste0("schema_", newTID)
   }
+
+  # make a schema description
+  write_rds(x = schema, path = paste0(intPaths, "/adb_tables/meta/schemas/", theSchemaName, ".rds"))
 
   if(is.null(archiveLink)){
     message("please type in the weblink from which the archive was downloaded: ")
@@ -386,8 +390,8 @@ regTable <- function(nation = NULL, subset = NULL, dSeries = NULL, gSeries = NUL
     }
   }
 
-  # test that the file is available
   if(update){
+    # test that the file is available
     if(!testFileExists(x = filePath, "r", extension = "csv")){
       message(paste0("... please store the table as '", fileName, "' with utf-8 encoding in './adb_tables/stage2'"))
       if(!testing){
@@ -396,9 +400,7 @@ regTable <- function(nation = NULL, subset = NULL, dSeries = NULL, gSeries = NUL
       # make sure that the file is really there
       assertFileExists(x = filePath, "r", extension = "csv")
     }
-  }
 
-  if(update){
     # put together new census database entry
     doc <- tibble(tabID = newTID,
                   geoID = geomSeries,
@@ -419,7 +421,7 @@ regTable <- function(nation = NULL, subset = NULL, dSeries = NULL, gSeries = NUL
     }
     return(doc)
   } else {
-    message(paste0("... please store the table as '", fileName, "' with utf-8 encoding in './adb_tables/stage2'"))
+    message(paste0("... the filename is '", fileName, "'."))
   }
 
 }
