@@ -1,8 +1,8 @@
 Package: arealDB
 Type: Package
 Title: Harmonise and integrate heterogeneous areal data
-Description: Helps the user to build up harmonised databases of areal data.
-Version: 0.2.4
+Description: Helps the user to integrate a harmonised databases of areal data.
+Version: 0.3.0
 Authors@R: c(
     person("Steffen", "Ehrmann", 
            email = "steffen.ehrmann@idiv.de", 
@@ -15,7 +15,7 @@ URL: https://gitlab.com/luckinet/software/arealDB
 BugReports: https://gitlab.com/luckinet/software/arealDB/issues
 Depends:
     R (>= 2.10)
-License: GPL-3 + file LICENSE
+License: GPL-3
 Encoding: UTF-8
 LazyData: true
 Imports: 

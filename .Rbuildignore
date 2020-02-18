@@ -7,3 +7,4 @@ replication_script
 ^\.gitlab-ci\.yml$
 ^doc$
 ^Meta$
+^LICENSE\.md$
