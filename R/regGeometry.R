@@ -149,12 +149,12 @@ regGeometry <- function(nation = NULL, subset = NULL, gSeries = NULL, level = NU
     }
 
     if(grepl(pattern = "_", x = gSeries)){
-      stop("please give a geometry series name that does not contain any '_' characters.")
+      stop("! please give a geometry series name that does not contain any '_' characters !")
     }
 
     if(!testing){
       if(!any(inv_dataseries$name %in% gSeries)){
-        stop(paste0("please first create the new geometry series '", gSeries,"' via 'regDataseries()'"))
+        stop(paste0("! please first create the new geometry series '", gSeries,"' via 'regDataseries()' !"))
       }
     } else {
       dataSeries <- NA_integer_
@@ -162,7 +162,7 @@ regGeometry <- function(nation = NULL, subset = NULL, gSeries = NULL, level = NU
   } else{
     dataSeries <- inv_dataseries$datID[inv_dataseries$name %in% gSeries]
     if(length(dataSeries) < 1){
-      stop(paste0("please first create the new geometry series '", gSeries,"' via 'regDataseries()'"))
+      stop(paste0("! please first create the new geometry series '", gSeries,"' via 'regDataseries()' !"))
     }
   }
 
@@ -288,7 +288,7 @@ regGeometry <- function(nation = NULL, subset = NULL, gSeries = NULL, level = NU
     }
   }
 
-  # test whether the geometry file is available
+  # test whether the geometry file is available and proper
   if(update){
     if(!testFileExists(x = filePath, access = "r", extension = "gpkg")){
       message(paste0("... please store the geometry as '", fileName, "' in './adb_geometries/stage2'"))
@@ -298,36 +298,32 @@ regGeometry <- function(nation = NULL, subset = NULL, gSeries = NULL, level = NU
       # make sure that the file is really there
       assertFileExists(x = filePath, access = "r", extension = "gpkg")
     }
-  }
 
-  # to check that what has been given in 'nation' and 'nameCol' is in fact a
-  # column in the geometry, load it
-  if(is.null(theNation)){
-    theGeometry <- read_sf(dsn = filePath,
-                           stringsAsFactors = FALSE)
-    assertChoice(x = nation, choices = colnames(theGeometry))
-  }
-
-  # determine which layers exist and ask the user which to chose, if none is
-  # given
-  layers <- st_layers(dsn = filePath)
-  if(length(layers$name) != 1){
-    if(is.null(layer)){
-      message(paste0("... Please chose only one of the layers ", paste0(layers$name, collapse = ", "), ": "))
-      if(!testing){
-        layer <- readline()
-      } else {
-        layer <- "example_geom"
-      }
+    # to check that what has been given in 'nation' and 'nameCol' is in fact a
+    # column in the geometry, load it
+    if(is.null(theNation)){
+      theGeometry <- read_sf(dsn = filePath,
+                             stringsAsFactors = FALSE)
+      assertChoice(x = nation, choices = colnames(theGeometry))
     }
-    assertChoice(x = layer, choices = layers$name)
-  } else{
-    layer <- layers$name
-  }
 
+    # determine which layers exist and ask the user which to chose, if none is
+    # given
+    layers <- st_layers(dsn = filePath)
+    if(length(layers$name) != 1){
+      if(is.null(layer)){
+        message(paste0("... Please chose only one of the layers ", paste0(layers$name, collapse = ", "), ": "))
+        if(!testing){
+          layer <- readline()
+        } else {
+          layer <- "example_geom"
+        }
+      }
+      assertChoice(x = layer, choices = layers$name)
+    } else{
+      layer <- layers$name
+    }
 
-
-  if(update){
     # construct new documentation
     newGID <- ifelse(length(inv_geometries$geoID)==0, 1, as.integer(max(inv_geometries$geoID)+1))
     doc <- tibble(geoID = newGID,
@@ -350,6 +346,6 @@ regGeometry <- function(nation = NULL, subset = NULL, gSeries = NULL, level = NU
     }
     return(doc)
   } else {
-    message(paste0("... please store the geometry as '", fileName, "' in './adb_geometries/stage2'"))
+    message(paste0("... the filename is '", fileName, "'."))
   }
 }
