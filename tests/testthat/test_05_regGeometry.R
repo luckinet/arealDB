@@ -52,7 +52,7 @@ test_that("function asks for details, if not provided", {
 
   expect_message(object = regGeometry())
   output <- capture_messages(code = regGeometry())
-  expect_character(x = output, len = 8, any.missing = FALSE, unique = TRUE)
+  expect_character(x = output, len = 9, any.missing = FALSE, unique = TRUE)
   expect_equal(object = output[1], expected = "please type in either a nation or the name of the column that contains nation names: \n")
   expect_equal(object = output[2], expected = "please type in the name of the column that contains unit names: \n")
   expect_equal(object = output[3], expected = "please type in to which series the geometry belongs: \n")

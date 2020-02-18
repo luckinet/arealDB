@@ -6,7 +6,7 @@ context("normGeometry")
 test_that("geometries can be normalised", {
   path <- system.file("test_datasets", package="arealDB", mustWork = TRUE)
   setPath(root = paste0(path, "/newDB"))
-  territories <- read_csv(file = paste0(path, "/id_units.csv"), col_types = "icc")
+  territories <- read_csv(file = paste0(path, "/id_units.csv"), col_types = "iccc")
   setVariables(input = territories, variable = "territories", pid = "anID", target = "names")
   options(adb_testing = TRUE)
 

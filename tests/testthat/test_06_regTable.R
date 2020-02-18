@@ -4,7 +4,6 @@ library(rectifyr)
 context("regTable")
 
 
-
 test_that("a table inventory entry is produced", {
   path <- system.file("test_datasets", package="arealDB", mustWork = TRUE)
   setPath(root = paste0(path, "/newDB"))
@@ -28,10 +27,27 @@ test_that("a table inventory entry is produced", {
             to = paste0(path, "/newDB/adb_tables/stage2/arg_1_soyMaize_1990_2017_maia.csv"))
   file.copy(from = paste0(path, "/example_table2.csv"),
             to = paste0(path, "/newDB/adb_tables/stage2/arg_2_soyMaize_1990_2017_maia.csv"))
+  file.copy(from = paste0(path, "/example_geom.7z"),
+            to = paste0(path, "/newDB/adb_geometries/stage1/example_geom.7z"))
+  file.copy(from = paste0(path, "/example_geom1.gpkg"),
+            to = paste0(path, "/newDB/adb_geometries/stage2/_1__gadm.gpkg"))
+
+  output <- regGeometry(nation = "NAME_0",
+                        gSeries = "gadm",
+                        level = 1,
+                        layer = "example_geom1",
+                        nameCol = "NAME_0",
+                        archive = "example_geom.7z|example_geom1.gpkg",
+                        archiveLink = "https://gadm.org/downloads/example_geom.7z.html",
+                        nextUpdate = "2019-10-01",
+                        updateFrequency = "quarterly",
+                        update = TRUE)
 
   meta_maia_1 <- makeSchema(
     list(clusters = list(top = NULL, left = NULL, width = NULL, height = NULL,
-                         id = NULL, header = FALSE),
+                         id = NULL),
+         header = list(row = 1, rel = FALSE),
+         meta = list(dec = ".", na = c("", "NA"), types = NULL),
          variables = list(territories =
                             list(type = "id", name = "al1", split = NULL,
                                  row = NULL, col = 1, rel = FALSE),
@@ -97,10 +113,27 @@ test_that("function asks for details, if not provided", {
             to = paste0(path, "/newDB/adb_tables/stage1/example_table.7z"))
   file.copy(from = paste0(path, "/example_table1.csv"),
             to = paste0(path, "/newDB/adb_tables/stage2/_1__1990_2019_maia.csv"))
+  file.copy(from = paste0(path, "/example_geom.7z"),
+            to = paste0(path, "/newDB/adb_geometries/stage1/example_geom.7z"))
+  file.copy(from = paste0(path, "/example_geom1.gpkg"),
+            to = paste0(path, "/newDB/adb_geometries/stage2/_1__gadm.gpkg"))
+
+  output <- regGeometry(nation = "NAME_0",
+                        gSeries = "gadm",
+                        level = 1,
+                        layer = "example_geom1",
+                        nameCol = "NAME_0",
+                        archive = "example_geom.7z|example_geom1.gpkg",
+                        archiveLink = "https://gadm.org/downloads/example_geom.7z.html",
+                        nextUpdate = "2019-10-01",
+                        updateFrequency = "quarterly",
+                        update = TRUE)
 
   meta_maia_1 <- makeSchema(
     list(clusters = list(top = NULL, left = NULL, width = NULL, height = NULL,
-                         id = NULL, header = FALSE),
+                         id = NULL),
+         header = list(row = 1, rel = FALSE),
+         meta = list(dec = ".", na = c("", "NA"), types = NULL),
          variables = list(territories =
                             list(type = "id", name = "al1", split = NULL,
                                  row = NULL, col = 1, rel = FALSE),
@@ -121,7 +154,7 @@ test_that("function asks for details, if not provided", {
 
   expect_message(object = regTable())
   output <- capture_messages(code = regTable())
-  expect_character(x = output, len = 12, any.missing = FALSE, unique = TRUE)
+  expect_character(x = output, len = 13, any.missing = FALSE, unique = TRUE)
   expect_equal(object = output[1], expected = "please type in to which data series this table belongs: \n")
   expect_equal(object = output[2], expected = "please type in to which geometry series this table belongs: \n")
   expect_equal(object = output[3], expected = "please type in the administrative level of the units: \n")

@@ -8,9 +8,10 @@ context("matchUnits")
 
 test_that("units are matched", {
   path <- system.file("test_datasets", package = "arealDB", mustWork = TRUE)
+  # unlink(paste0(path, "/newDB"), recursive = TRUE)
   setPath(root = paste0(path, "/newDB"))
-  territories <- read_csv(file = paste0(path, "/id_units.csv"), col_types = "icc")
-  setVariables(input = territories, variable = "territories", pid = "anID", target = "names")
+  territories <- read_csv(file = paste0(path, "/id_units.csv"), col_types = "iccc")
+  setVariables(input = territories, variable = "territories", pid = "anID", origin = "origin", target = "names")
   options(adb_testing = TRUE)
 
   regDataseries(name = "gadm",
@@ -42,76 +43,7 @@ test_that("units are matched", {
   file.copy(from = paste0(path, "/example_geom4.gpkg"),
             to = paste0(path, "/newDB/adb_geometries/stage2/arg_3__maia.gpkg"))
 
-  meta_maia_1 <- makeSchema(
-    list(clusters = list(top = NULL, left = NULL, width = NULL, height = NULL,
-                         id = NULL, header = TRUE),
-         variables = list(al1 =
-                            list(type = "id", name = "territories", split = NULL,
-                                 row = NULL, col = 1, rel = FALSE),
-                          year =
-                            list(type = "id", name = "period", split = NULL,
-                                 row = NULL, col = 2, rel = FALSE),
-                          commodities =
-                            list(type = "id", name = NULL, split = NULL,
-                                 row = NULL, col = 3, rel = FALSE),
-                          harvested =
-                            list(type = "values", unit = "ha", factor = 1,
-                                 row = NULL, col = 4, rel = FALSE,
-                                 key = NULL, value = NULL),
-                          production =
-                            list(type = "values", unit = "t", factor = 1,
-                                 row = NULL, col = 5, rel = FALSE,
-                                 key = NULL, value = NULL))))
-  meta_maia_2 <- makeSchema(
-    list(clusters = list(top = NULL, left = NULL, width = NULL, height = NULL,
-                         id = NULL, header = TRUE),
-         variables = list(al1 =
-                            list(type = "id", name = "territories", split = NULL,
-                                 row = NULL, col = 1, rel = FALSE),
-                          al2 =
-                            list(type = "id", name = "province", split = NULL,
-                                 row = NULL, col = 2, rel = FALSE),
-                          year =
-                            list(type = "id", name = "period", split = NULL,
-                                 row = NULL, col = 3, rel = FALSE),
-                          commodities =
-                            list(type = "id", name = NULL, split = NULL,
-                                 row = NULL, col = 4, rel = FALSE),
-                          harvested =
-                            list(type = "values", unit = "ha", factor = 1,
-                                 row = NULL, col = 5, rel = FALSE,
-                                 key = NULL, value = NULL),
-                          production =
-                            list(type = "values", unit = "t", factor = 1,
-                                 row = NULL, col = 6, rel = FALSE,
-                                 key = NULL, value = NULL))))
-
-  regTable(nation = "Argentina",
-           subset = "soyMaize",
-           dSeries = "maia", gSeries = "gadm",
-           level = 1,
-           begin = 1990, end = 2017,
-           schema = meta_maia_1,
-           archive = "example_table.7z|example_table1.csv",
-           archiveLink = "https://ec.europa.eu/eurostat/de/table1",
-           nextUpdate = "2019-10-01",
-           updateFrequency = "quarterly",
-           metadataLink = "https://ec.europa.eu/eurostat/de/table1/metadata",
-           metadataPath = "C:/Users/arue/Projects/GeoKur/Luckinet/census/table1_meta.txt",
-           update = TRUE)
-  regTable(nation = "Argentina",
-           subset = "soyMaize",
-           dSeries = "maia", gSeries = "gadm",
-           level = 2,
-           begin = 1990, end = 2017,
-           schema = meta_maia_2,
-           archive = "example_table.7z|example_table2.csv",
-           archiveLink = "https://ec.europa.eu/eurostat/de/table2",
-           nextUpdate = "2019-10-01",
-           updateFrequency = "quarterly",
-           metadataLink = "https://ec.europa.eu/eurostat/de/table2/metadata",
-           metadataPath = "C:/Users/arue/Projects/GeoKur/Luckinet/census/table2_meta.txt",
-           update = TRUE)
+  # register geometries
   regGeometry(nation = "NAME_0",
               gSeries = "gadm",
               level = 1,
@@ -152,6 +84,85 @@ test_that("units are matched", {
               nextUpdate = "2019-10-01",
               updateFrequency = "quarterly",
               update = TRUE)
+
+  # make schemas
+  meta_maia_1 <- makeSchema(
+    list(clusters = list(top = NULL, left = NULL, width = NULL, height = NULL,
+                         id = NULL),
+         header = list(row = 1, rel = FALSE),
+         meta = list(dec = ".", na = c("", "NA"), types = NULL),
+         variables = list(al1 =
+                            list(type = "id", name = "territories", split = NULL,
+                                 row = NULL, col = 1, rel = FALSE),
+                          year =
+                            list(type = "id", name = "period", split = NULL,
+                                 row = NULL, col = 2, rel = FALSE),
+                          commodities =
+                            list(type = "id", name = NULL, split = NULL,
+                                 row = NULL, col = 3, rel = FALSE),
+                          harvested =
+                            list(type = "values", unit = "ha", factor = 1,
+                                 row = NULL, col = 4, rel = FALSE,
+                                 key = NULL, value = NULL),
+                          production =
+                            list(type = "values", unit = "t", factor = 1,
+                                 row = NULL, col = 5, rel = FALSE,
+                                 key = NULL, value = NULL))))
+  meta_maia_2 <- makeSchema(
+    list(clusters = list(top = NULL, left = NULL, width = NULL, height = NULL,
+                         id = NULL),
+         header = list(row = 1, rel = FALSE),
+         meta = list(dec = ".", na = c("", "NA"), types = NULL),
+         variables = list(al1 =
+                            list(type = "id", name = "territories", split = NULL,
+                                 row = NULL, col = 1, rel = FALSE),
+                          al2 =
+                            list(type = "id", name = "province", split = NULL,
+                                 row = NULL, col = 2, rel = FALSE),
+                          year =
+                            list(type = "id", name = "period", split = NULL,
+                                 row = NULL, col = 3, rel = FALSE),
+                          commodities =
+                            list(type = "id", name = NULL, split = NULL,
+                                 row = NULL, col = 4, rel = FALSE),
+                          harvested =
+                            list(type = "values", unit = "ha", factor = 1,
+                                 row = NULL, col = 5, rel = FALSE,
+                                 key = NULL, value = NULL),
+                          production =
+                            list(type = "values", unit = "t", factor = 1,
+                                 row = NULL, col = 6, rel = FALSE,
+                                 key = NULL, value = NULL))))
+
+  # register data tables
+  regTable(nation = "Argentina",
+           subset = "soyMaize",
+           dSeries = "maia", gSeries = "gadm",
+           level = 1,
+           begin = 1990, end = 2017,
+           schema = meta_maia_1,
+           archive = "example_table.7z|example_table1.csv",
+           archiveLink = "https://ec.europa.eu/eurostat/de/table1",
+           nextUpdate = "2019-10-01",
+           updateFrequency = "quarterly",
+           metadataLink = "https://ec.europa.eu/eurostat/de/table1/metadata",
+           metadataPath = "C:/Users/arue/Projects/GeoKur/Luckinet/census/table1_meta.txt",
+           update = TRUE)
+  regTable(nation = "Argentina",
+           subset = "soyMaize",
+           dSeries = "maia", gSeries = "gadm",
+           level = 2,
+           begin = 1990, end = 2017,
+           schema = meta_maia_2,
+           archive = "example_table.7z|example_table2.csv",
+           archiveLink = "https://ec.europa.eu/eurostat/de/table2",
+           nextUpdate = "2019-10-01",
+           updateFrequency = "quarterly",
+           metadataLink = "https://ec.europa.eu/eurostat/de/table2/metadata",
+           metadataPath = "C:/Users/arue/Projects/GeoKur/Luckinet/census/table2_meta.txt",
+           update = TRUE)
+
+  # normalise geometries
   normGeometry(nation = "argentina", update = TRUE)
 
   # test for a table that only has values at the first administrative level
@@ -170,7 +181,7 @@ test_that("units are matched", {
   output <- matchUnits(input = input, source = 1, keepOrig = TRUE)
   expect_tibble(x = output, nrows = 56, ncols = 9, col.names = "strict")
   expect_character(x = output$ahID, any.missing = FALSE)
-  expect_names(x = names(output), permutation.of = c("year", "commodities", "harvested", "production", "id", "tabID", "geoID", "al1", "ahID"))
+  expect_names(x = names(output), permutation.of = c("year", "commodities", "harvested", "production", "id", "tabID", "geoID", "al1_name", "ahID"))
 
   # test for a table that has values at the second administrative level
   input <- read_csv(file = paste0(path, "/newDB/adb_tables/stage2/arg_2_soyMaize_1990_2017_maia.csv"),

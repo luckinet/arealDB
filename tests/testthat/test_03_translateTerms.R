@@ -22,9 +22,9 @@ test_that("not yet known terms are properly translated", {
   setPath(root = paste0(path, "/newDB"))
   input <- c("coruscant", "kashyyyk", "alderaan")
   output <- translateTerms(terms = input,
-                        source = list("geoID" = 1),
-                        index = "tt_territories",
-                        inline = FALSE)
+                           source = list("geoID" = 1),
+                           index = "tt_territories",
+                           inline = FALSE)
 
   expect_tibble(x = output, nrows = 3, col.names = "strict")
   expect_names(names(output), must.include = c("origin", "target", "source", "ID", "notes"))

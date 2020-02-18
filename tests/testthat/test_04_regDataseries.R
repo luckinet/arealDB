@@ -13,13 +13,13 @@ test_that("a dataseries inventory entry can be produced", {
                           licence_link = "https://gadm.org/license.html",
                           licence_path = "C:/Users/arue/Projects/GeoKur/Luckinet/licenceFiles/licence.txt",
                           update = TRUE)
-  
+
   expect_tibble(x = output, nrows = 1, ncols = 7, col.names = "strict")
   expect_names(x = names(output), must.include = c("datID", "name", "description", "homepage", "licence_link", "licence_path", "notes"))
 
   # check also whether the entry is in inv_dataseries.csv
   db <- read_csv(file = paste0(path, "/newDB/inv_dataseries.csv"), col_types = c("icccccc"))
-  
+
   expect_equal(output, db)
 
   unlink(paste0(path, "/newDB"), recursive = TRUE)
