@@ -9,29 +9,33 @@
 #'   dataset names which match the regular expression will be returned.
 #' @param update [\code{logical(1)}]\cr whether or not the physical files should
 #'   be updated (\code{TRUE}) or the function should merely return the new
-#'   object (\code{FALSE} default).
-#' @details Arguments in \code{...} are so-called matching lists that indicate
-#'   with which target column variables shall be matched and which value should
-#'   be used as target ID.
+#'   object (\code{FALSE} default). This is helpful to check whether the
+#'   metadata specification and the provided file(s) are properly specified.
+#' @details Arguments in \code{...} are so-called matching lists. This argument
+#'   captures three kinds of information: \enumerate{\item the 'variable' that
+#'   should be matched with a matching list, \item the 'targetColumn' in that
+#'   matching list that should be included in the final table in the place of
+#'   'variable' and \item the 'targetID' (column name) of that new variable.}
 #'
 #'   targetID = list(variable = targetColumn)
 #'
-#'   The variable must be present as column in \code{input} and a table that is
-#'   named "id_VARIABLE.csv" must be available in the root directory of the
-#'   project. This should have been created with \code{\link{setVariables}}.
+#'   'variable' must be present as column in \code{input} and a table that is
+#'   named "id_variable.csv" (where 'variable' is replaced by the variable name)
+#'   must be available in the root directory of the project. This should have
+#'   been created with \code{\link{setVariables}}.
 #'
 #'   To normalise data tables, this function proceeds as follows: \enumerate{
 #'   \item Read in \code{input} and extract initial metadata from the file name.
 #'   \item Employ the function \code{rectifyr::\link{reorganise}} to reshape
 #'   \code{input} according to the respective schema description (see
-#'   \code{rectifyr::\link{schema_default}}). \item Match the territorial units in
-#'   \code{input} via the \code{\link{matchUnits}}. \item If \code{...} has been
-#'   provided with variables to match, those are matched via
+#'   \code{rectifyr::\link{schema_default}}). \item Match the territorial units
+#'   in \code{input} via the \code{\link{matchUnits}}. \item If \code{...} has
+#'   been provided with variables to match, those are matched via
 #'   \code{\link{matchVars}}. \item Harmonise territorial unit names. \item If
 #'   \code{update = TRUE}, store the processed data table at stage three.}
 #' @family normalisers
-#' @return This function integrates unprocessed data tables at stage two into
-#'   the geospatial database.
+#' @return This function harmonises and integrates so far unprocessed data
+#'   tables at stage two into stage three of the geospatial database.
 #' @examples
 #' \dontrun{
 #'
@@ -82,11 +86,13 @@ normTable <- function(input = NULL, ..., pattern = NULL, update = FALSE){
     file_name <- pathStr[length(pathStr)]
     fields <- str_split(file_name, "_")[[1]]
 
+    thisSchema <- inv_tables$schema[inv_tables$source_file == file_name]
+
     if(!file_name %in% inv_tables$source_file){
       next
     }
 
-    algorithm = readRDS(file = paste0(intPaths, "/adb_tables/meta/schemas/", inv_tables$schema[inv_tables$source_file == file_name], ".rds"))
+    algorithm = readRDS(file = paste0(intPaths, "/adb_tables/meta/schemas/", thisSchema, ".rds"))
     if(!exists(x = "algorithm")){
       stop(paste0("please create the schema desciption '", algorithm, "' for the file '", file_name, "'.\n  --> See '?meta_default' for details"))
     }
@@ -97,13 +103,17 @@ normTable <- function(input = NULL, ..., pattern = NULL, update = FALSE){
     geoID <- ifelse(length(inv_tables$geoID) == 0, 1,
                     inv_tables$geoID[grep(pattern = file_name, x = inv_tables$source_file)])
 
+    message("\n--> reading new data table from '", file_name, "' ...")
     temp <- read.csv(file = thisInput, header = FALSE, as.is = TRUE) %>%
-      as_tibble() %>%
+      as_tibble()
+    message("--> reorganising data table with '", thisSchema, "' ...")
+    temp <- temp %>%
       reorganise(schema = algorithm) %>%
       filter_at(vars(starts_with("al")), all_vars(!is.na(.)))
 
-    # make al1 if it doesn't extist
+    # make al1 if it doesn't extist (is needed below for subsetting by nation)
     if(!"al1" %in% names(temp)){
+      message("\n--> reconstructing 'al1' ...")
       if(length(fields[1]) == 0){
         stop("the data table '", file_name, "' seems to include several nations but no column for nations (al1).\n Is the schema description correct?")
       } else {
@@ -122,7 +132,7 @@ normTable <- function(input = NULL, ..., pattern = NULL, update = FALSE){
     if(length(vars) != 0){
       message()
       out <- out %>%
-        matchVars(source = tabID, ..., keepOrig = FALSE)
+        matchVars(source = tabID, faoID = list(commodities = "target"), keepOrig = FALSE)
     }
 
     # in case the user wants to update, update the data table
