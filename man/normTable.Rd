@@ -18,33 +18,37 @@ dataset names which match the regular expression will be returned.}
 
 \item{update}{[\code{logical(1)}]\cr whether or not the physical files should
 be updated (\code{TRUE}) or the function should merely return the new
-object (\code{FALSE} default).}
+object (\code{FALSE} default). This is helpful to check whether the
+metadata specification and the provided file(s) are properly specified.}
 }
 \value{
-This function integrates unprocessed data tables at stage two into
-  the geospatial database.
+This function harmonises and integrates so far unprocessed data
+  tables at stage two into stage three of the geospatial database.
 }
 \description{
 Harmonise and integrate data tables into standardised format
 }
 \details{
-Arguments in \code{...} are so-called matching lists that indicate
-  with which target column variables shall be matched and which value should
-  be used as target ID.
+Arguments in \code{...} are so-called matching lists. This argument
+  captures three kinds of information: \enumerate{\item the 'variable' that
+  should be matched with a matching list, \item the 'targetColumn' in that
+  matching list that should be included in the final table in the place of
+  'variable' and \item the 'targetID' (column name) of that new variable.}
 
   targetID = list(variable = targetColumn)
 
-  The variable must be present as column in \code{input} and a table that is
-  named "id_VARIABLE.csv" must be available in the root directory of the
-  project. This should have been created with \code{\link{setVariables}}.
+  'variable' must be present as column in \code{input} and a table that is
+  named "id_variable.csv" (where 'variable' is replaced by the variable name)
+  must be available in the root directory of the project. This should have
+  been created with \code{\link{setVariables}}.
 
   To normalise data tables, this function proceeds as follows: \enumerate{
   \item Read in \code{input} and extract initial metadata from the file name.
   \item Employ the function \code{rectifyr::\link{reorganise}} to reshape
   \code{input} according to the respective schema description (see
-  \code{rectifyr::\link{schema_default}}). \item Match the territorial units in
-  \code{input} via the \code{\link{matchUnits}}. \item If \code{...} has been
-  provided with variables to match, those are matched via
+  \code{rectifyr::\link{schema_default}}). \item Match the territorial units
+  in \code{input} via the \code{\link{matchUnits}}. \item If \code{...} has
+  been provided with variables to match, those are matched via
   \code{\link{matchVars}}. \item Harmonise territorial unit names. \item If
   \code{update = TRUE}, store the processed data table at stage three.}
 }

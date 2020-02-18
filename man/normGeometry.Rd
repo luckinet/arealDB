@@ -19,18 +19,22 @@ object \code{\link{countries}}.}
 overlap above which to consider two territorial units "different".}
 
 \item{outType}{[\code{character(1)}]\cr the output file-type, see
-\code{\link{st_drivers}} for a list.}
+\code{\link{st_drivers}} for a list. If a file-type supports layers, they
+are stored in the same file, otherwise the different layers are provided
+seperately.}
 
 \item{pattern}{[\code{character(1)}]\cr an optional regular expression. Only
 dataset names which match the regular expression will be returned.}
 
 \item{update}{[\code{logical(1)}]\cr whether or not the physical files should
 be updated (\code{TRUE}) or the function should merely return the geometry
-inventory of the handled files (\code{FALSE} default).}
+inventory of the handled files (\code{FALSE} default). This is helpful to
+check whether the metadata specification and the provided file(s) are
+properly specified.}
 }
 \value{
-This function integrates unprocessed geometries at stage two into the
-  geospatial database.
+This function harmonises and integrates so far unprocessed geometries
+  at stage two into stage three of the geospatial database.
 }
 \description{
 Harmonise and integrate geometries in a standardised format
@@ -56,8 +60,8 @@ To normalise geometries, this function proceeds as follows:
   if that is the case. \item Check whether the new geometries are all within
   the already defined parents, and save those that are not as a new geometry,
   that needs to be treated seperately. \item Calculate spatial overlap and
-  distinguish the geometries into those that overlap with more and less than
-  \code{thresh}. \item For all units that did match, copy ahID from the
+  distinguish the geometries into those that overlap with more and with less
+  than \code{thresh}. \item For all units that did match, copy ahID from the
   geometries they overlap with. \item For all units that did not match,
   rebuild metadata and a new ahID. } \item If update = TRUE, store the
   processed geometry at stage three.} \item Move the geometry to the folder

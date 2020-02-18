@@ -11,7 +11,7 @@ translateTerms(terms, index = NULL, source = NULL, strict = FALSE,
 \arguments{
 \item{terms}{[\code{character(.)}]\cr terms to be translated.}
 
-\item{index}{[\code{data.frame(1)}]\cr table that contains translations.}
+\item{index}{[\code{character(1)}]\cr name of a table that contains translations.}
 
 \item{source}{[\code{list(1)}]\cr the table or geometry ID from which the
 terms have been taken. List must be named with either \code{tabID} or
