@@ -5,7 +5,7 @@
 #' @param source [\code{list(1)}]\cr the table or geometry ID from which the
 #'   terms have been taken. List must be named with either \code{tabID} or
 #'   \code{geoID} to denote where the ID comes from.
-#' @param index [\code{data.frame(1)}]\cr table that contains translations.
+#' @param index [\code{character(1)}]\cr name of a table that contains translations.
 #' @param strict [\code{logical(1)}]\cr whether or not to stick to the terms
 #'   that have been defined as \code{'original'} in a translation table.
 #' @param fuzzy_terms [\code{vector(.)}]\cr additional target terms with which a
@@ -29,7 +29,7 @@
 #' @importFrom checkmate assertCharacter assertDataFrame assertNames
 #'   testCharacter
 #' @importFrom tibble as_tibble
-#' @importFrom dplyr filter pull bind_rows ends_with mutate select
+#' @importFrom dplyr filter pull bind_rows ends_with mutate select slice
 #' @importFrom readr read_csv write_csv
 #' @importFrom rlang enexpr
 #' @importFrom utils edit View adist file.edit
@@ -42,7 +42,10 @@ translateTerms <- function(terms, index = NULL, source = NULL, strict = FALSE,
   # check validity of arguments
   assertCharacter(x = terms, any.missing = FALSE)
   assertList(x = source, len = 1, null.ok = TRUE)
-  assertNames(x = names(source), subset.of = c("geoID", "tabID"))
+  if(!is.null(source)){
+    assertNames(x = names(source), subset.of = c("geoID", "tabID"))
+  }
+  inv_source <- ifelse(source[[1]] == "geoID", "inv_geometries.csv", "inv_tables.csv")
   assertCharacter(x = index, len = 1, any.missing = FALSE)
   args <- enexpr(index)
   indFile <- index
@@ -56,16 +59,19 @@ translateTerms <- function(terms, index = NULL, source = NULL, strict = FALSE,
     theFuzzyTerms <- index %>%
       filter(source == "original") %>%
       pull(target)
+    if(!is.null(fuzzy_terms)){
+      theFuzzyTerms <- fuzzy_terms
+    }
   } else {
     theFuzzyTerms <- index %>%
       filter(target != "missing") %>%
       pull(target)
-  }
-  if(!is.null(fuzzy_terms)){
-    if(length(theFuzzyTerms) == 0){
-      theFuzzyTerms <- fuzzy_terms
-    } else{
-      theFuzzyTerms <- c(theFuzzyTerms, fuzzy_terms)
+    if(!is.null(fuzzy_terms)){
+      if(length(theFuzzyTerms) == 0){
+        theFuzzyTerms <- fuzzy_terms
+      } else{
+        theFuzzyTerms <- c(theFuzzyTerms, fuzzy_terms)
+      }
     }
   }
   if(length(theFuzzyTerms) == 0){
@@ -76,7 +82,12 @@ translateTerms <- function(terms, index = NULL, source = NULL, strict = FALSE,
 
   tempOut <- NULL
   sourceName <- names(source)
-  sourceVal <- as.character(source[[1]])
+  if(is.null(sourceName)){
+    sourceName <- NA_character_
+    sourceVal <- NA_character_
+  } else {
+    sourceVal <- as.character(source[[1]])
+  }
   newEntries <- FALSE
   if(verbose){
     message("    translating from '", args, ".csv' ...")
@@ -87,42 +98,79 @@ translateTerms <- function(terms, index = NULL, source = NULL, strict = FALSE,
 
   # go through all terms and process them
   for(i in seq_along(terms)){
-    # check whether the exact term is in 'target' or 'origin'
     exists <- terms[i] %in% unique(index$target) | terms[i] %in% unique(index$origin)
 
     if(exists){
 
       temp <- index %>%
-        filter(index$target %in% terms[i] | index$origin %in% terms[i]) %>%
+        mutate(rn = row_number()) %>%
+        filter(target %in% terms[i] | origin %in% terms[i]) %>%
+        filter(target != "missing") %>%
         rename("ID" = ends_with("ID"))
 
       # first make sure that the term should not be ignored
       if(any(temp$target == "ignore")){
         temp <- tibble(origin = terms[i], target = "ignore", source = NA_character_, ID = NA_character_, notes = NA_character_)
-      }
-
-      # then take terms that are not 'missing'
-      if(any(temp$target != "missing")){
-        temp <- temp %>%
-          filter(temp$target != "missing") %>%
-          mutate(origin = terms[i],
-                 source = sourceName,
-                 ID = sourceVal) %>%
-          select(-notes) %>%
-          unique() %>%
-          mutate(notes = paste0("translateTerms_", Sys.Date()))
       } else {
-        temp <- tibble(origin = terms[i], target = "missing", source = sourceName, ID = sourceVal, notes = NA_character_)
-      }
+        # then take terms that are not 'missing'
+        if(dim(temp)[1] > 0){
+          # if there is more than one translation, match by 'sourceName' and
+          # 'sourceVal'
+          if(length(unique(temp$target)) > 1){
+            temp <- temp %>%
+              filter(!is.na(temp$ID)) %>%
+              filter(source == sourceName & ID == sourceVal)
 
-      # make sure that there is only one translation
-      if(length(unique(temp$target)) != 1){
-        stop(paste0("'", terms[i], "' does not have a unique translation in ", indFile, ".csv."))
+            # if there is still more or less than one translation, continue selecting
+            if(length(unique(temp$target)) > 1){
+              index <- index %>%
+                slice(-temp$rn)
+              message("the term '", terms[i], "' has several matches in '", indFile, ".csv'\n  -> please select which target value occurs in the object with '", sourceName, " = ", sourceVal, "' (see ", inv_source, "):")
+              for(k in seq_along(unique(temp$target))){
+                message("  ", k, ": ", temp$target[k])
+              }
+              theTarget <- readline(prompt = "type in the number: ")
+              tempTarget <- suppressWarnings(as.integer(theTarget))
+              if(is.na(tempTarget)){
+                assertIntegerish(x = theTarget, len = 1, any.missing = FALSE)
+              }
+              temp <- temp %>%
+                slice(tempTarget) %>%
+                select(-rn)
+
+            } else if(length(unique(temp$target)) < 1){
+              exists <- FALSE
+            }
+
+            temp <- temp %>%
+              mutate(notes = paste0("translateTerms_", Sys.Date()))
+
+            # remove 'rn'
+            if("rn" %in% names(temp)){
+              temp <- temp %>%
+                select(-rn)
+            }
+
+          } else {
+            temp <- temp %>%
+              distinct(target) %>%
+              mutate(origin = terms[i],
+                     source = sourceName,
+                     ID = sourceVal) %>%
+              mutate(notes = paste0("translateTerms_", Sys.Date()))
+          }
+
+
+        } else {
+          temp <- tibble(origin = terms[i], target = "missing", source = sourceName, ID = sourceVal, notes = NA_character_)
+        }
       }
 
       tempOut <- bind_rows(tempOut, temp)
 
-    } else {
+    }
+
+    if(!exists){
 
       # if a set of fuzzy terms is available, try to match with those
       if(length(theFuzzyTerms) != 0){
@@ -130,18 +178,26 @@ translateTerms <- function(terms, index = NULL, source = NULL, strict = FALSE,
         # this preserves apostrophes
         distances <- adist(tolower(terms[i]), tolower(theFuzzyTerms))
         distances_sum <- cumsum(table(distances))
-        thresh_dist <- as.numeric(names(distances_sum[distances_sum < fuzzy_dist]))
+        thresh_dist <- distances_sum[as.numeric(names(distances_sum)) < fuzzy_dist]
         # take care of terms with a too high edit distance
         if(length(thresh_dist) == 0){
           thresh_dist <- 99
+          names(thresh_dist) <- "missing"
         }
-        theFuzz <- unlist(lapply(thresh_dist, function(x){
-          theFuzzyTerms[which(distances %in% x)]
+        theFuzz <- unlist(lapply(names(thresh_dist), function(x){
+          if(x != "missing"){
+            temp <- unique(theFuzzyTerms[which(distances %in% as.numeric(x))])
+          } else {
+            temp <- NULL
+          }
         }))
+        if(length(theFuzz) > 10){
+          theFuzz <- theFuzz[1:10]
+        }
 
         # in case an edit distance of 0 has been found, this term is perfectly
         # matched and doesn't need to be further treated
-        if(thresh_dist[1] == 0){
+        if(names(thresh_dist[1]) == "0"){
           app <- c(terms[i], theFuzz[1], sourceName, sourceVal, NA_character_)
         } else{
           newEntries <- TRUE
@@ -186,7 +242,7 @@ translateTerms <- function(terms, index = NULL, source = NULL, strict = FALSE,
       message("please replace the missing values and save the file")
       done <- readline(" -> press any key when done: ")
     } else {
-      message("please edit the column 'target' in '", getOption(x = "adb_path"), "/'translating.csv'")
+      message("please edit the column 'target' in '", getOption(x = "adb_path"), "/translating.csv'")
       done <- readline(" -> press any key when done: ")
     }
 
