@@ -65,6 +65,9 @@ regDataseries <- function(name = NULL, description = NULL, homepage = NULL, lice
       theName = NA_character_
     }
   } else{
+    if(name %in% inv_dataseries$name){
+      stop("! the dataseries '", name, "' has been registered already !")
+    }
     theName <- name
   }
 
