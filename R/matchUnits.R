@@ -46,8 +46,8 @@ matchUnits <- function(input = NULL, source = NULL, keepOrig = FALSE){
   # to manage the workload, split up input according to nations ("al1")
   theNations <- unique(eval(parse(text = "al1"), envir = input))
   nations <- translateTerms(terms = theNations,
-                            source = list("tabID" = source),
                             index = "tt_territories",
+                            source = list("tabID" = source),
                             inline = FALSE,
                             verbose = FALSE) %>%
     filter(!target %in% "ignore")
@@ -61,11 +61,20 @@ matchUnits <- function(input = NULL, source = NULL, keepOrig = FALSE){
   })
 
   outhIDs <- NULL
-  message("--> Matching geometries of ...")
+  message("--> matching geometries of ...")
   for(i in seq_along(nations$target)){
     recentNation <- nations[i,]
 
-    message("    ... '", recentNation$target, "'")
+    if(recentNation$target %in% c("missing")){
+      message("    ... skipping '", recentNation$origin, "' ('missing' in translation table)")
+      next
+    } else if(recentNation$target %in% c("ignore")){
+      message("    ... skipping '", recentNation$origin, "' ('ignore' in translation table)")
+      next
+    } else {
+      message("    ... '", recentNation$target, "'")
+    }
+
 
     # make an input subset for the current nation ...
     inputSbst <- input %>%
@@ -79,7 +88,12 @@ matchUnits <- function(input = NULL, source = NULL, keepOrig = FALSE){
       unique()
 
     # load the nation geometries ...
-    layers <- st_layers(dsn = paste0(intPaths, "stage3/", recentNation$target, ".gpkg"))
+    if(!recentNation$target %in% availableNations){
+      message("    ... skipping '", recentNation$origin, "' (no geoemtries available)")
+      next
+    } else {
+      layers <- st_layers(dsn = paste0(intPaths, "stage3/", recentNation$target, ".gpkg"))
+    }
     geometries <- NULL
     for(j in seq_along(layers$name)){
       theGeom <- read_sf(dsn = paste0(intPaths, "stage3/", recentNation$target, ".gpkg"),
@@ -110,7 +124,7 @@ matchUnits <- function(input = NULL, source = NULL, keepOrig = FALSE){
             filter(name == recentNation$target) %>%
             as_tibble() %>%
             mutate(al1_alt = recentNation$origin) %>%
-            select(al1 = name, al1_alt, level, ahID)
+            select(al1_name = name, al1_alt, level, ahID)
         } else{
           next
         }
@@ -131,14 +145,15 @@ matchUnits <- function(input = NULL, source = NULL, keepOrig = FALSE){
 
         # ... translate them to the default unit names
         theParents <- translateTerms(terms = unique(inputUnits[[1]]),
-                                     source = list("tabID" = source),
                                      index = "tt_territories",
+                                     source = list("tabID" = source),
                                      fuzzy_terms = unique(parentSubset$name),
                                      verbose = FALSE)
+        # this seems to give a NAs introduced by coercion for "brazil" of "schema_54"
         theParents <- unique(theParents)
         theUnits <- translateTerms(terms = unique(inputUnits[[2]]),
-                                   source = list("tabID" = source),
                                    index = "tt_territories",
+                                   source = list("tabID" = source),
                                    fuzzy_terms = unique(unitSubset$name),
                                    verbose = FALSE)
         theUnits <- unique(theUnits)
