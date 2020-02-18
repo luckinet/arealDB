@@ -9,12 +9,16 @@
 #' @param thresh [\code{integerish(1)}]\cr the deviation of percentage of
 #'   overlap above which to consider two territorial units "different".
 #' @param outType [\code{character(1)}]\cr the output file-type, see
-#'   \code{\link{st_drivers}} for a list.
+#'   \code{\link{st_drivers}} for a list. If a file-type supports layers, they
+#'   are stored in the same file, otherwise the different layers are provided
+#'   seperately.
 #' @param pattern [\code{character(1)}]\cr an optional regular expression. Only
 #'   dataset names which match the regular expression will be returned.
 #' @param update [\code{logical(1)}]\cr whether or not the physical files should
 #'   be updated (\code{TRUE}) or the function should merely return the geometry
-#'   inventory of the handled files (\code{FALSE} default).
+#'   inventory of the handled files (\code{FALSE} default). This is helpful to
+#'   check whether the metadata specification and the provided file(s) are
+#'   properly specified.
 #' @details To normalise geometries, this function proceeds as follows:
 #'   \enumerate{ \item Read in \code{input} and extract initial metadata from
 #'   the file name. \item Loop through every nation that shall be processed and
@@ -35,15 +39,15 @@
 #'   if that is the case. \item Check whether the new geometries are all within
 #'   the already defined parents, and save those that are not as a new geometry,
 #'   that needs to be treated seperately. \item Calculate spatial overlap and
-#'   distinguish the geometries into those that overlap with more and less than
-#'   \code{thresh}. \item For all units that did match, copy ahID from the
+#'   distinguish the geometries into those that overlap with more and with less
+#'   than \code{thresh}. \item For all units that did match, copy ahID from the
 #'   geometries they overlap with. \item For all units that did not match,
 #'   rebuild metadata and a new ahID. } \item If update = TRUE, store the
 #'   processed geometry at stage three.} \item Move the geometry to the folder
 #'   '/processed', if it is fully processed.}
 #' @family normalisers
-#' @return This function integrates unprocessed geometries at stage two into the
-#'   geospatial database.
+#' @return This function harmonises and integrates so far unprocessed geometries
+#'   at stage two into stage three of the geospatial database.
 #' @examples
 #' \dontrun{
 #'
@@ -386,7 +390,8 @@ normGeometry <- function(input = NULL, ..., thresh = 10, outType = "gpkg",
               group_by(sourceFID) %>%
               mutate(overlap_area = sum(area),
                      deviation = overlap_area/target_area*100 - 100) %>%
-              filter(area == max(area)) %>% # do summarise() here isntead, to put them together into a multipolygon
+              filter(area == max(area)) %>%
+              filter(row_number() == 1) %>%
               mutate(valid = abs(deviation) < thresh) %>%
               ungroup() %>%
               as_tibble() %>%
@@ -400,7 +405,7 @@ normGeometry <- function(input = NULL, ..., thresh = 10, outType = "gpkg",
             # if we are at level 1, the nation may not overlap, but would still
             # be that nation. So we assume that it is valid nevertheless.
             if(theLevel == 1){
-              overlap_with_target <-targetGeom %>%
+              overlap_with_target <- targetGeom %>%
                 as_tibble() %>%
                 select(-target_area, -targetFID, -geom) %>%
                 mutate(valid = TRUE,
@@ -563,6 +568,8 @@ normGeometry <- function(input = NULL, ..., thresh = 10, outType = "gpkg",
 
             }
           }
+          prevIDs <- prevIDs %>%
+            mutate_if(is.character, tolower)
 
           # timings
           # id_time <- Sys.time()
@@ -584,18 +591,15 @@ normGeometry <- function(input = NULL, ..., thresh = 10, outType = "gpkg",
           suppressMessages(
             newUnits <- invalidUnits %>%
               as_tibble() %>%
-              select(-ahID, -geoID, -level, -name, -starts_with("al"))  %>%
+              select(-ahID, -geoID, -level, -name, -starts_with("al")) %>%
               mutate_if(is.character, tolower) %>%
               left_join(prevIDs) %>%
+              mutate(al1_id = {if (any(is.na(al1_id))) nationID else al1_id}) %>%
               left_join(prevUnits) %>%
               filter(!duplicated(.)) %>%
               group_by(.dots = paste0("al", groupLevel-1, "_id")) %>%
               mutate(nation = tempNation,
                      name = {if (n() > 0) !!unitCols[length(unitCols)] else ""},
-                     # name = {if (n() > 0) translateTerms(terms = !!as.symbol(unitCols[length(unitCols)]),
-                     #                                     index = "tt_territories",
-                     #                                     source = list("geoID" = newGID),
-                     #                                     verbose = FALSE)$target else ""},
                      level = theLevel,
                      tempID = seq_along(!!sym(unitCols[length(unitCols)]))) %>%
               ungroup() %>%
@@ -630,8 +634,11 @@ normGeometry <- function(input = NULL, ..., thresh = 10, outType = "gpkg",
 
           # combine old and new units and rebuild columns
           outGeom <- validUnits %>%
-            rbind(newUnits) %>%
             select(nation, name, level, ahID, geoID, everything())
+          if(!dim(outGeom)[1] == 0 | !dim(newUnits)[1] == 0){
+            outGeom <- outGeom %>%
+              rbind(newUnits)
+          }
 
           outGeom <- targetGeom %>%
             rbind(outGeom) %>%
