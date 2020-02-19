@@ -84,9 +84,9 @@ translateTerms <- function(terms, index = NULL, source = NULL, strict = FALSE,
   sourceName <- names(source)
   if(is.null(sourceName)){
     sourceName <- NA_character_
-    sourceVal <- NA_character_
+    sourceVal <- NA_integer_
   } else {
-    sourceVal <- as.character(source[[1]])
+    sourceVal <- source[[1]]
   }
   newEntries <- FALSE
   if(verbose){
@@ -198,16 +198,15 @@ translateTerms <- function(terms, index = NULL, source = NULL, strict = FALSE,
         # in case an edit distance of 0 has been found, this term is perfectly
         # matched and doesn't need to be further treated
         if(names(thresh_dist[1]) == "0"){
-          app <- c(terms[i], theFuzz[1], sourceName, sourceVal, NA_character_)
+          app <- tibble(origin = terms[i], target = theFuzz[1], source = sourceName, ID = sourceVal, notes = NA_character_)
         } else{
           newEntries <- TRUE
-          app <- c(terms[i], "missing", sourceName, sourceVal, paste0(theFuzz, collapse = " | "))
+          app <- tibble(origin = terms[i], target = "missing", source = sourceName, ID = sourceVal, notes = paste0(theFuzz, collapse = " | "))
         }
       } else{
-        app <- c(terms[i], tolower(terms[i]), sourceName, sourceVal, NA_character_)
+        app <- tibble(origin = terms[i], target = tolower(terms[i]), source = sourceName, ID = sourceVal, notes = NA_character_)
       }
 
-      names(app) <- c("origin", "target", "source", "ID", "notes")
       tempOut <- bind_rows(tempOut, app)
 
     }
