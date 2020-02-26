@@ -8,8 +8,8 @@ test_that("already known terms are correct", {
   setPath(root = paste0(path, "/newDB"))
   input <- c("albania", "botswana", "estonia", "germany")
   output <- translateTerms(terms = input,
-                        source = list("geoID" = 1),
-                        index = "tt_territories")
+                           source = list("geoID" = 1),
+                           index = "tt_nations")
 
   expect_tibble(x = output, nrows = 4, col.names = "strict")
   expect_names(names(output), must.include = c("origin", "target", "source", "ID", "notes"))
@@ -23,7 +23,7 @@ test_that("not yet known terms are properly translated", {
   input <- c("coruscant", "kashyyyk", "alderaan")
   output <- translateTerms(terms = input,
                            source = list("geoID" = 1),
-                           index = "tt_territories",
+                           index = "tt_nations",
                            inline = FALSE)
 
   expect_tibble(x = output, nrows = 3, col.names = "strict")
