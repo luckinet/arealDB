@@ -93,16 +93,16 @@ normGeometry <- function(input = NULL, ..., thresh = 10, outType = "gpkg",
 
   # set internal objects
   subsets <- exprs(..., .named = TRUE)
+  assertList(x = subsets)
   moveFile <- TRUE
 
   # get tables
   inv_geometries <- read_csv(paste0(intPaths, "/inv_geometries.csv"), col_types = "iiiccccccDDcc")
-
-  # check validity of arguments
   assertNames(x = colnames(inv_geometries), permutation.of = c("geoID", "datID", "level", "source_file",
                                                                "layer", "nation_column", "unit_column", "orig_file", "orig_link",
                                                                "download_date", "next_update", "update_frequency", "notes"))
-  assertList(x = subsets)
+
+  # check validity of arguments
   assertIntegerish(x = thresh, any.missing = FALSE)
   assertLogical(x = update, len = 1)
   assertNames(x = outType, subset.of = tolower(st_drivers()$name))
@@ -753,7 +753,7 @@ normGeometry <- function(input = NULL, ..., thresh = 10, outType = "gpkg",
       firstStage <- paste0(intPaths, "/adb_geometries/stage2")
       file.copy(from = paste0(firstStage, "/", file_name), to = paste0(firstStage, "/processed/", file_name))
       file.remove(paste0(firstStage, "/", file_name))
-      }
+    }
 
     outLut <- bind_rows(outLut, lut)
 
