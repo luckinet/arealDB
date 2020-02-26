@@ -44,10 +44,11 @@
 #'           update = TRUE)
 #' }
 #' @importFrom checkmate assertNames assertFileExists assertLogical
+#' @importFrom rlang exprs
 #' @importFrom rectifyr reorganise
-#' @importFrom dplyr mutate select pull
+#' @importFrom dplyr mutate select pull full_join
 #' @importFrom magrittr %>%
-#' @importFrom readr read_csv
+#' @importFrom readr read_csv cols
 #' @importFrom stringr str_split
 #' @importFrom tidyselect everything
 #' @importFrom utils read.csv
@@ -68,6 +69,14 @@ normTable <- function(input = NULL, ..., pattern = NULL, update = FALSE){
   inv_tables <- read_csv(paste0(intPaths, "/inv_tables.csv"), col_types = "iiiccccDccccc")
   inv_geometries <- read_csv(paste0(intPaths, "/inv_geometries.csv"), col_types = "iiiccccccDDcc")
   vars <- exprs(..., .named = TRUE)
+  # make spatial subset
+  spatSub <- c("nation", "un_member", "continent", "region", "subregion")
+  if(any(names(vars) %in% spatSub)){
+    subsets <- vars[names(vars) %in% spatSub]
+    vars <- vars[!names(vars) %in% spatSub]
+  } else {
+    subsets <- NULL
+  }
 
   # check validity of arguments
   assertNames(x = colnames(inv_tables), permutation.of = c("tabID", "geoID", "datID", "source_file",
@@ -86,23 +95,61 @@ normTable <- function(input = NULL, ..., pattern = NULL, update = FALSE){
     file_name <- pathStr[length(pathStr)]
     fields <- str_split(file_name, "_")[[1]]
 
-    thisSchema <- inv_tables$schema[inv_tables$source_file == file_name]
-
     if(!file_name %in% inv_tables$source_file){
       next
+    }
+
+    # get some variables
+    lut <- inv_tables[grep(pattern = paste0("^", file_name, "$"), x = inv_tables$source_file),]
+    if(file_name %in% lut$source_file){
+      newGID <- lut$geoID
+      thisSchema <- lut$schema
+    } else{
+      stop(paste0("  ! the file '", file_name, "' has not been registered yet."))
     }
 
     algorithm = readRDS(file = paste0(intPaths, "/adb_tables/meta/schemas/", thisSchema, ".rds"))
     if(!exists(x = "algorithm")){
       stop(paste0("please create the schema desciption '", algorithm, "' for the file '", file_name, "'.\n  --> See '?meta_default' for details"))
     }
+    joinVars <- unlist(lapply(seq_along(algorithm@variables), function(x){
+      if(algorithm@variables[[x]]$type == "id"){
+        theName <- names(algorithm@variables)[[x]]
+        if(!grepl(pattern = "al\\d", x = theName)){
+          theName
+        }
+      }
+    }))
 
     # get some variables
     tabID <- ifelse(length(inv_tables$tabID) == 0, 1,
                     inv_tables$tabID[grep(pattern = file_name, x = inv_tables$source_file)])
     geoID <- ifelse(length(inv_tables$geoID) == 0, 1,
                     inv_tables$geoID[grep(pattern = file_name, x = inv_tables$source_file)])
+    joinVars <- c("tabID", "geoID", joinVars)
 
+    # potentially subset nation values
+    if(length(subsets) > 0){
+      assertChoice(x = names(subsets), choices = c("nation", "un_member", "continent", "region", "subregion"))
+
+      # unify also the nations with which to subset
+      if(any(names(subsets) == "nation")){
+        toUnify <- eval(subsets[[which(names(subsets) == "nation")]])
+        unified <- translateTerms(terms = toUnify,
+                                  index = "tt_nations",
+                                  source = list("tabID" = tabID),
+                                  verbose = FALSE) %>%
+          pull(target)
+        subsets[[which(names(subsets) == "nation")]] <- unified
+      }
+      subNations <- countries %>%
+        filter_at(vars(!!names(subsets)), any_vars(. %in% as.character(subsets[[1]]))) %>%
+        pull(nation)
+    } else {
+      subNations <- NULL
+    }
+
+    # reorganise data
     message("\n--> reading new data table from '", file_name, "' ...")
     temp <- read.csv(file = thisInput, header = FALSE, as.is = TRUE) %>%
       as_tibble()
@@ -122,32 +169,84 @@ normTable <- function(input = NULL, ..., pattern = NULL, update = FALSE){
       }
     }
 
-    out <- temp %>%
-      mutate(id = seq_along(year),
-             tabID = tabID,
+    # translate nations in input
+    message("\n--> harmonising nation names ...")
+    nations <- translateTerms(terms = unique(temp$al1),
+                              index = "tt_nations",
+                              source = list("tabID" = tabID),
+                              verbose = FALSE) %>%
+      filter(!target %in% c("ignore", "missing")) %>%
+      select(target, origin)
+
+    temp <- left_join(temp, nations, by = c("al1" = "origin")) %>%
+      select(-al1) %>%
+      select(al1 = target, everything())
+    if(!is.null(subNations)){
+      temp <- temp %>%
+        filter(al1 %in% subNations)
+      moveFile <- FALSE
+    } else {
+      moveFile <- TRUE
+    }
+
+    temp <- temp %>%
+      mutate(tabID = tabID,
              geoID = geoID) %>%
       matchUnits(source = tabID, keepOrig = TRUE)
+    joinVars <- c("ahID", joinVars)
 
     # if a matching list for other variables is defined, match those
     if(length(vars) != 0){
+      joinVars <- tibble(orig = joinVars) %>%
+        mutate(new = if_else(orig %in% names(vars[[1]]), names(vars), orig)) %>%
+        pull(new)
       message()
-      out <- out %>%
+      temp <- temp %>%
         matchVars(source = tabID, faoID = list(commodities = "target"), keepOrig = FALSE)
     }
 
     # in case the user wants to update, update the data table
     if(update){
 
-      theNations <- out %>%
+      theNations <- temp %>%
         filter(!is.na(ahID)) %>%
         pull(al1_name) %>%
         unique()
 
-      out <- out %>%
-        select(id, tabID, geoID, ahID, everything()) %>%
+      temp <- temp %>%
+        select(tabID, geoID, ahID, everything()) %>%
         mutate(year = as.numeric(year))
 
-      updateData(table = out, nations = theNations, file = thisInput)
+      for(j in seq_along(theNations)){
+
+        # message("--> Updating table of '", nations[i], "'.")
+
+        tempOut <- temp %>%
+          filter(al1_name == theNations[j]) %>%
+          select(-starts_with("al"))
+
+        # append output to previous file
+        if(file.exists(paste0(intPaths, "/adb_tables/stage3/", theNations[j], ".csv"))){
+          tempData <- read_csv(file = paste0(intPaths, "/adb_tables/stage3/", theNations[j], ".csv"),
+                               col_types = cols(id = "i", tabID = "i", geoID = "i", ahID = "c"))
+          out <- suppressMessages(full_join(tempData, tempOut) %>%
+                                    mutate(id = seq_along(year)))
+        } else{
+          out <- tempOut %>%
+            mutate(id = seq_along(year))
+        }
+        out <- out %>%
+          select(id, everything())
+
+        # write file to 'stage3' and move to folder 'processed'
+        write_csv(x = out, path = paste0(intPaths, "/adb_tables/stage3/", theNations[j], ".csv"), na = "")
+      }
+
+      if(moveFile){
+        file.copy(from = thisInput, to = paste0(intPaths, "/adb_tables/stage2/processed"))
+        file.remove(thisInput)
+      }
+
 
     } else{
       out <- out %>%
