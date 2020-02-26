@@ -98,118 +98,139 @@ translateTerms <- function(terms, index = NULL, source = NULL, strict = FALSE,
 
   # go through all terms and process them
   for(i in seq_along(terms)){
-    exists <- terms[i] %in% unique(index$target) | terms[i] %in% unique(index$origin)
 
-    if(exists){
+    # figure out which version of each term matches
+    newTerm <- terms[i]
+    lowerTerm <- tolower(newTerm)
+    nonAccented <- iconv(index$target, from = "UTF-8", to = "ASCII//TRANSLIT")
+    doFuzzy <- FALSE
+    matchTerm <- NULL
+    if(newTerm %in% index$origin){
+      matchTerm <- index$target[index$origin %in% newTerm]
+    } else if(newTerm %in% index$target){
+      matchTerm <- newTerm
+    } else if(lowerTerm %in% index$target){
+      matchTerm <- index$target[which(index$target %in% lowerTerm)]
+    } else if(newTerm %in% nonAccented){
+      matchTerm <- unique(index$target[which(nonAccented %in% newTerm)])
+    } else if(lowerTerm %in% nonAccented){
+      matchTerm <- unique(index$target[which(nonAccented %in% lowerTerm)])
+    }
 
-      temp <- index %>%
-        mutate(rn = row_number()) %>%
-        filter(target %in% terms[i] | origin %in% terms[i]) %>%
-        filter(target != "missing") %>%
-        rename("ID" = ends_with("ID"))
+    temp <- index %>%
+      mutate(rn = row_number()) %>%
+      filter(target %in% matchTerm | origin %in% matchTerm) %>%
+      filter(target != "missing") %>%
+      rename("ID" = ends_with("ID"))
 
-      # first make sure that the term should not be ignored
-      if(any(temp$target == "ignore")){
-        temp <- tibble(origin = terms[i], target = "ignore", source = NA_character_, ID = NA_character_, notes = NA_character_)
-      } else {
-        # then take terms that are not 'missing'
-        if(dim(temp)[1] > 0){
-          # if there is more than one translation, match by 'sourceName' and
-          # 'sourceVal'
-          if(length(unique(temp$target)) > 1){
+    # first make sure that the term should not be ignored
+    if(any(temp$target == "ignore")){
+      temp <- tibble(origin = theTerm, target = "ignore", source = NA_character_, ID = NA_integer_, notes = NA_character_)
+    } else {
+      # if there is no translation, carry out fuzzy matching to find best guess
+      if(dim(temp)[1] > 0){
+        # if there is more than one translation, match by 'sourceName' and
+        # 'sourceVal'
+        if(length(unique(temp$target)) > 1){
+
+          if(any(!is.na(temp$source)) & any(!is.na(temp$ID))){
             temp <- temp %>%
               filter(!is.na(temp$ID)) %>%
               filter(source == sourceName & ID == sourceVal)
-
-            # if there is still more or less than one translation, continue selecting
-            if(length(unique(temp$target)) > 1){
-              index <- index %>%
-                slice(-temp$rn)
-              message("the term '", terms[i], "' has several matches in '", indFile, ".csv'\n  -> please select which target value occurs in the object with '", sourceName, " = ", sourceVal, "' (see ", inv_source, "):")
-              for(k in seq_along(unique(temp$target))){
-                message("  ", k, ": ", temp$target[k])
-              }
-              theTarget <- readline(prompt = "type in the number: ")
-              tempTarget <- suppressWarnings(as.integer(theTarget))
-              if(is.na(tempTarget)){
-                assertIntegerish(x = theTarget, len = 1, any.missing = FALSE)
-              }
-              temp <- temp %>%
-                slice(tempTarget) %>%
-                select(-rn)
-
-            } else if(length(unique(temp$target)) < 1){
-              exists <- FALSE
-            }
-
-            temp <- temp %>%
-              mutate(notes = paste0("translateTerms_", Sys.Date()))
-
-            # remove 'rn'
-            if("rn" %in% names(temp)){
-              temp <- temp %>%
-                select(-rn)
-            }
-
-          } else {
-            temp <- temp %>%
-              distinct(target) %>%
-              mutate(origin = terms[i],
-                     source = sourceName,
-                     ID = sourceVal) %>%
-              mutate(notes = paste0("translateTerms_", Sys.Date()))
           }
 
+          # if there is still more or less than one translation, let the user select
+          if(length(unique(temp$target)) > 1){
+            message("the term '", terms[i], "' has several matches in '", indFile, ".csv'\n  -> please select the correct match (see '", inv_source, "' with '", sourceName, " = ", sourceVal, "'):")
+            for(k in seq_along(unique(temp$target))){
+              message("    ", k, ": ", unique(temp$target)[k])
+            }
+            message("    ", length(unique(temp$target))+1, ": ! none !")
+            theTarget <- readline(prompt = "type in the number: ")
+            tempTarget <- suppressWarnings(as.integer(theTarget))
+            if(is.na(tempTarget)){
+              assertIntegerish(x = theTarget, len = 1, any.missing = FALSE)
+            } else {
+              if(tempTarget == length(unique(temp$target))+1){
+                app <- tibble(origin = newTerm,
+                               target = "missing",
+                               source = sourceName,
+                               ID = as.integer(sourceVal),
+                               notes = "already existing terms did not match")
+                newEntries <- TRUE
+              } else {
+                app <- temp %>%
+                  slice(tempTarget) %>%
+                  select(-rn) %>%
+                  mutate(origin = newTerm,
+                         source = sourceName,
+                         ID = sourceVal,
+                         notes = paste0("translateTerms_", Sys.Date()))
+              }
+
+              # remove 'rn'
+              if("rn" %in% names(app)){
+                app <- app %>%
+                  select(-rn)
+              }
+            }
+
+          } else if(length(unique(temp$target)) < 1){
+            doFuzzy <- TRUE
+          }
 
         } else {
-          temp <- tibble(origin = terms[i], target = "missing", source = sourceName, ID = sourceVal, notes = NA_character_)
+          app <- temp %>%
+            distinct(target) %>%
+            mutate(origin = newTerm,
+                   source = sourceName,
+                   ID = sourceVal,
+                   notes = paste0("translateTerms_", Sys.Date()))
         }
+      } else {
+        doFuzzy <- TRUE
       }
 
-      tempOut <- bind_rows(tempOut, temp)
+      if(doFuzzy){
 
-    }
-
-    if(!exists){
-
-      # if a set of fuzzy terms is available, try to match with those
-      if(length(theFuzzyTerms) != 0){
-        # all terms are put to lower case, which makes matching them easier,
-        # this preserves apostrophes
-        distances <- adist(tolower(terms[i]), tolower(theFuzzyTerms))
-        distances_sum <- cumsum(table(distances))
-        thresh_dist <- distances_sum[as.numeric(names(distances_sum)) < fuzzy_dist]
-        # take care of terms with a too high edit distance
-        if(length(thresh_dist) == 0){
-          thresh_dist <- 99
-          names(thresh_dist) <- "missing"
-        }
-        theFuzz <- unlist(lapply(names(thresh_dist), function(x){
-          if(x != "missing"){
-            temp <- unique(theFuzzyTerms[which(distances %in% as.numeric(x))])
-          } else {
-            temp <- NULL
+        # if a set of fuzzy terms is available, try to match with those
+        if(length(theFuzzyTerms) != 0){
+          # all terms are put to lower case, which makes matching them easier,
+          # this preserves apostrophes
+          distances <- adist(tolower(newTerm), tolower(theFuzzyTerms))
+          distances_sum <- cumsum(table(distances))
+          thresh_dist <- distances_sum[as.numeric(names(distances_sum)) < fuzzy_dist]
+          # take care of terms with a too high edit distance
+          if(length(thresh_dist) == 0){
+            thresh_dist <- 99
+            names(thresh_dist) <- "missing"
           }
-        }))
-        if(length(theFuzz) > 10){
-          theFuzz <- theFuzz[1:10]
-        }
+          theFuzz <- unlist(lapply(names(thresh_dist), function(x){
+            if(x != "missing"){
+              temp <- unique(theFuzzyTerms[which(distances %in% as.numeric(x))])
+            } else {
+              temp <- NULL
+            }
+          }))
+          if(length(theFuzz) > 10){
+            theFuzz <- theFuzz[1:10]
+          }
 
-        # in case an edit distance of 0 has been found, this term is perfectly
-        # matched and doesn't need to be further treated
-        if(names(thresh_dist[1]) == "0"){
-          app <- tibble(origin = terms[i], target = theFuzz[1], source = sourceName, ID = sourceVal, notes = NA_character_)
+          # in case an edit distance of 0 has been found, this term is perfectly
+          # matched and doesn't need to be further treated
+          if(names(thresh_dist[1]) == "0"){
+            app <- tibble(origin = newTerm, target = theFuzz[1], source = sourceName, ID = as.integer(sourceVal), notes = NA_character_)
+          } else{
+            newEntries <- TRUE
+            app <- tibble(origin = newTerm, target = "missing", source = sourceName, ID = as.integer(sourceVal), notes = paste0(theFuzz, collapse = " | "))
+          }
         } else{
-          newEntries <- TRUE
-          app <- tibble(origin = terms[i], target = "missing", source = sourceName, ID = sourceVal, notes = paste0(theFuzz, collapse = " | "))
+          app <- tibble(origin = newTerm, target = "missing", source = sourceName, ID = as.integer(sourceVal), notes = "no terms for fuzzy matching defined")
         }
-      } else{
-        app <- tibble(origin = terms[i], target = tolower(terms[i]), source = sourceName, ID = sourceVal, notes = NA_character_)
       }
-
-      tempOut <- bind_rows(tempOut, app)
-
     }
+    tempOut <- bind_rows(tempOut, app)
+
 
     if(verbose){
       if(length(terms) > 15){
