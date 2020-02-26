@@ -8,3 +8,5 @@ replication_script
 ^doc$
 ^Meta$
 ^LICENSE\.md$
+^appveyor\.yml$
+^codecov\.yml$
