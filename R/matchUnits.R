@@ -44,13 +44,13 @@ matchUnits <- function(input = NULL, source = NULL, keepOrig = FALSE){
   adminLvls <- names(input)[grepl(pattern = "al", x = names(input))]
 
   # to manage the workload, split up input according to nations ("al1")
-  theNations <- unique(eval(parse(text = "al1"), envir = input))
-  nations <- translateTerms(terms = theNations,
-                            index = "tt_territories",
-                            source = list("tabID" = source),
-                            inline = FALSE,
-                            verbose = FALSE) %>%
-    filter(!target %in% "ignore")
+  nations <- unique(eval(parse(text = "al1"), envir = input))
+  # nations <- translateTerms(terms = theNations,
+  #                           index = "tt_territories",
+  #                           source = list("tabID" = source),
+  #                           inline = FALSE,
+  #                           verbose = FALSE) %>%
+  #   filter(!target %in% "ignore")
 
   # test whether there is a file to match with, by the nation name
   availableNations <- list.files(path = paste0(intPaths, "stage3"), full.names = TRUE) %>%
@@ -62,23 +62,23 @@ matchUnits <- function(input = NULL, source = NULL, keepOrig = FALSE){
 
   outhIDs <- NULL
   message("--> matching geometries of ...")
-  for(i in seq_along(nations$target)){
-    recentNation <- nations[i,]
+  for(i in seq_along(nations)){
+    recentNation <- nations[i]
 
-    if(recentNation$target %in% c("missing")){
-      message("    ... skipping '", recentNation$origin, "' ('missing' in translation table)")
-      next
-    } else if(recentNation$target %in% c("ignore")){
-      message("    ... skipping '", recentNation$origin, "' ('ignore' in translation table)")
-      next
-    } else {
-      message("    ... '", recentNation$target, "'")
-    }
+    # if(recentNation$target %in% c("missing")){
+    #   message("    ... skipping '", recentNation$origin, "' ('missing' in translation table)")
+    #   next
+    # } else if(recentNation$target %in% c("ignore")){
+    #   message("    ... skipping '", recentNation$origin, "' ('ignore' in translation table)")
+    #   next
+    # } else {
+      message("    ... '", recentNation, "'")
+    # }
 
 
     # make an input subset for the current nation ...
     inputSbst <- input %>%
-      filter(al1 == recentNation$origin)
+      filter(al1 == recentNation)
 
     # ... extract and find the unique combinations of the respective columns,
     # this asserts that only administrative units nested in their parents are
@@ -88,15 +88,15 @@ matchUnits <- function(input = NULL, source = NULL, keepOrig = FALSE){
       unique()
 
     # load the nation geometries ...
-    if(!recentNation$target %in% availableNations){
-      message("    ... skipping '", recentNation$origin, "' (no geoemtries available)")
+    if(!recentNation %in% availableNations){
+      message("    ... skipping '", recentNation, "' (no geoemtries available)")
       next
     } else {
-      layers <- st_layers(dsn = paste0(intPaths, "stage3/", recentNation$target, ".gpkg"))
+      layers <- st_layers(dsn = paste0(intPaths, "stage3/", recentNation, ".gpkg"))
     }
     geometries <- NULL
     for(j in seq_along(layers$name)){
-      theGeom <- read_sf(dsn = paste0(intPaths, "stage3/", recentNation$target, ".gpkg"),
+      theGeom <- read_sf(dsn = paste0(intPaths, "stage3/", recentNation, ".gpkg"),
                          layer = sort(layers$name)[j],
                          stringsAsFactors = FALSE) %>%
         as_tibble() %>%
@@ -121,9 +121,9 @@ matchUnits <- function(input = NULL, source = NULL, keepOrig = FALSE){
       if(j == 1){
         if(length(adminLvls) == 1){
           outputUnits <- outputUnits %>%
-            filter(name == recentNation$target) %>%
+            filter(name == recentNation) %>%
             as_tibble() %>%
-            mutate(al1_alt = recentNation$origin) %>%
+            mutate(al1_alt = recentNation) %>%
             select(al1_name = name, al1_alt, level, ahID)
         } else{
           next
