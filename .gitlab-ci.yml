@@ -8,7 +8,8 @@ stages:
 building:
   stage: build
   script:
-    - sudo apt-get install --yes --fix-missing libproj-dev libgeos-dev libgdal-dev gdal-bin libudunits2-dev qpdf
+    - sudo apt-get update
+    - sudo apt-get install --yes libproj-dev libgeos-dev libgdal-dev gdal-bin libudunits2-dev qpdf
     - R -e 'remotes::install_deps(dependencies = TRUE)'
     - R -e 'devtools::check()'
   cache:
