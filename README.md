@@ -13,14 +13,8 @@ The goal of arealDB is to …
 
 ## Installation
 
-You can install the released version of arealDB from
-[CRAN](https://CRAN.R-project.org) with:
-
-``` r
-install.packages("arealDB")
-```
-
-And the development version from [GitHub](https://github.com/) with:
+You can install the development version from
+[GitHub](https://github.com/) with:
 
 ``` r
 # install.packages("devtools")
