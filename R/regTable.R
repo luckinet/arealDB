@@ -57,7 +57,7 @@
 #'   that describes the position of the data components) for each data table,
 #'   which is saved as \code{paste0("meta_", dSeries, TAB_NUMBER)}. A template
 #'   thereof, and documentation on how to set them up, comes as the object
-#'   \code{rectifyr::\link{schema_default}} with \code{arealDB}.
+#'   \code{tabshiftr::\link{schema_default}} with \code{arealDB}.
 #' @return Returns the entry that is appended to 'inv_tables.csv' in case
 #'   \code{update = TRUE}.
 #' @examples
@@ -238,7 +238,7 @@ regTable <- function(nation = NULL, subset = NULL, dSeries = NULL, gSeries = NUL
     if(!testing){
       schema <- readline()
     } else {
-      schema <- rectifyr::schema_default
+      schema <- tabshiftr::schema_default
     }
     if(length(schema) < 1){
       schema = NA_character_
@@ -264,6 +264,7 @@ regTable <- function(nation = NULL, subset = NULL, dSeries = NULL, gSeries = NUL
     nations <- tolower(nation)
     assertChoice(x = nations, choices = countries$nation)
     theNation <- countries %>%
+      as_tibble() %>%
       filter(nation == nations) %>%
       distinct(iso_a3) %>%
       tolower()

@@ -197,6 +197,7 @@ regGeometry <- function(nation = NULL, subset = NULL, gSeries = NULL, level = NU
     nations <- tolower(nation)
     assertChoice(x = nations, choices = countries$nation)
     theNation <- countries %>%
+      as_tibble() %>%
       filter(nation == nations) %>%
       distinct(iso_a3) %>%
       tolower()

@@ -35,7 +35,7 @@ matchUnits <- function(input = NULL, source = NULL, keepOrig = FALSE){
 
   # check validity of arguments
   assertDataFrame(x = input)
-  assertIntegerish(x = source)
+  assertList(x = source, len = 1)
   assertLogical(x = keepOrig)
   # assert that one of the columnnames is "al1" so that at least nations are matched
   assertNames(x = names(input), must.include = "al1")
@@ -72,7 +72,6 @@ matchUnits <- function(input = NULL, source = NULL, keepOrig = FALSE){
     #   message("    ... skipping '", recentNation$origin, "' ('ignore' in translation table)")
     #   next
     # } else {
-      message("    ... '", recentNation, "'")
     # }
 
 
@@ -92,6 +91,7 @@ matchUnits <- function(input = NULL, source = NULL, keepOrig = FALSE){
       message("    ... skipping '", recentNation, "' (no geoemtries available)")
       next
     } else {
+      message("    ... '", recentNation, "'")
       layers <- st_layers(dsn = paste0(intPaths, "stage3/", recentNation, ".gpkg"))
     }
     geometries <- NULL
@@ -116,6 +116,7 @@ matchUnits <- function(input = NULL, source = NULL, keepOrig = FALSE){
       theLevel <- as.integer(sub(pattern = "\\D*(\\d+).*",
                                  replacement = "\\1",
                                  x = adminLvls)[j])
+      message("        ... at level ", theLevel)
       levels <- c(levels, theLevel)
 
       if(j == 1){
@@ -146,16 +147,16 @@ matchUnits <- function(input = NULL, source = NULL, keepOrig = FALSE){
         # ... translate them to the default unit names
         theParents <- translateTerms(terms = unique(inputUnits[[1]]),
                                      index = "tt_territories",
-                                     source = list("tabID" = source),
+                                     source = source,
                                      fuzzy_terms = unique(parentSubset$name),
                                      verbose = FALSE)
         # this seems to give a NAs introduced by coercion for "brazil" of "schema_54"
         theParents <- unique(theParents)
         theUnits <- translateTerms(terms = unique(inputUnits[[2]]),
                                    index = "tt_territories",
-                                   source = list("tabID" = source),
+                                   source = source,
                                    fuzzy_terms = unique(unitSubset$name),
-                                   verbose = FALSE)
+                                   verbose = TRUE)
         theUnits <- unique(theUnits)
 
         # ... join with 'inputUnits' to get the standard names into it

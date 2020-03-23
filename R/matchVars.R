@@ -50,7 +50,7 @@ matchVars <- function(input = NULL, source = NULL, ..., keepOrig = FALSE){
   assertList(x = vars)
   assertLogical(x = keepOrig)
 
-  message("--> matching variables of ...'")
+  message("--> matching variables of ...")
   for(i in seq_along(vars)){
 
     targetVar <- names(vars)[i]

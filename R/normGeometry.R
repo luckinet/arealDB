@@ -177,6 +177,7 @@ normGeometry <- function(input = NULL, ..., thresh = 10, outType = "gpkg",
       nation <- toupper(fields[1])
       assertChoice(x = nation, choices = countries$iso_a3)
       nations <- countries %>%
+        as_tibble() %>%
         filter(iso_a3 == !!nation) %>%
         pull(nation)
       theNations <- nations
