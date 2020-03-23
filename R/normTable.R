@@ -5,12 +5,18 @@
 #' @param ... [\code{list(.)}]\cr matching lists that capture the variables by
 #'   which to match and the new column names containing the resulting ID; see
 #'   Details.
+#' @param source [\code{charcter(1)}]\cr the source from which translations of
+#'   terms should be sought. By default the recent \code{"tabID"}, but when the
+#'   same terms occur in several tables of a dataseries \code{"datID"}.
 #' @param pattern [\code{character(1)}]\cr an optional regular expression. Only
 #'   dataset names which match the regular expression will be returned.
 #' @param update [\code{logical(1)}]\cr whether or not the physical files should
 #'   be updated (\code{TRUE}) or the function should merely return the new
 #'   object (\code{FALSE} default). This is helpful to check whether the
 #'   metadata specification and the provided file(s) are properly specified.
+#' @param keepOrig [\code{logical(1)}]\cr to keep the original units and
+#'   variable names in the output (\code{TRUE}) or to remove them (\code{FALSE},
+#'   default). Useful for debugging.
 #' @details Arguments in \code{...} are so-called matching lists. This argument
 #'   captures three kinds of information: \enumerate{\item the 'variable' that
 #'   should be matched with a matching list, \item the 'targetColumn' in that
@@ -26,9 +32,9 @@
 #'
 #'   To normalise data tables, this function proceeds as follows: \enumerate{
 #'   \item Read in \code{input} and extract initial metadata from the file name.
-#'   \item Employ the function \code{rectifyr::\link{reorganise}} to reshape
+#'   \item Employ the function \code{tabshiftr::\link{reorganise}} to reshape
 #'   \code{input} according to the respective schema description (see
-#'   \code{rectifyr::\link{schema_default}}). \item Match the territorial units
+#'   \code{tabshiftr::\link{schema_default}}). \item Match the territorial units
 #'   in \code{input} via the \code{\link{matchUnits}}. \item If \code{...} has
 #'   been provided with variables to match, those are matched via
 #'   \code{\link{matchVars}}. \item Harmonise territorial unit names. \item If
@@ -45,7 +51,7 @@
 #' }
 #' @importFrom checkmate assertNames assertFileExists assertLogical
 #' @importFrom rlang exprs
-#' @importFrom rectifyr reorganise
+#' @importFrom tabshiftr reorganise
 #' @importFrom dplyr mutate select pull full_join
 #' @importFrom magrittr %>%
 #' @importFrom readr read_csv cols
@@ -54,7 +60,8 @@
 #' @importFrom utils read.csv
 #' @export
 
-normTable <- function(input = NULL, ..., pattern = NULL, update = FALSE){
+normTable <- function(input = NULL, ..., source = "tabID", pattern = NULL,
+                      update = FALSE, keepOrig = FALSE){
 
   # set internal paths
   intPaths <- paste0(getOption(x = "adb_path"))
@@ -84,6 +91,7 @@ normTable <- function(input = NULL, ..., pattern = NULL, update = FALSE){
                                                            "next_update", "update_frequency", "metadata_link",
                                                            "metadata_path", "notes"))
   assertLogical(x = update, len = 1)
+  assertChoice(x = source, choices = c("tabID", "datID"))
   assertList(x = vars)
 
   for(i in seq_along(input)){
@@ -151,18 +159,18 @@ normTable <- function(input = NULL, ..., pattern = NULL, update = FALSE){
 
     # reorganise data
     message("\n--> reading new data table from '", file_name, "' ...")
-    temp <- read.csv(file = thisInput, header = FALSE, as.is = TRUE) %>%
+    temp <- read.csv(file = thisInput, header = FALSE, as.is = TRUE, na.strings = algorithm@meta$na) %>%
       as_tibble()
-    message("--> reorganising data table with '", thisSchema, "' ...")
+    message("    reorganising data table with '", thisSchema, "' ...")
     temp <- temp %>%
       reorganise(schema = algorithm) %>%
       filter_at(vars(starts_with("al")), all_vars(!is.na(.)))
 
     # make al1 if it doesn't extist (is needed below for subsetting by nation)
     if(!"al1" %in% names(temp)){
-      message("\n--> reconstructing 'al1' ...")
+      message("    reconstructing 'al1' ...")
       if(length(fields[1]) == 0){
-        stop("the data table '", file_name, "' seems to include several nations but no column for nations (al1).\n Is the schema description correct?")
+        stop("  ! the data table '", file_name, "' seems to include several nations but no column for nations (al1).\n Is the schema description correct?")
       } else {
         temp$al1 <- countries$nation[countries$iso_a3 == toupper(fields[1])]
         temp <- temp %>% select(al1, everything())
@@ -170,7 +178,7 @@ normTable <- function(input = NULL, ..., pattern = NULL, update = FALSE){
     }
 
     # translate nations in input
-    message("\n--> harmonising nation names ...")
+    message("    harmonising nation names ...")
     nations <- translateTerms(terms = unique(temp$al1),
                               index = "tt_nations",
                               source = list("tabID" = tabID),
@@ -184,15 +192,28 @@ normTable <- function(input = NULL, ..., pattern = NULL, update = FALSE){
     if(!is.null(subNations)){
       temp <- temp %>%
         filter(al1 %in% subNations)
+
+      # if there no more elements, jump to next 'input'
+      if(dim(temp)[1] == 0){
+        message("  ! the file is not part of the subset '", paste0(subNations, collapse = ", "), "'.")
+        message("\n--- ", i+1, " ", rep("-", times= getOption("width")-(nchar(i)+7)))
+        next
+      }
       moveFile <- FALSE
     } else {
       moveFile <- TRUE
     }
 
+    if(source == "tabID"){
+      theSource <- list("tabID" = tabID)
+    } else {
+      theSource <- list("datID" = inv_tables$datID[inv_tables$tabID %in% tabID])
+    }
+
     temp <- temp %>%
       mutate(tabID = tabID,
              geoID = geoID) %>%
-      matchUnits(source = tabID, keepOrig = TRUE)
+      matchUnits(source = theSource, keepOrig = TRUE)
     joinVars <- c("ahID", joinVars)
 
     # if a matching list for other variables is defined, match those
@@ -202,7 +223,7 @@ normTable <- function(input = NULL, ..., pattern = NULL, update = FALSE){
         pull(new)
       message()
       temp <- temp %>%
-        matchVars(source = tabID, faoID = list(commodities = "target"), keepOrig = FALSE)
+        matchVars(source = tabID, faoID = list(commodities = "target"), keepOrig = keepOrig)
     }
 
     # in case the user wants to update, update the data table
@@ -227,19 +248,27 @@ normTable <- function(input = NULL, ..., pattern = NULL, update = FALSE){
 
         # append output to previous file
         if(file.exists(paste0(intPaths, "/adb_tables/stage3/", theNations[j], ".csv"))){
-          tempData <- read_csv(file = paste0(intPaths, "/adb_tables/stage3/", theNations[j], ".csv"),
-                               col_types = cols(id = "i", tabID = "i", geoID = "i", ahID = "c"))
-          out <- suppressMessages(full_join(tempData, tempOut) %>%
-                                    mutate(id = seq_along(year)))
-        } else{
-          out <- tempOut %>%
-            mutate(id = seq_along(year))
-        }
-        out <- out %>%
-          select(id, everything())
+          oldData <- read_csv(file = paste0(intPaths, "/adb_tables/stage3/", theNations[j], ".csv"),
+                              col_types = cols(id = "i", tabID = "i", geoID = "i", ahID = "c", year = "i", .default = "d"))
 
-        # write file to 'stage3' and move to folder 'processed'
-        write_csv(x = out, path = paste0(intPaths, "/adb_tables/stage3/", theNations[j], ".csv"), na = "")
+          out <- tempOut %>%
+            bind_rows(oldData, .) %>%
+            select(-id) %>%
+            distinct() %>%
+            mutate(id = seq_along(year)) %>%
+            select(id, everything())
+
+          # write file to 'stage3' and move to folder 'processed'
+          write_csv(x = out, path = paste0(intPaths, "/adb_tables/stage3/", theNations[j], ".csv"), na = "")
+        } else {
+          out <- tempOut %>%
+            distinct() %>%
+            mutate(id = seq_along(year)) %>%
+            select(id, everything())
+
+          # write file to 'stage3' and move to folder 'processed'
+          write_csv(x = out, path = paste0(intPaths, "/adb_tables/stage3/", theNations[j], ".csv"), na = "")
+        }
       }
 
       if(moveFile){
@@ -249,9 +278,17 @@ normTable <- function(input = NULL, ..., pattern = NULL, update = FALSE){
 
 
     } else{
-      out <- out %>%
+      out <- temp %>%
         select(-starts_with("al"))
       return(out)
+    }
+
+    if(length(input) > 1){
+      if(!length(input) == i){
+        message("\n--- ", i+1, " ", rep("-", times= getOption("width")-(nchar(i)+7)))
+      } else {
+        message("done!")
+      }
     }
   }
 
