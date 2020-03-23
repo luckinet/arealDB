@@ -1,6 +1,6 @@
 library(testthat)
 library(checkmate)
-library(rectifyr)
+library(tabshiftr)
 context("regTable")
 
 
@@ -43,28 +43,21 @@ test_that("a table inventory entry is produced", {
                         updateFrequency = "quarterly",
                         update = TRUE)
 
-  meta_maia_1 <- makeSchema(
-    list(clusters = list(top = NULL, left = NULL, width = NULL, height = NULL,
-                         id = NULL),
-         header = list(row = 1, rel = FALSE),
-         meta = list(dec = ".", na = c("", "NA"), types = NULL),
-         variables = list(territories =
-                            list(type = "id", name = "al1", split = NULL,
-                                 row = NULL, col = 1, rel = FALSE),
-                          period =
-                            list(type = "id", name = "year", split = NULL,
-                                 row = NULL, col = 2, rel = FALSE),
-                          commodities =
-                            list(type = "id", name = NULL, split = NULL,
-                                 row = NULL, col = 3, rel = FALSE),
-                          harvested =
-                            list(type = "values", unit = "ha", factor = 1,
-                                 row = NULL, col = 4, rel = FALSE,
-                                 key = NULL, value = NULL),
-                          production =
-                            list(type = "values", unit = "t", factor = 1,
-                                 row = NULL, col = 5, rel = FALSE,
-                                 key = NULL, value = NULL))))
+  meta_maia_1 <- makeSchema(list(
+    clusters = list(row = NULL, col = NULL, width = NULL, height = NULL,
+                    id = NULL),
+    header = list(row = 1),
+    variables = list(
+      territories =
+        list(type = "id", col = 1),
+      period =
+        list(type = "id", col = 2),
+      commodities =
+        list(type = "id", col = 3),
+      harvested =
+        list(type = "measured", unit = "ha", factor = 1, col = 4),
+      production =
+        list(type = "measured", unit = "t", factor = 1, col = 5))))
 
   output <- regTable(nation = "Argentina",
                      subset = "soyMaize",
@@ -129,28 +122,21 @@ test_that("function asks for details, if not provided", {
                         updateFrequency = "quarterly",
                         update = TRUE)
 
-  meta_maia_1 <- makeSchema(
-    list(clusters = list(top = NULL, left = NULL, width = NULL, height = NULL,
-                         id = NULL),
-         header = list(row = 1, rel = FALSE),
-         meta = list(dec = ".", na = c("", "NA"), types = NULL),
-         variables = list(territories =
-                            list(type = "id", name = "al1", split = NULL,
-                                 row = NULL, col = 1, rel = FALSE),
-                          period =
-                            list(type = "id", name = "year", split = NULL,
-                                 row = NULL, col = 2, rel = FALSE),
-                          commodities =
-                            list(type = "id", name = NULL, split = NULL,
-                                 row = NULL, col = 3, rel = FALSE),
-                          harvested =
-                            list(type = "values", unit = "ha", factor = 1,
-                                 row = NULL, col = 4, rel = FALSE,
-                                 key = NULL, value = NULL),
-                          production =
-                            list(type = "values", unit = "t", factor = 1,
-                                 row = NULL, col = 5, rel = FALSE,
-                                 key = NULL, value = NULL))))
+  meta_maia_1 <- makeSchema(list(
+    clusters = list(row = NULL, col = NULL, width = NULL, height = NULL,
+                    id = NULL),
+    header = list(row = 1),
+    variables = list(
+      territories =
+        list(type = "id", col = 1),
+      period =
+        list(type = "id", col = 2),
+      commodities =
+        list(type = "id", col = 3),
+      harvested =
+        list(type = "measured", unit = "ha", factor = 1, col = 4),
+      production =
+        list(type = "measured", unit = "t", factor = 1, col = 5))))
 
   expect_message(object = regTable())
   output <- capture_messages(code = regTable())

@@ -2,7 +2,7 @@ library(testthat)
 library(readr)
 library(magrittr)
 library(checkmate)
-library(rectifyr)
+library(tabshiftr)
 context("matchUnits")
 
 
@@ -87,52 +87,36 @@ test_that("units are matched", {
 
   # make schemas
   meta_maia_1 <- makeSchema(
-    list(clusters = list(top = NULL, left = NULL, width = NULL, height = NULL,
+    list(clusters = list(row = NULL, col = NULL, width = NULL, height = NULL,
                          id = NULL),
-         header = list(row = 1, rel = FALSE),
-         meta = list(dec = ".", na = c("", "NA"), types = NULL),
+         header = list(row = 1),
          variables = list(al1 =
-                            list(type = "id", name = "territories", split = NULL,
-                                 row = NULL, col = 1, rel = FALSE),
+                            list(type = "id", col = 1),
                           year =
-                            list(type = "id", name = "period", split = NULL,
-                                 row = NULL, col = 2, rel = FALSE),
+                            list(type = "id", col = 2),
                           commodities =
-                            list(type = "id", name = NULL, split = NULL,
-                                 row = NULL, col = 3, rel = FALSE),
+                            list(type = "id", col = 3),
                           harvested =
-                            list(type = "values", unit = "ha", factor = 1,
-                                 row = NULL, col = 4, rel = FALSE,
-                                 key = NULL, value = NULL),
+                            list(type = "measured", unit = "ha", factor = 1, col = 4),
                           production =
-                            list(type = "values", unit = "t", factor = 1,
-                                 row = NULL, col = 5, rel = FALSE,
-                                 key = NULL, value = NULL))))
+                            list(type = "measured", unit = "t", factor = 1, col = 5))))
   meta_maia_2 <- makeSchema(
-    list(clusters = list(top = NULL, left = NULL, width = NULL, height = NULL,
+    list(clusters = list(row = NULL, col = NULL, width = NULL, height = NULL,
                          id = NULL),
-         header = list(row = 1, rel = FALSE),
+         header = list(row = 1),
          meta = list(dec = ".", na = c("", "NA"), types = NULL),
          variables = list(al1 =
-                            list(type = "id", name = "territories", split = NULL,
-                                 row = NULL, col = 1, rel = FALSE),
+                            list(type = "id", col = 1),
                           al2 =
-                            list(type = "id", name = "province", split = NULL,
-                                 row = NULL, col = 2, rel = FALSE),
+                            list(type = "id", col = 2),
                           year =
-                            list(type = "id", name = "period", split = NULL,
-                                 row = NULL, col = 3, rel = FALSE),
+                            list(type = "id", col = 3),
                           commodities =
-                            list(type = "id", name = NULL, split = NULL,
-                                 row = NULL, col = 4, rel = FALSE),
+                            list(type = "id", col = 4),
                           harvested =
-                            list(type = "values", unit = "ha", factor = 1,
-                                 row = NULL, col = 5, rel = FALSE,
-                                 key = NULL, value = NULL),
+                            list(type = "measured", unit = "ha", factor = 1, col = 5),
                           production =
-                            list(type = "values", unit = "t", factor = 1,
-                                 row = NULL, col = 6, rel = FALSE,
-                                 key = NULL, value = NULL))))
+                            list(type = "measured", unit = "t", factor = 1, col = 6))))
 
   # register data tables
   regTable(nation = "Argentina",
@@ -172,13 +156,13 @@ test_that("units are matched", {
     mutate(id = seq_along(year),
            tabID = 1,
            geoID = 1)
-  output <- matchUnits(input = input, source = 1)
+  output <- matchUnits(input = input, source = list("tabID" = 1))
   expect_tibble(x = output, nrows = 56, ncols = 8, col.names = "strict")
   expect_character(x = output$ahID, any.missing = FALSE)
   expect_names(x = names(output), permutation.of = c("year", "commodities", "harvested", "production", "id", "tabID", "geoID", "ahID"))
 
   # ... with keeping original columns
-  output <- matchUnits(input = input, source = 1, keepOrig = TRUE)
+  output <- matchUnits(input = input, source = list("tabID" = 1), keepOrig = TRUE)
   expect_tibble(x = output, nrows = 56, ncols = 9, col.names = "strict")
   expect_character(x = output$ahID, any.missing = FALSE)
   expect_names(x = names(output), permutation.of = c("year", "commodities", "harvested", "production", "id", "tabID", "geoID", "al1_name", "ahID"))
@@ -190,7 +174,7 @@ test_that("units are matched", {
     mutate(id = seq_along(year),
            tabID = 1,
            geoID = 1)
-  output <- matchUnits(input = input, source = 1, keepOrig = TRUE)
+  output <- matchUnits(input = input, source = list("tabID" = 1), keepOrig = TRUE)
   expect_tibble(x = output, nrows = 224, ncols = 13, col.names = "strict")
   expect_character(x = output$ahID, any.missing = FALSE)
   expect_names(x = names(output), permutation.of = c("year", "commodities", "harvested", "production", "id", "tabID", "geoID", "al1_name", "al1_id", "al2_name", "al2_id", "al3_id", "ahID"))

@@ -1,9 +1,9 @@
 library(testthat)
-library(rectifyr)
+library(tabshiftr)
 library(checkmate)
 context("matchVars")
 
-test_that("", {
+test_that("variables are matched", {
   path <- system.file("test_datasets", package = "arealDB", mustWork = TRUE)
   setPath(root = paste0(path, "/newDB"))
   territories <- read_csv(file = paste0(path, "/id_units.csv"), col_types = "iccc")
@@ -80,27 +80,19 @@ test_that("", {
               update = TRUE)
 
   meta_maia_1 <- makeSchema(
-    list(clusters = list(top = NULL, left = NULL, width = NULL, height = NULL,
+    list(clusters = list(row = NULL, col = NULL, width = NULL, height = NULL,
                          id = NULL),
-         header = list(row = 1, rel = FALSE),
-         meta = list(dec = ".", na = c("", "NA"), types = NULL),
+         header = list(row = 1),
          variables = list(al1 =
-                            list(type = "id", name = "territories", split = NULL,
-                                 row = NULL, col = 1, rel = FALSE),
+                            list(type = "id", col = 1),
                           year =
-                            list(type = "id", name = "period", split = NULL,
-                                 row = NULL, col = 2, rel = FALSE),
+                            list(type = "id", col = 2),
                           commodities =
-                            list(type = "id", name = NULL, split = NULL,
-                                 row = NULL, col = 3, rel = FALSE),
+                            list(type = "id", col = 3),
                           harvested =
-                            list(type = "values", unit = "ha", factor = 1,
-                                 row = NULL, col = 4, rel = FALSE,
-                                 key = NULL, value = NULL),
+                            list(type = "measured", unit = "ha", factor = 1, col = 4),
                           production =
-                            list(type = "values", unit = "t", factor = 1,
-                                 row = NULL, col = 5, rel = FALSE,
-                                 key = NULL, value = NULL))))
+                            list(type = "measured", unit = "t", factor = 1, col = 5))))
 
   regTable(nation = "Argentina",
            subset = "soyMaize",
@@ -124,7 +116,7 @@ test_that("", {
     mutate(id = seq_along(year),
            tabID = 1,
            geoID = 1) %>%
-    matchUnits(source = 1, keepOrig = FALSE)
+    matchUnits(source = list("tabID" = 1), keepOrig = FALSE)
 
   # discard output
   output <- matchVars(input = input, faoID = list(commodities = "target"),
