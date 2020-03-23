@@ -4,7 +4,8 @@
 \alias{normTable}
 \title{Normalise data tables}
 \usage{
-normTable(input = NULL, ..., pattern = NULL, update = FALSE)
+normTable(input = NULL, ..., source = "tabID", pattern = NULL,
+  update = FALSE, keepOrig = FALSE)
 }
 \arguments{
 \item{input}{[\code{character(1)}]\cr path of the file to normalise.}
@@ -13,6 +14,10 @@ normTable(input = NULL, ..., pattern = NULL, update = FALSE)
 which to match and the new column names containing the resulting ID; see
 Details.}
 
+\item{source}{[\code{charcter(1)}]\cr the source from which translations of
+terms should be sought. By default the recent \code{"tabID"}, but when the
+same terms occur in several tables of a dataseries \code{"datID"}.}
+
 \item{pattern}{[\code{character(1)}]\cr an optional regular expression. Only
 dataset names which match the regular expression will be returned.}
 
@@ -20,6 +25,10 @@ dataset names which match the regular expression will be returned.}
 be updated (\code{TRUE}) or the function should merely return the new
 object (\code{FALSE} default). This is helpful to check whether the
 metadata specification and the provided file(s) are properly specified.}
+
+\item{keepOrig}{[\code{logical(1)}]\cr to keep the original units and
+variable names in the output (\code{TRUE}) or to remove them (\code{FALSE},
+default). Useful for debugging.}
 }
 \value{
 This function harmonises and integrates so far unprocessed data
@@ -44,9 +53,9 @@ Arguments in \code{...} are so-called matching lists. This argument
 
   To normalise data tables, this function proceeds as follows: \enumerate{
   \item Read in \code{input} and extract initial metadata from the file name.
-  \item Employ the function \code{rectifyr::\link{reorganise}} to reshape
+  \item Employ the function \code{tabshiftr::\link{reorganise}} to reshape
   \code{input} according to the respective schema description (see
-  \code{rectifyr::\link{schema_default}}). \item Match the territorial units
+  \code{tabshiftr::\link{schema_default}}). \item Match the territorial units
   in \code{input} via the \code{\link{matchUnits}}. \item If \code{...} has
   been provided with variables to match, those are matched via
   \code{\link{matchVars}}. \item Harmonise territorial unit names. \item If

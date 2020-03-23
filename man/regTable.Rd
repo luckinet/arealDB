@@ -93,7 +93,7 @@ When processing areal data tables, carry out the following steps:
   that describes the position of the data components) for each data table,
   which is saved as \code{paste0("meta_", dSeries, TAB_NUMBER)}. A template
   thereof, and documentation on how to set them up, comes as the object
-  \code{rectifyr::\link{schema_default}} with \code{arealDB}.
+  \code{tabshiftr::\link{schema_default}} with \code{arealDB}.
 }
 \examples{
 \dontrun{
