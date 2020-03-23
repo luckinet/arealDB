@@ -43,7 +43,7 @@ translateTerms <- function(terms, index = NULL, source = NULL, strict = FALSE,
   assertCharacter(x = terms, any.missing = FALSE)
   assertList(x = source, len = 1, null.ok = TRUE)
   if(!is.null(source)){
-    assertNames(x = names(source), subset.of = c("geoID", "tabID"))
+    assertNames(x = names(source), subset.of = c("geoID", "tabID", "datID"))
   }
   inv_source <- ifelse(source[[1]] == "geoID", "inv_geometries.csv", "inv_tables.csv")
   assertCharacter(x = index, len = 1, any.missing = FALSE)
@@ -106,7 +106,7 @@ translateTerms <- function(terms, index = NULL, source = NULL, strict = FALSE,
     doFuzzy <- FALSE
     matchTerm <- NULL
     if(newTerm %in% index$origin){
-      matchTerm <- index$target[index$origin %in% newTerm]
+      matchTerm <- newTerm
     } else if(newTerm %in% index$target){
       matchTerm <- newTerm
     } else if(lowerTerm %in% index$target){
@@ -125,12 +125,12 @@ translateTerms <- function(terms, index = NULL, source = NULL, strict = FALSE,
 
     # first make sure that the term should not be ignored
     if(any(temp$target == "ignore")){
-      temp <- tibble(origin = theTerm, target = "ignore", source = NA_character_, ID = NA_integer_, notes = NA_character_)
+      app <- tibble(origin = newTerm, target = "ignore", source = NA_character_, ID = NA_integer_, notes = NA_character_)
     } else {
       # if there is no translation, carry out fuzzy matching to find best guess
       if(dim(temp)[1] > 0){
-        # if there is more than one translation, match by 'sourceName' and
-        # 'sourceVal'
+        # if there is more than one translation, try to match by 'sourceName'
+        # and 'sourceVal'
         if(length(unique(temp$target)) > 1){
 
           if(any(!is.na(temp$source)) & any(!is.na(temp$ID))){
@@ -139,9 +139,9 @@ translateTerms <- function(terms, index = NULL, source = NULL, strict = FALSE,
               filter(source == sourceName & ID == sourceVal)
           }
 
-          # if there is still more or less than one translation, let the user select
+          # if there is still more than one translation, let the user select
           if(length(unique(temp$target)) > 1){
-            message("the term '", terms[i], "' has several matches in '", indFile, ".csv'\n  -> please select the correct match (see '", inv_source, "' with '", sourceName, " = ", sourceVal, "'):")
+            message("\nthe term '", terms[i], "' has several matches in '", indFile, ".csv'\n  -> please select the correct match (see '", inv_source, "' with '", sourceName, " = ", sourceVal, "'):")
             for(k in seq_along(unique(temp$target))){
               message("    ", k, ": ", unique(temp$target)[k])
             }
