@@ -9,8 +9,14 @@ Authors@R: c(
            role = c("aut", "cre"), 
            comment = c(ORCID = "0000-0002-2958-0796")),
     person("Arne", "Rümmler", 
-           email = "arne.ruemmler@tu-dresden.de", 
-           role = c("aut")))
+           email = "arne.ruemmler@tu-dresden.de",
+           role = c("ctb")),
+    person("Felipe", "Melges",
+           role = c("ctb")),
+    person("Carsten", "Mayer",
+           email = "carsten.meyer@idiv.de", 
+           role = c("ctb"), 
+           comment = c(ORCID = "0000-0003-3927-5856")))
 URL: https://gitlab.com/luckinet/software/arealDB
 BugReports: https://gitlab.com/luckinet/software/arealDB/issues
 Depends:
@@ -29,12 +35,12 @@ Imports:
     tibble,
     tidyr,
     tidyselect,
-    rectifyr
-Remotes: gitlab::luckinet/software/rectifyr
+    tabshiftr
+Remotes: gitlab::luckinet/software/tabshiftr
 Suggests: 
     testthat,
     knitr,
     rmarkdown,
     covr
-RoxygenNote: 6.1.1
+RoxygenNote: 7.1.0
 VignetteBuilder: knitr
