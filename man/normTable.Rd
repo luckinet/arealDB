@@ -4,8 +4,14 @@
 \alias{normTable}
 \title{Normalise data tables}
 \usage{
-normTable(input = NULL, ..., source = "tabID", pattern = NULL,
-  update = FALSE, keepOrig = FALSE)
+normTable(
+  input = NULL,
+  ...,
+  source = "tabID",
+  pattern = NULL,
+  update = FALSE,
+  keepOrig = FALSE
+)
 }
 \arguments{
 \item{input}{[\code{character(1)}]\cr path of the file to normalise.}
@@ -70,6 +76,7 @@ normTable(input = ".../adb_tables/stage2/dataTable.csv",
 }
 }
 \seealso{
-Other normalisers: \code{\link{normGeometry}}
+Other normalisers: 
+\code{\link{normGeometry}()}
 }
 \concept{normalisers}

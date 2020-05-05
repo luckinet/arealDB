@@ -4,9 +4,15 @@
 \alias{regDataseries}
 \title{Register a new dataseries}
 \usage{
-regDataseries(name = NULL, description = NULL, homepage = NULL,
-  licence_link = NULL, licence_path = NULL, notes = NULL,
-  update = FALSE)
+regDataseries(
+  name = NULL,
+  description = NULL,
+  homepage = NULL,
+  licence_link = NULL,
+  licence_path = NULL,
+  notes = NULL,
+  update = FALSE
+)
 }
 \arguments{
 \item{name}{[\code{character(1)}]\cr the dataseries abbreviation.}

@@ -4,10 +4,21 @@
 \alias{regGeometry}
 \title{Register a new geometry entry}
 \usage{
-regGeometry(nation = NULL, subset = NULL, gSeries = NULL,
-  level = NULL, layer = NULL, nameCol = NULL, archive = NULL,
-  archiveLink = NULL, nextUpdate = NULL, updateFrequency = NULL,
-  notes = NULL, update = FALSE, overwrite = FALSE)
+regGeometry(
+  nation = NULL,
+  subset = NULL,
+  gSeries = NULL,
+  level = NULL,
+  layer = NULL,
+  nameCol = NULL,
+  archive = NULL,
+  archiveLink = NULL,
+  nextUpdate = NULL,
+  updateFrequency = NULL,
+  notes = NULL,
+  update = FALSE,
+  overwrite = FALSE
+)
 }
 \arguments{
 \item{nation}{[\code{character(1)}]\cr either the nation name or the column

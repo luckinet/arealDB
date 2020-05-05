@@ -4,8 +4,14 @@
 \alias{setVariables}
 \title{Set index and translation tables}
 \usage{
-setVariables(input = NULL, variable = NULL, type = "both",
-  pid = NULL, origin = NULL, target = NULL)
+setVariables(
+  input = NULL,
+  variable = NULL,
+  type = "both",
+  pid = NULL,
+  origin = NULL,
+  target = NULL
+)
 }
 \arguments{
 \item{input}{[\code{tibble(1)}]\cr a possibly already existing table based on

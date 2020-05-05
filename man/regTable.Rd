@@ -4,12 +4,25 @@
 \alias{regTable}
 \title{Register a new areal data table}
 \usage{
-regTable(nation = NULL, subset = NULL, dSeries = NULL,
-  gSeries = NULL, level = NULL, begin = NULL, end = NULL,
-  schema = NULL, archive = NULL, archiveLink = NULL,
-  nextUpdate = NULL, updateFrequency = NULL, metadataLink = NULL,
-  metadataPath = NULL, notes = NULL, update = FALSE,
-  overwrite = FALSE)
+regTable(
+  nation = NULL,
+  subset = NULL,
+  dSeries = NULL,
+  gSeries = NULL,
+  level = NULL,
+  begin = NULL,
+  end = NULL,
+  schema = NULL,
+  archive = NULL,
+  archiveLink = NULL,
+  nextUpdate = NULL,
+  updateFrequency = NULL,
+  metadataLink = NULL,
+  metadataPath = NULL,
+  notes = NULL,
+  update = FALSE,
+  overwrite = FALSE
+)
 }
 \arguments{
 \item{nation}{[\code{character(1)}]\cr the nation for which the areal data
