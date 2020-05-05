@@ -17,13 +17,13 @@ test_that("tables can be normalised (without matched variables)", {
                 description = "Database of Global Administrative Areas",
                 homepage = "https://gadm.org/index.html",
                 licence_link = "https://gadm.org/license.html",
-                licence_path = "C:/Users/arue/Projects/GeoKur/Luckinet/licenceFiles/licence.txt",
+                licence_path = "./Luckinet/licenceFiles/licence.txt",
                 update = TRUE)
   regDataseries(name = "maia",
                 description = "ministerio de agricultura ganaderia y pesca",
                 homepage = "http://datosestimaciones.magyp.gob.ar",
                 licence_link = "http://datosestimaciones.magyp.gob.ar/license.html",
-                licence_path = "C:/Users/arue/Projects/GeoKur/Luckinet/licenceFiles/licence2.txt",
+                licence_path = ".../Luckinet/licenceFiles/licence2.txt",
                 update = TRUE)
   file.copy(from = paste0(path, "/example_table.7z"),
             to = paste0(path, "/newDB/adb_tables/stage1/example_table.7z"))
@@ -107,7 +107,7 @@ test_that("tables can be normalised (without matched variables)", {
            nextUpdate = "2019-10-01",
            updateFrequency = "quarterly",
            metadataLink = "https://ec.europa.eu/eurostat/de/table/metadata",
-           metadataPath = "C:/Users/arue/Projects/GeoKur/Luckinet/census/table_meta.txt",
+           metadataPath = ".../Luckinet/census/table_meta.txt",
            update = TRUE)
 
   normGeometry(nation = "argentina", update = TRUE)
@@ -138,13 +138,13 @@ test_that("tables can be normalised (with matched variables)", {
                 description = "Database of Global Administrative Areas",
                 homepage = "https://gadm.org/index.html",
                 licence_link = "https://gadm.org/license.html",
-                licence_path = "C:/Users/arue/Projects/GeoKur/Luckinet/licenceFiles/licence.txt",
+                licence_path = ".../Luckinet/licenceFiles/licence.txt",
                 update = TRUE)
   regDataseries(name = "maia",
                 description = "ministerio de agricultura ganaderia y pesca",
                 homepage = "http://datosestimaciones.magyp.gob.ar",
                 licence_link = "http://datosestimaciones.magyp.gob.ar/license.html",
-                licence_path = "C:/Users/arue/Projects/GeoKur/Luckinet/licenceFiles/licence2.txt",
+                licence_path = ".../Luckinet/licenceFiles/licence2.txt",
                 update = TRUE)
   file.copy(from = paste0(path, "/example_table.7z"),
             to = paste0(path, "/newDB/adb_tables/stage1/example_table.7z"))
@@ -228,7 +228,7 @@ test_that("tables can be normalised (with matched variables)", {
            nextUpdate = "2019-10-01",
            updateFrequency = "quarterly",
            metadataLink = "https://ec.europa.eu/eurostat/de/table/metadata",
-           metadataPath = "C:/Users/arue/Projects/GeoKur/Luckinet/census/table_meta.txt",
+           metadataPath = ".../Luckinet/census/table_meta.txt",
            update = TRUE)
 
   normGeometry(nation = "argentina", update = TRUE)

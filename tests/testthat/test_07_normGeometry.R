@@ -14,13 +14,13 @@ test_that("geometries can be normalised", {
                 description = "Database of Global Administrative Areas",
                 homepage = "https://gadm.org/index.html",
                 licence_link = "https://gadm.org/license.html",
-                licence_path = "C:/Users/arue/Projects/GeoKur/Luckinet/licenceFiles/licence.txt",
+                licence_path = ".../Luckinet/licenceFiles/licence.txt", # this is not checked in this version
                 update = TRUE)
   regDataseries(name = "maia",
                 description = "ministerio de agricultura ganaderia y pesca",
                 homepage = "http://datosestimaciones.magyp.gob.ar",
                 licence_link = "http://datosestimaciones.magyp.gob.ar/license.html",
-                licence_path = "C:/Users/arue/Projects/GeoKur/Luckinet/licenceFiles/licence2.txt",
+                licence_path = ".../Luckinet/licenceFiles/licence2.txt",
                 update = TRUE)
   file.copy(from = paste0(path, "/example_geom.7z"),
             to = paste0(path, "/newDB/adb_geometries/stage1/example_geom.7z"))
