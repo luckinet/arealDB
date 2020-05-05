@@ -94,7 +94,7 @@ regTable <- function(nation = NULL, subset = NULL, dSeries = NULL, gSeries = NUL
   inv_dataseries <- read_csv(paste0(intPaths, "/inv_dataseries.csv"), col_types = "icccccc")
   inv_geometries <- read_csv(paste0(intPaths, "/inv_geometries.csv"), col_types = "iiiccccccDDcc")
 
-   if(dim(inv_dataseries)[1] == 0){
+  if(dim(inv_dataseries)[1] == 0){
     stop("'inv_dataseries.csv' does not contain any entries!")
   } else if(dim(inv_geometries)[1] == 0){
     stop("'inv_geometries.csv' does not contain any entries!")
@@ -265,7 +265,7 @@ regTable <- function(nation = NULL, subset = NULL, dSeries = NULL, gSeries = NUL
     assertChoice(x = nations, choices = countries$nation)
     theNation <- countries %>%
       as_tibble() %>%
-      filter(nation == nations) %>%
+      filter(unit == nations) %>%
       distinct(iso_a3) %>%
       tolower()
   }

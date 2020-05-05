@@ -172,7 +172,7 @@ normTable <- function(input = NULL, ..., source = "tabID", pattern = NULL,
       if(length(fields[1]) == 0){
         stop("  ! the data table '", file_name, "' seems to include several nations but no column for nations (al1).\n Is the schema description correct?")
       } else {
-        temp$al1 <- countries$nation[countries$iso_a3 == toupper(fields[1])]
+        temp$al1 <- countries$unit[countries$iso_a3 == toupper(fields[1])]
         temp <- temp %>% select(al1, everything())
       }
     }
