@@ -24,7 +24,7 @@
 #' @importFrom sf st_geometry<- read_sf
 #' @importFrom stats setNames
 #' @importFrom tibble tibble
-#' @importFrom tidyselect matches everything contains
+#' @importFrom tidyselect matches everything contains all_of
 #' @importFrom utils tail txtProgressBar setTxtProgressBar
 #' @export
 
@@ -83,7 +83,7 @@ matchUnits <- function(input = NULL, source = NULL, keepOrig = FALSE){
     # this asserts that only administrative units nested in their parents are
     # found
     allInputUnits <- inputSbst %>%
-      select(adminLvls) %>%
+      select(all_of(adminLvls)) %>%
       unique()
 
     # load the nation geometries ...

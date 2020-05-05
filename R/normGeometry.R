@@ -4,8 +4,8 @@
 #' @param input [\code{character(1)}]\cr path of the file to normalise.
 #' @param ... [\code{character(.)}]\cr a subset of administrative units as given
 #'   by \code{nation}, \code{continent}, \code{region}, \code{subregion} or
-#'   \code{un_member = TRUE/FALSE}. Valid values are the column names of the
-#'   object \code{\link{countries}}.
+#'   \code{un_member = TRUE/FALSE}. Valid selection criteria and their values
+#'   are in the object \code{\link{countries}}.
 #' @param thresh [\code{integerish(1)}]\cr the deviation of percentage of
 #'   overlap above which to consider two territorial units "different".
 #' @param outType [\code{character(1)}]\cr the output file-type, see
@@ -16,35 +16,35 @@
 #'   dataset names which match the regular expression will be returned.
 #' @param update [\code{logical(1)}]\cr whether or not the physical files should
 #'   be updated (\code{TRUE}) or the function should merely return the geometry
-#'   inventory of the handled files (\code{FALSE} default). This is helpful to
+#'   inventory of the handled files (\code{FALSE}, default). This is helpful to
 #'   check whether the metadata specification and the provided file(s) are
 #'   properly specified.
 #' @details To normalise geometries, this function proceeds as follows:
 #'   \enumerate{ \item Read in \code{input} and extract initial metadata from
-#'   the file name. \item Loop through every nation that shall be processed and
-#'   carry out the following steps: \itemize{ \item In case the geometries are
-#'   provided as a list of simple feature POLYGONS, they are dissolved into a
-#'   single MULTIPOLYGON per nation. \item In case the nation to which a
-#'   geometry belongs has not yet been created at stage three, the following
-#'   steps are carried out: \enumerate{ \item Check whether the recent dataset
-#'   is GADM, to build the initial administrative hiearchy from GADM geometries,
-#'   and stop if this is not the case. \item Extract the full hierarchy of all
-#'   territorial units that are part of the geometry. \item Reconstruct ahID
-#'   from the intermediate spatial objects and from the metadata. } \item In
-#'   case the nation to which the geometry belongs has already been created, the
-#'   following steps are carried out: \enumerate{ \item Check whether the new
-#'   geometries have the same coordinate reference system as the already
-#'   existing database and reproject if this is not the case. \item Check
-#'   whether all new geometries are already exactly matched spatially and stop
-#'   if that is the case. \item Check whether the new geometries are all within
-#'   the already defined parents, and save those that are not as a new geometry,
-#'   that needs to be treated seperately. \item Calculate spatial overlap and
-#'   distinguish the geometries into those that overlap with more and with less
-#'   than \code{thresh}. \item For all units that did match, copy ahID from the
-#'   geometries they overlap with. \item For all units that did not match,
-#'   rebuild metadata and a new ahID. } \item If update = TRUE, store the
-#'   processed geometry at stage three.} \item Move the geometry to the folder
-#'   '/processed', if it is fully processed.}
+#'   the file name. \item Loop through every nation potentially included in the
+#'   file that shall be processed and carry out the following steps: \itemize{
+#'   \item In case the geometries are provided as a list of simple feature
+#'   POLYGONS, they are dissolved into a single MULTIPOLYGON per nation. \item
+#'   In case the nation to which a geometry belongs has not yet been created at
+#'   stage three, the following steps are carried out: \enumerate{ \item Check
+#'   whether the recent dataset is GADM, to build the initial administrative
+#'   hiearchy from GADM geometries, and stop if this is not the case. \item
+#'   Extract the full hierarchy of all territorial units that are part of the
+#'   geometry. \item Reconstruct ahID from the intermediate spatial objects and
+#'   from the metadata. } \item In case the nation to which the geometry belongs
+#'   has already been created, the following steps are carried out: \enumerate{
+#'   \item Check whether the new geometries have the same coordinate reference
+#'   system as the already existing database and reproject if this is not the
+#'   case. \item Check whether all new geometries are already exactly matched
+#'   spatially and stop if that is the case. \item Check whether the new
+#'   geometries are all within the already defined parents, and save those that
+#'   are not as a new geometry, that needs to be treated seperately. \item
+#'   Calculate spatial overlap and distinguish the geometries into those that
+#'   overlap with more and with less than \code{thresh}. \item For all units
+#'   that did match, copy ahID from the geometries they overlap with. \item For
+#'   all units that did not match, rebuild metadata and a new ahID. } \item If
+#'   update = TRUE, store the processed geometry at stage three.} \item Move the
+#'   geometry to the folder '/processed', if it is fully processed.}
 #' @family normalisers
 #' @return This function harmonises and integrates so far unprocessed geometries
 #'   at stage two into stage three of the geospatial database.
@@ -76,7 +76,7 @@
 #' @importFrom stringr str_split
 #' @importFrom tibble as_tibble
 #' @importFrom tidyr unite
-#' @importFrom tidyselect starts_with
+#' @importFrom tidyselect starts_with all_of
 #' @export
 
 normGeometry <- function(input = NULL, ..., thresh = 10, outType = "gpkg",
@@ -188,8 +188,8 @@ normGeometry <- function(input = NULL, ..., thresh = 10, outType = "gpkg",
     nations <- nations[!is.na(nations)]
 
     # only process nations that are part of 'countries'
-    theNations <- theNations[nations %in% countries$nation]
-    nations <- nations[nations %in% countries$nation]
+    theNations <- theNations[nations %in% countries$unit]
+    nations <- nations[nations %in% countries$unit]
 
     # potentially subset nation values
     if(length(subsets) > 0){
@@ -229,14 +229,14 @@ normGeometry <- function(input = NULL, ..., thresh = 10, outType = "gpkg",
         start_nation <- Sys.time()
 
         tempNation <- nations[j]
-        nationID <- as.integer(countries$ahID[countries$nation == tempNation])
+        nationID <- as.integer(countries$ahID[countries$unit == tempNation])
         message(paste0(" -> processing '", tempNation, "' ..."))
 
         # create a geom specifically for the recent nation
         if(severalNations){
           sourceGeom <- newGeom %>%
             filter_at(vars(nationCol), all_vars(. %in% theNations[j])) %>%
-            select(unitCols)
+            select(all_of(unitCols))
           assertChoice(x = natCol, choices = names(sourceGeom), .var.name = "names(nation_column)")
         } else{
           sourceGeom <- newGeom %>%
@@ -736,7 +736,7 @@ normGeometry <- function(input = NULL, ..., thresh = 10, outType = "gpkg",
                    dsn = paste0(intPaths, "/adb_geometries/stage3/", tempNation, paste0(".", outType)),
                    layer = paste0("level_", theLevel),
                    delete_layer = TRUE,
-                   update = TRUE,
+                   append = TRUE,
                    quiet = TRUE)
 
           # save_time <- Sys.time()
