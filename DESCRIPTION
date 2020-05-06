@@ -1,11 +1,11 @@
 Package: arealDB
 Type: Package
-Title: Harmonise and integrate heterogeneous areal data
+Title: Harmonise and Integrate Heterogeneous Areal Data
 Description: Helps the user to integrate a harmonised databases of areal data.
-Version: 0.3.1
+Version: 0.3.2
 Authors@R: c(
     person("Steffen", "Ehrmann", 
-           email = "steffen.ehrmann@idiv.de", 
+           email = "steffen@funroll-loops.de", 
            role = c("aut", "cre"), 
            comment = c(ORCID = "0000-0002-2958-0796")),
     person("Arne", "Rümmler", 
@@ -24,6 +24,7 @@ URL: https://gitlab.com/luckinet/software/arealDB
 BugReports: https://gitlab.com/luckinet/software/arealDB/issues
 Depends:
     R (>= 2.10)
+Language: en-gb
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
@@ -39,7 +40,6 @@ Imports:
     tidyr,
     tidyselect,
     tabshiftr
-Remotes: gitlab::luckinet/software/tabshiftr
 Suggests: 
     testthat,
     knitr,
