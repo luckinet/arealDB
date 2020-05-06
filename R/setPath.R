@@ -6,7 +6,7 @@
 #'   or shall contain an areal database.
 #' @details This is the first function that is run in a project, as it initiates
 #'   the areal database by creating the default sub-directories and initial
-#'   inventory tables. When a database has already been set up, this funciton is
+#'   inventory tables. When a database has already been set up, this function is
 #'   used to register that path in the options of the current R session.
 #' @return Enters the root path as 'adb_path' into the options.
 #' @importFrom checkmate testDirectory testFileExists

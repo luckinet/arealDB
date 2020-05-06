@@ -34,7 +34,7 @@ only one municipality) or of a target variable.}
 
 \item{dSeries}{[\code{character(1)}]\cr the dataseries of the areal data.}
 
-\item{gSeries}{[\code{character(1)}]\cr optinally, the dataseries of the
+\item{gSeries}{[\code{character(1)}]\cr optionally, the dataseries of the
 geometries, if the geometry dataseries deviates from the dataseries of the
 areal data.}
 
@@ -56,7 +56,7 @@ boundaries emerge.}
 \item{archiveLink}{[\code{character(1)}] download-link of the archive.}
 
 \item{nextUpdate}{[\code{character(1)}]\cr when does the geometry dataset
-gets updated the next time (format resricted to: YYYY-MM-DD).}
+gets updated the next time (format restricted to: YYYY-MM-DD).}
 
 \item{updateFrequency}{[\code{character(1)}]\cr value describing the
 frequency in which the dataset is updated, according to the
@@ -67,7 +67,7 @@ frequency in which the dataset is updated, according to the
 'semimonthly', 'biennially'.}
 
 \item{metadataLink}{[\code{character(1)}]\cr if there is already metadata
-existing: link to the metadataset .}
+existing: link to the meta dataset.}
 
 \item{metadataPath}{[\code{character(1)}]\cr if a existing metadataset was
 downloaded along the data: the path where it is stored locally.}

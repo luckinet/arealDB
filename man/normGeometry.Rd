@@ -55,7 +55,7 @@ To normalise geometries, this function proceeds as follows:
   In case the nation to which a geometry belongs has not yet been created at
   stage three, the following steps are carried out: \enumerate{ \item Check
   whether the recent dataset is GADM, to build the initial administrative
-  hiearchy from GADM geometries, and stop if this is not the case. \item
+  hierarchy from GADM geometries, and stop if this is not the case. \item
   Extract the full hierarchy of all territorial units that are part of the
   geometry. \item Reconstruct ahID from the intermediate spatial objects and
   from the metadata. } \item In case the nation to which the geometry belongs
@@ -65,7 +65,7 @@ To normalise geometries, this function proceeds as follows:
   case. \item Check whether all new geometries are already exactly matched
   spatially and stop if that is the case. \item Check whether the new
   geometries are all within the already defined parents, and save those that
-  are not as a new geometry, that needs to be treated seperately. \item
+  are not as a new geometry, that needs to be treated separately. \item
   Calculate spatial overlap and distinguish the geometries into those that
   overlap with more and with less than \code{thresh}. \item For all units
   that did match, copy ahID from the geometries they overlap with. \item For

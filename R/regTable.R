@@ -7,7 +7,7 @@
 #'   subset the file contains. This could be a subset of territorial units (e.g.
 #'   only one municipality) or of a target variable.
 #' @param dSeries [\code{character(1)}]\cr the dataseries of the areal data.
-#' @param gSeries [\code{character(1)}]\cr optinally, the dataseries of the
+#' @param gSeries [\code{character(1)}]\cr optionally, the dataseries of the
 #'   geometries, if the geometry dataseries deviates from the dataseries of the
 #'   areal data.
 #' @param level [\code{integerish(1)}]\cr the administrative level at which the
@@ -22,7 +22,7 @@
 #'   boundaries emerge.
 #' @param archiveLink [\code{character(1)}] download-link of the archive.
 #' @param nextUpdate [\code{character(1)}]\cr when does the geometry dataset
-#'   gets updated the next time (format resricted to: YYYY-MM-DD).
+#'   gets updated the next time (format restricted to: YYYY-MM-DD).
 #' @param updateFrequency [\code{character(1)}]\cr value describing the
 #'   frequency in which the dataset is updated, according to the
 #'   \href{https://geo-ide.noaa.gov/wiki/index.php?title=ISO_19115_and_19115-2_CodeList_Dictionaries#MD_MaintenanceFrequencyCode}{ISO
@@ -31,7 +31,7 @@
 #'   'annually', 'asNeeded', 'irregular', 'notPlanned', 'unknown', 'periodic',
 #'   'semimonthly', 'biennially'.
 #' @param metadataLink [\code{character(1)}]\cr if there is already metadata
-#'   existing: link to the metadataset .
+#'   existing: link to the meta dataset.
 #' @param metadataPath [\code{character(1)}]\cr if a existing metadataset was
 #'   downloaded along the data: the path where it is stored locally.
 #' @param notes [\code{character(1)}]\cr optional notes.

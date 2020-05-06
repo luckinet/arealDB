@@ -32,7 +32,7 @@ as \code{paste0(str_sub(variable, 1, 3), "ID")}}
 terms that shall be translated.}
 
 \item{target}{[\code{character(1)}]\cr column in \code{input} that contains
-the standadrised terms.}
+the standardised terms.}
 }
 \value{
 Writes a table to the project root directory with name paste0(type,
@@ -49,7 +49,7 @@ This is the second function that is run in a project, as it creates
   'time' that shall be included in the areal database, both index and
   translation table must be created. \itemize{ \item An index table relates
   an ID (given in \code{pid}) to the variable terms (given in \code{target})
-  and potentially to ancilliary information. Such tables should be compiled
+  and potentially to ancillary information. Such tables should be compiled
   before a project is started and should contain a clear set of values per
   variable (which will be used as standard ontology). \item A translation
   table relates terms in foreign languages (given in \code{origin}) to terms
