@@ -18,13 +18,11 @@ test_that("units are matched", {
                 description = "Database of Global Administrative Areas",
                 homepage = "https://gadm.org/index.html",
                 licence_link = "https://gadm.org/license.html",
-                licence_path = ".../Luckinet/licenceFiles/licence.txt",  # this is not checked in this version
                 update = TRUE)
   regDataseries(name = "maia",
                 description = "ministerio de agricultura ganaderia y pesca",
                 homepage = "http://datosestimaciones.magyp.gob.ar",
                 licence_link = "http://datosestimaciones.magyp.gob.ar/license.html",
-                licence_path = ".../Luckinet/licenceFiles/licence2.txt",
                 update = TRUE)
   file.copy(from = paste0(path, "/example_table.7z"),
             to = paste0(path, "/newDB/adb_tables/stage1/example_table.7z"))
@@ -130,7 +128,6 @@ test_that("units are matched", {
            nextUpdate = "2019-10-01",
            updateFrequency = "quarterly",
            metadataLink = "https://ec.europa.eu/eurostat/de/table1/metadata",
-           metadataPath = ".../Luckinet/census/table1_meta.txt",   # this is not checked in this version
            update = TRUE)
   regTable(nation = "Argentina",
            subset = "soyMaize",
@@ -143,7 +140,6 @@ test_that("units are matched", {
            nextUpdate = "2019-10-01",
            updateFrequency = "quarterly",
            metadataLink = "https://ec.europa.eu/eurostat/de/table2/metadata",
-           metadataPath = ".../Luckinet/census/table2_meta.txt",
            update = TRUE)
 
   # normalise geometries

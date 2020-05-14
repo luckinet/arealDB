@@ -11,7 +11,7 @@ test_that("a dataseries inventory entry can be produced", {
                           description = "Database of Global Administrative Areas",
                           homepage = "https://gadm.org/index.html",
                           licence_link = "https://gadm.org/license.html",
-                          licence_path = ".../Luckinet/licenceFiles/licence.txt",
+                          licence_path = ".../Luckinet/licenceFiles/licence.txt", # this requires an example path, because otherwise the output of that function is a question that asks for this path.
                           update = TRUE)
 
   expect_tibble(x = output, nrows = 1, ncols = 7, col.names = "strict")

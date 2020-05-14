@@ -13,13 +13,11 @@ test_that("a table inventory entry is produced", {
                 description = "Database of Global Administrative Areas",
                 homepage = "https://gadm.org/index.html",
                 licence_link = "https://gadm.org/license.html",
-                licence_path = ".../Luckinet/licenceFiles/licence.txt",  # this is not checked in this version
                 update = TRUE)
   regDataseries(name = "maia",
                 description = "ministerio de agricultura ganaderia y pesca",
                 homepage = "http://datosestimaciones.magyp.gob.ar",
                 licence_link = "http://datosestimaciones.magyp.gob.ar/license.html",
-                licence_path = ".../Luckinet/licenceFiles/licence2.txt",
                 update = TRUE)
   file.copy(from = paste0(path, "/example_table.7z"),
             to = paste0(path, "/newDB/adb_tables/stage1/example_table.7z"))
@@ -72,7 +70,6 @@ test_that("a table inventory entry is produced", {
                      nextUpdate = "2019-10-01",
                      updateFrequency = "quarterly",
                      metadataLink = "https://ec.europa.eu/eurostat/de/table1/metadata",
-                     metadataPath = "C:/Users/arue/Projects/GeoKur/Luckinet/census/table1_meta.txt",
                      update = TRUE)
 
   expect_tibble(x = output, nrows = 1, ncols = 13, col.names = "strict")
@@ -94,13 +91,11 @@ test_that("function asks for details, if not provided", {
                 description = "Database of Global Administrative Areas",
                 homepage = "https://gadm.org/index.html",
                 licence_link = "https://gadm.org/license.html",
-                licence_path = ".../Luckinet/licenceFiles/licence.txt",
                 update = TRUE)
   regDataseries(name = "maia",
                 description = "ministerio de agricultura ganaderia y pesca",
                 homepage = "http://datosestimaciones.magyp.gob.ar",
                 licence_link = "http://datosestimaciones.magyp.gob.ar/licence.html",
-                licence_path = ".../Luckinet/licenceFiles/licence2.txt",
                 update = TRUE)
   file.copy(from = paste0(path, "/example_table.7z"),
             to = paste0(path, "/newDB/adb_tables/stage1/example_table.7z"))
@@ -166,7 +161,6 @@ test_that("Error if arguments have wrong value", {
                 description = "Database of Global Administrative Areas",
                 homepage = "https://gadm.org/index.html",
                 licence_link = "https://gadm.org/license.html",
-                licence_path = "C:/Users/arue/Projects/GeoKur/Luckinet/licenceFiles/licence.txt",
                 update = TRUE)
   file.copy(from = paste0(path, "/example_table.7z"),
             to = paste0(path, "/newDB/adb_tables/stage1/example_table.7z"))
