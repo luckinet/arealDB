@@ -43,4 +43,4 @@ devtools::install_github("EhrmannS/arealDB")
 
 ## Examples
 
-
+For examples, please refer currently to the [appendix](https://arxiv.org/format/1909.06610) of the preprint.
