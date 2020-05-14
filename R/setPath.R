@@ -9,6 +9,12 @@
 #'   inventory tables. When a database has already been set up, this function is
 #'   used to register that path in the options of the current R session.
 #' @return Enters the root path as 'adb_path' into the options.
+#' @examples
+#' \donttest{
+#' myPath <- "path/to/my/root/directory"
+#'
+#' setPath(root = paste0(myPath, "newDB"))
+#' }
 #' @importFrom checkmate testDirectory testFileExists
 #' @importFrom readr write_csv
 #' @export
@@ -27,7 +33,7 @@ setPath <- function(root = NULL){
   # test whether the required directories exist and create them if they don't exist
   if(!testDirectory(x = root, access = "rw")){
     dir.create(file.path(root))
-    message("I have created a new project directory.\n  -> please run 'setVariables()' to create optional indices and translation tables.")
+    message("I have created a new project directory.\n  -> please run 'setVariables()' to create a translation table for territories.")
   }
 
   if(!testDirectory(x = file.path(root, "adb_tables"), access = "rw")){

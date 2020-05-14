@@ -7,23 +7,22 @@
 #'   description" of the dataseries.
 #' @param homepage [\code{character(1)}]\cr the homepage of the data provider
 #'   where the dataseries or additional information can be found.
-#' @param licence_link [\code{character(1)}]\cr link to the licence or the webpage
-#'   from which the licence was copied.
-#' @param licence_path [\code{character(1)}]\cr path to the local file in with the
-#'   licence text is stored.
+#' @param licence_link [\code{character(1)}]\cr link to the licence or the
+#'   webpage from which the licence was copied.
+#' @param licence_path [\code{character(1)}]\cr path to the local file in with
+#'   the licence text is stored.
 #' @param notes [\code{character(1)}]\cr optional notes.
 #' @param update [\code{logical(1)}]\cr whether or not the file
 #'   'inv_dataseries.csv' should be updated.
-#' @return Returns the entry that is appended to 'inv_dataseries.csv' in case
-#'   \code{update = TRUE}.
+#' @return Returns a tibble of the new entry that is appended to
+#'   'inv_dataseries.csv' in case \code{update = TRUE}.
 #' @examples
-#' \dontrun{
-#'
+#' \donttest{
 #' regDataseries(name = "gadm",
 #'               description = "Database of Global Administrative Areas",
 #'               homepage = "https://gadm.org/index.html",
 #'               licence_link = "https://gadm.org/license.html",
-#'               licence_path = "C:/Users/arue/Projects/GeoKur/Luckinet/licenceFiles/licence.txt",
+#'               licence_path = ".../newDB/adb_tables/meta/licence.txt",
 #'               update = TRUE)
 #'
 #' }

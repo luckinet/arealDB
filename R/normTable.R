@@ -1,7 +1,9 @@
 #' Normalise data tables
 #'
 #' Harmonise and integrate data tables into standardised format
-#' @param input [\code{character(1)}]\cr path of the file to normalise.
+#' @param input [\code{character(1)}]\cr path of the file to normalise. If this
+#'   is left empty, all files at stage two as subset by \code{pattern} are
+#'   chosen
 #' @param ... [\code{list(.)}]\cr matching lists that capture the variables by
 #'   which to match and the new column names containing the resulting ID; see
 #'   Details.
@@ -36,7 +38,7 @@
 #'   \item Read in \code{input} and extract initial metadata from the file name.
 #'   \item Employ the function \code{tabshiftr::\link{reorganise}} to reshape
 #'   \code{input} according to the respective schema description (see
-#'   \code{tabshiftr::\link{schema_default}}). \item Match the territorial units
+#'   \code{tabshiftr::\link{makeSchema}}). \item Match the territorial units
 #'   in \code{input} via the \code{\link{matchUnits}}. \item If \code{...} has
 #'   been provided with variables to match, those are matched via
 #'   \code{\link{matchVars}}. \item Harmonise territorial unit names. \item If
@@ -45,8 +47,7 @@
 #' @return This function harmonises and integrates so far unprocessed data
 #'   tables at stage two into stage three of the geospatial database.
 #' @examples
-#' \dontrun{
-#'
+#' \donttest{
 #' normTable(input = ".../adb_tables/stage2/dataTable.csv",
 #'           faoID = list(commodities = "simpleName"),
 #'           update = TRUE)
@@ -78,6 +79,7 @@ normTable <- function(input = NULL, ..., source = "tabID", pattern = NULL,
   inv_tables <- read_csv(paste0(intPaths, "/inv_tables.csv"), col_types = "iiiccccDccccc")
   inv_geometries <- read_csv(paste0(intPaths, "/inv_geometries.csv"), col_types = "iiiccccccDDcc")
   vars <- exprs(..., .named = TRUE)
+
   # make spatial subset
   spatSub <- c("nation", "un_member", "continent", "region", "subregion")
   if(any(names(vars) %in% spatSub)){
@@ -225,7 +227,7 @@ normTable <- function(input = NULL, ..., source = "tabID", pattern = NULL,
         pull(new)
       message()
       temp <- temp %>%
-        matchVars(source = tabID, faoID = list(commodities = "target"), keepOrig = keepOrig)
+        matchVars(source = tabID, ..., keepOrig = keepOrig)
     }
 
     # in case the user wants to update, update the data table
@@ -238,7 +240,7 @@ normTable <- function(input = NULL, ..., source = "tabID", pattern = NULL,
 
       temp <- temp %>%
         select(tabID, geoID, ahID, everything()) %>%
-        mutate(year = as.numeric(year))
+        mutate(year = as.character(year))
 
       for(j in seq_along(theNations)){
 
@@ -251,7 +253,7 @@ normTable <- function(input = NULL, ..., source = "tabID", pattern = NULL,
         # append output to previous file
         if(file.exists(paste0(intPaths, "/adb_tables/stage3/", theNations[j], ".csv"))){
           oldData <- read_csv(file = paste0(intPaths, "/adb_tables/stage3/", theNations[j], ".csv"),
-                              col_types = cols(id = "i", tabID = "i", geoID = "i", ahID = "c", year = "i", .default = "d"))
+                              col_types = cols(id = "i", tabID = "i", geoID = "i", ahID = "c", year = "c", .default = "d"))
 
           out <- tempOut %>%
             bind_rows(oldData, .) %>%
@@ -279,7 +281,7 @@ normTable <- function(input = NULL, ..., source = "tabID", pattern = NULL,
       }
 
 
-    } else{
+    } else {
       out <- temp %>%
         select(-starts_with("al"))
       return(out)
@@ -289,7 +291,7 @@ normTable <- function(input = NULL, ..., source = "tabID", pattern = NULL,
       if(!length(input) == i){
         message("\n--- ", i+1, " ", rep("-", times= getOption("width")-(nchar(i)+7)))
       } else {
-        message("done!")
+        message("\ndone!")
       }
     }
   }

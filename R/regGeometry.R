@@ -7,7 +7,8 @@
 #' @param subset [\code{character(1)}]\cr optional argument to specify which
 #'   subset the file contains. This could be a subset of territorial units (e.g.
 #'   only one municipality) or of a target variable.
-#' @param gSeries [\code{character(1)}]\cr the name of the geometry dataseries.
+#' @param gSeries [\code{character(1)}]\cr the name of the geometry dataseries
+#'   (see \code{\link{regDataseries}}).
 #' @param level [\code{integerish(1)}]\cr the administrative level at which the
 #'   geometry is recorded.
 #' @param layer [\code{character}]\cr the name of the file's layer from which
@@ -21,20 +22,19 @@
 #' @param nextUpdate [\code{character(1)}]\cr value describing the next
 #'   anticipated update of this dataset (in YYYY-MM-DD format).
 #' @param updateFrequency [\code{character(1)}]\cr value describing the
-#'   frequency in which the dataset is updated, according to the
-#'   \href{https://geo-ide.noaa.gov/wiki/index.php?title=ISO_19115_and_19115-2_CodeList_Dictionaries#MD_MaintenanceFrequencyCode}{ISO
-#'    19115 Codelist, MD_MaintenanceFrequencyCode}. Possible values are:
-#'   'continual', 'daily', 'weekly', 'fortnightly', 'quarterly', 'biannually',
-#'   'annually', 'asNeeded', 'irregular', 'notPlanned', 'unknown', 'periodic',
+#'   frequency with which the dataset is updated, according to the ISO 19115
+#'   Codelist, MD_MaintenanceFrequencyCode. Possible values are: 'continual',
+#'   'daily', 'weekly', 'fortnightly', 'quarterly', 'biannually', 'annually',
+#'   'asNeeded', 'irregular', 'notPlanned', 'unknown', 'periodic',
 #'   'semimonthly', 'biennially'.
 #' @param notes [\code{character(1)}]\cr optional notes that are assigned to all
 #'   features of this geometry.
 #' @param update [\code{logical(1)}]\cr whether or not the file
-#'   'inv_geometries.csv' should be updated (\code{TRUE}).
+#'   'inv_geometries.csv' should be updated.
 #' @param overwrite [\code{logical(1)}]\cr whether or not the geometry to
 #'   register shall overwrite a potentially already existing older version.
-#' @details When processing geometries to which areal data shall be linked
-#'   linked, carry out the following steps: \enumerate{ \item Determine the
+#' @details When processing geometries to which areal data shall be linked,
+#'   carry out the following steps: \enumerate{ \item Determine the
 #'   \code{nation}, a \code{subset} (if applicable), the dataseries of the
 #'   geometry and the administrative \code{level}, and provide them as arguments
 #'   to this function. \item Run the function. \item Export the shapefile with
@@ -42,10 +42,10 @@
 #'   name: What is provided as message by this function \item CRS: EPSG:4326 -
 #'   WGS 84 \item make sure that 'all fields are exported'} \item Confirm that
 #'   you have saved the file.}
-#' @return Returns the entry that is appended to 'inv_geometries.csv' in case
-#'   \code{update = TRUE}.
+#' @return Returns a tibble of the entry that is appended to
+#'   'inv_geometries.csv' in case \code{update = TRUE}.
 #' @examples
-#' \dontrun{
+#' \donttest{
 #'
 #' # The GADM dataset comes as *.zip archive
 #' regGeometry(nation = "NAME_0",
