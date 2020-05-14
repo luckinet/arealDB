@@ -10,7 +10,8 @@ normTable(
   source = "tabID",
   pattern = NULL,
   update = FALSE,
-  keepOrig = FALSE
+  keepOrig = FALSE,
+  verbose = FALSE
 )
 }
 \arguments{
@@ -35,6 +36,9 @@ metadata specification and the provided file(s) are properly specified.}
 \item{keepOrig}{[\code{logical(1)}]\cr to keep the original units and
 variable names in the output (\code{TRUE}) or to remove them (\code{FALSE},
 default). Useful for debugging.}
+
+\item{verbose}{[\code{logical(1)}]\cr be verbose about what is happening
+(default \code{FALSE}).}
 }
 \value{
 This function harmonises and integrates so far unprocessed data

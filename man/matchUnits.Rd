@@ -4,7 +4,7 @@
 \alias{matchUnits}
 \title{Determine the administrative hierarchy ID}
 \usage{
-matchUnits(input = NULL, source = NULL, keepOrig = FALSE)
+matchUnits(input = NULL, source = NULL, keepOrig = FALSE, verbose = FALSE)
 }
 \arguments{
 \item{input}{[\code{data.frame(1)}]\cr table in which to match administrative
@@ -16,6 +16,9 @@ which the terms have been taken.}
 \item{keepOrig}{[\code{logical(1)}]\cr to keep the original units in the
 output (\code{TRUE}) or to remove them (\code{FALSE}, default). Useful for
 debugging.}
+
+\item{verbose}{[\code{logical(1)}]\cr be verbose about what is happening
+(default \code{FALSE}).}
 }
 \value{
 The table provided in \code{input}, where the given columns are

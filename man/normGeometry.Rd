@@ -10,7 +10,8 @@ normGeometry(
   thresh = 10,
   outType = "gpkg",
   pattern = NULL,
-  update = FALSE
+  update = FALSE,
+  verbose = FALSE
 )
 }
 \arguments{
@@ -37,6 +38,9 @@ be updated (\code{TRUE}) or the function should merely return the geometry
 inventory of the handled files (\code{FALSE}, default). This is helpful to
 check whether the metadata specification and the provided file(s) are
 properly specified.}
+
+\item{verbose}{[\code{logical(1)}]\cr be verbose about what is happening
+(default \code{FALSE}).}
 }
 \value{
 This function harmonises and integrates so far unprocessed geometries
