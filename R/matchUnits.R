@@ -28,9 +28,9 @@
 #' @importFrom tibble tibble
 #' @importFrom tidyselect matches everything contains all_of
 #' @importFrom utils tail txtProgressBar setTxtProgressBar
-#' @export
 
-matchUnits <- function(input = NULL, source = NULL, keepOrig = FALSE, verbose = FALSE){
+matchUnits <- function(input = NULL, source = NULL, keepOrig = FALSE,
+                       verbose = FALSE){
 
   # set internal objects
   intPaths <- paste0(getOption(x = "adb_path"), "/adb_geometries/")
@@ -184,24 +184,26 @@ matchUnits <- function(input = NULL, source = NULL, keepOrig = FALSE, verbose = 
           select(!!paste0("al", j, "_name") := name, idUnit = paste0("al", j, "_id"), idParent = paste0("al", j-1, "_id")) %>%
           unique()
 
-        tempUnitsIDs <- tempUnits %>%
-          left_join(parentID) %>%
-          mutate(idParent = id) %>%
-          select(-id) %>%
-          left_join(unitID) %>%
-          select(!!paste0("al", j-1, "_name"),
-                 !!paste0("al", j-1, "_id") := idParent,
-                 !!paste0("al", j-1, "_alt") := parent,
-                 !!paste0("al", j, "_name"),
-                 !!paste0("al", j, "_id") := idUnit,
-                 !!paste0("al", j, "_alt") := unit
-                 )
+        tempUnitsIDs <- suppressMessages(
+          tempUnits %>%
+            left_join(parentID) %>%
+            mutate(idParent = id) %>%
+            select(-id) %>%
+            left_join(unitID) %>%
+            select(!!paste0("al", j-1, "_name"),
+                   !!paste0("al", j-1, "_id") := idParent,
+                   !!paste0("al", j-1, "_alt") := parent,
+                   !!paste0("al", j, "_name"),
+                   !!paste0("al", j, "_id") := idUnit,
+                   !!paste0("al", j, "_alt") := unit
+            ))
 
         # In the third step the geometries/outputUnits are pruned down to the
         # available units by left-joining to tempUnits via the respective
         # al*_id
-        outputUnits <- tempUnitsIDs %>%
-          left_join(outputUnits)
+        outputUnits <- suppressMessages(
+          tempUnitsIDs %>%
+            left_join(outputUnits))
 
       }
     }
@@ -219,13 +221,15 @@ matchUnits <- function(input = NULL, source = NULL, keepOrig = FALSE, verbose = 
   }
 
   if(!keepOrig){
-    out <- out %>%
-      left_join(outhIDs) %>%
-      select(-starts_with("al"))
+    out <- suppressMessages(
+      out %>%
+        left_join(outhIDs) %>%
+        select(-starts_with("al")))
   } else{
-    out <- out %>%
-      left_join(outhIDs) %>%
-      select(-contains("_alt"))
+    out <- suppressMessages(
+      out %>%
+        left_join(outhIDs) %>%
+        select(-contains("_alt")))
   }
 
   return(out)
