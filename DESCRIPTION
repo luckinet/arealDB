@@ -1,7 +1,14 @@
 Package: arealDB
 Type: Package
 Title: Harmonise and Integrate Heterogeneous Areal Data
-Description: Helps the user to integrate a harmonised databases of areal data.
+Description: Many relevant applications in the environmental and socioeconomic 
+    sciences use areal data, such as biodiversity checklists, agricultural statistics, 
+    or socioeconomic surveys. For applications that surpass the spatial, temporal or 
+    thematic scope of any single data source, data must be integrated from several 
+    heterogeneous sources. Inconsistent concepts, definitions, or messy data tables 
+    make this a tedious and error-prone process. arealDB tackels those problems and 
+    helps the user to integrate a harmonised databases of areal data. Read the preprint 
+    at https://arxiv.org/abs/1909.06610
 Version: 0.3.2
 Authors@R: c(
     person("Steffen", "Ehrmann", 
@@ -36,7 +43,7 @@ Imports:
     rlang,
     sf,
     stringr,
-    tibble,
+    tibble, 
     tidyr,
     tidyselect,
     tabshiftr
