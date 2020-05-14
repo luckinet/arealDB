@@ -35,8 +35,8 @@ terms that shall be translated.}
 the standardised terms.}
 }
 \value{
-Writes a table to the project root directory with name paste0(type,
-  "_", variable, ".csv").
+Writes a table to the project root directory with name
+  \code{paste0(type, "_", variable, ".csv")}.
 }
 \description{
 Use a pre-compiled table to create an index and/or translation table for the
@@ -45,27 +45,22 @@ target variables of a geospatial database.
 \details{
 This is the second function that is run in a project, as it creates
   index and translation tables for the target variables that shall be stored
-  in an areal database. For each variable other than 'territorial unit' and
-  'time' that shall be included in the areal database, both index and
-  translation table must be created. \itemize{ \item An index table relates
-  an ID (given in \code{pid}) to the variable terms (given in \code{target})
-  and potentially to ancillary information. Such tables should be compiled
-  before a project is started and should contain a clear set of values per
-  variable (which will be used as standard ontology). \item A translation
-  table relates terms in foreign languages (given in \code{origin}) to terms
-  in the target language (given in \code{target}). It does not have to be
-  filled with initial values, but could be.}
+  in an areal database.  \itemize{ \item An index table relates an ID (given
+  in \code{pid}) to the variable terms (given in \code{target}) and
+  potentially to ancillary information. Such tables should be compiled before
+  a project is started and should contain a clear set of values per variable
+  (which will be used as standard ontology). \item A translation table
+  relates terms in foreign languages (given in \code{origin}) to terms in the
+  target language (given in \code{target}). If target does not exist, the
+  terms are simply registered as "original" to be used for fuzzy matching.}
 }
 \examples{
-\dontrun{
-
-# https://github.com/EhrmannS/tidy_fao
+\donttest{
 library(readr)
-library(magrittr)
 
 # create index from an already existing table
-read_csv(file = "fao_commodities.csv", col_types = "iclciccc") \%>\%
-  setVariables(variable = "commodities", pid = "faoID",
-               target = "simpleName")
+comm <- read_csv(file = "fao_commodities.csv", col_types = "iclciccc")
+setVariables(input = comm, variable = "commodities",
+             pid = "faoID", target = "simpleName")
 }
 }

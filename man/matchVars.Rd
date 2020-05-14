@@ -38,13 +38,3 @@ Arguments in \code{...} are named lists that indicate with which
   named "id_VARIABLE.csv" must be available in the root directory of the
   project. This should have been created with \code{\link{setVariables}}.
 }
-\examples{
-\dontrun{
-
-# match 'commodities' with the column 'simpleName' and chose 'faoID'
-matchVars(input = someInput, faoID = list(commodities = "simpleName"))
-
-# alternatively, the column 'faoGroupID' could be used via
-matchVars(input = someInput, faoGroupID = list(commodities = "simpleName"))
-}
-}

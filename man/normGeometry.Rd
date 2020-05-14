@@ -15,7 +15,9 @@ normGeometry(
 )
 }
 \arguments{
-\item{input}{[\code{character(1)}]\cr path of the file to normalise.}
+\item{input}{[\code{character(1)}]\cr path of the file to normalise. If this
+is left empty, all files at stage two as subset by \code{pattern} are
+chosen.}
 
 \item{...}{[\code{character(.)}]\cr a subset of administrative units as given
 by \code{nation}, \code{continent}, \code{region}, \code{subregion} or
@@ -28,7 +30,7 @@ overlap above which to consider two territorial units "different".}
 \item{outType}{[\code{character(1)}]\cr the output file-type, see
 \code{\link{st_drivers}} for a list. If a file-type supports layers, they
 are stored in the same file, otherwise the different layers are provided
-seperately.}
+separately.}
 
 \item{pattern}{[\code{character(1)}]\cr an optional regular expression. Only
 dataset names which match the regular expression will be returned.}
@@ -65,31 +67,31 @@ To normalise geometries, this function proceeds as follows:
   from the metadata. } \item In case the nation to which the geometry belongs
   has already been created, the following steps are carried out: \enumerate{
   \item Check whether the new geometries have the same coordinate reference
-  system as the already existing database and reproject if this is not the
-  case. \item Check whether all new geometries are already exactly matched
-  spatially and stop if that is the case. \item Check whether the new
-  geometries are all within the already defined parents, and save those that
-  are not as a new geometry, that needs to be treated separately. \item
-  Calculate spatial overlap and distinguish the geometries into those that
-  overlap with more and with less than \code{thresh}. \item For all units
-  that did match, copy ahID from the geometries they overlap with. \item For
-  all units that did not match, rebuild metadata and a new ahID. } \item If
-  update = TRUE, store the processed geometry at stage three.} \item Move the
-  geometry to the folder '/processed', if it is fully processed.}
+  system as the already existing database and re-project the new geometries
+  if this is not the case. \item Check whether all new geometries are already
+  exactly matched spatially and stop if that is the case. \item Check whether
+  the new geometries are all within the already defined parents, and save
+  those that are not as a new geometry. \item Calculate spatial overlap and
+  distinguish the geometries into those that overlap with more and those with
+  less than \code{thresh}. \item For all units that did match, copy ahID from
+  the geometries they overlap. \item For all units that did not match,
+  rebuild metadata and a new ahID. } \item If update = TRUE, store the
+  processed geometry at stage three.} \item Move the geometry to the folder
+  '/processed', if it is fully processed.}
 }
 \examples{
-\dontrun{
+\donttest{
 
-# 1. set up a basis dataset from GADM
+# set up a basis dataset from GADM
 normGeoemtry(pattern = "gadm",
              update = TRUE)
 
-# 2. normalise a specific dataset
+# normalise a specific dataset ...
 normGeometry(input = ".../adb_geometries/stage2/europe.gpkg",
              nation = c("estonia"),
              update = TRUE)
 
-# 3. or normalise all remaining files
+# ... or normalise all remaining files
 normGeometry(nation = c("estonia"),
              update = TRUE)
 

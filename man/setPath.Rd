@@ -23,3 +23,10 @@ This is the first function that is run in a project, as it initiates
   inventory tables. When a database has already been set up, this function is
   used to register that path in the options of the current R session.
 }
+\examples{
+\donttest{
+myPath <- "path/to/my/root/directory"
+
+setPath(root = paste0(myPath, "newDB"))
+}
+}

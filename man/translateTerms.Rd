@@ -20,7 +20,7 @@ translateTerms(
 
 \item{index}{[\code{character(1)}]\cr name of a table that contains translations.}
 
-\item{source}{[\code{list(1)}]\cr the table or geometry ID from which the
+\item{source}{[\code{named list(1)}]\cr the table or geometry ID from which the
 terms have been taken. List must be named with either \code{tabID} or
 \code{geoID} to denote where the ID comes from.}
 
@@ -49,11 +49,4 @@ Translate terms based on fuzzy matching.
 \details{
 This is basically a sophisticated matching algorithm, that adds new
   entries to the respective index.
-}
-\examples{
-\dontrun{
-
-translateTerms(terms = c("wheet", "weizen", "Wheat", "Weat"),
-               index = paste0("tt_commodities"))
-}
 }

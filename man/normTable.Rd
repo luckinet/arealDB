@@ -15,7 +15,9 @@ normTable(
 )
 }
 \arguments{
-\item{input}{[\code{character(1)}]\cr path of the file to normalise.}
+\item{input}{[\code{character(1)}]\cr path of the file to normalise. If this
+is left empty, all files at stage two as subset by \code{pattern} are
+chosen}
 
 \item{...}{[\code{list(.)}]\cr matching lists that capture the variables by
 which to match and the new column names containing the resulting ID; see
@@ -65,15 +67,14 @@ Arguments in \code{...} are so-called matching lists. This argument
   \item Read in \code{input} and extract initial metadata from the file name.
   \item Employ the function \code{tabshiftr::\link{reorganise}} to reshape
   \code{input} according to the respective schema description (see
-  \code{tabshiftr::\link{schema_default}}). \item Match the territorial units
+  \code{tabshiftr::\link{makeSchema}}). \item Match the territorial units
   in \code{input} via the \code{\link{matchUnits}}. \item If \code{...} has
   been provided with variables to match, those are matched via
   \code{\link{matchVars}}. \item Harmonise territorial unit names. \item If
   \code{update = TRUE}, store the processed data table at stage three.}
 }
 \examples{
-\dontrun{
-
+\donttest{
 normTable(input = ".../adb_tables/stage2/dataTable.csv",
           faoID = list(commodities = "simpleName"),
           update = TRUE)

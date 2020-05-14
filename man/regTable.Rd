@@ -32,20 +32,20 @@ are valid.}
 subset the file contains. This could be a subset of territorial units (e.g.
 only one municipality) or of a target variable.}
 
-\item{dSeries}{[\code{character(1)}]\cr the dataseries of the areal data.}
+\item{dSeries}{[\code{character(1)}]\cr the dataseries of the areal data (see
+\code{\link{regDataseries}}).}
 
 \item{gSeries}{[\code{character(1)}]\cr optionally, the dataseries of the
 geometries, if the geometry dataseries deviates from the dataseries of the
-areal data.}
+areal data (see \code{\link{regDataseries}}).}
 
 \item{level}{[\code{integerish(1)}]\cr the administrative level at which the
 boundaries are recorded.}
 
-\item{begin}{[\code{integerish(1)}]\cr the date from which on the boundaries
-are valid.}
-
-\item{end}{[\code{integerish(1)}]\cr the date until which the boundaries are
+\item{begin}{[\code{integerish(1)}]\cr the date from which on the data are
 valid.}
+
+\item{end}{[\code{integerish(1)}]\cr the date until which the data are valid.}
 
 \item{schema}{[\code{list(1)}]\cr the schema description of the table to read
 in (must have been placed in the global environment before calling it here.}
@@ -53,23 +53,22 @@ in (must have been placed in the global environment before calling it here.}
 \item{archive}{[\code{character(1)}]\cr the original file from which the
 boundaries emerge.}
 
-\item{archiveLink}{[\code{character(1)}] download-link of the archive.}
+\item{archiveLink}{[\code{character(1)}]\cr download-link of the archive.}
 
-\item{nextUpdate}{[\code{character(1)}]\cr when does the geometry dataset
-gets updated the next time (format restricted to: YYYY-MM-DD).}
+\item{nextUpdate}{[\code{character(1)}]\cr when does the geometry dataset get
+updated the next time (format restricted to: YYYY-MM-DD).}
 
 \item{updateFrequency}{[\code{character(1)}]\cr value describing the
-frequency in which the dataset is updated, according to the
-\href{https://geo-ide.noaa.gov/wiki/index.php?title=ISO_19115_and_19115-2_CodeList_Dictionaries#MD_MaintenanceFrequencyCode}{ISO
-19115 Codelist, MD_MaintenanceFrequencyCode}. Possible values are:
-'continual', 'daily', 'weekly', 'fortnightly', 'quarterly', 'biannually',
-'annually', 'asNeeded', 'irregular', 'notPlanned', 'unknown', 'periodic',
+frequency with which the dataset is updated, according to the ISO 19115
+Codelist, MD_MaintenanceFrequencyCode. Possible values are: 'continual',
+'daily', 'weekly', 'fortnightly', 'quarterly', 'biannually', 'annually',
+'asNeeded', 'irregular', 'notPlanned', 'unknown', 'periodic',
 'semimonthly', 'biennially'.}
 
 \item{metadataLink}{[\code{character(1)}]\cr if there is already metadata
 existing: link to the meta dataset.}
 
-\item{metadataPath}{[\code{character(1)}]\cr if a existing metadataset was
+\item{metadataPath}{[\code{character(1)}]\cr if an existing meta dataset was
 downloaded along the data: the path where it is stored locally.}
 
 \item{notes}{[\code{character(1)}]\cr optional notes.}
@@ -81,8 +80,8 @@ should be updated.}
 register shall overwrite a potentially already existing older version.}
 }
 \value{
-Returns the entry that is appended to 'inv_tables.csv' in case
-  \code{update = TRUE}.
+Returns a tibble of the entry that is appended to 'inv_tables.csv' in
+  case \code{update = TRUE}.
 }
 \description{
 This function registers a new areal data table into the geospatial database.
@@ -105,12 +104,11 @@ When processing areal data tables, carry out the following steps:
   \code{\link{normTable}} expects internally a schema description (a list
   that describes the position of the data components) for each data table,
   which is saved as \code{paste0("meta_", dSeries, TAB_NUMBER)}. A template
-  thereof, and documentation on how to set them up, comes as the object
-  \code{tabshiftr::\link{schema_default}} with \code{arealDB}.
+  thereof, and documentation on how to set them up, can be found in
+  \code{tabshiftr::\link{makeSchema}} with \code{arealDB}.
 }
 \examples{
-\dontrun{
-
+\donttest{
 regTable(nation = "United States of America",
          subset = "soy",
          dSeries = "usda", gSeries = "gadm",
