@@ -2,7 +2,7 @@
 #'
 #' Translate terms based on fuzzy matching.
 #' @param terms [\code{character(.)}]\cr terms to be translated.
-#' @param source [\code{list(1)}]\cr the table or geometry ID from which the
+#' @param source [\code{named list(1)}]\cr the table or geometry ID from which the
 #'   terms have been taken. List must be named with either \code{tabID} or
 #'   \code{geoID} to denote where the ID comes from.
 #' @param index [\code{character(1)}]\cr name of a table that contains translations.
@@ -20,12 +20,6 @@
 #' @return translated \code{terms}.
 #' @details This is basically a sophisticated matching algorithm, that adds new
 #'   entries to the respective index.
-#' @examples
-#' \dontrun{
-#'
-#' translateTerms(terms = c("wheet", "weizen", "Wheat", "Weat"),
-#'                index = paste0("tt_commodities"))
-#' }
 #' @importFrom checkmate assertCharacter assertDataFrame assertNames
 #'   testCharacter
 #' @importFrom tibble as_tibble
@@ -33,7 +27,6 @@
 #' @importFrom readr read_csv write_csv
 #' @importFrom rlang enexpr
 #' @importFrom utils edit View adist file.edit
-#' @export
 
 translateTerms <- function(terms, index = NULL, source = NULL, strict = FALSE,
                            fuzzy_terms = NULL, fuzzy_dist = 5, inline = TRUE,

@@ -19,15 +19,6 @@
 #'   The variable must be present as column in \code{input} and a table that is
 #'   named "id_VARIABLE.csv" must be available in the root directory of the
 #'   project. This should have been created with \code{\link{setVariables}}.
-#' @examples
-#' \dontrun{
-#'
-#' # match 'commodities' with the column 'simpleName' and chose 'faoID'
-#' matchVars(input = someInput, faoID = list(commodities = "simpleName"))
-#'
-#' # alternatively, the column 'faoGroupID' could be used via
-#' matchVars(input = someInput, faoGroupID = list(commodities = "simpleName"))
-#' }
 #' @return The table provided in \code{input}, where the given variable is
 #'   replaced by the column that is specified by the argument name.
 #' @importFrom checkmate assertCharacter assertIntegerish assertNames
@@ -36,7 +27,6 @@
 #' @importFrom rlang exprs
 #' @importFrom magrittr %>%
 #' @importFrom utils txtProgressBar setTxtProgressBar
-#' @export
 
 matchVars <- function(input = NULL, source = NULL, ..., keepOrig = FALSE){
 
@@ -80,12 +70,14 @@ matchVars <- function(input = NULL, source = NULL, ..., keepOrig = FALSE){
       select(!!varName := origin, targetVar)
 
     if(!keepOrig){
-      out <- input %>%
-        left_join(matched) %>%
-        select(-!!varName)
+      out <- suppressMessages(
+        input %>%
+          left_join(matched) %>%
+          select(-!!varName))
     } else{
-      out <- input %>%
-        left_join(matched)
+      out <- suppressMessages(
+        input %>%
+          left_join(matched))
     }
   }
 

@@ -7,7 +7,6 @@
 #' @importFrom checkmate assertTibble assertCharacter
 #' @importFrom readr write_csv
 #' @importFrom dplyr union arrange row_number
-#' @export
 
 updateTable <- function(index = NULL, name = NULL){
 

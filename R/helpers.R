@@ -6,7 +6,6 @@
 #' @importFrom dplyr summarise_all left_join pull
 #' @importFrom tidyr gather
 #' @importFrom stringr str_c
-#' @export
 
 getColTypes <- function(input = NULL){
 
@@ -33,7 +32,6 @@ getColTypes <- function(input = NULL){
 #'   \code{.gz}, \code{.bz2}, \code{.tar} \code{.zip}, \code{.tgz}, \code{.gzip}
 #'   or \code{.7z}, it returns the value \code{TRUE}.
 #' @importFrom checkmate assertCharacter
-#' @export
 
 testCompressed <- function(x){
 
@@ -43,9 +41,9 @@ testCompressed <- function(x){
 }
 
 #' View large simple features
+#'
 #' @param x [\code{sf}]\cr the sf object to view.
 #' @importFrom rlang ensym
-#' @export
 
 View_sf <- function(x){
   theTitle <- ensym(x)
