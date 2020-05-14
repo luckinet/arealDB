@@ -19,6 +19,8 @@
 #'   inventory of the handled files (\code{FALSE}, default). This is helpful to
 #'   check whether the metadata specification and the provided file(s) are
 #'   properly specified.
+#' @param verbose [\code{logical(1)}]\cr be verbose about what is happening
+#'   (default \code{FALSE}).
 #' @details To normalise geometries, this function proceeds as follows:
 #'   \enumerate{ \item Read in \code{input} and extract initial metadata from
 #'   the file name. \item Loop through every nation potentially included in the
@@ -80,7 +82,7 @@
 #' @export
 
 normGeometry <- function(input = NULL, ..., thresh = 10, outType = "gpkg",
-                         pattern = NULL, update = FALSE){
+                         pattern = NULL, update = FALSE, verbose = FALSE){
 
   # set internal paths
   intPaths <- paste0(getOption(x = "adb_path"))
@@ -168,7 +170,7 @@ normGeometry <- function(input = NULL, ..., thresh = 10, outType = "gpkg",
       nations <- translateTerms(terms = theNations,
                                 index = "tt_territories",
                                 source = list("geoID" = newGID),
-                                verbose = FALSE) %>%
+                                verbose = verbose) %>%
         mutate(target = if_else(target == "ignore", NA_character_, target)) %>%
         pull(target)
 
@@ -201,7 +203,7 @@ normGeometry <- function(input = NULL, ..., thresh = 10, outType = "gpkg",
         unified <- translateTerms(terms = toUnify,
                                   index = "tt_territories",
                                   source = list("geoID" = newGID),
-                                  verbose = FALSE) %>%
+                                  verbose = verbose) %>%
           pull(target)
         subsets[[which(names(subsets) == "nation")]] <- unified
       }

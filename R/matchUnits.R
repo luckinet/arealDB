@@ -9,6 +9,8 @@
 #' @param keepOrig [\code{logical(1)}]\cr to keep the original units in the
 #'   output (\code{TRUE}) or to remove them (\code{FALSE}, default). Useful for
 #'   debugging.
+#' @param verbose [\code{logical(1)}]\cr be verbose about what is happening
+#'   (default \code{FALSE}).
 #' @details \code{names(input)} must contain at least the \code{al1 = ...} to
 #'   match at least a certain nation. Further administrative levels are denoted
 #'   by column names \code{al2}, \code{al3}, ...
@@ -28,7 +30,7 @@
 #' @importFrom utils tail txtProgressBar setTxtProgressBar
 #' @export
 
-matchUnits <- function(input = NULL, source = NULL, keepOrig = FALSE){
+matchUnits <- function(input = NULL, source = NULL, keepOrig = FALSE, verbose = FALSE){
 
   # set internal objects
   intPaths <- paste0(getOption(x = "adb_path"), "/adb_geometries/")
@@ -156,7 +158,7 @@ matchUnits <- function(input = NULL, source = NULL, keepOrig = FALSE){
                                    index = "tt_territories",
                                    source = source,
                                    fuzzy_terms = unique(unitSubset$name),
-                                   verbose = TRUE)
+                                   verbose = verbose)
         theUnits <- unique(theUnits)
 
         # ... join with 'inputUnits' to get the standard names into it

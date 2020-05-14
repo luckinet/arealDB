@@ -17,6 +17,8 @@
 #' @param keepOrig [\code{logical(1)}]\cr to keep the original units and
 #'   variable names in the output (\code{TRUE}) or to remove them (\code{FALSE},
 #'   default). Useful for debugging.
+#' @param verbose [\code{logical(1)}]\cr be verbose about what is happening
+#'   (default \code{FALSE}).
 #' @details Arguments in \code{...} are so-called matching lists. This argument
 #'   captures three kinds of information: \enumerate{\item the 'variable' that
 #'   should be matched with a matching list, \item the 'targetColumn' in that
@@ -61,7 +63,7 @@
 #' @export
 
 normTable <- function(input = NULL, ..., source = "tabID", pattern = NULL,
-                      update = FALSE, keepOrig = FALSE){
+                      update = FALSE, keepOrig = FALSE, verbose = FALSE){
 
   # set internal paths
   intPaths <- paste0(getOption(x = "adb_path"))
@@ -146,7 +148,7 @@ normTable <- function(input = NULL, ..., source = "tabID", pattern = NULL,
         unified <- translateTerms(terms = toUnify,
                                   index = "tt_nations",
                                   source = list("tabID" = tabID),
-                                  verbose = FALSE) %>%
+                                  verbose = verbose) %>%
           pull(target)
         subsets[[which(names(subsets) == "nation")]] <- unified
       }
@@ -182,7 +184,7 @@ normTable <- function(input = NULL, ..., source = "tabID", pattern = NULL,
     nations <- translateTerms(terms = unique(temp$al1),
                               index = "tt_nations",
                               source = list("tabID" = tabID),
-                              verbose = FALSE) %>%
+                              verbose = verbose) %>%
       filter(!target %in% c("ignore", "missing")) %>%
       select(target, origin)
 
