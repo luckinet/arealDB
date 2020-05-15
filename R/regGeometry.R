@@ -45,7 +45,7 @@
 #' @return Returns a tibble of the entry that is appended to
 #'   'inv_geometries.csv' in case \code{update = TRUE}.
 #' @examples
-#' \donttest{
+#' \dontrun{
 #'
 #' # The GADM dataset comes as *.zip archive
 #' regGeometry(nation = "NAME_0",

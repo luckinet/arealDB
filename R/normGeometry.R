@@ -53,10 +53,10 @@
 #' @return This function harmonises and integrates so far unprocessed geometries
 #'   at stage two into stage three of the geospatial database.
 #' @examples
-#' \donttest{
+#' \dontrun{
 #'
 #' # set up a basis dataset from GADM
-#' normGeoemtry(pattern = "gadm",
+#' normGeometry(pattern = "gadm",
 #'              update = TRUE)
 #'
 #' # normalise a specific dataset ...

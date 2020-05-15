@@ -47,7 +47,7 @@
 #' @return This function harmonises and integrates so far unprocessed data
 #'   tables at stage two into stage three of the geospatial database.
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' normTable(input = ".../adb_tables/stage2/dataTable.csv",
 #'           faoID = list(commodities = "simpleName"),
 #'           update = TRUE)

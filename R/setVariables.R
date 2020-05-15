@@ -29,7 +29,7 @@
 #' @return Writes a table to the project root directory with name
 #'   \code{paste0(type, "_", variable, ".csv")}.
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' library(readr)
 #'
 #' # create index from an already existing table

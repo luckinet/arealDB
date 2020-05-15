@@ -17,7 +17,7 @@
 #' @return Returns a tibble of the new entry that is appended to
 #'   'inv_dataseries.csv' in case \code{update = TRUE}.
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' regDataseries(name = "gadm",
 #'               description = "Database of Global Administrative Areas",
 #'               homepage = "https://gadm.org/index.html",

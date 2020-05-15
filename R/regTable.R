@@ -60,7 +60,7 @@
 #' @return Returns a tibble of the entry that is appended to 'inv_tables.csv' in
 #'   case \code{update = TRUE}.
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' regTable(nation = "United States of America",
 #'          subset = "soy",
 #'          dSeries = "usda", gSeries = "gadm",

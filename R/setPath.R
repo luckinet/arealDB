@@ -10,7 +10,7 @@
 #'   used to register that path in the options of the current R session.
 #' @return Enters the root path as 'adb_path' into the options.
 #' @examples
-#' \donttest{
+#' \dontrun{
 #' myPath <- "path/to/my/root/directory"
 #'
 #' setPath(root = paste0(myPath, "newDB"))
