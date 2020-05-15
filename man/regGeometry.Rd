@@ -85,7 +85,7 @@ When processing geometries to which areal data shall be linked,
   you have saved the file.}
 }
 \examples{
-\donttest{
+\dontrun{
 
 # The GADM dataset comes as *.zip archive
 regGeometry(nation = "NAME_0",

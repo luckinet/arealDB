@@ -24,7 +24,7 @@ This is the first function that is run in a project, as it initiates
   used to register that path in the options of the current R session.
 }
 \examples{
-\donttest{
+\dontrun{
 myPath <- "path/to/my/root/directory"
 
 setPath(root = paste0(myPath, "newDB"))

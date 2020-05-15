@@ -108,7 +108,7 @@ When processing areal data tables, carry out the following steps:
   \code{tabshiftr::\link{makeSchema}} with \code{arealDB}.
 }
 \examples{
-\donttest{
+\dontrun{
 regTable(nation = "United States of America",
          subset = "soy",
          dSeries = "usda", gSeries = "gadm",

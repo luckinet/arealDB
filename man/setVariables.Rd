@@ -55,7 +55,7 @@ This is the second function that is run in a project, as it creates
   terms are simply registered as "original" to be used for fuzzy matching.}
 }
 \examples{
-\donttest{
+\dontrun{
 library(readr)
 
 # create index from an already existing table

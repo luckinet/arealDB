@@ -80,10 +80,10 @@ To normalise geometries, this function proceeds as follows:
   '/processed', if it is fully processed.}
 }
 \examples{
-\donttest{
+\dontrun{
 
 # set up a basis dataset from GADM
-normGeoemtry(pattern = "gadm",
+normGeometry(pattern = "gadm",
              update = TRUE)
 
 # normalise a specific dataset ...

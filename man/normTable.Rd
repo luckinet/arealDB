@@ -74,7 +74,7 @@ Arguments in \code{...} are so-called matching lists. This argument
   \code{update = TRUE}, store the processed data table at stage three.}
 }
 \examples{
-\donttest{
+\dontrun{
 normTable(input = ".../adb_tables/stage2/dataTable.csv",
           faoID = list(commodities = "simpleName"),
           update = TRUE)
