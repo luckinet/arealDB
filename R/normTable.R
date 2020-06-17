@@ -308,6 +308,8 @@ normTable <- function(input = NULL, ..., source = "tabID", pattern = NULL,
       if(!keepOrig){
         tempOut <- temp %>%
           select(-starts_with("al"))
+      } else {
+        tempOut <- temp
       }
 
       out <- bind_rows(out, tempOut)
