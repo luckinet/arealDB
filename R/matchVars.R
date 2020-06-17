@@ -55,7 +55,7 @@ matchVars <- function(input = NULL, source = NULL, ..., keepOrig = FALSE){
 
     # extract the respective column
     inputTerms <- input %>%
-      select(varName) %>%
+      select(all_of(varName)) %>%
       unique() %>%
       pull(1)
 
@@ -67,7 +67,7 @@ matchVars <- function(input = NULL, source = NULL, ..., keepOrig = FALSE){
     # get the matching terms
     matched <- theTerms %>%
       left_join(id_temp, by = c("target" = targetName)) %>%
-      select(!!varName := origin, targetVar)
+      select(!!varName := origin, all_of(targetVar))
 
     if(!keepOrig){
       out <- suppressMessages(
