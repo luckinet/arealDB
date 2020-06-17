@@ -20,7 +20,7 @@ test_that("a dataseries inventory entry can be produced", {
   # check also whether the entry is in inv_dataseries.csv
   db <- read_csv(file = paste0(path, "/newDB/inv_dataseries.csv"), col_types = c("icccccc"))
 
-  expect_equal(output, db)
+  expect_equal(output[-7], db[-7])
 
   unlink(paste0(path, "/newDB"), recursive = TRUE)
 })

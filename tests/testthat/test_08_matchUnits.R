@@ -1,6 +1,7 @@
 library(testthat)
 library(readr)
 library(magrittr)
+library(dplyr)
 library(checkmate)
 library(tabshiftr)
 context("matchUnits")
