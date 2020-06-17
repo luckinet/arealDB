@@ -26,8 +26,9 @@
 #'   relates terms in foreign languages (given in \code{origin}) to terms in the
 #'   target language (given in \code{target}). If target does not exist, the
 #'   terms are simply registered as "original" to be used for fuzzy matching.}
-#' @return Writes a table to the project root directory with name
-#'   \code{paste0(type, "_", variable, ".csv")}.
+#' @return No return value, called for the side effect of writing a table to
+#'   the project root directory with name \code{paste0(type, "_", variable,
+#'   ".csv")}.
 #' @examples
 #' \dontrun{
 #' library(readr)

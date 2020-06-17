@@ -17,7 +17,7 @@
 #'   (only possible in linux).
 #' @param verbose [\code{logical(1)}]\cr be verbose about what is happening
 #'   (default \code{TRUE}).
-#' @return translated \code{terms}.
+#' @return A table of translated \code{terms}.
 #' @details This is basically a sophisticated matching algorithm, that adds new
 #'   entries to the respective index.
 #' @importFrom checkmate assertCharacter assertDataFrame assertNames
@@ -170,6 +170,9 @@ translateTerms <- function(terms, index = NULL, source = NULL, strict = FALSE,
 
           } else if(length(unique(temp$target)) < 1){
             doFuzzy <- TRUE
+          } else {
+            app <- temp %>%
+              select(-rn)
           }
 
         } else {
