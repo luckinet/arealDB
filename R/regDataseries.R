@@ -17,7 +17,7 @@
 #' @return Returns a tibble of the new entry that is appended to
 #'   'inv_dataseries.csv' in case \code{update = TRUE}.
 #' @examples
-#' \dontrun{
+#' setPath(root = paste0(system.file("test_datasets", package="arealDB", mustWork = TRUE), "newDB"))
 #' regDataseries(name = "gadm",
 #'               description = "Database of Global Administrative Areas",
 #'               homepage = "https://gadm.org/index.html",
@@ -25,7 +25,6 @@
 #'               licence_path = ".../newDB/adb_tables/meta/licence.txt",
 #'               update = TRUE)
 #'
-#' }
 #' @importFrom readr read_csv
 #' @importFrom checkmate assertDataFrame assertNames assertCharacter
 #'   assertLogical
