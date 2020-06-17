@@ -8,13 +8,13 @@
 #'   the areal database by creating the default sub-directories and initial
 #'   inventory tables. When a database has already been set up, this function is
 #'   used to register that path in the options of the current R session.
-#' @return Enters the root path as 'adb_path' into the options.
+#' @return  No return value, called for the side effect of creating the
+#'   directory structure of the new areal database and a new environment that
+#'   contains the database metadata.
 #' @examples
-#' \dontrun{
-#' myPath <- "path/to/my/root/directory"
+#' myPath <- system.file("test_datasets", package="arealDB", mustWork = TRUE)
 #'
 #' setPath(root = paste0(myPath, "newDB"))
-#' }
 #' @importFrom checkmate testDirectory testFileExists
 #' @importFrom readr write_csv
 #' @export
@@ -147,6 +147,9 @@ setPath <- function(root = NULL){
               path = paste0(root, "/tt_nations.csv"),
               na = "")
   }
+
+  oldOptions <- options()
+  on.exit(options(oldOptions))
 
   options(adb_path = root)
 }
