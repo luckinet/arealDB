@@ -51,7 +51,9 @@
 #'   '/processed', if it is fully processed.}
 #' @family normalisers
 #' @return This function harmonises and integrates so far unprocessed geometries
-#'   at stage two into stage three of the geospatial database.
+#'   at stage two into stage three of the geospatial database. It produces for
+#'   each nation in the registered geometries a spatial file of the specified
+#'   file-type.
 #' @examples
 #' \dontrun{
 #'
@@ -534,7 +536,7 @@ normGeometry <- function(input = NULL, ..., thresh = 10, outType = "gpkg",
               #   unique()
               prevIDs <- in_parent %>%
                 as_tibble() %>%
-                select(unitCols, alCols)
+                select(all_of(unitCols), all_of(alCols))
             }
           } else {
             # if that is not the case, we need to fall back to finding parents IDs
@@ -604,7 +606,7 @@ normGeometry <- function(input = NULL, ..., thresh = 10, outType = "gpkg",
               filter(!duplicated(.)) %>%
               group_by(.dots = paste0("al", groupLevel-1, "_id")) %>%
               mutate(nation = tempNation,
-                     name = {if (n() > 0) !!unitCols[length(unitCols)] else ""},
+                     name = {if (n() > 0) !!sym(unitCols[length(unitCols)]) else ""},
                      level = theLevel,
                      tempID = seq_along(!!sym(unitCols[length(unitCols)]))) %>%
               ungroup() %>%
