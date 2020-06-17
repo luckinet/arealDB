@@ -19,11 +19,12 @@
 #'   hierarchy ID.
 #' @importFrom checkmate assertCharacter assertIntegerish assertList
 #'   assertDataFrame
+#' @importFrom stringr str_extract
 #' @importFrom dplyr filter pull mutate mutate_at bind_rows bind_cols vars
 #'   any_vars all_vars ungroup
 #' @importFrom magrittr %>%
 #' @importFrom rlang exprs :=
-#' @importFrom sf st_geometry<- read_sf
+#' @importFrom sf st_geometry<- read_sf st_layers
 #' @importFrom stats setNames
 #' @importFrom tibble tibble
 #' @importFrom tidyselect matches everything contains all_of
@@ -42,17 +43,22 @@ matchUnits <- function(input = NULL, source = NULL, keepOrig = FALSE,
   # assert that one of the columnnames is "al1" so that at least nations are matched
   assertNames(x = names(input), must.include = "al1")
 
-  out <- input
+  tempOut <- input
   adminLvls <- names(input)[grepl(pattern = "al", x = names(input))]
+
+  # check whether all adminLvls are there
+  levels <- sort(as.integer(str_extract(adminLvls, "[[:digit:]]")))
+  missingLevels <- setdiff(1:max(levels), levels)
+  if(length(missingLevels) != 0){
+    missingLevels <- paste0("al", missingLevels)
+    newLvls <- paste0("al", 1:max(levels))
+  } else {
+    missingLevels <- NULL
+    newLvls <- adminLvls
+  }
 
   # to manage the workload, split up input according to nations ("al1")
   nations <- unique(eval(parse(text = "al1"), envir = input))
-  # nations <- translateTerms(terms = theNations,
-  #                           index = "tt_territories",
-  #                           source = list("tabID" = source),
-  #                           inline = FALSE,
-  #                           verbose = FALSE) %>%
-  #   filter(!target %in% "ignore")
 
   # test whether there is a file to match with, by the nation name
   availableNations <- list.files(path = paste0(intPaths, "stage3"), full.names = TRUE) %>%
@@ -66,16 +72,6 @@ matchUnits <- function(input = NULL, source = NULL, keepOrig = FALSE,
   message("--> matching geometries of ...")
   for(i in seq_along(nations)){
     recentNation <- nations[i]
-
-    # if(recentNation$target %in% c("missing")){
-    #   message("    ... skipping '", recentNation$origin, "' ('missing' in translation table)")
-    #   next
-    # } else if(recentNation$target %in% c("ignore")){
-    #   message("    ... skipping '", recentNation$origin, "' ('ignore' in translation table)")
-    #   next
-    # } else {
-    # }
-
 
     # make an input subset for the current nation ...
     inputSbst <- input %>%
@@ -106,7 +102,7 @@ matchUnits <- function(input = NULL, source = NULL, keepOrig = FALSE,
       geometries <- bind_rows(geometries, theGeom)
     }
 
-    # ... and select only unique rows of all 'al*_id'
+    # ... select only unique rows of all 'al*_id' ...
     temp <- geometries %>%
       select(name, starts_with("al"))
     geometries <- geometries %>%
@@ -114,10 +110,10 @@ matchUnits <- function(input = NULL, source = NULL, keepOrig = FALSE,
 
     outputUnits <- geometries
     levels <- NULL
-    for(j in seq_along(adminLvls)){
+    for(j in seq_along(newLvls)){
       theLevel <- as.integer(sub(pattern = "\\D*(\\d+).*",
                                  replacement = "\\1",
-                                 x = adminLvls)[j])
+                                 x = newLvls)[j])
       message("        ... at level ", theLevel)
       levels <- c(levels, theLevel)
 
@@ -131,7 +127,7 @@ matchUnits <- function(input = NULL, source = NULL, keepOrig = FALSE,
         } else{
           next
         }
-      } else{
+      } else {
 
         # In a first step we need to build a table of the units and their
         # parents, both with the standard name of our database ('geometries'),
@@ -141,25 +137,57 @@ matchUnits <- function(input = NULL, source = NULL, keepOrig = FALSE,
         parentSubset <- geometries %>%
           filter(level == theLevel-1)
 
-        # ... select only unique elements of the current level and its parent
-        inputUnits <- allInputUnits %>%
-          select(parent = paste0("al", j-1), unit = paste0("al", j)) %>%
-          unique()
+        # ... select terms of the current level and its parent
+        inputUnits <- NULL
+        if(!is.null(missingLevels)){
+          if(missingLevels == paste0("al", j)){
+            # if the current level is missing, take unit names from 'geometries'
+            parentInput <- unique(parentSubset$name)
+            unitInput <- unique(geometries$name[geometries$level == theLevel])
+          } else if(missingLevels == paste0("al", j-1)){
+            # if the parent level is missing, take parent names from 'geometries'
+            parentInput <- unique(geometries$name[geometries$level == theLevel-1])
+            unitInput <- allInputUnits %>%
+              pull(paste0("al", j)) %>%
+              unique()
+          }
+        } else {
+          inputUnits <- allInputUnits %>%
+            select(parent = paste0("al", j-1), unit = paste0("al", j)) %>%
+            unique()
+
+          parentInput <- inputUnits$parent
+          unitInput <- inputUnits$unit
+        }
 
         # ... translate them to the default unit names
-        theParents <- translateTerms(terms = unique(inputUnits[[1]]),
+        theParents <- translateTerms(terms = unique(parentInput),
                                      index = "tt_territories",
                                      source = source,
                                      fuzzy_terms = unique(parentSubset$name),
                                      verbose = FALSE)
-        # this seems to give a NAs introduced by coercion for "brazil" of "schema_54"
         theParents <- unique(theParents)
-        theUnits <- translateTerms(terms = unique(inputUnits[[2]]),
+        theUnits <- translateTerms(terms = unique(unitInput),
                                    index = "tt_territories",
                                    source = source,
                                    fuzzy_terms = unique(unitSubset$name),
                                    verbose = verbose)
         theUnits <- unique(theUnits)
+
+        if(is.null(inputUnits)){
+          inputUnits <- theUnits %>%
+            left_join(geometries, by = c("target" = "name")) %>%
+            filter(level == theLevel) %>%
+            select(unit = origin, !!paste0("al", j, "_name") := target, starts_with("al"))
+          inputParents <- theParents %>%
+            left_join(geometries, by = c("target" = "name")) %>%
+            filter(level == theLevel-1) %>%
+            select(parent = origin, !!paste0("al", j-1, "_name") := target, starts_with("al"), -paste0("al", j, "_id"))
+
+          inputUnits <- inputUnits %>%
+            left_join(inputParents) %>%
+            select(parent = paste0("al", j-1, "_name"), unit)
+        }
 
         # ... join with 'inputUnits' to get the standard names into it
         tempUnits <- inputUnits %>%
@@ -167,6 +195,7 @@ matchUnits <- function(input = NULL, source = NULL, keepOrig = FALSE,
           select(parent, !!paste0("al", j-1, "_name") := target, unit) %>%
           left_join(theUnits, by = c("unit" = "origin")) %>%
           select(parent, unit, paste0("al", j-1, "_name"), !!paste0("al", j, "_name") := target)
+
 
         # In the second step we join the respective 'al*_id' values to 'tempUnits'
         parentID <- geometries %>%
@@ -216,20 +245,21 @@ matchUnits <- function(input = NULL, source = NULL, keepOrig = FALSE,
   }
 
   for(i in seq_along(adminLvls)){
-    pos <- which(colnames(out) == adminLvls[i])
-    colnames(out)[pos] <- paste0(adminLvls[i], "_alt")
+    pos <- which(colnames(tempOut) == adminLvls[i])
+    colnames(tempOut)[pos] <- paste0(adminLvls[i], "_alt")
   }
 
   if(!keepOrig){
     out <- suppressMessages(
-      out %>%
+      tempOut %>%
         left_join(outhIDs) %>%
         select(-starts_with("al")))
   } else{
     out <- suppressMessages(
-      out %>%
+      tempOut %>%
         left_join(outhIDs) %>%
-        select(-contains("_alt")))
+        select(-contains("_alt"))
+      )
   }
 
   return(out)
