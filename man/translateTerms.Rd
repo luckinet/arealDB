@@ -41,7 +41,7 @@ inline in R, or in the 'translating.csv' in your database root directory
 (default \code{TRUE}).}
 }
 \value{
-translated \code{terms}.
+A table of translated \code{terms}.
 }
 \description{
 Translate terms based on fuzzy matching.

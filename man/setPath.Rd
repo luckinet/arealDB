@@ -11,7 +11,9 @@ setPath(root = NULL)
 or shall contain an areal database.}
 }
 \value{
-Enters the root path as 'adb_path' into the options.
+No return value, called for the side effect of creating the
+  directory structure of the new areal database and a new environment that
+  contains the database metadata.
 }
 \description{
 Initiate a geospatial database or register a database that exists at the root
@@ -24,9 +26,7 @@ This is the first function that is run in a project, as it initiates
   used to register that path in the options of the current R session.
 }
 \examples{
-\dontrun{
-myPath <- "path/to/my/root/directory"
+myPath <- system.file("test_datasets", package="arealDB", mustWork = TRUE)
 
 setPath(root = paste0(myPath, "newDB"))
-}
 }

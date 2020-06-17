@@ -35,8 +35,9 @@ terms that shall be translated.}
 the standardised terms.}
 }
 \value{
-Writes a table to the project root directory with name
-  \code{paste0(type, "_", variable, ".csv")}.
+No return value, called for the side effect of writing a table to
+  the project root directory with name \code{paste0(type, "_", variable,
+  ".csv")}.
 }
 \description{
 Use a pre-compiled table to create an index and/or translation table for the

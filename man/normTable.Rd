@@ -33,7 +33,8 @@ dataset names which match the regular expression will be returned.}
 \item{update}{[\code{logical(1)}]\cr whether or not the physical files should
 be updated (\code{TRUE}) or the function should merely return the new
 object (\code{FALSE} default). This is helpful to check whether the
-metadata specification and the provided file(s) are properly specified.}
+metadata specification and the provided file(s) (translation and ID tables)
+are properly specified.}
 
 \item{keepOrig}{[\code{logical(1)}]\cr to keep the original units and
 variable names in the output (\code{TRUE}) or to remove them (\code{FALSE},
@@ -44,7 +45,9 @@ default). Useful for debugging.}
 }
 \value{
 This function harmonises and integrates so far unprocessed data
-  tables at stage two into stage three of the geospatial database.
+  tables at stage two into stage three of the geospatial database. It
+  produces for each nation in the registered data tables a comma-separated
+  values file that includes all thematic areal data.
 }
 \description{
 Harmonise and integrate data tables into standardised format
@@ -67,9 +70,9 @@ Arguments in \code{...} are so-called matching lists. This argument
   \item Read in \code{input} and extract initial metadata from the file name.
   \item Employ the function \code{tabshiftr::\link{reorganise}} to reshape
   \code{input} according to the respective schema description (see
-  \code{tabshiftr::\link{makeSchema}}). \item Match the territorial units
-  in \code{input} via the \code{\link{matchUnits}}. \item If \code{...} has
-  been provided with variables to match, those are matched via
+  \code{tabshiftr::\link{makeSchema}}). \item Match the territorial units in
+  \code{input} via the \code{\link{matchUnits}}. \item If \code{...} has been
+  provided with variables to match, those are matched via
   \code{\link{matchVars}}. \item Harmonise territorial unit names. \item If
   \code{update = TRUE}, store the processed data table at stage three.}
 }
