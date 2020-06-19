@@ -12,7 +12,7 @@ Description: Many relevant applications in the environmental and socioeconomic
 Version: 0.3.2
 Authors@R: c(
     person("Steffen", "Ehrmann", 
-           email = "steffen@funroll-loops.de", 
+           email = "steffen.science@funroll-loops.de", 
            role = c("aut", "cre"), 
            comment = c(ORCID = "0000-0002-2958-0796")),
     person("Arne", "Rümmler", 
