@@ -2,10 +2,11 @@
 #'
 #' Translate terms based on fuzzy matching.
 #' @param terms [\code{character(.)}]\cr terms to be translated.
-#' @param source [\code{named list(1)}]\cr the table or geometry ID from which the
-#'   terms have been taken. List must be named with either \code{tabID} or
+#' @param source [\code{named list(1)}]\cr the table or geometry ID from which
+#'   the terms have been taken. List must be named with either \code{tabID} or
 #'   \code{geoID} to denote where the ID comes from.
-#' @param index [\code{character(1)}]\cr name of a table that contains translations.
+#' @param index [\code{character(1)}]\cr name of a table that contains
+#'   translations.
 #' @param strict [\code{logical(1)}]\cr whether or not to stick to the terms
 #'   that have been defined as \code{'original'} in a translation table.
 #' @param fuzzy_terms [\code{vector(.)}]\cr additional target terms with which a
@@ -13,8 +14,8 @@
 #' @param fuzzy_dist [\code{integerish(1)}]\cr the maximum edit-distance for
 #'   which terms of fuzzy-matching should be suggested as match.
 #' @param inline [\code{logical(1)}]\cr whether or not to edit translations
-#'   inline in R, or in the 'translating.csv' in your database root directory
-#'   (only possible in linux).
+#'   inline in R (only possible in linux), or in the 'translating.csv' in your
+#'   database root directory.
 #' @param verbose [\code{logical(1)}]\cr be verbose about what is happening
 #'   (default \code{TRUE}).
 #' @return A table of translated \code{terms}.
@@ -138,7 +139,7 @@ translateTerms <- function(terms, index = NULL, source = NULL, strict = FALSE,
             for(k in seq_along(unique(temp$target))){
               message("    ", k, ": ", unique(temp$target)[k])
             }
-            message("    ", length(unique(temp$target))+1, ": ! none !")
+            message("    ", length(unique(temp$target))+1, ": ! none ! (allows you to provide another translation)")
             theTarget <- readline(prompt = "type in the number: ")
             tempTarget <- suppressWarnings(as.integer(theTarget))
             if(is.na(tempTarget)){
@@ -170,6 +171,7 @@ translateTerms <- function(terms, index = NULL, source = NULL, strict = FALSE,
 
           } else if(length(unique(temp$target)) < 1){
             doFuzzy <- TRUE
+            app <- NULL
           } else {
             app <- temp %>%
               select(-rn)
@@ -185,6 +187,7 @@ translateTerms <- function(terms, index = NULL, source = NULL, strict = FALSE,
         }
       } else {
         doFuzzy <- TRUE
+        app <- NULL
       }
 
       if(doFuzzy){
