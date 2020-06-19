@@ -25,7 +25,7 @@ Details.}
 
 \item{source}{[\code{charcter(1)}]\cr the source from which translations of
 terms should be sought. By default the recent \code{"tabID"}, but when the
-same terms occur in several tables of a dataseries \code{"datID"}.}
+same terms occur in several tables of a dataseries, chose \code{"datID"}.}
 
 \item{pattern}{[\code{character(1)}]\cr an optional regular expression. Only
 dataset names which match the regular expression will be returned.}

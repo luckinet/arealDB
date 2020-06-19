@@ -18,10 +18,11 @@ translateTerms(
 \arguments{
 \item{terms}{[\code{character(.)}]\cr terms to be translated.}
 
-\item{index}{[\code{character(1)}]\cr name of a table that contains translations.}
+\item{index}{[\code{character(1)}]\cr name of a table that contains
+translations.}
 
-\item{source}{[\code{named list(1)}]\cr the table or geometry ID from which the
-terms have been taken. List must be named with either \code{tabID} or
+\item{source}{[\code{named list(1)}]\cr the table or geometry ID from which
+the terms have been taken. List must be named with either \code{tabID} or
 \code{geoID} to denote where the ID comes from.}
 
 \item{strict}{[\code{logical(1)}]\cr whether or not to stick to the terms
@@ -34,8 +35,8 @@ fuzzy match should be carried out.}
 which terms of fuzzy-matching should be suggested as match.}
 
 \item{inline}{[\code{logical(1)}]\cr whether or not to edit translations
-inline in R, or in the 'translating.csv' in your database root directory
-(only possible in linux).}
+inline in R (only possible in linux), or in the 'translating.csv' in your
+database root directory.}
 
 \item{verbose}{[\code{logical(1)}]\cr be verbose about what is happening
 (default \code{TRUE}).}
