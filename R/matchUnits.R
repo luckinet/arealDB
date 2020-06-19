@@ -71,6 +71,7 @@ matchUnits <- function(input = NULL, source = NULL, keepOrig = FALSE,
   outhIDs <- NULL
   message("--> matching geometries of ...")
   for(i in seq_along(nations)){
+
     recentNation <- nations[i]
 
     # make an input subset for the current nation ...

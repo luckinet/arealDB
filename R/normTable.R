@@ -9,7 +9,7 @@
 #'   Details.
 #' @param source [\code{charcter(1)}]\cr the source from which translations of
 #'   terms should be sought. By default the recent \code{"tabID"}, but when the
-#'   same terms occur in several tables of a dataseries \code{"datID"}.
+#'   same terms occur in several tables of a dataseries, chose \code{"datID"}.
 #' @param pattern [\code{character(1)}]\cr an optional regular expression. Only
 #'   dataset names which match the regular expression will be returned.
 #' @param update [\code{logical(1)}]\cr whether or not the physical files should
@@ -305,11 +305,15 @@ normTable <- function(input = NULL, ..., source = "tabID", pattern = NULL,
 
     } else {
 
+      outVars <- c(names(algorithm@variables)[-grep("al", names(algorithm@variables))], "tabID", "geoID", names(vars), "ahID")
       if(!keepOrig){
         tempOut <- temp %>%
-          select(-starts_with("al"))
+          select(all_of(outVars))
       } else {
-        tempOut <- temp
+
+        tempOut <- temp  %>%
+          select(all_of(outVars), everything())
+
       }
 
       out <- bind_rows(out, tempOut)
