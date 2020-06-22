@@ -236,7 +236,7 @@ test_that("tables can be normalised (with matched variables)", {
   final <- read_csv(file = paste0(path, "/newDB/adb_tables/stage3/argentina.csv"))
   expect_tibble(x = final, types = c("double", "double", "double", "character", "double", "character", "double", "double", "double"))
   expect_data_frame(x = final, nrows = 56, ncols = 8)
-  expect_names(x = names(final), identical.to = c("id", "tabID", "geoID", "ahID", "year", "harvested", "production", "faoID"))
+  expect_names(x = names(final), identical.to = c("id", "tabID", "geoID", "ahID", "faoID", "year", "harvested", "production"))
 
   unlink(paste0(path, "/newDB"), recursive = TRUE)
 })

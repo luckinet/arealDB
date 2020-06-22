@@ -154,12 +154,6 @@ test_that("units are matched", {
            tabID = 1,
            geoID = 1)
   output <- matchUnits(input = input, source = list("tabID" = 1))
-  expect_tibble(x = output, nrows = 56, ncols = 8, col.names = "strict")
-  expect_character(x = output$ahID, any.missing = FALSE)
-  expect_names(x = names(output), permutation.of = c("year", "commodities", "harvested", "production", "id", "tabID", "geoID", "ahID"))
-
-  # ... with keeping original columns
-  output <- matchUnits(input = input, source = list("tabID" = 1), keepOrig = TRUE)
   expect_tibble(x = output, nrows = 56, ncols = 9, col.names = "strict")
   expect_character(x = output$ahID, any.missing = FALSE)
   expect_names(x = names(output), permutation.of = c("year", "commodities", "harvested", "production", "id", "tabID", "geoID", "al1_name", "ahID"))
@@ -171,7 +165,7 @@ test_that("units are matched", {
     mutate(id = seq_along(year),
            tabID = 1,
            geoID = 1)
-  output <- matchUnits(input = input, source = list("tabID" = 1), keepOrig = TRUE)
+  output <- matchUnits(input = input, source = list("tabID" = 1))
   expect_tibble(x = output, nrows = 224, ncols = 13, col.names = "strict")
   expect_character(x = output$ahID, any.missing = FALSE)
   expect_names(x = names(output), permutation.of = c("year", "commodities", "harvested", "production", "id", "tabID", "geoID", "al1_name", "al1_id", "al2_name", "al2_id", "al3_id", "ahID"))

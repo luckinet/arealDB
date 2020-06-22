@@ -113,21 +113,13 @@ test_that("variables are matched", {
     mutate(id = seq_along(year),
            tabID = 1,
            geoID = 1) %>%
-    matchUnits(source = list("tabID" = 1), keepOrig = FALSE)
+    matchUnits(source = list("tabID" = 1))
 
-  # discard output
   output <- matchVars(input = input, faoID = list(commodities = "target"),
-                      source = 1, keepOrig = FALSE)
-  expect_tibble(x = output, nrows = 56, ncols = 8, col.names = "strict")
+                      source = 1)
+  expect_tibble(x = output, nrows = 56, ncols = 10, col.names = "strict")
   expect_double(x = output$faoID, any.missing = FALSE)
-  expect_names(x = names(output), permutation.of = c("year", "harvested", "production", "id", "tabID", "geoID", "ahID", "faoID"))
-
-  # keep output
-  output <- matchVars(input = input, faoID = list(commodities = "target"),
-                      source = 1, keepOrig = TRUE)
-  expect_tibble(x = output, nrows = 56, ncols = 9, col.names = "strict")
-  expect_double(x = output$faoID, any.missing = FALSE)
-  expect_names(x = names(output), permutation.of = c("year", "commodities", "harvested", "production", "id", "tabID", "geoID", "ahID", "faoID"))
+  expect_names(x = names(output), permutation.of = c("year", "commodities", "harvested", "production", "id", "tabID", "geoID", "al1_name", "ahID", "faoID"))
 
   unlink(paste0(path, "/newDB"), recursive = TRUE)
 })
