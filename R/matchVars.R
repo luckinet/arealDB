@@ -7,9 +7,6 @@
 #'   which the terms have been taken.
 #' @param ... [\code{list(1)}]\cr lists that capture the variables by which to
 #'   match and the new column names containing the resulting ID; see Details.
-#' @param keepOrig [\code{logical(1)}]\cr to keep the original commodities in
-#'   the output (\code{TRUE}) or to remove them (\code{FALSE}, default). Useful
-#'   for debugging.
 #' @details Arguments in \code{...} are named lists that indicate with which
 #'   target column variables shall be matched and which value should be used as
 #'   target ID.
@@ -28,7 +25,7 @@
 #' @importFrom magrittr %>%
 #' @importFrom utils txtProgressBar setTxtProgressBar
 
-matchVars <- function(input = NULL, source = NULL, ..., keepOrig = FALSE){
+matchVars <- function(input = NULL, source = NULL, ...){
 
   # set internal objects
   intPaths <- paste0(getOption(x = "adb_path"))
@@ -38,7 +35,6 @@ matchVars <- function(input = NULL, source = NULL, ..., keepOrig = FALSE){
   assertTibble(x = input)
   assertIntegerish(x = source)
   assertList(x = vars)
-  assertLogical(x = keepOrig)
 
   message("--> matching variables of ...")
   for(i in seq_along(vars)){
@@ -69,16 +65,10 @@ matchVars <- function(input = NULL, source = NULL, ..., keepOrig = FALSE){
       left_join(id_temp, by = c("target" = targetName)) %>%
       select(!!varName := origin, all_of(targetVar))
 
-    if(!keepOrig){
-      out <- suppressMessages(
-        input %>%
-          left_join(matched) %>%
-          select(-!!varName))
-    } else{
-      out <- suppressMessages(
-        input %>%
-          left_join(matched))
-    }
+    out <- suppressMessages(
+      input %>%
+        left_join(matched))
+
   }
 
   return(out)

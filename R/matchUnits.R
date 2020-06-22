@@ -6,9 +6,6 @@
 #'   units.
 #' @param source [\code{integerish(1)}]\cr the geometry ID (\code{geoID}) from
 #'   which the terms have been taken.
-#' @param keepOrig [\code{logical(1)}]\cr to keep the original units in the
-#'   output (\code{TRUE}) or to remove them (\code{FALSE}, default). Useful for
-#'   debugging.
 #' @param verbose [\code{logical(1)}]\cr be verbose about what is happening
 #'   (default \code{FALSE}).
 #' @details \code{names(input)} must contain at least the \code{al1 = ...} to
@@ -30,8 +27,7 @@
 #' @importFrom tidyselect matches everything contains all_of
 #' @importFrom utils tail txtProgressBar setTxtProgressBar
 
-matchUnits <- function(input = NULL, source = NULL, keepOrig = FALSE,
-                       verbose = FALSE){
+matchUnits <- function(input = NULL, source = NULL, verbose = FALSE){
 
   # set internal objects
   intPaths <- paste0(getOption(x = "adb_path"), "/adb_geometries/")
@@ -39,7 +35,6 @@ matchUnits <- function(input = NULL, source = NULL, keepOrig = FALSE,
   # check validity of arguments
   assertDataFrame(x = input)
   assertList(x = source, len = 1)
-  assertLogical(x = keepOrig)
   # assert that one of the columnnames is "al1" so that at least nations are matched
   assertNames(x = names(input), must.include = "al1")
 
@@ -250,18 +245,11 @@ matchUnits <- function(input = NULL, source = NULL, keepOrig = FALSE,
     colnames(tempOut)[pos] <- paste0(adminLvls[i], "_alt")
   }
 
-  if(!keepOrig){
-    out <- suppressMessages(
-      tempOut %>%
-        left_join(outhIDs) %>%
-        select(-starts_with("al")))
-  } else{
-    out <- suppressMessages(
-      tempOut %>%
-        left_join(outhIDs) %>%
-        select(-contains("_alt"))
-      )
-  }
+  out <- suppressMessages(
+    tempOut %>%
+      left_join(outhIDs) %>%
+      select(-contains("_alt"))
+  )
 
   return(out)
 }

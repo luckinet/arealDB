@@ -83,6 +83,13 @@ normTable <- function(input = NULL, ..., source = "tabID", pattern = NULL,
   inv_geometries <- read_csv(paste0(intPaths, "/inv_geometries.csv"), col_types = "iiiccccccDDcc")
   vars <- exprs(..., .named = TRUE)
 
+  if(update){
+    if(keepOrig){
+      warning("to ensure database consistency, non-standard columns are removed (keepOrig = FALSE).\n-> Set update = FALSE to keep all original columns.\n")
+      keepOrig <- FALSE
+    }
+  }
+
   # make spatial subset
   spatSub <- c("nation", "un_member", "continent", "region", "subregion")
   if(any(names(vars) %in% spatSub)){
@@ -224,7 +231,12 @@ normTable <- function(input = NULL, ..., source = "tabID", pattern = NULL,
         message("  ! the file is not part of the subset '", paste0(subNations, collapse = ", "), "'.")
         next
       }
-      moveFile <- FALSE
+
+      if(nchar(fields[1]) != 0){
+        moveFile <- TRUE
+      } else {
+        moveFile <- FALSE
+      }
     } else {
       moveFile <- TRUE
     }
@@ -238,7 +250,7 @@ normTable <- function(input = NULL, ..., source = "tabID", pattern = NULL,
     temp <- temp %>%
       mutate(tabID = tabID,
              geoID = geoID) %>%
-      matchUnits(source = theSource, keepOrig = TRUE)
+      matchUnits(source = theSource)
     joinVars <- c("ahID", joinVars)
 
     # if a matching list for other variables is defined, match those
@@ -248,7 +260,7 @@ normTable <- function(input = NULL, ..., source = "tabID", pattern = NULL,
         pull(new)
       message()
       temp <- temp %>%
-        matchVars(source = tabID, !!!vars, keepOrig = keepOrig)
+        matchVars(source = tabID, !!!vars)
     }
 
     temp <- temp %>%
@@ -256,6 +268,12 @@ normTable <- function(input = NULL, ..., source = "tabID", pattern = NULL,
       mutate(year = as.character(year))
 
     # in case the user wants to update, update the data table
+    if(length(vars) == 0) {
+      outVars <- c("tabID", "geoID", "ahID", names(vars), names(algorithm@variables)[-c(grep("al", names(algorithm@variables)))])
+    } else {
+      varNames <- names(algorithm@variables)
+      outVars <- c("tabID", "geoID", "ahID", names(vars), varNames[!varNames %in% c(grep("al", names(algorithm@variables), value = TRUE), names(vars[[1]]))])
+    }
     if(update){
 
       theNations <- temp %>%
@@ -265,15 +283,11 @@ normTable <- function(input = NULL, ..., source = "tabID", pattern = NULL,
 
       for(j in seq_along(theNations)){
 
-        # message("--> Updating table of '", nations[i], "'.")
-
         tempOut <- temp %>%
           filter(al1_name == theNations[j])
-
-        if(!keepOrig){
-          tempOut <- tempOut %>%
-            select(-starts_with("al"))
-        }
+        tempOut <- tempOut %>%
+          select(all_of(outVars)) %>%
+          filter_at(.vars = outVars, all_vars(!is.na(.)))
 
         # append output to previous file
         if(file.exists(paste0(intPaths, "/adb_tables/stage3/", theNations[j], ".csv"))){
@@ -305,10 +319,12 @@ normTable <- function(input = NULL, ..., source = "tabID", pattern = NULL,
 
     } else {
 
-      outVars <- c(names(algorithm@variables)[-grep("al", names(algorithm@variables))], "tabID", "geoID", names(vars), "ahID")
       if(!keepOrig){
+
         tempOut <- temp %>%
-          select(all_of(outVars))
+          select(all_of(outVars)) %>%
+          filter_at(.vars = outVars, all_vars(!is.na(.)))
+
       } else {
 
         tempOut <- temp  %>%
@@ -318,6 +334,8 @@ normTable <- function(input = NULL, ..., source = "tabID", pattern = NULL,
 
       out <- bind_rows(out, tempOut)
     }
+
+    gc()
 
   }
 
