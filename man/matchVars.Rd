@@ -4,7 +4,7 @@
 \alias{matchVars}
 \title{Determine the valid ID of variables}
 \usage{
-matchVars(input = NULL, source = NULL, ..., keepOrig = FALSE)
+matchVars(input = NULL, source = NULL, ...)
 }
 \arguments{
 \item{input}{[\code{character(.)}]\cr terms to be translated.}
@@ -14,10 +14,6 @@ which the terms have been taken.}
 
 \item{...}{[\code{list(1)}]\cr lists that capture the variables by which to
 match and the new column names containing the resulting ID; see Details.}
-
-\item{keepOrig}{[\code{logical(1)}]\cr to keep the original commodities in
-the output (\code{TRUE}) or to remove them (\code{FALSE}, default). Useful
-for debugging.}
 }
 \value{
 The table provided in \code{input}, where the given variable is

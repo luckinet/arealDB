@@ -43,7 +43,7 @@ This function registers a new dataseries of both, geometries or areal data
 into the geospatial database.
 }
 \examples{
-setPath(root = paste0(system.file("test_datasets", package="arealDB", mustWork = TRUE), "newDB"))
+setPath(root = paste0(system.file("test_datasets", package="arealDB", mustWork = TRUE), "/newDB"))
 regDataseries(name = "gadm",
               description = "Database of Global Administrative Areas",
               homepage = "https://gadm.org/index.html",
