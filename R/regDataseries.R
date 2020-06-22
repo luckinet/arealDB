@@ -17,7 +17,7 @@
 #' @return Returns a tibble of the new entry that is appended to
 #'   'inv_dataseries.csv' in case \code{update = TRUE}.
 #' @examples
-#' setPath(root = paste0(system.file("test_datasets", package="arealDB", mustWork = TRUE), "newDB"))
+#' setPath(root = paste0(system.file("test_datasets", package="arealDB", mustWork = TRUE), "/newDB"))
 #' regDataseries(name = "gadm",
 #'               description = "Database of Global Administrative Areas",
 #'               homepage = "https://gadm.org/index.html",
@@ -63,7 +63,7 @@ regDataseries <- function(name = NULL, description = NULL, homepage = NULL, lice
       theName = NA_character_
     }
   } else{
-    if(name %in% inv_dataseries$name){
+    if(name %in% inv_dataseries$name & !update){
       stop("! the dataseries '", name, "' has been registered already !")
     }
     theName <- name
@@ -130,7 +130,15 @@ regDataseries <- function(name = NULL, description = NULL, homepage = NULL, lice
   }
 
   # construct new documentation
-  newDID <- ifelse(length(inv_dataseries$datID)==0, 1, as.integer(max(inv_dataseries$datID)+1))
+  if(update){
+    if(theName %in% inv_dataseries$name){
+      newDID <- inv_dataseries$datID[which(inv_dataseries$name %in% theName)]
+    } else {
+      newDID <- ifelse(length(inv_dataseries$datID)==0, 1, as.integer(max(inv_dataseries$datID)+1))
+    }
+  } else {
+    newDID <- ifelse(length(inv_dataseries$datID)==0, 1, as.integer(max(inv_dataseries$datID)+1))
+  }
   temp <- tibble(datID = as.integer(newDID),
                  name = theName,
                  description = theDescription,
