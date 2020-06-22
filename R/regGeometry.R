@@ -230,10 +230,7 @@ regGeometry <- function(nation = NULL, subset = NULL, gSeries = NULL, level = NU
     if(!testing){
       updateFrequency <- readline(" -> select one of: continual, daily, weekly, fortnightly, quarterly, biannually, annually, asNeeded, irregular, notPlanned, unknown, periodic, semimonthly, biennially: ")
       while(!is.element(updateFrequency,
-                        c("continual", "daily","weekly", "fortnightly",
-                          "quarterly", "biannually", "annually", "asNeeded",
-                          "irregular", "notPlanned", "unknown", "periodic",
-                          "semimonthly", "biennially"))){
+                        c("continual", "daily","weekly", "fortnightly", "quarterly", "biannually", "annually", "asNeeded", "irregular", "notPlanned", "unknown", "periodic", "semimonthly", "biennially"))){
         # test missing
         message(paste(" -> input none of: continual, daily, weekly, fortnightly, quarterly, biannually, annually, asNeeded, irregular, notPlanned, unknown, periodic, semimonthly, biennially \n
                       please repeat: "))
