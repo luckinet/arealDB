@@ -45,15 +45,19 @@
 #' @return Returns a tibble of the entry that is appended to
 #'   'inv_geometries.csv' in case \code{update = TRUE}.
 #' @examples
-#' \dontrun{
+#' # build the example database
+#' makeExampleDB(until = "regDataseries")
 #'
 #' # The GADM dataset comes as *.zip archive
 #' regGeometry(nation = "NAME_0",
 #'             gSeries = "gadm",
 #'             level = 1,
-#'             layer = "level0",
+#'             layer = "example_geom1",
 #'             nameCol = "NAME_0",
-#'             archive = "gadm36_levels_gpkg.zip|gadm36_levels.gpkg",
+#'             archive = "example_geom.7z|example_geom1.gpkg",
+#'             archiveLink = "https://gadm.org/",
+#'             nextUpdate = "2019-10-01",
+#'             updateFrequency = "quarterly",
 #'             update = TRUE)
 #'
 #' # The second administrative level in GADM contains names in the columns
@@ -61,11 +65,13 @@
 #' regGeometry(nation = "NAME_0",
 #'             gSeries = "gadm",
 #'             level = 2,
-#'             layer = "level1",
+#'             layer = "example_geom2",
 #'             nameCol = "NAME_0|NAME_1",
-#'             archive = "gadm36_levels_gpkg.zip|gadm36_levels.gpkg",
+#'             archive = "example_geom.7z|example_geom2.gpkg",
+#'             archiveLink = "https://gadm.org/",
+#'             nextUpdate = "2019-10-01",
+#'             updateFrequency = "quarterly",
 #'             update = TRUE)
-#' }
 #' @importFrom checkmate assertNames assertCharacter assertIntegerish
 #'   assertFileExists testChoice assertLogical
 #' @importFrom readr read_csv
@@ -232,8 +238,7 @@ regGeometry <- function(nation = NULL, subset = NULL, gSeries = NULL, level = NU
       while(!is.element(updateFrequency,
                         c("continual", "daily","weekly", "fortnightly", "quarterly", "biannually", "annually", "asNeeded", "irregular", "notPlanned", "unknown", "periodic", "semimonthly", "biennially"))){
         # test missing
-        message(paste(" -> input none of: continual, daily, weekly, fortnightly, quarterly, biannually, annually, asNeeded, irregular, notPlanned, unknown, periodic, semimonthly, biennially \n
-                      please repeat: "))
+        message(paste(" -> input one of: continual, daily, weekly, fortnightly, quarterly, biannually, annually, asNeeded, irregular, notPlanned, unknown, periodic, semimonthly, biennially"))
         updateFrequency <- readline()
       }
     } else {
