@@ -3,7 +3,8 @@ library(checkmate)
 context("setPath")
 
 test_that("path has been added to the global options", {
-  path <- system.file("test_datasets", package="arealDB", mustWork = TRUE)
+
+  path <- tempdir()
   setPath(root = paste0(path, "/newDB"))
 
   out <- getOption("adb_path")

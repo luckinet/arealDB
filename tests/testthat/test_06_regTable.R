@@ -5,61 +5,25 @@ context("regTable")
 
 
 test_that("a table inventory entry is produced", {
-  path <- system.file("test_datasets", package="arealDB", mustWork = TRUE)
-  setPath(root = paste0(path, "/newDB"))
-  options(adb_testing = TRUE)
 
-  regDataseries(name = "gadm",
-                description = "Database of Global Administrative Areas",
-                homepage = "https://gadm.org/index.html",
-                licence_link = "https://gadm.org/license.html",
-                update = TRUE)
-  regDataseries(name = "maia",
-                description = "ministerio de agricultura ganaderia y pesca",
-                homepage = "http://datosestimaciones.magyp.gob.ar",
-                licence_link = "http://datosestimaciones.magyp.gob.ar/license.html",
-                update = TRUE)
-  file.copy(from = paste0(path, "/example_table.7z"),
-            to = paste0(path, "/newDB/adb_tables/stage1/example_table.7z"))
-  file.copy(from = paste0(path, "/example_table1.csv"),
-            to = paste0(path, "/newDB/adb_tables/stage2/arg_1_soyMaize_1990_2017_maia.csv"))
-  file.copy(from = paste0(path, "/example_table2.csv"),
-            to = paste0(path, "/newDB/adb_tables/stage2/arg_2_soyMaize_1990_2017_maia.csv"))
-  file.copy(from = paste0(path, "/example_geom.7z"),
-            to = paste0(path, "/newDB/adb_geometries/stage1/example_geom.7z"))
-  file.copy(from = paste0(path, "/example_geom1.gpkg"),
-            to = paste0(path, "/newDB/adb_geometries/stage2/_1__gadm.gpkg"))
+  makeExampleDB(until = "regGeometry")
 
-  output <- regGeometry(nation = "NAME_0",
-                        gSeries = "gadm",
-                        level = 1,
-                        layer = "example_geom1",
-                        nameCol = "NAME_0",
-                        archive = "example_geom.7z|example_geom1.gpkg",
-                        archiveLink = "https://gadm.org/downloads/example_geom.7z.html",
-                        nextUpdate = "2019-10-01",
-                        updateFrequency = "quarterly",
-                        update = TRUE)
+  meta_maia_1 <- makeSchema(
+    list(header = list(row = 1),
+         variables = list(al1 =
+                            list(type = "id", col = 1),
+                          year =
+                            list(type = "id", col = 2),
+                          commodities =
+                            list(type = "id", col = 3),
+                          harvested =
+                            list(type = "measured", unit = "ha", factor = 1, col = 4),
+                          production =
+                            list(type = "measured", unit = "t", factor = 1, col = 5))))
 
-  meta_maia_1 <- makeSchema(list(
-    clusters = list(row = NULL, col = NULL, width = NULL, height = NULL,
-                    id = NULL),
-    header = list(row = 1),
-    variables = list(
-      territories =
-        list(type = "id", col = 1),
-      period =
-        list(type = "id", col = 2),
-      commodities =
-        list(type = "id", col = 3),
-      harvested =
-        list(type = "measured", unit = "ha", factor = 1, col = 4),
-      production =
-        list(type = "measured", unit = "t", factor = 1, col = 5))))
-
-  output <- regTable(nation = "Argentina",
+  output <- regTable(nation = "estonia",
                      subset = "soyMaize",
-                     dSeries = "maia",
+                     dSeries = "madeUp",
                      gSeries = "gadm",
                      level = 1,
                      schema = meta_maia_1,
@@ -77,61 +41,26 @@ test_that("a table inventory entry is produced", {
                                   "schema", "orig_file", "orig_link", "download_date",
                                   "next_update", "update_frequency", "metadata_link",
                                   "metadata_path", "notes"))
-  expect_file_exists(x = paste0(path, "/newDB/adb_tables/meta/schemas/schema_1.rds"))
-
-  unlink(paste0(path, "/newDB"), recursive = TRUE)
+  expect_file_exists(x = paste0(getOption("adb_path"), "/adb_tables/meta/schemas/schema_1.rds"))
 })
 
 test_that("function asks for details, if not provided", {
-  path <- system.file("test_datasets", package="arealDB", mustWork = TRUE)
-  setPath(root = paste0(path, "/newDB"))
+
+  makeExampleDB(until = "regGeometry")
   options(adb_testing = TRUE)
 
-  regDataseries(name = "gadm",
-                description = "Database of Global Administrative Areas",
-                homepage = "https://gadm.org/index.html",
-                licence_link = "https://gadm.org/license.html",
-                update = TRUE)
-  regDataseries(name = "maia",
-                description = "ministerio de agricultura ganaderia y pesca",
-                homepage = "http://datosestimaciones.magyp.gob.ar",
-                licence_link = "http://datosestimaciones.magyp.gob.ar/licence.html",
-                update = TRUE)
-  file.copy(from = paste0(path, "/example_table.7z"),
-            to = paste0(path, "/newDB/adb_tables/stage1/example_table.7z"))
-  file.copy(from = paste0(path, "/example_table1.csv"),
-            to = paste0(path, "/newDB/adb_tables/stage2/_1__1990_2019_maia.csv"))
-  file.copy(from = paste0(path, "/example_geom.7z"),
-            to = paste0(path, "/newDB/adb_geometries/stage1/example_geom.7z"))
-  file.copy(from = paste0(path, "/example_geom1.gpkg"),
-            to = paste0(path, "/newDB/adb_geometries/stage2/_1__gadm.gpkg"))
-
-  output <- regGeometry(nation = "NAME_0",
-                        gSeries = "gadm",
-                        level = 1,
-                        layer = "example_geom1",
-                        nameCol = "NAME_0",
-                        archive = "example_geom.7z|example_geom1.gpkg",
-                        archiveLink = "https://gadm.org/downloads/example_geom.7z.html",
-                        nextUpdate = "2019-10-01",
-                        updateFrequency = "quarterly",
-                        update = TRUE)
-
-  meta_maia_1 <- makeSchema(list(
-    clusters = list(row = NULL, col = NULL, width = NULL, height = NULL,
-                    id = NULL),
-    header = list(row = 1),
-    variables = list(
-      territories =
-        list(type = "id", col = 1),
-      period =
-        list(type = "id", col = 2),
-      commodities =
-        list(type = "id", col = 3),
-      harvested =
-        list(type = "measured", unit = "ha", factor = 1, col = 4),
-      production =
-        list(type = "measured", unit = "t", factor = 1, col = 5))))
+  meta_maia_1 <- makeSchema(
+    list(header = list(row = 1),
+         variables = list(al1 =
+                            list(type = "id", col = 1),
+                          year =
+                            list(type = "id", col = 2),
+                          commodities =
+                            list(type = "id", col = 3),
+                          harvested =
+                            list(type = "measured", unit = "ha", factor = 1, col = 4),
+                          production =
+                            list(type = "measured", unit = "t", factor = 1, col = 5))))
 
   expect_message(object = regTable())
   output <- capture_messages(code = regTable())
@@ -148,27 +77,4 @@ test_that("function asks for details, if not provided", {
   expect_equal(object = output[10], expected = "please type in when the table gets its next update (YYYY-MM-DD): \n")
   expect_equal(object = output[11], expected = "if there is already metadata available:\n -> type in the weblink to the metadataset: \n")
   expect_equal(object = output[12], expected = "if there was an existing metadataset downloaded:\n -> type in the local path to the metadataset: \n")
-
-  unlink(paste0(path, "/newDB"), recursive = TRUE)
-})
-
-test_that("Error if arguments have wrong value", {
-  path <- system.file("test_datasets", package="arealDB", mustWork = TRUE)
-  setPath(root = paste0(path, "/newDB"))
-  options(adb_testing = TRUE)
-
-  regDataseries(name = "gadm",
-                description = "Database of Global Administrative Areas",
-                homepage = "https://gadm.org/index.html",
-                licence_link = "https://gadm.org/license.html",
-                update = TRUE)
-  file.copy(from = paste0(path, "/example_table.7z"),
-            to = paste0(path, "/newDB/adb_tables/stage1/example_table.7z"))
-  file.copy(from = paste0(path, "/example_table1.csv"),
-            to = paste0(path, "/newDB/adb_tables/stage2/arg_1_soyMaize_1990_2017_maia.csv"))
-
-  expect_error(regTable())
-  expect_error(regTable(update = 1))
-
-  unlink(paste0(path, "/newDB"), recursive = TRUE)
 })
