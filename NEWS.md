@@ -1,3 +1,8 @@
+# arealDB 0.3.4
+
+* include 'makeExampleDB', which allows to build an example database at any stage. This is useful for testing, debugging and examplifying an areal database.
+* improved documentation due to this change.
+
 # arealDB 0.3.3
 
 * refine package documentation
