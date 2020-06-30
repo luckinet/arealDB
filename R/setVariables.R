@@ -1,7 +1,7 @@
 #' Set index and translation tables
 #'
 #' Use a pre-compiled table to create an index and/or translation table for the
-#' target variables of a geospatial database.
+#' target variables of an areal database.
 #' @param input [\code{tibble(1)}]\cr a possibly already existing table based on
 #'   which the output should be constructed; see details.
 #' @param variable [\code{character(1)}]\cr name of the variable and thus of the
@@ -18,7 +18,7 @@
 #'   the standardised terms.
 #' @details This is the second function that is run in a project, as it creates
 #'   index and translation tables for the target variables that shall be stored
-#'   in an areal database.  \itemize{ \item An index table relates an ID (given
+#'   in an areal database. \itemize{ \item An index table relates an ID (given
 #'   in \code{pid}) to the variable terms (given in \code{target}) and
 #'   potentially to ancillary information. Such tables should be compiled before
 #'   a project is started and should contain a clear set of values per variable
@@ -30,14 +30,19 @@
 #'   the project root directory with name \code{paste0(type, "_", variable,
 #'   ".csv")}.
 #' @examples
-#' \dontrun{
 #' library(readr)
+#' inPath <- system.file("test_datasets",
+#'                       package = "arealDB",
+#'                       mustWork = TRUE)
+#'
+#' # start the example database
+#' makeExampleDB(until = "setPath")
 #'
 #' # create index from an already existing table
-#' comm <- read_csv(file = "fao_commodities.csv", col_types = "iclciccc")
+#' comm <- read_csv(file = paste0(inPath, "/id_commodities.csv"),
+#'                  col_types = "iccc")
 #' setVariables(input = comm, variable = "commodities",
 #'              pid = "faoID", target = "simpleName")
-#' }
 #' @importFrom checkmate assertCharacter
 #' @importFrom stringr str_detect str_locate str_sub
 #' @export
