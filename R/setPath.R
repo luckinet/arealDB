@@ -12,9 +12,7 @@
 #'   directory structure of the new areal database and a new environment that
 #'   contains the database metadata.
 #' @examples
-#' myPath <- system.file("test_datasets", package="arealDB", mustWork = TRUE)
-#'
-#' setPath(root = paste0(myPath, "newDB"))
+#' setPath(root = paste0(tempdir(), "/newDB"))
 #' @importFrom checkmate testDirectory testFileExists
 #' @importFrom readr write_csv
 #' @export

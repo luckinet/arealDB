@@ -60,15 +60,42 @@
 #' @return Returns a tibble of the entry that is appended to 'inv_tables.csv' in
 #'   case \code{update = TRUE}.
 #' @examples
-#' \dontrun{
-#' regTable(nation = "United States of America",
-#'          subset = "soy",
-#'          dSeries = "usda", gSeries = "gadm",
-#'          level = 3,
-#'          begin = 1990, end = 2017,
-#'          archive = "soybean_us_county_1990_2017.csv",
+#' # build the example database
+#' makeExampleDB(until = "regGeometry")
+#'
+#' # the schema description for this table
+#' library(tabshiftr)
+#' schema_madeUp <- makeSchema(
+#'   list(header = list(row = 1),
+#'        variables = list(
+#'          al1 =
+#'            list(type = "id", col = 1),
+#'          year =
+#'            list(type = "id", col = 2),
+#'          commodities =
+#'            list(type = "id", col = 3),
+#'          harvested =
+#'            list(type = "measured", unit = "ha",
+#'                 factor = 1, col = 4),
+#'          production =
+#'            list(type = "measured", unit = "t",
+#'                 factor = 1, col = 5))))
+#'
+#' regTable(nation = "estonia",
+#'          subset = "soyMaize",
+#'          dSeries = "madeUp",
+#'          gSeries = "gadm",
+#'          level = 1,
+#'          begin = 1990,
+#'          end = 2017,
+#'          schema = schema_madeUp,
+#'          archive = "example_table.7z|example_table1.csv",
+#'          archiveLink = "...",
+#'          nextUpdate = "2019-10-01",
+#'          updateFrequency = "quarterly",
+#'          metadataLink = "...",
+#'          metadataPath = "my/local/path",
 #'          update = TRUE)
-#' }
 #' @importFrom readr read_csv write_rds guess_encoding
 #' @importFrom checkmate assertDataFrame assertNames assertCharacter
 #'   assertIntegerish assertSubset assertLogical testChoice assertChoice
@@ -153,8 +180,8 @@ regTable <- function(nation = NULL, subset = NULL, dSeries = NULL, gSeries = NUL
     }
 
     if(!testing){
-      if(!any(inv_dataseries$name %in% gSeries)){
-        stop(paste0("please first create the new dataseries '", gSeries,"' via 'regDataseries()'"))
+      if(!any(inv_dataseries$name %in% dSeries)){
+        stop(paste0("please first create the new dataseries '", dSeries,"' via 'regDataseries()'"))
       }
     } else {
       dataSeries <- NA_integer_
