@@ -42,7 +42,8 @@ check whether the metadata specification and the provided file(s) are
 properly specified.}
 
 \item{verbose}{[\code{logical(1)}]\cr be verbose about what is happening
-(default \code{FALSE}).}
+(default \code{FALSE}). Furthermore, you can use
+\code{\link{suppressMessages}} to make this function completely silent.}
 }
 \value{
 This function harmonises and integrates so far unprocessed geometries
@@ -82,22 +83,16 @@ To normalise geometries, this function proceeds as follows:
   '/processed', if it is fully processed.}
 }
 \examples{
-\dontrun{
+library(sf)
 
-# set up a basis dataset from GADM
-normGeometry(pattern = "gadm",
-             update = TRUE)
+# build the example database
+makeExampleDB(until = "regGeometry")
 
-# normalise a specific dataset ...
-normGeometry(input = ".../adb_geometries/stage2/europe.gpkg",
-             nation = c("estonia"),
-             update = TRUE)
+# normalise all geometries ...
+normGeometry(nation = "estonia", update = TRUE)
 
-# ... or normalise all remaining files
-normGeometry(nation = c("estonia"),
-             update = TRUE)
-
-}
+# ... and check the result
+output <- st_read(paste0(tempdir(), "/newDB/adb_geometries/stage3/estonia.gpkg"))
 }
 \seealso{
 Other normalisers: 

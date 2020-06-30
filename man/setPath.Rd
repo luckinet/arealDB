@@ -26,7 +26,5 @@ This is the first function that is run in a project, as it initiates
   used to register that path in the options of the current R session.
 }
 \examples{
-myPath <- system.file("test_datasets", package="arealDB", mustWork = TRUE)
-
-setPath(root = paste0(myPath, "newDB"))
+setPath(root = paste0(tempdir(), "/newDB"))
 }

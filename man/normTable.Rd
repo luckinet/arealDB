@@ -32,7 +32,7 @@ dataset names which match the regular expression will be returned.}
 
 \item{update}{[\code{logical(1)}]\cr whether or not the physical files should
 be updated (\code{TRUE}) or the function should merely return the new
-object (\code{FALSE} default). This is helpful to check whether the
+object (\code{FALSE}, default). This is helpful to check whether the
 metadata specification and the provided file(s) (translation and ID tables)
 are properly specified.}
 
@@ -40,8 +40,9 @@ are properly specified.}
 variable names in the output (\code{TRUE}) or to remove them (\code{FALSE},
 default). Useful for debugging.}
 
-\item{verbose}{[\code{logical(1)}]\cr be verbose about what is happening
-(default \code{FALSE}).}
+\item{verbose}{[\code{logical(1)}]\cr be verbose about translating terms
+(default \code{FALSE}). Furthermore, you can use
+\code{\link{suppressMessages}} to make this function completely silent.}
 }
 \value{
 This function harmonises and integrates so far unprocessed data
@@ -77,11 +78,17 @@ Arguments in \code{...} are so-called matching lists. This argument
   \code{update = TRUE}, store the processed data table at stage three.}
 }
 \examples{
-\dontrun{
-normTable(input = ".../adb_tables/stage2/dataTable.csv",
-          faoID = list(commodities = "simpleName"),
-          update = TRUE)
-}
+library(readr)
+
+# build the example database
+makeExampleDB(until = "normGeometry")
+
+# normalise all available data tables, harmonising commodities
+# according to the FAO commodity list ...
+normTable(faoID = list(commodities = "target"), update = TRUE)
+
+# ... and check the result
+output <- read_csv(paste0(tempdir(), "/newDB/adb_tables/stage3/estonia.csv"))
 }
 \seealso{
 Other normalisers: 

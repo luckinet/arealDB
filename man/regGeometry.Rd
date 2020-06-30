@@ -85,15 +85,19 @@ When processing geometries to which areal data shall be linked,
   you have saved the file.}
 }
 \examples{
-\dontrun{
+# build the example database
+makeExampleDB(until = "regDataseries")
 
 # The GADM dataset comes as *.zip archive
 regGeometry(nation = "NAME_0",
             gSeries = "gadm",
             level = 1,
-            layer = "level0",
+            layer = "example_geom1",
             nameCol = "NAME_0",
-            archive = "gadm36_levels_gpkg.zip|gadm36_levels.gpkg",
+            archive = "example_geom.7z|example_geom1.gpkg",
+            archiveLink = "https://gadm.org/",
+            nextUpdate = "2019-10-01",
+            updateFrequency = "quarterly",
             update = TRUE)
 
 # The second administrative level in GADM contains names in the columns
@@ -101,9 +105,11 @@ regGeometry(nation = "NAME_0",
 regGeometry(nation = "NAME_0",
             gSeries = "gadm",
             level = 2,
-            layer = "level1",
+            layer = "example_geom2",
             nameCol = "NAME_0|NAME_1",
-            archive = "gadm36_levels_gpkg.zip|gadm36_levels.gpkg",
+            archive = "example_geom.7z|example_geom2.gpkg",
+            archiveLink = "https://gadm.org/",
+            nextUpdate = "2019-10-01",
+            updateFrequency = "quarterly",
             update = TRUE)
-}
 }

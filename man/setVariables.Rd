@@ -41,12 +41,12 @@ No return value, called for the side effect of writing a table to
 }
 \description{
 Use a pre-compiled table to create an index and/or translation table for the
-target variables of a geospatial database.
+target variables of an areal database.
 }
 \details{
 This is the second function that is run in a project, as it creates
   index and translation tables for the target variables that shall be stored
-  in an areal database.  \itemize{ \item An index table relates an ID (given
+  in an areal database. \itemize{ \item An index table relates an ID (given
   in \code{pid}) to the variable terms (given in \code{target}) and
   potentially to ancillary information. Such tables should be compiled before
   a project is started and should contain a clear set of values per variable
@@ -56,12 +56,17 @@ This is the second function that is run in a project, as it creates
   terms are simply registered as "original" to be used for fuzzy matching.}
 }
 \examples{
-\dontrun{
 library(readr)
+inPath <- system.file("test_datasets",
+                      package = "arealDB",
+                      mustWork = TRUE)
+
+# start the example database
+makeExampleDB(until = "setPath")
 
 # create index from an already existing table
-comm <- read_csv(file = "fao_commodities.csv", col_types = "iclciccc")
+comm <- read_csv(file = paste0(inPath, "/id_commodities.csv"),
+                 col_types = "iccc")
 setVariables(input = comm, variable = "commodities",
              pid = "faoID", target = "simpleName")
-}
 }

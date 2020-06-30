@@ -108,13 +108,40 @@ When processing areal data tables, carry out the following steps:
   \code{tabshiftr::\link{makeSchema}} with \code{arealDB}.
 }
 \examples{
-\dontrun{
-regTable(nation = "United States of America",
-         subset = "soy",
-         dSeries = "usda", gSeries = "gadm",
-         level = 3,
-         begin = 1990, end = 2017,
-         archive = "soybean_us_county_1990_2017.csv",
+# build the example database
+makeExampleDB(until = "regGeometry")
+
+# the schema description for this table
+library(tabshiftr)
+schema_madeUp <- makeSchema(
+  list(header = list(row = 1),
+       variables = list(
+         al1 =
+           list(type = "id", col = 1),
+         year =
+           list(type = "id", col = 2),
+         commodities =
+           list(type = "id", col = 3),
+         harvested =
+           list(type = "measured", unit = "ha",
+                factor = 1, col = 4),
+         production =
+           list(type = "measured", unit = "t",
+                factor = 1, col = 5))))
+
+regTable(nation = "estonia",
+         subset = "soyMaize",
+         dSeries = "madeUp",
+         gSeries = "gadm",
+         level = 1,
+         begin = 1990,
+         end = 2017,
+         schema = schema_madeUp,
+         archive = "example_table.7z|example_table1.csv",
+         archiveLink = "...",
+         nextUpdate = "2019-10-01",
+         updateFrequency = "quarterly",
+         metadataLink = "...",
+         metadataPath = "my/local/path",
          update = TRUE)
-}
 }
