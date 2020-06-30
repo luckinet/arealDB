@@ -22,7 +22,8 @@
 #'   check whether the metadata specification and the provided file(s) are
 #'   properly specified.
 #' @param verbose [\code{logical(1)}]\cr be verbose about what is happening
-#'   (default \code{FALSE}).
+#'   (default \code{FALSE}). Furthermore, you can use
+#'   \code{\link{suppressMessages}} to make this function completely silent.
 #' @details To normalise geometries, this function proceeds as follows:
 #'   \enumerate{ \item Read in \code{input} and extract initial metadata from
 #'   the file name. \item Loop through every nation potentially included in the
@@ -55,22 +56,16 @@
 #'   each nation in the registered geometries a spatial file of the specified
 #'   file-type.
 #' @examples
-#' \dontrun{
+#' library(sf)
 #'
-#' # set up a basis dataset from GADM
-#' normGeometry(pattern = "gadm",
-#'              update = TRUE)
+#' # build the example database
+#' makeExampleDB(until = "regGeometry")
 #'
-#' # normalise a specific dataset ...
-#' normGeometry(input = ".../adb_geometries/stage2/europe.gpkg",
-#'              nation = c("estonia"),
-#'              update = TRUE)
+#' # normalise all geometries ...
+#' normGeometry(nation = "estonia", update = TRUE)
 #'
-#' # ... or normalise all remaining files
-#' normGeometry(nation = c("estonia"),
-#'              update = TRUE)
-#'
-#' }
+#' # ... and check the result
+#' output <- st_read(paste0(tempdir(), "/newDB/adb_geometries/stage3/estonia.gpkg"))
 #' @importFrom checkmate assertFileExists assertIntegerish assertLogical
 #'   assertCharacter assertChoice testFileExists
 #' @importFrom dplyr filter distinct select mutate rowwise filter_at vars
@@ -192,10 +187,6 @@ normGeometry <- function(input = NULL, ..., thresh = 10, outType = "gpkg",
     # only process existing nations
     theNations <- theNations[!is.na(nations)]
     nations <- nations[!is.na(nations)]
-
-    # only process nations that are part of 'countries'
-    theNations <- theNations[nations %in% countries$unit]
-    nations <- nations[nations %in% countries$unit]
 
     # potentially subset nation values
     if(length(subsets) > 0){
