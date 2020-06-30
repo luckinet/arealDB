@@ -14,14 +14,15 @@
 #'   dataset names which match the regular expression will be returned.
 #' @param update [\code{logical(1)}]\cr whether or not the physical files should
 #'   be updated (\code{TRUE}) or the function should merely return the new
-#'   object (\code{FALSE} default). This is helpful to check whether the
+#'   object (\code{FALSE}, default). This is helpful to check whether the
 #'   metadata specification and the provided file(s) (translation and ID tables)
 #'   are properly specified.
 #' @param keepOrig [\code{logical(1)}]\cr to keep the original units and
 #'   variable names in the output (\code{TRUE}) or to remove them (\code{FALSE},
 #'   default). Useful for debugging.
-#' @param verbose [\code{logical(1)}]\cr be verbose about what is happening
-#'   (default \code{FALSE}).
+#' @param verbose [\code{logical(1)}]\cr be verbose about translating terms
+#'   (default \code{FALSE}). Furthermore, you can use
+#'   \code{\link{suppressMessages}} to make this function completely silent.
 #' @details Arguments in \code{...} are so-called matching lists. This argument
 #'   captures three kinds of information: \enumerate{\item the 'variable' that
 #'   should be matched with a matching list, \item the 'targetColumn' in that
@@ -50,11 +51,17 @@
 #'   produces for each nation in the registered data tables a comma-separated
 #'   values file that includes all thematic areal data.
 #' @examples
-#' \dontrun{
-#' normTable(input = ".../adb_tables/stage2/dataTable.csv",
-#'           faoID = list(commodities = "simpleName"),
-#'           update = TRUE)
-#' }
+#' library(readr)
+#'
+#' # build the example database
+#' makeExampleDB(until = "normGeometry")
+#'
+#' # normalise all available data tables, harmonising commodities
+#' # according to the FAO commodity list ...
+#' normTable(faoID = list(commodities = "target"), update = TRUE)
+#'
+#' # ... and check the result
+#' output <- read_csv(paste0(tempdir(), "/newDB/adb_tables/stage3/estonia.csv"))
 #' @importFrom checkmate assertNames assertFileExists assertLogical
 #' @importFrom rlang exprs
 #' @importFrom tabshiftr reorganise
@@ -70,7 +77,7 @@ normTable <- function(input = NULL, ..., source = "tabID", pattern = NULL,
                       update = FALSE, keepOrig = FALSE, verbose = FALSE){
 
   # set internal paths
-  intPaths <- paste0(getOption(x = "adb_path"))
+  intPaths <- getOption(x = "adb_path")
 
   if(is.null(input)){
     input <- list.files(path = paste0(intPaths, "/adb_tables/stage2"), full.names = TRUE, pattern = pattern)
