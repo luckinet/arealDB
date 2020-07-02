@@ -39,15 +39,3 @@ testCompressed <- function(x){
 
   return(grepl("^.*(.gz|.bz2|.tar|.zip|.tgz|.gzip|.7z)[[:space:]]*$", x))
 }
-
-#' View large simple features
-#'
-#' @param x [\code{sf}]\cr the sf object to view.
-#' @importFrom rlang ensym
-
-View_sf <- function(x){
-  theTitle <- ensym(x)
-  x %>% as_tibble() %>%
-    select(-geom) %>%
-    View(title = as.character(theTitle))
-}
