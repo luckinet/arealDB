@@ -1,7 +1,6 @@
 #' Update a table
 #'
-#' Update any inventory, index or translation table of a geospatial
-#' database.
+#' Update any inventory, index or translation table of an areal database.
 #' @param index [\code{tibble(1)}]\cr the table to use as update.
 #' @param name [\code{character(1)}]\cr name of the table that shall be updated.
 #' @importFrom checkmate assertTibble assertCharacter
@@ -30,12 +29,14 @@ updateTable <- function(index = NULL, name = NULL){
     # create vector of columns that should be checked for distinct values
     keepCols <- names(index)[!str_detect(string = names(index), pattern = "ID") &
                                !str_detect(string = names(index), pattern = "notes") &
-                               !str_detect(string = names(index), pattern = "date")]
+                               !str_detect(string = names(index), pattern = "date") &
+                               !str_detect(string = names(index), pattern = "column") &
+                               !str_detect(string = names(index), pattern = "orig")]
 
     # join the old table with 'index'
     index <- union(oldIndex, index) %>%
       group_by(.dots = keepCols) %>%
-      filter(row_number() == 1) %>%
+      filter(row_number() == n()) %>%
       arrange(!!as.name(colnames(index)[1]))
   }
 
