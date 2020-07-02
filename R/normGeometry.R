@@ -167,7 +167,7 @@ normGeometry <- function(input = NULL, ..., thresh = 10, outType = "gpkg",
         as.character()
       assertCharacter(x = theNations, min.len = 1, any.missing = FALSE)
       nations <- translateTerms(terms = theNations,
-                                index = "tt_territories",
+                                index = "tt_nations",
                                 source = list("geoID" = newGID),
                                 verbose = verbose) %>%
         mutate(target = if_else(target == "ignore", NA_character_, target)) %>%
@@ -232,7 +232,7 @@ normGeometry <- function(input = NULL, ..., thresh = 10, outType = "gpkg",
         # create a geom specifically for the recent nation
         if(severalNations){
           sourceGeom <- newGeom %>%
-            filter_at(vars(nationCol), all_vars(. %in% theNations[j])) %>%
+            filter_at(vars(all_of(nationCol)), all_vars(. %in% theNations[j])) %>%
             select(all_of(unitCols))
           assertChoice(x = natCol, choices = names(sourceGeom), .var.name = "names(nation_column)")
         } else{
@@ -718,7 +718,7 @@ normGeometry <- function(input = NULL, ..., thresh = 10, outType = "gpkg",
                                  {if("al6_id" %in% names(.)) formatC(al6_id, width = 3, flag = 0) else ""})
             ) %>%
             ungroup() %>%
-            select(nation = NAME_0, name = !!unitCols[length(unitCols)], level, ahID, geoID, everything(), -xyz) %>%
+            select(nation = NAME_0, name = !!unitCols[length(unitCols)], level, ahID, geoID, everything(), -all_of(xyz)) %>%
             mutate(name = tolower(name))
 
           if(theLevel == 1){
