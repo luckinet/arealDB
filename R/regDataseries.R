@@ -14,6 +14,8 @@
 #' @param notes [\code{character(1)}]\cr optional notes.
 #' @param update [\code{logical(1)}]\cr whether or not the file
 #'   'inv_dataseries.csv' should be updated.
+#' @param overwrite [\code{logical(1)}]\cr whether or not the dataseries to
+#'   register shall overwrite a potentially already existing older version.
 #' @return Returns a tibble of the new entry that is appended to
 #'   'inv_dataseries.csv' in case \code{update = TRUE}.
 #' @examples

@@ -34,6 +34,9 @@ the licence text is stored.}
 
 \item{update}{[\code{logical(1)}]\cr whether or not the file
 'inv_dataseries.csv' should be updated.}
+
+\item{overwrite}{[\code{logical(1)}]\cr whether or not the dataseries to
+register shall overwrite a potentially already existing older version.}
 }
 \value{
 Returns a tibble of the new entry that is appended to
