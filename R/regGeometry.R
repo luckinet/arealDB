@@ -117,6 +117,7 @@ regGeometry <- function(nation = NULL, subset = NULL, gSeries = NULL, level = NU
   assertCharacter(x = updateFrequency, any.missing = FALSE, null.ok = TRUE)
   assertCharacter(x = notes, ignore.case = TRUE, any.missing = FALSE, len = 1, null.ok = TRUE)
   assertLogical(x = update, len = 1)
+  assertLogical(x = overwrite, len = 1)
 
   # ask for missing and required arguments
   if(is.null(nation)){
@@ -145,6 +146,7 @@ regGeometry <- function(nation = NULL, subset = NULL, gSeries = NULL, level = NU
       nameCol <- "units"
     }
   }
+
 
   if(is.null(gSeries)){
     message("please type in to which series the geometry belongs: ")
@@ -215,8 +217,13 @@ regGeometry <- function(nation = NULL, subset = NULL, gSeries = NULL, level = NU
   filePath <- paste0(intPaths, "/adb_geometries/stage2/", fileName)
   filesTrace <- str_split(archive, "\\|")[[1]]
 
-  if(any(inv_geometries$source_file %in% fileName) & !overwrite){
-    return(paste0("'", fileName, "' has already been registered."))
+  newGID <- ifelse(length(inv_geometries$geoID)==0, 1, as.integer(max(inv_geometries$geoID)+1))
+  if(any(inv_geometries$source_file %in% fileName)){
+    if(overwrite){
+      newGID <- inv_geometries$geoID[which(inv_geometries$source_file %in% fileName)]
+    } else {
+      return(paste0("'", fileName, "' has already been registered."))
+    }
   }
 
   if(is.null(archiveLink)){
@@ -310,6 +317,11 @@ regGeometry <- function(nation = NULL, subset = NULL, gSeries = NULL, level = NU
       assertChoice(x = nation, choices = colnames(theGeometry))
     }
 
+    nameCols <- str_split(string = nameCol, pattern = "\\|")[[1]]
+    if(length(nameCols) != level){
+      warning("'nameCol' contains less entries (", length(nameCols), ") than implied by the level (", level, ")")
+    }
+
     # determine which layers exist and ask the user which to chose, if none is
     # given
     layers <- st_layers(dsn = filePath)
@@ -328,7 +340,6 @@ regGeometry <- function(nation = NULL, subset = NULL, gSeries = NULL, level = NU
     }
 
     # construct new documentation
-    newGID <- ifelse(length(inv_geometries$geoID)==0, 1, as.integer(max(inv_geometries$geoID)+1))
     doc <- tibble(geoID = newGID,
                   datID = dataSeries,
                   level = level,
@@ -342,7 +353,7 @@ regGeometry <- function(nation = NULL, subset = NULL, gSeries = NULL, level = NU
                   next_update = nextUpdate,
                   update_frequency = updateFrequency,
                   notes = notes)
-    if(!any(inv_geometries$source_file %in% fileName)){
+    if(!any(inv_geometries$source_file %in% fileName) | overwrite){
       # in case the user wants to update, attach the new information to the table
       # inv_geometries.csv
       updateTable(index = doc, name = "inv_geometries")

@@ -17,7 +17,7 @@
 #'   valid.
 #' @param end [\code{integerish(1)}]\cr the date until which the data are valid.
 #' @param schema [\code{list(1)}]\cr the schema description of the table to read
-#'   in (must have been placed in the global environment before calling it here.
+#'   in (must have been placed in the global environment before calling it here).
 #' @param archive [\code{character(1)}]\cr the original file from which the
 #'   boundaries emerge.
 #' @param archiveLink [\code{character(1)}]\cr download-link of the archive.
@@ -39,16 +39,16 @@
 #' @param overwrite [\code{logical(1)}]\cr whether or not the geometry to
 #'   register shall overwrite a potentially already existing older version.
 #' @details When processing areal data tables, carry out the following steps:
-#'   \enumerate{ \item Determine the \code{nation}, administrative \code{level},
-#'   a \code{subset} (if applicable) and the \code{dataseries} of the areal data
-#'   and of the geometry, and provide them as arguments to this function. \item
-#'   Provide a \code{begin} and \code{end} date for the areal data. \item Run
-#'   the function. \item (Re)Save the table with the following properties:
-#'   \itemize{\item Format: csv \item Encoding: UTF-8 \item File name: What is
-#'   provided as message by this function \item make sure that the file is not
-#'   modified or reshaped. This will happen during data normalisation via the
-#'   schema description, which expects the original table.} \item Confirm that
-#'   you have saved the file.}
+#'   \enumerate{ \item Determine the \code{nation}, a \code{subset} (if
+#'   applicable), the administrative \code{level} and the \code{dataseries} of
+#'   the areal data and of the geometry, and provide them as arguments to this
+#'   function. \item Provide a \code{begin} and \code{end} date for the areal
+#'   data. \item Run the function. \item (Re)Save the table with the following
+#'   properties: \itemize{\item Format: csv \item Encoding: UTF-8 \item File
+#'   name: What is provided as message by this function \item make sure that the
+#'   file is not modified or reshaped. This will happen during data
+#'   normalisation via the schema description, which expects the original
+#'   table.} \item Confirm that you have saved the file.}
 #'
 #'   Every areal data dataseries (\code{dSeries}) may come as a slight
 #'   permutation of a particular table arrangement. The function
@@ -56,7 +56,7 @@
 #'   that describes the position of the data components) for each data table,
 #'   which is saved as \code{paste0("meta_", dSeries, TAB_NUMBER)}. A template
 #'   thereof, and documentation on how to set them up, can be found in
-#'   \code{tabshiftr::\link{makeSchema}} with \code{arealDB}.
+#'   \code{tabshiftr::\link{makeSchema}}.
 #' @return Returns a tibble of the entry that is appended to 'inv_tables.csv' in
 #'   case \code{update = TRUE}.
 #' @examples
@@ -159,6 +159,7 @@ regTable <- function(nation = NULL, subset = NULL, dSeries = NULL, gSeries = NUL
   assertCharacter(x = metadataPath, any.missing = FALSE, null.ok = TRUE)
   assertCharacter(x = notes, ignore.case = TRUE, any.missing = FALSE, len = 1, null.ok = TRUE)
   assertLogical(x = update, len = 1)
+  assertLogical(x = overwrite, len = 1)
 
   # ask for missing and required arguments
   if(!is.null(subset)){
@@ -270,6 +271,7 @@ regTable <- function(nation = NULL, subset = NULL, dSeries = NULL, gSeries = NUL
     }
   }
 
+
   if(is.null(archive)){
     message("please type in the archives' file name: ")
     if(!testing){
@@ -303,6 +305,7 @@ regTable <- function(nation = NULL, subset = NULL, dSeries = NULL, gSeries = NUL
   if(any(inv_tables$source_file %in% fileName)){
     if(overwrite){
       theSchemaName <- inv_tables$schema[inv_tables$source_file == fileName]
+      newTID <- inv_tables$tabID[which(inv_tables$source_file %in% fileName)]
     } else {
       return(paste0("'", fileName, "' has already been registered."))
     }
@@ -441,7 +444,7 @@ regTable <- function(nation = NULL, subset = NULL, dSeries = NULL, gSeries = NUL
                   metadata_link = metadataLink,
                   metadata_path = metadataPath,
                   notes = notes)
-    if(!any(inv_tables$source_file %in% fileName)){
+    if(!any(inv_tables$source_file %in% fileName) | overwrite){
       # in case the user wants to update, attach the new information to the table inv_sourceData.csv
       updateTable(index = doc, name = "inv_tables")
     }
