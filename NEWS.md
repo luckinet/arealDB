@@ -1,3 +1,7 @@
+# arealDB 0.3.5
+
+* streamline overwriting of already registered items in the inventory tables.
+
 # arealDB 0.3.4
 
 * include 'makeExampleDB', which allows to build an example database at any stage. This is useful for testing, debugging and examplifying an areal database.
