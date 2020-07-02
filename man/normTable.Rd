@@ -46,7 +46,7 @@ default). Useful for debugging.}
 }
 \value{
 This function harmonises and integrates so far unprocessed data
-  tables at stage two into stage three of the geospatial database. It
+  tables at stage two into stage three of the areal database. It
   produces for each nation in the registered data tables a comma-separated
   values file that includes all thematic areal data.
 }
@@ -72,7 +72,7 @@ Arguments in \code{...} are so-called matching lists. This argument
   \item Employ the function \code{tabshiftr::\link{reorganise}} to reshape
   \code{input} according to the respective schema description (see
   \code{tabshiftr::\link{makeSchema}}). \item Match the territorial units in
-  \code{input} via the \code{\link{matchUnits}}. \item If \code{...} has been
+  \code{input} via \code{\link{matchUnits}}. \item If \code{...} has been
   provided with variables to match, those are matched via
   \code{\link{matchVars}}. \item Harmonise territorial unit names. \item If
   \code{update = TRUE}, store the processed data table at stage three.}

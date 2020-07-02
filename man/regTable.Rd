@@ -48,7 +48,7 @@ valid.}
 \item{end}{[\code{integerish(1)}]\cr the date until which the data are valid.}
 
 \item{schema}{[\code{list(1)}]\cr the schema description of the table to read
-in (must have been placed in the global environment before calling it here.}
+in (must have been placed in the global environment before calling it here).}
 
 \item{archive}{[\code{character(1)}]\cr the original file from which the
 boundaries emerge.}
@@ -88,16 +88,16 @@ This function registers a new areal data table into the geospatial database.
 }
 \details{
 When processing areal data tables, carry out the following steps:
-  \enumerate{ \item Determine the \code{nation}, administrative \code{level},
-  a \code{subset} (if applicable) and the \code{dataseries} of the areal data
-  and of the geometry, and provide them as arguments to this function. \item
-  Provide a \code{begin} and \code{end} date for the areal data. \item Run
-  the function. \item (Re)Save the table with the following properties:
-  \itemize{\item Format: csv \item Encoding: UTF-8 \item File name: What is
-  provided as message by this function \item make sure that the file is not
-  modified or reshaped. This will happen during data normalisation via the
-  schema description, which expects the original table.} \item Confirm that
-  you have saved the file.}
+  \enumerate{ \item Determine the \code{nation}, a \code{subset} (if
+  applicable), the administrative \code{level} and the \code{dataseries} of
+  the areal data and of the geometry, and provide them as arguments to this
+  function. \item Provide a \code{begin} and \code{end} date for the areal
+  data. \item Run the function. \item (Re)Save the table with the following
+  properties: \itemize{\item Format: csv \item Encoding: UTF-8 \item File
+  name: What is provided as message by this function \item make sure that the
+  file is not modified or reshaped. This will happen during data
+  normalisation via the schema description, which expects the original
+  table.} \item Confirm that you have saved the file.}
 
   Every areal data dataseries (\code{dSeries}) may come as a slight
   permutation of a particular table arrangement. The function
@@ -105,7 +105,7 @@ When processing areal data tables, carry out the following steps:
   that describes the position of the data components) for each data table,
   which is saved as \code{paste0("meta_", dSeries, TAB_NUMBER)}. A template
   thereof, and documentation on how to set them up, can be found in
-  \code{tabshiftr::\link{makeSchema}} with \code{arealDB}.
+  \code{tabshiftr::\link{makeSchema}}.
 }
 \examples{
 # build the example database

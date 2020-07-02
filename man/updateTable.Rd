@@ -12,6 +12,5 @@ updateTable(index = NULL, name = NULL)
 \item{name}{[\code{character(1)}]\cr name of the table that shall be updated.}
 }
 \description{
-Update any inventory, index or translation table of a geospatial
-database.
+Update any inventory, index or translation table of an areal database.
 }

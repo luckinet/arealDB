@@ -7,7 +7,7 @@
 matchVars(input = NULL, source = NULL, ...)
 }
 \arguments{
-\item{input}{[\code{character(.)}]\cr terms to be translated.}
+\item{input}{[\code{character(.)}]\cr table in which to match variables.}
 
 \item{source}{[\code{integerish(1)}]\cr the census ID (\code{cenID}) from
 which the terms have been taken.}
