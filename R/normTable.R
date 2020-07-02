@@ -41,13 +41,13 @@
 #'   \item Employ the function \code{tabshiftr::\link{reorganise}} to reshape
 #'   \code{input} according to the respective schema description (see
 #'   \code{tabshiftr::\link{makeSchema}}). \item Match the territorial units in
-#'   \code{input} via the \code{\link{matchUnits}}. \item If \code{...} has been
+#'   \code{input} via \code{\link{matchUnits}}. \item If \code{...} has been
 #'   provided with variables to match, those are matched via
 #'   \code{\link{matchVars}}. \item Harmonise territorial unit names. \item If
 #'   \code{update = TRUE}, store the processed data table at stage three.}
 #' @family normalisers
 #' @return This function harmonises and integrates so far unprocessed data
-#'   tables at stage two into stage three of the geospatial database. It
+#'   tables at stage two into stage three of the areal database. It
 #'   produces for each nation in the registered data tables a comma-separated
 #'   values file that includes all thematic areal data.
 #' @examples
@@ -203,19 +203,21 @@ normTable <- function(input = NULL, ..., source = "tabID", pattern = NULL,
       as_tibble()
     message("    reorganising table with '", thisSchema, "' ...")
     temp <- temp %>%
-      reorganise(schema = algorithm) %>%
-      filter_at(vars(starts_with("al")), all_vars(!is.na(.)))
+      reorganise(schema = algorithm)
 
     # make al1 if it doesn't extist (is needed below for subsetting by nation)
     if(!"al1" %in% names(temp)){
       message("    reconstructing 'al1' ...")
       if(nchar(fields[1]) == 0){
-        stop("  ! the data table '", file_name, "' seems to include several nations but no column for nations (al1).\n Is the schema description correct?")
+        stop("  ! the data table '", file_name, "' seems to include several nations but the schema description doesn't contain the variable 'al1'.")
       } else {
         temp$al1 <- countries$unit[countries$iso_a3 == toupper(fields[1])]
         temp <- temp %>% select(al1, everything())
       }
     }
+
+    temp <- temp %>%
+      filter_at(vars(starts_with("al")), all_vars(!is.na(.)))
 
     # translate nations in input
     message("    harmonising nation names ...")
