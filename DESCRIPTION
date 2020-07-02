@@ -23,7 +23,7 @@ Authors@R: c(
            email = "felipe.cozimmelges@wur.nl",
            role = c("ctb"),
            comment = c(ORCID = "0000-0003-0833-8973")),
-    person("Carsten", "Mayer",
+    person("Carsten", "Meyer",
            email = "carsten.meyer@idiv.de", 
            role = c("ctb"), 
            comment = c(ORCID = "0000-0003-3927-5856")))
