@@ -137,7 +137,7 @@ setPath <- function(root = NULL){
   # and also the translation table for nations
   if(!testFileExists(x = file.path(root, "tt_nations.csv"))){
     tt_nations <- tibble(origin = NA_character_,
-                         target = countries$nation,
+                         target = countries$unit,
                          source = "original",
                          ID = NA_character_,
                          notes = NA_character_)
