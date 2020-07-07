@@ -1,3 +1,8 @@
+# arealDB 0.3.6
+
+* streamline translations to reduce the amount of items that have to be translated (specifically, only translate nations in normTable() that have been subsetted, not the whole list of nations)
+* repeat translation of terms as long as some are still (accidently) missing.
+
 # arealDB 0.3.5
 
 * streamline overwriting of already registered items in the inventory tables.
