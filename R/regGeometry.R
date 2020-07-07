@@ -356,7 +356,7 @@ regGeometry <- function(nation = NULL, subset = NULL, gSeries = NULL, level = NU
     if(!any(inv_geometries$source_file %in% fileName) | overwrite){
       # in case the user wants to update, attach the new information to the table
       # inv_geometries.csv
-      updateTable(index = doc, name = "inv_geometries")
+      updateTable(index = doc, name = "inv_geometries", matchCols = c("source_file", "level"))
     }
     return(doc)
   } else {

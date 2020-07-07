@@ -149,7 +149,7 @@ regDataseries <- function(name = NULL, description = NULL, homepage = NULL,
                  notes = notes)
   if(update){
     # in case the user wants to update, attach the new information to the table inv_dataseries.csv
-    updateTable(index = temp, name = "inv_dataseries")
+    updateTable(index = temp, name = "inv_dataseries", matchCols = c("name"))
   }
 
   return(temp)

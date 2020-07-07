@@ -446,7 +446,7 @@ regTable <- function(nation = NULL, subset = NULL, dSeries = NULL, gSeries = NUL
                   notes = notes)
     if(!any(inv_tables$source_file %in% fileName) | overwrite){
       # in case the user wants to update, attach the new information to the table inv_sourceData.csv
-      updateTable(index = doc, name = "inv_tables")
+      updateTable(index = doc, name = "inv_tables", matchCols = c("source_file"))
     }
     return(doc)
   } else {
