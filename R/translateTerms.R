@@ -284,7 +284,6 @@ translateTerms <- function(terms, index = NULL, source = NULL, strict = FALSE,
 
       translated <- newOut$target
       translated <- translated[translated != "missing"]
-      translated <- translated[translated != "ignore"]
 
       if(strict){
         if(!all(translated %in% theFuzzyTerms)){
