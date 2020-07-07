@@ -196,7 +196,6 @@ normTable <- function(input = NULL, ..., source = "tabID", pattern = NULL,
       subNations <- NULL
     }
 
-
     # reorganise data
     message("\n--> reading new data table ...")
     temp <- read.csv(file = thisInput, header = FALSE, as.is = TRUE, na.strings = algorithm@meta$na) %>%
@@ -224,6 +223,7 @@ normTable <- function(input = NULL, ..., source = "tabID", pattern = NULL,
     nations <- translateTerms(terms = unique(temp$al1),
                               index = "tt_nations",
                               source = list("tabID" = tabID),
+                              limit = subNations,
                               verbose = verbose) %>%
       filter(!target %in% c("ignore", "missing")) %>%
       select(target, origin)

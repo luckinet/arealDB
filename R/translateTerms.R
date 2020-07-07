@@ -13,6 +13,8 @@
 #'   fuzzy match should be carried out.
 #' @param fuzzy_dist [\code{integerish(1)}]\cr the maximum edit-distance for
 #'   which terms of fuzzy-matching should be suggested as match.
+#' @param limit [\code{character(.)}]\cr a set of terms to which the translation
+#'   should be limited.
 #' @param inline [\code{logical(1)}]\cr whether or not to edit translations
 #'   inline in R (only possible in linux), or in the 'translating.csv' in your
 #'   database root directory.
@@ -30,8 +32,8 @@
 #' @importFrom utils edit View adist file.edit
 
 translateTerms <- function(terms, index = NULL, source = NULL, strict = FALSE,
-                           fuzzy_terms = NULL, fuzzy_dist = 5, inline = TRUE,
-                           verbose = TRUE){
+                           fuzzy_terms = NULL, fuzzy_dist = 5, limit = NULL,
+                           inline = TRUE, verbose = TRUE){
 
   # check validity of arguments
   assertCharacter(x = terms, any.missing = FALSE)
@@ -47,6 +49,7 @@ translateTerms <- function(terms, index = NULL, source = NULL, strict = FALSE,
   assertNames(x = colnames(index), must.include = c("origin", "target"))
   assertCharacter(x = fuzzy_terms, any.missing = FALSE, null.ok = TRUE)
   assertIntegerish(x = fuzzy_dist, any.missing = FALSE)
+  assertCharacter(x = limit, any.missing = FALSE, null.ok = TRUE)
 
   # create a table with terms that will be used for fuzzy matching.
   if(strict){
@@ -247,6 +250,7 @@ translateTerms <- function(terms, index = NULL, source = NULL, strict = FALSE,
   # make sure that the columns contain the correct data
   tempOut$ID <- as.integer(tempOut$ID)
 
+
   if(newEntries){
 
     # define paths for translating
@@ -255,35 +259,49 @@ translateTerms <- function(terms, index = NULL, source = NULL, strict = FALSE,
 
     toTranslate <- tempOut %>%
       filter(target == "missing")
-    write_csv(x = toTranslate, path = translating)
-    if(Sys.info()[['sysname']] == "Linux" & inline){
-      file.edit(translating)
-      message("please replace the missing values and save the file")
-      done <- readline(" -> press any key when done: ")
-    } else {
-      message("please edit the column 'target' in '", getOption(x = "adb_path"), "/translating.csv'")
-      done <- readline(" -> press any key when done: ")
+
+    # in case a set of limiting terms has been set, use to subset
+    if(!is.null(limit)){
+      toTranslate <- toTranslate %>%
+        filter(target %in% limit)
     }
 
-    newOut <- read_csv(file = translating,
-                       col_types = getColTypes(index)) %>%
-      mutate(notes = paste0("translateTerms_", Sys.Date()))
+    if(dim(toTranslate)[1] != 0){
 
-    translated <- newOut$target
-    translated <- translated[translated != "missing"]
-    translated <- translated[translated != "ignore"]
-
-    if(strict){
-      if(!all(translated %in% theFuzzyTerms)){
-        stop("there are translated terms that did not appear in the standard vocabulary.")
+      write_csv(x = toTranslate, path = translating)
+      if(Sys.info()[['sysname']] == "Linux" & inline){
+        file.edit(translating)
+        message("please replace the missing values and save the file")
+        done <- readline(" -> press any key when done: ")
+      } else {
+        message("please edit the column 'target' in '", getOption(x = "adb_path"), "/translating.csv'")
+        done <- readline(" -> press any key when done: ")
       }
+
+      newOut <- read_csv(file = translating,
+                         col_types = getColTypes(index)) %>%
+        mutate(notes = paste0("translateTerms_", Sys.Date()))
+
+      translated <- newOut$target
+      translated <- translated[translated != "missing"]
+      translated <- translated[translated != "ignore"]
+
+      if(strict){
+        if(!all(translated %in% theFuzzyTerms)){
+          stop("there are translated terms that did not appear in the standard vocabulary.")
+        }
+      }
+
+      file.remove(translating)
+
+      out <- tempOut %>%
+        filter(target != "missing") %>%
+        bind_rows(newOut)
+
+    } else {
+      out <- tempOut
     }
 
-    file.remove(translating)
-
-    out <- tempOut %>%
-      filter(target != "missing") %>%
-      bind_rows(newOut)
   } else{
     out <- tempOut
   }
