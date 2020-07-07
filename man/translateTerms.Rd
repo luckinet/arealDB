@@ -11,6 +11,7 @@ translateTerms(
   strict = FALSE,
   fuzzy_terms = NULL,
   fuzzy_dist = 5,
+  limit = NULL,
   inline = TRUE,
   verbose = TRUE
 )
@@ -33,6 +34,9 @@ fuzzy match should be carried out.}
 
 \item{fuzzy_dist}{[\code{integerish(1)}]\cr the maximum edit-distance for
 which terms of fuzzy-matching should be suggested as match.}
+
+\item{limit}{[\code{character(.)}]\cr a set of terms to which the translation
+should be limited.}
 
 \item{inline}{[\code{logical(1)}]\cr whether or not to edit translations
 inline in R (only possible in linux), or in the 'translating.csv' in your
