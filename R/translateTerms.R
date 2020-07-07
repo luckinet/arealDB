@@ -268,22 +268,31 @@ translateTerms <- function(terms, index = NULL, source = NULL, strict = FALSE,
 
     if(dim(toTranslate)[1] != 0){
 
-      write_csv(x = toTranslate, path = translating)
-      if(Sys.info()[['sysname']] == "Linux" & inline){
-        file.edit(translating)
-        message("please replace the missing values and save the file")
-        done <- readline(" -> press any key when done: ")
-      } else {
-        message("please edit the column 'target' in '", getOption(x = "adb_path"), "/translating.csv'")
-        done <- readline(" -> press any key when done: ")
+      newOut <- NULL
+      while(any(toTranslate$target == "missing")){
+
+        write_csv(x = toTranslate, path = translating)
+        if(Sys.info()[['sysname']] == "Linux" & inline){
+          file.edit(translating)
+          message("please replace the missing values and save the file")
+          done <- readline(" -> press any key when done: ")
+        } else {
+          message("please edit the column 'target' in '", getOption(x = "adb_path"), "/translating.csv'")
+          done <- readline(" -> press any key when done: ")
+        }
+
+        newOut <- newOut %>%
+          bind_rows(read_csv(file = translating,
+                            col_types = getColTypes(index)) %>%
+          filter(target != "missing") %>%
+          mutate(notes = paste0("translateTerms_", Sys.Date())))
+
+        toTranslate <- read_csv(file = translating,
+                                col_types = getColTypes(index)) %>%
+          filter(target == "missing")
       }
 
-      newOut <- read_csv(file = translating,
-                         col_types = getColTypes(index)) %>%
-        mutate(notes = paste0("translateTerms_", Sys.Date()))
-
       translated <- newOut$target
-      translated <- translated[translated != "missing"]
 
       if(strict){
         if(!all(translated %in% theFuzzyTerms)){
