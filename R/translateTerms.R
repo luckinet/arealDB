@@ -51,6 +51,9 @@ translateTerms <- function(terms, index = NULL, source = NULL, strict = FALSE,
   assertIntegerish(x = fuzzy_dist, any.missing = FALSE)
   assertCharacter(x = limit, any.missing = FALSE, null.ok = TRUE)
 
+  # in testing mode?
+  testing <- getOption(x = "adb_testing")
+
   # create a table with terms that will be used for fuzzy matching.
   if(strict){
     theFuzzyTerms <- index %>%
@@ -98,20 +101,16 @@ translateTerms <- function(terms, index = NULL, source = NULL, strict = FALSE,
 
     # figure out which version of each term matches
     newTerm <- terms[i]
-    lowerTerm <- tolower(newTerm)
+    newTermGrep <- paste0("^", newTerm, "$")
     nonAccented <- iconv(index$target, from = "UTF-8", to = "ASCII//TRANSLIT")
     doFuzzy <- FALSE
     matchTerm <- NULL
-    if(newTerm %in% index$origin){
-      matchTerm <- newTerm
-    } else if(newTerm %in% index$target){
-      matchTerm <- newTerm
-    } else if(lowerTerm %in% index$target){
-      matchTerm <- index$target[which(index$target %in% lowerTerm)]
-    } else if(newTerm %in% nonAccented){
-      matchTerm <- unique(index$target[which(nonAccented %in% newTerm)])
-    } else if(lowerTerm %in% nonAccented){
-      matchTerm <- unique(index$target[which(nonAccented %in% lowerTerm)])
+    if(any(grepl(newTermGrep, index$origin, ignore.case = T))){
+      matchTerm <- index$origin[grep(newTermGrep, index$origin, ignore.case = T)]
+    } else if(any(grepl(newTermGrep, index$target, ignore.case = T))){
+      matchTerm <- index$target[grep(newTermGrep, index$target, ignore.case = T)]
+    } else if(any(grepl(newTermGrep, nonAccented, ignore.case = T))){
+      matchTerm <- index$target[grep(newTermGrep, nonAccented, ignore.case = T)]
     }
 
     temp <- index %>%
@@ -273,8 +272,8 @@ translateTerms <- function(terms, index = NULL, source = NULL, strict = FALSE,
 
         write_csv(x = toTranslate, path = translating)
         if(Sys.info()[['sysname']] == "Linux" & inline){
-          file.edit(translating)
           message("please replace the missing values and save the file")
+          file.edit(translating)
           done <- readline(" -> press any key when done: ")
         } else {
           message("please edit the column 'target' in '", getOption(x = "adb_path"), "/translating.csv'")
@@ -290,6 +289,14 @@ translateTerms <- function(terms, index = NULL, source = NULL, strict = FALSE,
         toTranslate <- read_csv(file = translating,
                                 col_types = getColTypes(index)) %>%
           filter(target == "missing")
+
+        if(testing){
+          newOut <- toTranslate <- tibble(target = character(),
+                                          origin = character(),
+                                          source = character(),
+                                          ID = integer(),
+                                          notes = character())
+        }
       }
 
       translated <- newOut$target
