@@ -2,6 +2,7 @@
 
 * streamline translations to reduce the amount of items that have to be translated (specifically, only translate nations in normTable() that have been subsetted, not the whole list of nations)
 * repeat translation of terms as long as some are still (accidently) missing.
+* improve updating of tables (concerning the functions reg*(), setVariables(), translateTerms()).
 
 # arealDB 0.3.5
 
