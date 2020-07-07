@@ -4,12 +4,15 @@
 \alias{updateTable}
 \title{Update a table}
 \usage{
-updateTable(index = NULL, name = NULL)
+updateTable(index = NULL, name = NULL, matchCols = NULL)
 }
 \arguments{
 \item{index}{[\code{tibble(1)}]\cr the table to use as update.}
 
 \item{name}{[\code{character(1)}]\cr name of the table that shall be updated.}
+
+\item{matchCols}{[\code{character(.)}]\cr the columns in the old file by
+which to match.}
 }
 \description{
 Update any inventory, index or translation table of an areal database.
