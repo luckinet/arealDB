@@ -101,16 +101,15 @@ translateTerms <- function(terms, index = NULL, source = NULL, strict = FALSE,
 
     # figure out which version of each term matches
     newTerm <- terms[i]
-    newTermGrep <- paste0("^", newTerm, "$")
     nonAccented <- iconv(index$target, from = "UTF-8", to = "ASCII//TRANSLIT")
     doFuzzy <- FALSE
     matchTerm <- NULL
-    if(any(grepl(newTermGrep, index$origin, ignore.case = T))){
-      matchTerm <- index$origin[grep(newTermGrep, index$origin, ignore.case = T)]
-    } else if(any(grepl(newTermGrep, index$target, ignore.case = T))){
-      matchTerm <- index$target[grep(newTermGrep, index$target, ignore.case = T)]
-    } else if(any(grepl(newTermGrep, nonAccented, ignore.case = T))){
-      matchTerm <- index$target[grep(newTermGrep, nonAccented, ignore.case = T)]
+    if(tolower(newTerm) %in% tolower(index$origin)){
+      matchTerm <- index$origin[which(tolower(index$origin) %in% tolower(newTerm))]
+    } else if(tolower(newTerm) %in% tolower(index$target)){
+      matchTerm <- index$target[which(tolower(index$target) %in% tolower(newTerm))]
+    } else if(tolower(newTerm) %in% nonAccented){
+      matchTerm <- index$origin[which(nonAccented %in% tolower(newTerm))]
     }
 
     temp <- index %>%

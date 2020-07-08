@@ -210,7 +210,7 @@ normTable <- function(input = NULL, ..., source = "tabID", pattern = NULL,
       if(nchar(fields[1]) == 0){
         stop("  ! the data table '", file_name, "' seems to include several nations but the schema description doesn't contain the variable 'al1'.")
       } else {
-        temp$al1 <- countries$unit[countries$iso_a3 == toupper(fields[1])]
+        temp$al1 <- countries$unit[which(countries$iso_a3 == toupper(fields[1]))]
         temp <- temp %>% select(al1, everything())
       }
     }
