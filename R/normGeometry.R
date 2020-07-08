@@ -171,6 +171,7 @@ normGeometry <- function(input = NULL, ..., thresh = 10, outType = "gpkg",
                                 source = list("geoID" = newGID),
                                 verbose = verbose) %>%
         mutate(target = if_else(target == "ignore", NA_character_, target)) %>%
+        filter(target %in% countries$unit) %>%
         pull(target)
 
     } else{
