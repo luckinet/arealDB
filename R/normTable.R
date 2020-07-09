@@ -128,7 +128,7 @@ normTable <- function(input = NULL, ..., source = "tabID", pattern = NULL,
     if(!file_name %in% inv_tables$source_file){
       next
     } else {
-      message("\n--- ", i, " ", rep("-", times= getOption("width")-(nchar(i)+12+nchar(file_name))), " ", file_name, " ---")
+      message("\n--- ", i, " / ", length(input), " ", rep("-", times = getOption("width")-(nchar(i)+nchar(length(input))+13+nchar(file_name))), " ", file_name, " ---")
     }
 
     # get some variables
