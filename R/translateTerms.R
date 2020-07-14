@@ -258,11 +258,11 @@ translateTerms <- function(terms, index = NULL, source = NULL, strict = FALSE,
     toTranslate <- tempOut %>%
       filter(target == "missing")
 
-    # in case a set of limiting terms has been set, use to subset
-    if(!is.null(limit)){
-      toTranslate <- toTranslate %>%
-        filter(target %in% limit)
-    }
+    # # in case a set of limiting terms has been set, use to subset
+    # if(!is.null(limit)){
+    #   toTranslate <- toTranslate %>%
+    #     filter(target %in% limit)
+    # }
 
     if(dim(toTranslate)[1] != 0){
 
