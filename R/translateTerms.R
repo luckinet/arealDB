@@ -115,7 +115,7 @@ translateTerms <- function(terms, index = NULL, source = NULL, strict = FALSE,
     temp <- index %>%
       mutate(rn = row_number()) %>%
       filter(target %in% matchTerm | origin %in% matchTerm) %>%
-      filter(target != "missing") %>%
+      filter(target != "missing" & !is.na(origin)) %>%
       rename("ID" = ends_with("ID"))
 
     # first make sure that the term should not be ignored

@@ -126,6 +126,7 @@ normTable <- function(input = NULL, ..., source = "tabID", pattern = NULL,
     fields <- str_split(file_name, "_")[[1]]
 
     if(!file_name %in% inv_tables$source_file){
+      message("\n--- ", i, " / ", length(input), " skipping ", rep("-", times = getOption("width")-(nchar(i)+nchar(length(input))+4+nchar(file_name))), " ", file_name, " ---")
       next
     } else {
       message("\n--- ", i, " / ", length(input), " ", rep("-", times = getOption("width")-(nchar(i)+nchar(length(input))+13+nchar(file_name))), " ", file_name, " ---")
