@@ -199,7 +199,7 @@ normTable <- function(input = NULL, ..., source = "tabID", pattern = NULL,
 
     # reorganise data
     message("\n--> reading new data table ...")
-    temp <- read.csv(file = thisInput, header = FALSE, as.is = TRUE, na.strings = algorithm@meta$na) %>%
+    temp <- read.csv(file = thisInput, header = FALSE, as.is = TRUE, na.strings = algorithm@meta$na, encoding = "UTF-8") %>%
       as_tibble()
     message("    reorganising table with '", thisSchema, "' ...")
     temp <- temp %>%
