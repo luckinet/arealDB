@@ -22,7 +22,7 @@
 #'
 #' @importFrom checkmate assertChoice assertDirectoryExists
 #' @importFrom readr read_csv
-#' @importFrom tabshiftr makeSchema
+#' @importFrom tabshiftr setHeader setFormat setIDVar setObsVar
 #' @export
 
 makeExampleDB <- function(until = NULL, path = NULL, verbose = FALSE){
@@ -148,37 +148,21 @@ makeExampleDB <- function(until = NULL, path = NULL, verbose = FALSE){
 
   if(any(theSteps %in% "regTable")){
 
-    meta_madeUp_1 <- makeSchema(
-      list(header = list(row = 1),
-           variables = list(
-             al1 =
-               list(type = "id", col = 1),
-             year =
-               list(type = "id", col = 2),
-             commodities =
-               list(type = "id", col = 3),
-             harvested =
-               list(type = "measured", unit = "ha",
-                    factor = 1, col = 4),
-             production =
-               list(type = "measured", unit = "t",
-                    factor = 1, col = 5))))
+    meta_madeUp_1 <- setHeader(rows = 1) %>%
+      setIDVar(name = "al1", columns = 1) %>%
+      setIDVar(name = "year", columns = 2) %>%
+      setIDVar(name = "commodities", columns = 3) %>%
+      setObsVar(name = "harvested", unit = "ha", columns = 4) %>%
+      setObsVar(name = "production", unit = "t", columns = 5)
 
-    meta_madeUp_2 <- makeSchema(
-      list(header = list(row = 1),
-           meta = list(dec = ".", na = c("", "NA")),
-           variables = list(al1 =
-                              list(type = "id", col = 1),
-                            al2 =
-                              list(type = "id", col = 2),
-                            year =
-                              list(type = "id", col = 3),
-                            commodities =
-                              list(type = "id", col = 4),
-                            harvested =
-                              list(type = "measured", unit = "ha", factor = 1, col = 5),
-                            production =
-                              list(type = "measured", unit = "t", factor = 1, col = 6))))
+    meta_madeUp_2 <- setHeader(rows = 1) %>%
+      setFormat(decimal = ".", na_values = c("", "NA")) %>%
+      setIDVar(name = "al1", columns = 1) %>%
+      setIDVar(name = "al2", columns = 2) %>%
+      setIDVar(name = "year", columns = 3) %>%
+      setIDVar(name = "commodities", columns = 4) %>%
+      setObsVar(name = "harvested", unit = "ha", columns = 5) %>%
+      setObsVar(name = "production", unit = "t", columns = 6)
 
     regTable(nation = "estonia",
              subset = "soyMaize",
