@@ -3,19 +3,20 @@
 \docType{data}
 \name{countries}
 \alias{countries}
-\title{Simple feature geometries of countries}
+\title{Global dataset of countries and a couple of attributes}
 \format{
 The object of class sf has 10 fields and 254 rows. It lists for each
   country the \code{unit} name, the \code{nation} name, \code{iso_a2} and
-  \code{iso-a3}-code, whether the country is a \code{un_member} or an
+  \code{iso_a3}-code, whether the country is a \code{un_member} or an
   \code{island}, on which \code{continent} the country is and of which
   \code{region} and \code{subregion} that is part. Finally, it lists the
-  initial ahID for each nation.
+  initial administrative hiearchy ID (ahID) for each nation and contains a
+  geometry for each feature.
 }
 \usage{
 countries
 }
 \description{
-Simple feature geometries of countries
+Global dataset of countries and a couple of attributes
 }
 \keyword{datasets}
