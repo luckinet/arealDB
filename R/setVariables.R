@@ -22,18 +22,19 @@
 #'   in \code{pid}) to the variable terms (given in \code{target}) and
 #'   potentially to ancillary information. Such tables should be compiled before
 #'   a project is started and should contain a clear set of values per variable
-#'   (which will be used as standard ontology). \item A translation table
+#'   (which will be used as standard vocabulary). \item A translation table
 #'   relates terms in foreign languages (given in \code{origin}) to terms in the
-#'   target language (given in \code{target}). If target does not exist, the
-#'   terms are simply registered as "original" to be used for fuzzy matching.}
-#' @return No return value, called for the side effect of writing a table to
-#'   the project root directory with name \code{paste0(type, "_", variable,
+#'   target language (given in \code{target}). A "foreign language" does not
+#'   only have to be another language per se, but could also be a vocabulary
+#'   with a different set of terms that carry the same semantic meaning as the
+#'   target terms. If target does not exist, the terms are simply registered as
+#'   "original" to be used for fuzzy matching.}
+#' @return No return value, called for the side effect of writing a table to the
+#'   project root directory with name \code{paste0(type, "_", variable,
 #'   ".csv")}.
 #' @examples
 #' library(readr)
-#' inPath <- system.file("test_datasets",
-#'                       package = "arealDB",
-#'                       mustWork = TRUE)
+#' inPath <- system.file("test_datasets", package = "arealDB", mustWork = TRUE)
 #'
 #' # start the example database
 #' makeExampleDB(until = "setPath")
