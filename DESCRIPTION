@@ -27,8 +27,8 @@ Authors@R: c(
            email = "carsten.meyer@idiv.de", 
            role = c("ctb"), 
            comment = c(ORCID = "0000-0003-3927-5856")))
-URL: https://gitlab.com/luckinet/software/arealDB
-BugReports: https://gitlab.com/luckinet/software/arealDB/issues
+URL: https://github.com/EhrmannS/arealDB
+BugReports: https://github.com/EhrmannS/arealDB/issues
 Depends:
     R (>= 2.10)
 Language: en-gb

@@ -1,0 +1,50 @@
+authors:
+  Steffen Ehrmann:
+    href:  https://orcid.org/0000-0002-2958-0796
+  Arne Rümmler:
+    href:  https://orcid.org/0000-0001-8637-9071
+  Felipe Melges:
+    href:  https://orcid.org/0000-0003-0833-8973
+  Carsten Meyer:
+    href: https://orcid.org/0000-0003-3927-5856
+title: arealDB
+url: http://EhrmannS.github.io/arealDB
+development:
+  mode: release
+
+reference:
+  - title: start database
+    desc: functions to start a database (stage one)
+    contents:
+      - setPath
+      - setVariables
+      - makeExampleDB
+  - title: register data
+    desc: functions that register data and metadata  (stage two)
+    contents:
+      - regDataseries
+      - regGeometry
+      - regTable
+  - title: normalise database
+    desc: functions that harmonise and integrate data into the database (stage three)
+    contents:
+      - normGeometry
+      - normTable
+  - title: datasets
+    contents:
+      - countries
+
+
+navbar:
+  left:
+    - text: "Get Started"
+      href: articles/arealDB.html
+    - text: "Reference"
+      href: reference/index.html
+    - text: "Changelog"
+      href: news/index.html
+  right:
+    - icon: fa-twitter fa-lg
+      href: http://www.twitter.com/DerEhrmann
+    - icon: fa-github
+      href: https://github.com/EhrmannS/arealDB
