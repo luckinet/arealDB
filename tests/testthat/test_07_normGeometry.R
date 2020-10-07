@@ -43,17 +43,17 @@ test_that("geometries can be normalised", {
                         "download_date", "next_update", "update_frequency", "notes"))
 
   # test whether the resulting file is "correct" ----
-  final <- st_read(dsn = paste0(getOption("adb_path"), "/adb_geometries/stage3/estonia.gpkg"), layer = "level_1", quiet = TRUE)
+  final <- st_read(dsn = paste0(getOption("adb_path"), "/adb_geometries/stage3/Estonia.gpkg"), layer = "level_1", quiet = TRUE)
   expect_class(x = final, classes = c("sf"))
   expect_data_frame(x = final, nrows = 1, ncols = 7)
   expect_names(x = names(final), identical.to = c("nation", "name", "level", "ahID", "geoID", "al1_id", "geom"))
 
-  final <- st_read(dsn = paste0(getOption("adb_path"), "/adb_geometries/stage3/estonia.gpkg"), layer = "level_2", quiet = TRUE)
+  final <- st_read(dsn = paste0(getOption("adb_path"), "/adb_geometries/stage3/Estonia.gpkg"), layer = "level_2", quiet = TRUE)
   expect_class(x = final, classes = c("sf"))
   expect_data_frame(x = final, nrows = 4, ncols = 8)
   expect_names(x = names(final), identical.to = c("nation", "name", "level", "ahID", "geoID", "al1_id", "al2_id", "geom"))
 
-  final <- st_read(dsn = paste0(getOption("adb_path"), "/adb_geometries/stage3/estonia.gpkg"), layer = "level_3", quiet = TRUE)
+  final <- st_read(dsn = paste0(getOption("adb_path"), "/adb_geometries/stage3/Estonia.gpkg"), layer = "level_3", quiet = TRUE)
   expect_class(x = final, classes = c("sf"))
   expect_data_frame(x = final, nrows = 12, ncols = 9)
   expect_names(x = names(final), identical.to = c("nation", "name", "level", "ahID", "geoID", "al1_id", "al2_id", "al3_id", "geom"))

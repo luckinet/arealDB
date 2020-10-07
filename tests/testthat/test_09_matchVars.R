@@ -8,20 +8,14 @@ test_that("variables are matched", {
 
   makeExampleDB(until = "normGeometry")
 
-  meta_madeUp_1 <- makeSchema(
-    list(header = list(row = 1),
-         variables = list(al1 =
-                            list(type = "id", col = 1),
-                          year =
-                            list(type = "id", col = 2),
-                          commodities =
-                            list(type = "id", col = 3),
-                          harvested =
-                            list(type = "measured", unit = "ha", factor = 1, col = 4),
-                          production =
-                            list(type = "measured", unit = "t", factor = 1, col = 5))))
+  meta_madeUp_1 <- setHeader(rows = 1) %>%
+    setIDVar(name = "al1", columns = 1) %>%
+    setIDVar(name = "year", columns = 2) %>%
+    setIDVar(name = "commodities", columns = 3) %>%
+    setObsVar(name = "harvested", unit = "ha", columns = 4) %>%
+    setObsVar(name = "production", unit = "t", columns = 5)
 
-  input <- read_csv(file = paste0(getOption("adb_path"), "/adb_tables/stage2/est_1_soyMaize_1990_2017_madeUp.csv"),
+  input <- read_csv(file = paste0(getOption("adb_path"), "/adb_tables/stage2/est_1_barleyMaize_1990_2017_madeUp.csv"),
                     col_names = FALSE) %>%
     reorganise(schema = meta_madeUp_1) %>%
     mutate(id = seq_along(year),

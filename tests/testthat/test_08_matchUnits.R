@@ -11,36 +11,23 @@ test_that("units are matched", {
 
   makeExampleDB(until = "normGeometry")
 
-  meta_madeUp_1 <- makeSchema(
-    list(header = list(row = 1),
-         variables = list(al1 =
-                            list(type = "id", col = 1),
-                          year =
-                            list(type = "id", col = 2),
-                          commodities =
-                            list(type = "id", col = 3),
-                          harvested =
-                            list(type = "measured", unit = "ha", factor = 1, col = 4),
-                          production =
-                            list(type = "measured", unit = "t", factor = 1, col = 5))))
+  meta_madeUp_1 <- setHeader(rows = 1) %>%
+    setIDVar(name = "al1", columns = 1) %>%
+    setIDVar(name = "year", columns = 2) %>%
+    setIDVar(name = "commodities", columns = 3) %>%
+    setObsVar(name = "harvested", unit = "ha", columns = 4) %>%
+    setObsVar(name = "production", unit = "t", columns = 5)
 
-  meta_madeUp_2 <- makeSchema(
-    list(header = list(row = 1),
-         variables = list(al1 =
-                            list(type = "id", col = 1),
-                          al2 =
-                            list(type = "id", col = 2),
-                          year =
-                            list(type = "id", col = 3),
-                          commodities =
-                            list(type = "id", col = 4),
-                          harvested =
-                            list(type = "measured", unit = "ha", factor = 1, col = 5),
-                          production =
-                            list(type = "measured", unit = "t", factor = 1, col = 6))))
+  meta_madeUp_2 <- setHeader(rows = 1) %>%
+    setIDVar(name = "al1", columns = 1) %>%
+    setIDVar(name = "al2", columns = 2) %>%
+    setIDVar(name = "year", columns = 3) %>%
+    setIDVar(name = "commodities", columns = 4) %>%
+    setObsVar(name = "harvested", unit = "ha", columns = 5) %>%
+    setObsVar(name = "production", unit = "t", columns = 6)
 
   # test for a table that only has values at the first administrative level
-  input <- read_csv(file = paste0(getOption("adb_path"), "/adb_tables/stage2/est_1_soyMaize_1990_2017_madeUp.csv"),
+  input <- read_csv(file = paste0(getOption("adb_path"), "/adb_tables/stage2/est_1_barleyMaize_1990_2017_madeUp.csv"),
                     col_names = FALSE) %>%
     reorganise(schema = meta_madeUp_1) %>%
     mutate(id = seq_along(year),
@@ -53,7 +40,7 @@ test_that("units are matched", {
   expect_names(x = names(output), permutation.of = c("year", "commodities", "harvested", "production", "id", "tabID", "geoID", "al1_name", "ahID"))
 
   # test for a table that has values at the second administrative level
-  input <- read_csv(file = paste0(getOption("adb_path"), "/adb_tables/stage2/est_2_soyMaize_1990_2017_madeUp.csv"),
+  input <- read_csv(file = paste0(getOption("adb_path"), "/adb_tables/stage2/est_2_barleyMaize_1990_2017_madeUp.csv"),
                     col_names = FALSE) %>%
     reorganise(schema = meta_madeUp_2) %>%
     mutate(id = seq_along(year),

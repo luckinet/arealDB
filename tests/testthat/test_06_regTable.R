@@ -1,6 +1,7 @@
 library(testthat)
 library(checkmate)
 library(tabshiftr)
+library(magrittr)
 context("regTable")
 
 
@@ -8,21 +9,15 @@ test_that("a table inventory entry is produced", {
 
   makeExampleDB(until = "regGeometry")
 
-  meta_maia_1 <- makeSchema(
-    list(header = list(row = 1),
-         variables = list(al1 =
-                            list(type = "id", col = 1),
-                          year =
-                            list(type = "id", col = 2),
-                          commodities =
-                            list(type = "id", col = 3),
-                          harvested =
-                            list(type = "measured", unit = "ha", factor = 1, col = 4),
-                          production =
-                            list(type = "measured", unit = "t", factor = 1, col = 5))))
+  meta_maia_1 <- setHeader(rows = 1) %>%
+    setIDVar(name = "al1", columns = 1) %>%
+    setIDVar(name = "year", columns = 2) %>%
+    setIDVar(name = "commodities", columns = 3) %>%
+    setObsVar(name = "harvested", unit = "ha", columns = 4) %>%
+    setObsVar(name = "production", unit = "t", columns = 5)
 
-  output <- regTable(nation = "estonia",
-                     subset = "soyMaize",
+  output <- regTable(nation = "Estonia",
+                     subset = "barleyMaize",
                      dSeries = "madeUp",
                      gSeries = "gadm",
                      level = 1,
@@ -49,18 +44,12 @@ test_that("function asks for details, if not provided", {
   makeExampleDB(until = "regGeometry")
   options(adb_testing = TRUE)
 
-  meta_maia_1 <- makeSchema(
-    list(header = list(row = 1),
-         variables = list(al1 =
-                            list(type = "id", col = 1),
-                          year =
-                            list(type = "id", col = 2),
-                          commodities =
-                            list(type = "id", col = 3),
-                          harvested =
-                            list(type = "measured", unit = "ha", factor = 1, col = 4),
-                          production =
-                            list(type = "measured", unit = "t", factor = 1, col = 5))))
+  meta_maia_1 <- setHeader(rows = 1) %>%
+    setIDVar(name = "al1", columns = 1) %>%
+    setIDVar(name = "year", columns = 2) %>%
+    setIDVar(name = "commodities", columns = 3) %>%
+    setObsVar(name = "harvested", unit = "ha", columns = 4) %>%
+    setObsVar(name = "production", unit = "t", columns = 5)
 
   expect_message(object = regTable())
   output <- capture_messages(code = regTable())
