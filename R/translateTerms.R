@@ -281,13 +281,27 @@ translateTerms <- function(terms, index = NULL, source = NULL, strict = FALSE,
 
         newOut <- newOut %>%
           bind_rows(read_csv(file = translating,
-                            col_types = getColTypes(index)) %>%
-          filter(target != "missing") %>%
-          mutate(notes = paste0("translateTerms_", Sys.Date())))
+                             col_types = getColTypes(index)) %>%
+                      filter(target != "missing") %>%
+                      mutate(valid = if_else(target %in% theFuzzyTerms, TRUE, if_else(target == "ignore", TRUE, FALSE))) %>%
+                      mutate(notes = paste0("translateTerms_", Sys.Date())))
+
+        invalid <- newOut %>%
+          filter(!valid) %>%
+          mutate(target = "missing",
+                 notes = paste0("previous translation did not match, check '", indFile, ".csv' for origin terms.")) %>%
+          select(-valid)
+
+        newOut <- newOut %>%
+          filter(valid) %>%
+          select(-valid)
 
         toTranslate <- read_csv(file = translating,
                                 col_types = getColTypes(index)) %>%
-          filter(target == "missing")
+          filter(target == "missing") %>%
+          bind_rows(invalid)
+
+
 
         if(testing){
           newOut <- toTranslate <- tibble(target = character(),
