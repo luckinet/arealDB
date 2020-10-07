@@ -163,10 +163,17 @@ normGeometry <- function(input = NULL, ..., thresh = 10, outType = "gpkg",
       nations <- translateTerms(terms = theNations,
                                 index = "tt_nations",
                                 source = list("geoID" = newGID),
-                                verbose = verbose) %>%
-        mutate(target = if_else(target == "ignore", NA_character_, target)) %>%
-        filter(target %in% countries$unit) %>%
-        pull(target)
+                                verbose = verbose)%>%
+        mutate(valid = if_else(target == "ignore", FALSE, if_else(target %in% countries$unit, TRUE, FALSE))) %>%
+        select(!!nationCol := origin, target, valid)
+      theNations <- nations[[nationCol]][nations$valid]
+
+      newGeom <- newGeom %>%
+        left_join(nations) %>%
+        filter(valid) %>%
+        mutate(!!nationCol := target) %>%
+        select(-valid, -target)
+      nations <- nations$target[nations$valid]
 
     } else{
       severalNations <- FALSE
@@ -178,10 +185,6 @@ normGeometry <- function(input = NULL, ..., thresh = 10, outType = "gpkg",
         pull(nation)
       theNations <- nations
     }
-
-    # only process existing nations
-    theNations <- theNations[!is.na(nations)]
-    nations <- nations[!is.na(nations)]
 
     # potentially subset nation values
     if(length(subsets) > 0){
@@ -220,14 +223,14 @@ normGeometry <- function(input = NULL, ..., thresh = 10, outType = "gpkg",
       for(j in seq_along(nations)){
 
         tempNation <- nations[j]
-        outNation <- theNations[j]
+        # outNation <- theNations[j]
         nationID <- as.integer(countries$ahID[countries$unit == tempNation])
         message(paste0(" -> processing '", tempNation, "' ..."))
 
         # create a geom specifically for the recent nation
         if(severalNations){
           sourceGeom <- newGeom %>%
-            filter_at(vars(all_of(nationCol)), all_vars(. %in% theNations[j])) %>%
+            filter_at(vars(all_of(nationCol)), all_vars(. %in% tempNation)) %>%
             select(all_of(unitCols))
           assertChoice(x = natCol, choices = names(sourceGeom), .var.name = "names(nation_column)")
         } else{
@@ -433,8 +436,7 @@ normGeometry <- function(input = NULL, ..., thresh = 10, outType = "gpkg",
                    name = as.character(name),
                    level = as.integer(theLevel),
                    ahID = as.integer(ahID),
-                   geoID = as.integer(geoID),
-                   nation = tempNation) %>%
+                   geoID = as.integer(geoID)) %>%
             mutate_at(vars(starts_with("al")), as.integer)
 
           # unique features ----
@@ -642,8 +644,8 @@ normGeometry <- function(input = NULL, ..., thresh = 10, outType = "gpkg",
                 select(-geom)
             }
           } else {
-            parentIDs <- tibble(NAME_0 = outNation, NAME_1 = outNation)
-            sourceGeom$NAME_1 <- outNation
+            parentIDs <- tibble(NAME_0 = tempNation, NAME_1 = tempNation)
+            sourceGeom$NAME_1 <- tempNation
             orig_units <- unitCols
             unitCols <- c("NAME_0", "NAME_1")
           }

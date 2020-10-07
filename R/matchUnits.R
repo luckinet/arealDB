@@ -86,12 +86,17 @@ matchUnits <- function(input = NULL, source = NULL, verbose = FALSE){
       next
     } else {
       message("    ... '", recentNation, "'")
-      layers <- st_layers(dsn = paste0(intPaths, "stage3/", recentNation, ".gpkg"))
+      layers <- st_layers(dsn = paste0(intPaths, "stage3/", recentNation, ".gpkg"))$name
     }
+    # if there is only the first level, take only the first layer
+    if(all(adminLvls %in% "al1")){
+      layers <- layers[1]
+    }
+
     geometries <- NULL
-    for(j in seq_along(layers$name)){
+    for(j in seq_along(layers)){
       theGeom <- read_sf(dsn = paste0(intPaths, "stage3/", recentNation, ".gpkg"),
-                         layer = sort(layers$name)[j],
+                         layer = sort(layers)[j],
                          stringsAsFactors = FALSE) %>%
         as_tibble() %>%
         select(-geom)
@@ -196,6 +201,7 @@ matchUnits <- function(input = NULL, source = NULL, verbose = FALSE){
         # In the second step we join the respective 'al*_id' values to 'tempUnits'
         parentID <- geometries %>%
           as_tibble() %>%
+          # mutate(name = tolower(name)) %>%
           filter(level == theLevel-1) %>%
           filter(name %in% unique(tempUnits[[3]])) %>%
           select(!!paste0("al", j-1, "_name") := name, id = paste0("al", j-1, "_id")) %>%
@@ -204,6 +210,7 @@ matchUnits <- function(input = NULL, source = NULL, verbose = FALSE){
         # here it's crucial to get the unit ID and the ID of their parents
         unitID <- geometries %>%
           as_tibble() %>%
+          # mutate(name = tolower(name)) %>%
           filter(level == theLevel) %>%
           filter(name %in% unique(tempUnits[[4]])) %>%
           select(!!paste0("al", j, "_name") := name, idUnit = paste0("al", j, "_id"), idParent = paste0("al", j-1, "_id")) %>%

@@ -199,10 +199,10 @@ normTable <- function(input = NULL, ..., source = "tabID", pattern = NULL,
 
     # reorganise data
     message("\n--> reading new data table ...")
-    temp <- read.csv(file = thisInput, header = FALSE, as.is = TRUE, na.strings = algorithm@meta$na, encoding = "UTF-8") %>%
+    thisTable <- read.csv(file = thisInput, header = FALSE, as.is = TRUE, na.strings = algorithm@format$na, encoding = "UTF-8") %>%
       as_tibble()
     message("    reorganising table with '", thisSchema, "' ...")
-    temp <- temp %>%
+    temp <- thisTable %>%
       reorganise(schema = algorithm)
 
     # make al1 if it doesn't extist (is needed below for subsetting by nation)
@@ -231,6 +231,7 @@ normTable <- function(input = NULL, ..., source = "tabID", pattern = NULL,
 
     temp <- left_join(temp, nations, by = c("al1" = "origin")) %>%
       select(-al1) %>%
+      filter(!is.na(target)) %>%
       select(al1 = target, everything())
     if(!is.null(subNations)){
       temp <- temp %>%
