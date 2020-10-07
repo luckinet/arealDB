@@ -5,7 +5,7 @@ library(sf)
 
 # administrative level 1
 attr <- tibble(fid = 1,
-               NAME_0 = "estonia")
+               NAME_0 = "Estonia")
 obj1 <- tibble(x = c(0, 100, 100, 0),
                y = c(0, 0, 100, 100)) %>%
   gs_polygon() %>%
@@ -15,7 +15,7 @@ st_write(obj = obj1, dsn = "example_geom1.gpkg")
 
 # administrative level 2
 attr <- tibble(fid = c(1:4),
-               NAME_0 = "estonia",
+               NAME_0 = "Estonia",
                NAME_1 = c("unit1", "unit2", "unit3", "unit4"))
 obj2 <- tibble(x = c(0, 50, 50, 0, 50, 100, 100, 50, 0, 50, 50, 0, 50, 100, 100, 50),
                y = c(0, 0, 50, 50, 0, 0, 50, 50, 50, 50, 100, 100, 50, 50, 100, 100),
@@ -27,7 +27,7 @@ st_write(obj = obj2, dsn = "example_geom2.gpkg")
 
 # administrative level 3 - first dataseries
 attr <- tibble(fid = c(1:6),
-               NAME_0 = "estonia",
+               NAME_0 = "Estonia",
                NAME_1 = c("unit1", "unit1", "unit2", "unit3", "unit4", "unit4"),
                NAME_2 = c("unit11", "unit12", "unit21", "unit31", "unit41", "unit42"))
 obj3 <- tibble(x = c(0, 25, 25, 0,
@@ -55,7 +55,7 @@ st_write(obj = obj3, dsn = "example_geom3.gpkg")
 
 # administrative level 3 - second dataseries
 attr <- tibble(fid = c(1:6),
-               NAME_0 = "estonia",
+               NAME_0 = "Estonia",
                NAME_1 = c("unit1", "unit1", "unit2", "unit3", "unit4", "unit4"),
                NAME_2 = c("unit11", "unit12", "unit21", "unit31", "unit41", "unit42"))
 obj4 <- tibble(x = c(0, 25, 25, 35, 35, 0,
