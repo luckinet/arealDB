@@ -82,7 +82,7 @@ matchUnits <- function(input = NULL, source = NULL, verbose = FALSE){
 
     # load the nation geometries ...
     if(!recentNation %in% availableNations){
-      message("    ... skipping '", recentNation, "' (no geoemtries available)")
+      message("    ... skipping '", recentNation, "' (no geometries available)")
       next
     } else {
       message("    ... '", recentNation, "'")
@@ -135,6 +135,10 @@ matchUnits <- function(input = NULL, source = NULL, verbose = FALSE){
         # then ...
         unitSubset <- geometries %>%
           filter(level == theLevel)
+        if(dim(unitSubset)[1] == 0){
+          message("    ... skipping '", recentNation, "' at level ", theLevel, " (no GADM geometries available)")
+          next
+        }
         parentSubset <- geometries %>%
           filter(level == theLevel-1)
 
