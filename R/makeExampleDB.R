@@ -149,15 +149,16 @@ makeExampleDB <- function(until = NULL, path = NULL, verbose = FALSE){
 
   if(any(theSteps %in% "regTable")){
 
-
-    meta_madeUp_1 <- setHeader(rows = 1) %>%
+    meta_madeUp_1 <- tabshiftr::schema_default %>%
+      setHeader(rows = 1) %>%
       setIDVar(name = "al1", columns = 1) %>%
       setIDVar(name = "year", columns = 2) %>%
       setIDVar(name = "commodities", columns = 3) %>%
       setObsVar(name = "harvested", unit = "ha", columns = 4) %>%
       setObsVar(name = "production", unit = "t", columns = 5)
 
-    meta_madeUp_2 <- setHeader(rows = 1) %>%
+    meta_madeUp_2 <- tabshiftr::schema_default %>%
+      setHeader(rows = 1) %>%
       setFormat(decimal = ".", na_values = c("", "NA")) %>%
       setIDVar(name = "al1", columns = 1) %>%
       setIDVar(name = "al2", columns = 2) %>%
