@@ -271,7 +271,7 @@ normTable <- function(input = NULL, ..., source = "tabID", pattern = NULL,
         pull(new)
       message()
       temp <- temp %>%
-        matchVars(source = tabID, !!!vars)
+        matchVars(source = theSource, !!!vars)
     }
 
     temp <- temp %>%

@@ -33,7 +33,7 @@ matchVars <- function(input = NULL, source = NULL, ...){
 
   # check validity of arguments
   assertTibble(x = input)
-  assertIntegerish(x = source)
+  assertList(x = source, len = 1)
   assertList(x = vars)
 
   message("--> matching variables of ...")
@@ -57,7 +57,7 @@ matchVars <- function(input = NULL, source = NULL, ...){
 
     # translate the terms
     theTerms <- translateTerms(terms = unique(inputTerms),
-                               source = list("tabID" = source),
+                               source = source,
                                index = paste0("tt_", varName))
 
     # get the matching terms

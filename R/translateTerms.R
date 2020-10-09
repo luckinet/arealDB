@@ -279,6 +279,10 @@ translateTerms <- function(terms, index = NULL, source = NULL, strict = FALSE,
           done <- readline(" -> press any key when done: ")
         }
 
+        if(!is.null(newOut)){
+         newOut <- newOut %>%
+           mutate(valid = TRUE)
+        }
         newOut <- newOut %>%
           bind_rows(read_csv(file = translating,
                              col_types = getColTypes(index)) %>%
