@@ -24,7 +24,7 @@ test_that("variables are matched", {
     matchUnits(source = list("tabID" = 1))
 
   output <- matchVars(input = input, faoID = list(commodities = "target"),
-                      source = 1)
+                      source = list("tabID" = 1))
   expect_tibble(x = output, nrows = 56, ncols = 10, col.names = "strict")
   expect_double(x = output$faoID, any.missing = FALSE)
   expect_names(x = names(output), permutation.of = c("year", "commodities", "harvested", "production", "id", "tabID", "geoID", "al1_name", "ahID", "faoID"))
