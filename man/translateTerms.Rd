@@ -26,8 +26,9 @@ translations.}
 the terms have been taken. List must be named with either \code{tabID} or
 \code{geoID} to denote where the ID comes from.}
 
-\item{strict}{[\code{logical(1)}]\cr whether or not to stick to the terms
-that have been defined as \code{'original'} in a translation table.}
+\item{strict}{[\code{logical(1)}]\cr shall the translation be limited to
+\code{fuzzy_terms}, or shall also those terms be available that have been
+defined as \code{'original'} in a translation table.}
 
 \item{fuzzy_terms}{[\code{vector(.)}]\cr additional target terms with which a
 fuzzy match should be carried out.}
