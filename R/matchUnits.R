@@ -32,11 +32,21 @@ matchUnits <- function(input = NULL, source = NULL, verbose = FALSE){
   # set internal objects
   intPaths <- paste0(getOption(x = "adb_path"), "/adb_geometries/")
 
+  inv_geometries <- read_csv(paste0(getOption(x = "adb_path"), "/inv_geometries.csv"), col_types = "iiiccccccDDcc")
+
   # check validity of arguments
   assertDataFrame(x = input)
   assertList(x = source, len = 1)
   # assert that one of the columnnames is "al1" so that at least nations are matched
   assertNames(x = names(input), must.include = "al1")
+
+  # get al geoIDs of the dataseries of this file to determine parent names
+  assertIntegerish(x = unique(input$geoID), len = 1)
+  datIDs <- inv_geometries %>%
+    filter(geoID == unique(input$geoID)) %>%
+    pull(datID)
+  lut <- inv_geometries %>%
+    filter(datID == datIDs)
 
   tempOut <- input
   adminLvls <- names(input)[grepl(pattern = "al", x = names(input))]
@@ -104,10 +114,10 @@ matchUnits <- function(input = NULL, source = NULL, verbose = FALSE){
     }
 
     # ... select only unique rows of all 'al*_id' ...
-    temp <- geometries %>%
-      select(name, starts_with("al"))
-    geometries <- geometries %>%
-      filter(!duplicated(temp))
+    # temp <- geometries %>%
+    #   select(name, starts_with("al"))
+    # geometries <- geometries %>%
+    #   filter(!duplicated(temp))
 
     outputUnits <- geometries
     levels <- NULL
@@ -133,8 +143,12 @@ matchUnits <- function(input = NULL, source = NULL, verbose = FALSE){
         # In a first step we need to build a table of the units and their
         # parents, both with the standard name of our database ('geometries'),
         # then ...
+        theGeoID <- lut$geoID[lut$level == theLevel]
         unitSubset <- geometries %>%
-          filter(level == theLevel)
+          filter(geoID %in% theGeoID)
+
+        # continue here with testing whether translations fit better now
+
         if(dim(unitSubset)[1] == 0){
           message("    ... skipping '", recentNation, "' at level ", theLevel, " (no GADM geometries available)")
           next
@@ -170,12 +184,14 @@ matchUnits <- function(input = NULL, source = NULL, verbose = FALSE){
                                      index = "tt_territories",
                                      source = source,
                                      fuzzy_terms = unique(parentSubset$name),
+                                     strict = TRUE,
                                      verbose = FALSE)
         theParents <- unique(theParents)
         theUnits <- translateTerms(terms = unique(unitInput),
                                    index = "tt_territories",
                                    source = source,
                                    fuzzy_terms = unique(unitSubset$name),
+                                   strict = TRUE,
                                    verbose = verbose)
         theUnits <- unique(theUnits)
 
