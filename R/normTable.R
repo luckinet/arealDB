@@ -87,7 +87,6 @@ normTable <- function(input = NULL, ..., source = "tabID", pattern = NULL,
 
   # get objects
   inv_tables <- read_csv(paste0(intPaths, "/inv_tables.csv"), col_types = "iiiccccDccccc")
-  inv_geometries <- read_csv(paste0(intPaths, "/inv_geometries.csv"), col_types = "iiiccccccDDcc")
   vars <- exprs(..., .named = TRUE)
 
   if(update){
@@ -258,7 +257,7 @@ normTable <- function(input = NULL, ..., source = "tabID", pattern = NULL,
       theSource <- list("datID" = inv_tables$datID[inv_tables$tabID %in% tabID])
     }
 
-    temp <- temp %>%
+    temp_units <- temp %>%
       mutate(tabID = tabID,
              geoID = geoID) %>%
       matchUnits(source = theSource)
@@ -270,11 +269,13 @@ normTable <- function(input = NULL, ..., source = "tabID", pattern = NULL,
         mutate(new = if_else(orig %in% names(vars[[1]]), names(vars), orig)) %>%
         pull(new)
       message()
-      temp <- temp %>%
+      temp_all <- temp_units %>%
         matchVars(source = theSource, !!!vars)
+    } else {
+      temp_all <- temp_units
     }
 
-    temp <- temp %>%
+    temp <- temp_all %>%
       select(tabID, geoID, ahID, everything()) %>%
       mutate(year = as.character(year))
 
@@ -319,7 +320,7 @@ normTable <- function(input = NULL, ..., source = "tabID", pattern = NULL,
         }
 
         # write file to 'stage3' and move to folder 'processed'
-        write_csv(x = out, path = paste0(intPaths, "/adb_tables/stage3/", theNations[j], ".csv"), na = "")
+        write_csv(x = out, file = paste0(intPaths, "/adb_tables/stage3/", theNations[j], ".csv"), na = "")
       }
 
       if(moveFile){
