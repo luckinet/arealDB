@@ -199,10 +199,10 @@ regGeometry <- function(nation = NULL, subset = NULL, gSeries = NULL, level = NU
   }
 
   # determine nation value
-  if(!testChoice(x = tolower(nation), choices = countries$nation)){
+  if(!testChoice(x = nation, choices = countries$nation)){
     theNation <- NULL
   } else{
-    nations <- tolower(nation)
+    nations <- nation
     assertChoice(x = nations, choices = countries$nation)
     theNation <- countries %>%
       as_tibble() %>%
