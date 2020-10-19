@@ -314,7 +314,7 @@ regTable <- function(nation = NULL, subset = NULL, dSeries = NULL, gSeries = NUL
   }
 
   # make a schema description
-  write_rds(x = schema, path = paste0(intPaths, "/adb_tables/meta/schemas/", theSchemaName, ".rds"))
+  write_rds(x = schema, file = paste0(intPaths, "/adb_tables/meta/schemas/", theSchemaName, ".rds"))
 
   if(is.null(archiveLink)){
     message("please type in the weblink from which the archive was downloaded: ")

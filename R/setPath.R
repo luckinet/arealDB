@@ -94,7 +94,7 @@ setPath <- function(root = NULL){
                          licence_path = character(),
                          notes = character())
     write_csv(x = dataseries,
-              path = paste0(root, "/inv_dataseries.csv"),
+              file = paste0(root, "/inv_dataseries.csv"),
               na = "")
   }
   if(!testFileExists(x = file.path(root, "inv_tables.csv"))){
@@ -112,7 +112,7 @@ setPath <- function(root = NULL){
                      metadata_path = character(),
                      notes = character())
     write_csv(x = census,
-              path = paste0(root, "/inv_tables.csv"),
+              file = paste0(root, "/inv_tables.csv"),
               na = "")
   }
   if(!testFileExists(x = file.path(root, "inv_geometries.csv"))){
@@ -130,7 +130,7 @@ setPath <- function(root = NULL){
                          update_frequency = character(),
                          notes = character())
     write_csv(x = geometries,
-              path = paste0(root, "/inv_geometries.csv"),
+              file = paste0(root, "/inv_geometries.csv"),
               na = "")
   }
 
@@ -142,7 +142,7 @@ setPath <- function(root = NULL){
                          ID = NA_character_,
                          notes = NA_character_)
     write_csv(x = tt_nations,
-              path = paste0(root, "/tt_nations.csv"),
+              file = paste0(root, "/tt_nations.csv"),
               na = "")
   }
 
