@@ -25,11 +25,12 @@ updateTable <- function(index = NULL, name = NULL, matchCols = NULL){
   if(testFileExists(x = paste0(intPaths, "/", name, ".csv"))){
     oldIndex <- read_csv(paste0(intPaths, "/", name, ".csv"), col_types = getColTypes(input = index))
     write_csv(x = oldIndex,
-              path = paste0(intPaths, "/log/", name, "_", theTime, ".csv"),
+              file = paste0(intPaths, "/log/", name, "_", theTime, ".csv"),
               na = "", append = FALSE)
 
     if(is.null(matchCols)){
       matchCols <- names(oldIndex)
+      matchCols <- matchCols[-which(matchCols == "notes")]
     } else {
       assertSubset(x = matchCols, choices = names(oldIndex))
     }
@@ -43,6 +44,6 @@ updateTable <- function(index = NULL, name = NULL, matchCols = NULL){
 
   # store it
   write_csv(x = index,
-            path = paste0(intPaths, "/", name, ".csv"),
+            file = paste0(intPaths, "/", name, ".csv"),
             na = "")
 }
