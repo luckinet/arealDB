@@ -222,7 +222,9 @@ regGeometry <- function(nation = NULL, subset = NULL, gSeries = NULL, level = NU
     if(overwrite){
       newGID <- inv_geometries$geoID[which(inv_geometries$source_file %in% fileName)]
     } else {
-      return(paste0("'", fileName, "' has already been registered."))
+      temp <- inv_geometries[which(inv_geometries$source_file %in% fileName), ]
+      message(paste0("! the geometry '", fileName, "' has already been registered !"))
+      return(temp)
     }
   }
 

@@ -74,6 +74,9 @@ makeExampleDB <- function(until = NULL, path = NULL, verbose = FALSE){
   file.copy(from = paste0(inPath, "/example_table2.csv"),
             to = paste0(path, "/adb_tables/stage2/est_2_barleyMaize_1990_2017_madeUp.csv"))
 
+  file.copy(from = paste0(inPath, "/example_schema.rds"),
+            to = paste0(path, "/adb_tables/meta/schemas/example_schema.rds"))
+
 
   if(any(theSteps %in% "setVariables")){
     territories <- read_csv(file = paste0(inPath, "/id_units.csv"), col_types = "iccc")

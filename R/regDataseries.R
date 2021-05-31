@@ -68,7 +68,9 @@ regDataseries <- function(name = NULL, description = NULL, homepage = NULL,
     }
   } else{
     if(name %in% inv_dataseries$name & !overwrite){
-      stop("! the dataseries '", name, "' has been registered already !")
+      message("! the dataseries '", name, "' has already been registered !")
+      temp <- inv_dataseries[which(inv_dataseries$name %in% name), ]
+      return(temp)
     }
     theName <- name
   }

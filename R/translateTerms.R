@@ -119,6 +119,12 @@ translateTerms <- function(terms, index = NULL, source = NULL, strict = FALSE,
       filter(target != "missing" & !is.na(origin)) %>%
       rename("ID" = ends_with("ID"))
 
+    # in case fuzzy terms were defined, filter target by them
+    if(!is.null(theFuzzyTerms)){
+      temp <- temp %>%
+        filter(target %in% theFuzzyTerms | target == "ignore")
+    }
+
     # first make sure that the term should not be ignored
     if(any(temp$target == "ignore")){
       app <- tibble(origin = newTerm, target = "ignore", source = NA_character_, ID = NA_integer_, notes = NA_character_)
@@ -275,7 +281,7 @@ translateTerms <- function(terms, index = NULL, source = NULL, strict = FALSE,
 
         write_csv(x = toTranslate, file = translating)
         if(Sys.info()[['sysname']] == "Linux" & inline){
-          message("please replace the missing values and save the file (see 'target_terms.csv' for legal terms)")
+          message("please replace the missing values and save the file (see 'target_terms.csv' for valid terms)")
           file.edit(translating)
           done <- readline(" -> press any key when done: ")
         } else {

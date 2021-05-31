@@ -8,7 +8,7 @@ globalVariables(c(
   "terms", "toClean", "unit", "year", "years", "yield", "tabID", "source_area",
   "overlap", "tempID", "key", "val", "rn", "values", "ID", "area", "deviation",
   "target_area", "valid", "running", "sourceFID", "targetFID", "overlap_area",
-  "orig", "new", "theTerm"
+  "orig", "new", "theTerm", "datID"
 ))
 
 .onAttach <- function(libname, pkgname){

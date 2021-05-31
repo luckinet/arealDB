@@ -274,8 +274,8 @@ matchUnits <- function(input = NULL, source = NULL, verbose = FALSE){
 
   out <- suppressMessages(
     tempOut %>%
-      left_join(outhIDs) %>%
-      select(-contains("_alt"))
+      left_join(outhIDs)# %>%
+      # select(-contains("_alt"))
   )
 
   return(out)
