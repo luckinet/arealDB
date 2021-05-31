@@ -4,7 +4,7 @@
 \alias{updateTable}
 \title{Update a table}
 \usage{
-updateTable(index = NULL, name = NULL, matchCols = NULL)
+updateTable(index = NULL, name = NULL, matchCols = NULL, backup = TRUE)
 }
 \arguments{
 \item{index}{[\code{tibble(1)}]\cr the table to use as update.}
@@ -13,6 +13,9 @@ updateTable(index = NULL, name = NULL, matchCols = NULL)
 
 \item{matchCols}{[\code{character(.)}]\cr the columns in the old file by
 which to match.}
+
+\item{backup}{[logical(1)]\cr whether or not to store the old table in the
+\code{log} directory.}
 }
 \description{
 Update any inventory, index or translation table of an areal database.

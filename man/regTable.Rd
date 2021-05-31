@@ -48,7 +48,8 @@ valid.}
 \item{end}{[\code{integerish(1)}]\cr the date until which the data are valid.}
 
 \item{schema}{[\code{list(1)}]\cr the schema description of the table to read
-in (must have been placed in the global environment before calling it here).}
+in (must have been placed in the global environment before calling it
+here).}
 
 \item{archive}{[\code{character(1)}]\cr the original file from which the
 boundaries emerge.}
@@ -103,9 +104,8 @@ When processing areal data tables, carry out the following steps:
   permutation of a particular table arrangement. The function
   \code{\link{normTable}} expects internally a schema description (a list
   that describes the position of the data components) for each data table,
-  which is saved as \code{paste0("meta_", dSeries, TAB_NUMBER)}. A template
-  thereof, and documentation on how to set them up, can be found in
-  \code{tabshiftr::\link{makeSchema}}.
+  which is saved as \code{paste0("meta_", dSeries, TAB_NUMBER)}. See package
+  \code{tabshiftr}.
 }
 \examples{
 # build the example database
@@ -113,24 +113,19 @@ makeExampleDB(until = "regGeometry")
 
 # the schema description for this table
 library(tabshiftr)
-schema_madeUp <- makeSchema(
-  list(header = list(row = 1),
-       variables = list(
-         al1 =
-           list(type = "id", col = 1),
-         year =
-           list(type = "id", col = 2),
-         commodities =
-           list(type = "id", col = 3),
-         harvested =
-           list(type = "measured", unit = "ha",
-                factor = 1, col = 4),
-         production =
-           list(type = "measured", unit = "t",
-                factor = 1, col = 5))))
+library(magrittr)
 
-regTable(nation = "estonia",
-         subset = "soyMaize",
+schema_madeUp <- setHeader(rows = 1) \%>\%
+  setIDVar(name = "al1", columns = 1) \%>\%
+  setIDVar(name = "year", columns = 2) \%>\%
+  setIDVar(name = "commodities", columns = 3) \%>\%
+  setObsVar(name = "harvested", unit = "ha",
+            factor = 1, columns = 4) \%>\%
+  setObsVar(name = "production", unit = "t",
+            factor = 1, columns = 5)
+
+regTable(nation = "Estonia",
+         subset = "barleyMaize",
          dSeries = "madeUp",
          gSeries = "gadm",
          level = 1,

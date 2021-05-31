@@ -11,6 +11,7 @@ normTable(
   pattern = NULL,
   update = FALSE,
   keepOrig = FALSE,
+  outType = "rds",
   verbose = FALSE
 )
 }
@@ -40,15 +41,20 @@ are properly specified.}
 variable names in the output (\code{TRUE}) or to remove them (\code{FALSE},
 default). Useful for debugging.}
 
+\item{outType}{[\code{logical(1)}]\cr the output file-type, currently
+implemented options are either \emph{*.csv} (more exchangeable for a
+workflow based on several programs) or \emph{*.rds} (smaller and less
+error-prone data-format but can only be read by R efficiently).}
+
 \item{verbose}{[\code{logical(1)}]\cr be verbose about translating terms
 (default \code{FALSE}). Furthermore, you can use
 \code{\link{suppressMessages}} to make this function completely silent.}
 }
 \value{
 This function harmonises and integrates so far unprocessed data
-  tables at stage two into stage three of the areal database. It
-  produces for each nation in the registered data tables a comma-separated
-  values file that includes all thematic areal data.
+  tables at stage two into stage three of the areal database. It produces for
+  each nation in the registered data tables a comma-separated values file
+  that includes all thematic areal data.
 }
 \description{
 Harmonise and integrate data tables into standardised format
@@ -70,16 +76,13 @@ Arguments in \code{...} are so-called matching lists. This argument
   To normalise data tables, this function proceeds as follows: \enumerate{
   \item Read in \code{input} and extract initial metadata from the file name.
   \item Employ the function \code{tabshiftr::\link{reorganise}} to reshape
-  \code{input} according to the respective schema description (see
-  \code{tabshiftr::\link{makeSchema}}). \item Match the territorial units in
-  \code{input} via \code{\link{matchUnits}}. \item If \code{...} has been
-  provided with variables to match, those are matched via
-  \code{\link{matchVars}}. \item Harmonise territorial unit names. \item If
-  \code{update = TRUE}, store the processed data table at stage three.}
+  \code{input} according to the respective schema description. \item Match
+  the territorial units in \code{input} via \code{\link{matchUnits}}. \item
+  If \code{...} has been provided with variables to match, those are matched
+  via \code{\link{matchVars}}. \item Harmonise territorial unit names. \item
+  If \code{update = TRUE}, store the processed data table at stage three.}
 }
 \examples{
-library(readr)
-
 # build the example database
 makeExampleDB(until = "normGeometry")
 
@@ -88,7 +91,7 @@ makeExampleDB(until = "normGeometry")
 normTable(faoID = list(commodities = "target"), update = TRUE)
 
 # ... and check the result
-output <- read_csv(paste0(tempdir(), "/newDB/adb_tables/stage3/estonia.csv"))
+output <- readRDS(paste0(tempdir(), "/newDB/adb_tables/stage3/Estonia.rds"))
 }
 \seealso{
 Other normalisers: 

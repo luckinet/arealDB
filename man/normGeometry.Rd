@@ -30,7 +30,8 @@ overlap above which to consider two territorial units "different".}
 \item{outType}{[\code{character(1)}]\cr the output file-type, see
 \code{\link{st_drivers}} for a list. If a file-type supports layers, they
 are stored in the same file, otherwise the different layers are provided
-separately.}
+separately. For an R-based workflow, \code{"rds"} could be an efficient
+option.}
 
 \item{pattern}{[\code{character(1)}]\cr an optional regular expression. Only
 dataset names which match the regular expression will be returned.}
@@ -92,7 +93,8 @@ makeExampleDB(until = "regGeometry")
 normGeometry(nation = "estonia", update = TRUE)
 
 # ... and check the result
-output <- st_read(paste0(tempdir(), "/newDB/adb_geometries/stage3/estonia.gpkg"))
+st_layers(paste0(tempdir(), "/newDB/adb_geometries/stage3/Estonia.gpkg"))
+output <- st_read(paste0(tempdir(), "/newDB/adb_geometries/stage3/Estonia.gpkg"))
 }
 \seealso{
 Other normalisers: 
