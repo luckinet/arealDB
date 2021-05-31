@@ -53,7 +53,7 @@ test_that("function asks for details, if not provided", {
 
   expect_message(object = regTable())
   output <- capture_messages(code = regTable())
-  expect_character(x = output, len = 13, any.missing = FALSE, unique = TRUE)
+  expect_character(x = output, len = 12, any.missing = FALSE, unique = TRUE)
   expect_equal(object = output[1], expected = "please type in to which data series this table belongs: \n")
   expect_equal(object = output[2], expected = "please type in to which geometry series this table belongs: \n")
   expect_equal(object = output[3], expected = "please type in the administrative level of the units: \n")
