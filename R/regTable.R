@@ -17,7 +17,8 @@
 #'   valid.
 #' @param end [\code{integerish(1)}]\cr the date until which the data are valid.
 #' @param schema [\code{list(1)}]\cr the schema description of the table to read
-#'   in (must have been placed in the global environment before calling it here).
+#'   in (must have been placed in the global environment before calling it
+#'   here).
 #' @param archive [\code{character(1)}]\cr the original file from which the
 #'   boundaries emerge.
 #' @param archiveLink [\code{character(1)}]\cr download-link of the archive.
@@ -54,9 +55,8 @@
 #'   permutation of a particular table arrangement. The function
 #'   \code{\link{normTable}} expects internally a schema description (a list
 #'   that describes the position of the data components) for each data table,
-#'   which is saved as \code{paste0("meta_", dSeries, TAB_NUMBER)}. A template
-#'   thereof, and documentation on how to set them up, can be found in
-#'   \code{tabshiftr::\link{makeSchema}}.
+#'   which is saved as \code{paste0("meta_", dSeries, TAB_NUMBER)}. See package
+#'   \code{tabshiftr}.
 #' @return Returns a tibble of the entry that is appended to 'inv_tables.csv' in
 #'   case \code{update = TRUE}.
 #' @examples
@@ -65,24 +65,19 @@
 #'
 #' # the schema description for this table
 #' library(tabshiftr)
-#' schema_madeUp <- makeSchema(
-#'   list(header = list(row = 1),
-#'        variables = list(
-#'          al1 =
-#'            list(type = "id", col = 1),
-#'          year =
-#'            list(type = "id", col = 2),
-#'          commodities =
-#'            list(type = "id", col = 3),
-#'          harvested =
-#'            list(type = "measured", unit = "ha",
-#'                 factor = 1, col = 4),
-#'          production =
-#'            list(type = "measured", unit = "t",
-#'                 factor = 1, col = 5))))
+#' library(magrittr)
 #'
-#' regTable(nation = "estonia",
-#'          subset = "soyMaize",
+#' schema_madeUp <- setHeader(rows = 1) %>%
+#'   setIDVar(name = "al1", columns = 1) %>%
+#'   setIDVar(name = "year", columns = 2) %>%
+#'   setIDVar(name = "commodities", columns = 3) %>%
+#'   setObsVar(name = "harvested", unit = "ha",
+#'             factor = 1, columns = 4) %>%
+#'   setObsVar(name = "production", unit = "t",
+#'             factor = 1, columns = 5)
+#'
+#' regTable(nation = "Estonia",
+#'          subset = "barleyMaize",
 #'          dSeries = "madeUp",
 #'          gSeries = "gadm",
 #'          level = 1,
@@ -97,9 +92,10 @@
 #'          metadataPath = "my/local/path",
 #'          update = TRUE)
 #' @importFrom readr read_csv write_rds guess_encoding
+#' @importFrom rlang ensym
 #' @importFrom checkmate assertDataFrame assertNames assertCharacter
 #'   assertIntegerish assertSubset assertLogical testChoice assertChoice
-#'   assertFileExists assertClass assertTRUE
+#'   assertFileExists assertClass assertTRUE testDataFrame testNames
 #' @importFrom dplyr filter distinct
 #' @importFrom stringr str_split
 #' @importFrom tibble tibble
@@ -161,11 +157,15 @@ regTable <- function(nation = NULL, subset = NULL, dSeries = NULL, gSeries = NUL
   assertLogical(x = update, len = 1)
   assertLogical(x = overwrite, len = 1)
 
+  schemaName <- as.character(substitute(schema))
+
   # ask for missing and required arguments
   if(!is.null(subset)){
     if(grepl(pattern = "_", x = subset)){
       stop("please give a subset that does not contain any '_' characters.")
     }
+  } else {
+    subset <- ""
   }
 
   if(is.null(dSeries)){
@@ -173,7 +173,7 @@ regTable <- function(nation = NULL, subset = NULL, dSeries = NULL, gSeries = NUL
     if(!testing){
       dSeries <- readline()
     } else {
-      dSeries <- "maia"
+      dSeries <- "madeUp"
     }
 
     if(grepl(pattern = "_", x = dSeries)){
@@ -252,7 +252,7 @@ regTable <- function(nation = NULL, subset = NULL, dSeries = NULL, gSeries = NUL
     if(!testing){
       end <- readline()
     } else {
-      end <- as.integer(format(Sys.Date(), "%Y"))
+      end <- 2017
     }
     if(is.na(end)){
       end =  NA_integer_
@@ -264,7 +264,7 @@ regTable <- function(nation = NULL, subset = NULL, dSeries = NULL, gSeries = NUL
     if(!testing){
       schema <- readline()
     } else {
-      schema <- tabshiftr::schema_default
+      schema <- readRDS(file = paste0(intPaths, "/adb_tables/meta/schemas/example_schema.rds"))
     }
     if(length(schema) < 1){
       schema = NA_character_
@@ -397,31 +397,39 @@ regTable <- function(nation = NULL, subset = NULL, dSeries = NULL, gSeries = NUL
     notes = NA_character_
   }
 
-  # test whether the archive file is available
-  if(!testFileExists(x = paste0(intPaths, "/adb_tables/stage1/", fileArchive[1]), "r")){
-    message(paste0("... please store the archive '", fileArchive[[1]], "' in './adb_tables/stage1'"))
-    if(!testing){
-      done <- readline(" -> press any key when done: ")
-    }
-
-    # make sure that the file is really there
-    assertFileExists(x = paste0(intPaths, "/adb_tables/stage1/", fileArchive[1]), "r")
-
-    # ... and if it is compressed, whether also the file therein is given that contains the data
-    if(testCompressed(x = fileArchive[1]) & length(fileArchive) < 2){
-      message(paste0("please give the name of the file in ", fileArchive[1]," that contains the table: "))
-      if(!testing){
-        theArchiveFile <- readline()
-      } else {
-        theArchiveFile <- "example_table.csv"
-      }
-      archive <- paste0(archive, "|", theArchiveFile)
-    }
-  }
-
   if(update){
+
+    # test whether the archive file is available
+    if(!testFileExists(x = paste0(intPaths, "/adb_tables/stage1/", fileArchive[1]), "r")){
+      message(paste0("... please store the archive '", fileArchive[[1]], "' in './adb_tables/stage1'"))
+      if(!testing){
+        done <- readline(" -> press any key when done: ")
+      }
+
+      # make sure that the file is really there
+      assertFileExists(x = paste0(intPaths, "/adb_tables/stage1/", fileArchive[1]), "r")
+
+      # ... and if it is compressed, whether also the file therein is given that contains the data
+      if(testCompressed(x = fileArchive[1]) & length(fileArchive) < 2){
+        message(paste0("please give the name of the file in ", fileArchive[1]," that contains the table: "))
+        if(!testing){
+          theArchiveFile <- readline()
+        } else {
+          theArchiveFile <- "example_table.csv"
+        }
+        archive <- paste0(archive, "|", theArchiveFile)
+      }
+    }
+
     # test that the file is available
     if(!testFileExists(x = filePath, "r", extension = "csv")){
+      processedPath <- paste0(intPaths, "/adb_tables/stage2/processed/", fileName)
+      if(testFileExists(x = processedPath, "r", extension = "csv")){
+        temp <- inv_tables[which(inv_tables$source_file %in% fileName), ]
+        message(paste0("! the table '", fileName, "' has already been normalised !"))
+        return(temp)
+      }
+
       message(paste0("... please store the table as '", fileName, "' with utf-8 encoding in './adb_tables/stage2'"))
       if(!testing){
         done <- readline(" -> press any key when done: ")
@@ -448,9 +456,39 @@ regTable <- function(nation = NULL, subset = NULL, dSeries = NULL, gSeries = NUL
       # in case the user wants to update, attach the new information to the table inv_sourceData.csv
       updateTable(index = doc, name = "inv_tables", matchCols = c("source_file"))
     }
+
     return(doc)
   } else {
-    message(paste0("... the filename is '", fileName, "'."))
+
+    stage1Exists <- testFileExists(x = filePath, "r", extension = "csv")
+    stage2Exists <- testFileExists(x = paste0(intPaths, "/adb_tables/stage1/", fileArchive[1]), "r")
+    if(stage1Exists){
+      thisTable <- as_tibble(read.csv(file = filePath, header = FALSE, as.is = TRUE, na.strings = schema@format$na, encoding = "UTF-8"))
+      temp <- tryCatch(expr = reorganise(input = thisTable, schema = schema),
+                       error = function(e){
+                         return("There was an error message")
+                       },
+                       warning = function(w){
+                         return("There was a warning message")
+                       })
+      isTable <- testDataFrame(x = temp)
+      correctNames <- testNames(x = names(temp), must.include = names(schema@variables))
+      schema_ok <- if_else(isTable & correctNames, "yes", temp)
+    } else {
+      schema_ok <- ""
+    }
+
+    diag <- tibble(stage1_name = fileArchive[1],
+                   stage2_name = fileName,
+                   schema_name = schemaName,
+                   stage1_ok = stage2Exists,
+                   stage2_ok = stage1Exists,
+                   schema_ok = schema_ok)
+
+    updateTable(index = diag, name = "diag_tables", matchCols = c("stage2_name"), backup = FALSE)
+
+    return(diag)
   }
+
 
 }
