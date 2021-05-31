@@ -13,7 +13,8 @@
 #' @param outType [\code{character(1)}]\cr the output file-type, see
 #'   \code{\link{st_drivers}} for a list. If a file-type supports layers, they
 #'   are stored in the same file, otherwise the different layers are provided
-#'   separately.
+#'   separately. For an R-based workflow, \code{"rds"} could be an efficient
+#'   option.
 #' @param pattern [\code{character(1)}]\cr an optional regular expression. Only
 #'   dataset names which match the regular expression will be returned.
 #' @param update [\code{logical(1)}]\cr whether or not the physical files should
@@ -65,11 +66,13 @@
 #' normGeometry(nation = "estonia", update = TRUE)
 #'
 #' # ... and check the result
-#' output <- st_read(paste0(tempdir(), "/newDB/adb_geometries/stage3/estonia.gpkg"))
+#' st_layers(paste0(tempdir(), "/newDB/adb_geometries/stage3/Estonia.gpkg"))
+#' output <- st_read(paste0(tempdir(), "/newDB/adb_geometries/stage3/Estonia.gpkg"))
 #' @importFrom checkmate assertFileExists assertIntegerish assertLogical
 #'   assertCharacter assertChoice testFileExists
 #' @importFrom dplyr filter distinct select mutate rowwise filter_at vars
 #'   all_vars pull group_by arrange summarise mutate_if rename n if_else ungroup
+#'   across
 #' @importFrom rlang sym exprs
 #' @importFrom readr read_csv
 #' @importFrom sf st_layers read_sf st_write st_join st_buffer st_equals st_sf
@@ -106,7 +109,7 @@ normGeometry <- function(input = NULL, ..., thresh = 10, outType = "gpkg",
   # check validity of arguments
   assertIntegerish(x = thresh, any.missing = FALSE)
   assertLogical(x = update, len = 1)
-  assertNames(x = outType, subset.of = tolower(st_drivers()$name))
+  assertNames(x = outType, subset.of = c(tolower(st_drivers()$name), "rds"))
 
   outLut <- NULL
   for(i in seq_along(input)){
@@ -193,8 +196,10 @@ normGeometry <- function(input = NULL, ..., thresh = 10, outType = "gpkg",
       # unify also the nations with which to subset
       if(any(names(subsets) == "nation")){
         toUnify <- eval(subsets[[which(names(subsets) == "nation")]])
+        nationNames <- countries$nation[!is.na(countries$nation)]
         unified <- translateTerms(terms = toUnify,
                                   index = "tt_territories",
+                                  fuzzy_terms = nationNames,
                                   source = list("geoID" = newGID),
                                   verbose = verbose) %>%
           pull(target)
@@ -252,7 +257,7 @@ normGeometry <- function(input = NULL, ..., thresh = 10, outType = "gpkg",
               message("    Dissolving multiple polygons into a single multipolygon")
 
               sourceGeom <- sourceGeom %>%
-                group_by(.dots = unitCols) %>%
+                group_by(across(all_of(unitCols))) %>%
                 summarise() %>%
                 ungroup()
             } else {
@@ -564,7 +569,7 @@ normGeometry <- function(input = NULL, ..., thresh = 10, outType = "gpkg",
               mutate(al1_id = {if (any(is.na(al1_id))) nationID else al1_id}) %>%
               left_join(prevUnits) %>%
               filter(!duplicated(.)) %>%
-              group_by(.dots = paste0("al", groupLevel-1, "_id")) %>%
+              group_by(across(all_of(paste0("al", groupLevel-1, "_id")))) %>%
               mutate(nation = tempNation,
                      name = {if (n() > 0) !!sym(unitCols[length(unitCols)]) else ""},
                      level = theLevel,
@@ -698,12 +703,16 @@ normGeometry <- function(input = NULL, ..., thresh = 10, outType = "gpkg",
 
         if(update){
           # in case the user wants to update, output the simple feature
-          st_write(obj = outGeom,
-                   dsn = paste0(intPaths, "/adb_geometries/stage3/", tempNation, paste0(".", outType)),
-                   layer = paste0("level_", theLevel),
-                   delete_layer = TRUE,
-                   append = TRUE,
-                   quiet = TRUE)
+          if(outType != "rds"){
+            st_write(obj = outGeom,
+                     dsn = paste0(intPaths, "/adb_geometries/stage3/", tempNation, ".", outType),
+                     layer = paste0("level_", theLevel),
+                     delete_layer = TRUE,
+                     append = TRUE,
+                     quiet = TRUE)
+          } else {
+            saveRDS(object = outGeom, file = paste0(intPaths, "/adb_geometries/stage3/", tempNation, ".rds"))
+          }
 
         }
 

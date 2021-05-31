@@ -20,6 +20,10 @@
 #' @param keepOrig [\code{logical(1)}]\cr to keep the original units and
 #'   variable names in the output (\code{TRUE}) or to remove them (\code{FALSE},
 #'   default). Useful for debugging.
+#' @param outType [\code{logical(1)}]\cr the output file-type, currently
+#'   implemented options are either \emph{*.csv} (more exchangeable for a
+#'   workflow based on several programs) or \emph{*.rds} (smaller and less
+#'   error-prone data-format but can only be read by R efficiently).
 #' @param verbose [\code{logical(1)}]\cr be verbose about translating terms
 #'   (default \code{FALSE}). Furthermore, you can use
 #'   \code{\link{suppressMessages}} to make this function completely silent.
@@ -39,20 +43,17 @@
 #'   To normalise data tables, this function proceeds as follows: \enumerate{
 #'   \item Read in \code{input} and extract initial metadata from the file name.
 #'   \item Employ the function \code{tabshiftr::\link{reorganise}} to reshape
-#'   \code{input} according to the respective schema description (see
-#'   \code{tabshiftr::\link{makeSchema}}). \item Match the territorial units in
-#'   \code{input} via \code{\link{matchUnits}}. \item If \code{...} has been
-#'   provided with variables to match, those are matched via
-#'   \code{\link{matchVars}}. \item Harmonise territorial unit names. \item If
-#'   \code{update = TRUE}, store the processed data table at stage three.}
+#'   \code{input} according to the respective schema description. \item Match
+#'   the territorial units in \code{input} via \code{\link{matchUnits}}. \item
+#'   If \code{...} has been provided with variables to match, those are matched
+#'   via \code{\link{matchVars}}. \item Harmonise territorial unit names. \item
+#'   If \code{update = TRUE}, store the processed data table at stage three.}
 #' @family normalisers
 #' @return This function harmonises and integrates so far unprocessed data
-#'   tables at stage two into stage three of the areal database. It
-#'   produces for each nation in the registered data tables a comma-separated
-#'   values file that includes all thematic areal data.
+#'   tables at stage two into stage three of the areal database. It produces for
+#'   each nation in the registered data tables a comma-separated values file
+#'   that includes all thematic areal data.
 #' @examples
-#' library(readr)
-#'
 #' # build the example database
 #' makeExampleDB(until = "normGeometry")
 #'
@@ -61,7 +62,7 @@
 #' normTable(faoID = list(commodities = "target"), update = TRUE)
 #'
 #' # ... and check the result
-#' output <- read_csv(paste0(tempdir(), "/newDB/adb_tables/stage3/estonia.csv"))
+#' output <- readRDS(paste0(tempdir(), "/newDB/adb_tables/stage3/Estonia.rds"))
 #' @importFrom checkmate assertNames assertFileExists assertLogical
 #' @importFrom rlang exprs
 #' @importFrom tabshiftr reorganise
@@ -74,7 +75,8 @@
 #' @export
 
 normTable <- function(input = NULL, ..., source = "tabID", pattern = NULL,
-                      update = FALSE, keepOrig = FALSE, verbose = FALSE){
+                      update = FALSE, keepOrig = FALSE, outType = "rds",
+                      verbose = FALSE){
 
   # set internal paths
   intPaths <- getOption(x = "adb_path")
@@ -111,6 +113,7 @@ normTable <- function(input = NULL, ..., source = "tabID", pattern = NULL,
                                                            "next_update", "update_frequency", "metadata_link",
                                                            "metadata_path", "notes"))
   assertLogical(x = update, len = 1)
+  assertNames(x = outType, subset.of = c("csv", "rds"))
   assertChoice(x = source, choices = c("tabID", "datID"))
   assertList(x = vars)
 
@@ -276,8 +279,7 @@ normTable <- function(input = NULL, ..., source = "tabID", pattern = NULL,
     }
 
     temp <- temp_all %>%
-      select(tabID, geoID, ahID, everything()) %>%
-      mutate(year = as.character(year))
+      select(tabID, geoID, ahID, everything())
 
     # in case the user wants to update, update the data table
     if(length(vars) == 0) {
@@ -302,16 +304,25 @@ normTable <- function(input = NULL, ..., source = "tabID", pattern = NULL,
           filter_at(.vars = outVars, all_vars(!is.na(.)))
 
         # append output to previous file
-        if(file.exists(paste0(intPaths, "/adb_tables/stage3/", theNations[j], ".csv"))){
-          oldData <- read_csv(file = paste0(intPaths, "/adb_tables/stage3/", theNations[j], ".csv"),
-                              col_types = cols(id = "i", tabID = "i", geoID = "i", ahID = "c", year = "c", .default = "d"))
+        avail <- list.files(path = paste0(intPaths, "/adb_tables/stage3/"), pattern = paste0("^", theNations[j], "."))
 
+        if(length(avail) == 1){
+
+          if(outType == "csv"){
+            prevData <- read_csv(file = paste0(intPaths, "/adb_tables/stage3/", theNations[j], ".csv"),
+                                 col_types = cols(id = "i", tabID = "i", geoID = "i", ahID = "c", year = "c", .default = "d"))
+          } else {
+            prevData <- readRDS(file = paste0(intPaths, "/adb_tables/stage3/", theNations[j], ".rds"))
+          }
           out <- tempOut %>%
-            bind_rows(oldData, .) %>%
+            bind_rows(prevData, .) %>%
             select(-id) %>%
             distinct() %>%
             mutate(id = seq_along(year)) %>%
             select(id, everything())
+
+        } else if(length(avail > 1)){
+          # stop("the nation '", theNations[j], "' exists several times in the output folder '/adb_tablse/stage3/'.")
         } else {
           out <- tempOut %>%
             distinct() %>%
@@ -320,7 +331,13 @@ normTable <- function(input = NULL, ..., source = "tabID", pattern = NULL,
         }
 
         # write file to 'stage3' and move to folder 'processed'
-        write_csv(x = out, file = paste0(intPaths, "/adb_tables/stage3/", theNations[j], ".csv"), na = "")
+        if(outType == "csv"){
+          write_csv(x = out,
+                    file = paste0(intPaths, "/adb_tables/stage3/", theNations[j], ".csv"),
+                    na = "")
+        } else if(outType == "rds"){
+          saveRDS(object = out, file = paste0(intPaths, "/adb_tables/stage3/", theNations[j], ".rds"))
+        }
       }
 
       if(moveFile){
