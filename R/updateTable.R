@@ -5,11 +5,14 @@
 #' @param name [\code{character(1)}]\cr name of the table that shall be updated.
 #' @param matchCols [\code{character(.)}]\cr the columns in the old file by
 #'   which to match.
+#' @param backup [logical(1)]\cr whether or not to store the old table in the
+#'   \code{log} directory.
 #' @importFrom checkmate assertTibble assertCharacter
 #' @importFrom readr write_csv
-#' @importFrom dplyr union arrange row_number
+#' @importFrom dplyr union arrange row_number across
+#' @importFrom tidyselect all_of
 
-updateTable <- function(index = NULL, name = NULL, matchCols = NULL){
+updateTable <- function(index = NULL, name = NULL, matchCols = NULL, backup = TRUE){
 
   # set internal paths
   intPaths <- getOption("adb_path")
@@ -24,20 +27,23 @@ updateTable <- function(index = NULL, name = NULL, matchCols = NULL){
   # if a file already exists, join the new data to that
   if(testFileExists(x = paste0(intPaths, "/", name, ".csv"))){
     oldIndex <- read_csv(paste0(intPaths, "/", name, ".csv"), col_types = getColTypes(input = index))
-    write_csv(x = oldIndex,
-              file = paste0(intPaths, "/log/", name, "_", theTime, ".csv"),
-              na = "", append = FALSE)
+
+    if(backup){
+      write_csv(x = oldIndex,
+                file = paste0(intPaths, "/log/", name, "_", theTime, ".csv"),
+                na = "", append = FALSE)
+    }
 
     if(is.null(matchCols)){
       matchCols <- names(oldIndex)
-      matchCols <- matchCols[-which(matchCols == "notes")]
+      matchCols <- matchCols[!matchCols %in% "notes"]
     } else {
       assertSubset(x = matchCols, choices = names(oldIndex))
     }
 
     # join the old table with 'index'
     index <- union(oldIndex, index) %>%
-      group_by(.dots = matchCols) %>%
+      group_by(across(all_of(matchCols))) %>%
       filter(row_number() == n()) %>%
       arrange(!!as.name(colnames(index)[1]))
   }
