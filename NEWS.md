@@ -1,3 +1,14 @@
+# arealDB 0.3.8
+
+* all `countries` now stored with capital letters
+* store tables and geometries by default in rds format with csv/gpkg as option
+* several minor bug-fixes
+
+# arealDB 0.3.7
+
+* streamline translations further by creating the file "target_terms.csv" that contains the translations that are allowed (taken from the respective translation tables or geometries).
+* more strict translations by allowing only provided terms that may come from outside of a translation table (such as geometry names that were not known at the time of creating the translation table)
+
 # arealDB 0.3.6
 
 * streamline translations to reduce the amount of items that have to be translated (specifically, only translate nations in normTable() that have been subsetted, not the whole list of nations)
