@@ -9,7 +9,7 @@ Description: Many relevant applications in the environmental and socioeconomic
     make this a tedious and error-prone process. 'arealDB' tackles those problems and 
     helps the user to integrate a harmonised databases of areal data. Read the pre-print 
     at Ehrmann, Seppelt & Meyer (2020) <arXiv:1909.06610>.
-Version: 0.3.6
+Version: 0.3.7
 Authors@R: c(
     person("Steffen", "Ehrmann", 
            email = "steffen.science@funroll-loops.de", 

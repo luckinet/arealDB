@@ -1,3 +1,5 @@
+# arealDB 0.3.7
+
 # arealDB 0.3.8
 
 * all `countries` now stored with capital letters
