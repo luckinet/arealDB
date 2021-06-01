@@ -1,6 +1,6 @@
 # arealDB 0.3.8
 
-* all `countries` now stored with capital letters
+* all `countries` now stored with capital letters and all geoms are stored as MULTIPOLYGON
 * store tables and geometries by default in rds format with csv/gpkg as option
 * several minor bug-fixes
 
