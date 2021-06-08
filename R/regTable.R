@@ -400,14 +400,14 @@ regTable <- function(nation = NULL, subset = NULL, dSeries = NULL, gSeries = NUL
   if(update){
 
     # test whether the archive file is available
-    if(!testFileExists(x = paste0(intPaths, "/adb_tables/stage1/", fileArchive[1]), "r")){
+    if(!testFileExists(x = paste0(intPaths, "/adb_tables/stage1/", fileArchive[1]))){
       message(paste0("... please store the archive '", fileArchive[[1]], "' in './adb_tables/stage1'"))
       if(!testing){
         done <- readline(" -> press any key when done: ")
       }
 
       # make sure that the file is really there
-      assertFileExists(x = paste0(intPaths, "/adb_tables/stage1/", fileArchive[1]), "r")
+      assertFileExists(x = paste0(intPaths, "/adb_tables/stage1/", fileArchive[1]))
 
       # ... and if it is compressed, whether also the file therein is given that contains the data
       if(testCompressed(x = fileArchive[1]) & length(fileArchive) < 2){
@@ -422,9 +422,9 @@ regTable <- function(nation = NULL, subset = NULL, dSeries = NULL, gSeries = NUL
     }
 
     # test that the file is available
-    if(!testFileExists(x = filePath, "r", extension = "csv")){
+    if(!testFileExists(x = filePath, extension = "csv")){
       processedPath <- paste0(intPaths, "/adb_tables/stage2/processed/", fileName)
-      if(testFileExists(x = processedPath, "r", extension = "csv")){
+      if(testFileExists(x = processedPath, extension = "csv")){
         temp <- inv_tables[which(inv_tables$source_file %in% fileName), ]
         message(paste0("! the table '", fileName, "' has already been normalised !"))
         return(temp)
@@ -435,7 +435,7 @@ regTable <- function(nation = NULL, subset = NULL, dSeries = NULL, gSeries = NUL
         done <- readline(" -> press any key when done: ")
       }
       # make sure that the file is really there
-      assertFileExists(x = filePath, "r", extension = "csv")
+      assertFileExists(x = filePath, extension = "csv")
     }
 
     # put together new census database entry
