@@ -279,14 +279,14 @@ regGeometry <- function(nation = NULL, subset = NULL, gSeries = NULL, level = NU
   }
 
   # test whether the archive file is available
-  if(!testFileExists(x = paste0(intPaths, "/adb_geometries/stage1/", filesTrace[1]), "r")){
+  if(!testFileExists(x = paste0(intPaths, "/adb_geometries/stage1/", filesTrace[1]))){
     message(paste0("... please store the archive '", filesTrace[[1]], "' in './adb_geometries/stage1'"))
     if(!testing){
       done <- readline(" -> press any key when done: ")
     }
 
     # make sure that the file is really there
-    assertFileExists(x = paste0(intPaths, "/adb_geometries/stage1/", filesTrace[1]), access = "r")
+    assertFileExists(x = paste0(intPaths, "/adb_geometries/stage1/", filesTrace[1]))
 
     # ... and if it is compressed, whether also the file therein is given that contains the data
     if(testCompressed(x = filesTrace[1]) & length(filesTrace) < 2){
