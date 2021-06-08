@@ -302,13 +302,13 @@ regGeometry <- function(nation = NULL, subset = NULL, gSeries = NULL, level = NU
 
   # test whether the geometry file is available and proper
   if(update){
-    if(!testFileExists(x = filePath, access = "r", extension = "gpkg")){
+    if(!testFileExists(x = filePath, extension = "gpkg")){
       message(paste0("... please store the geometry as '", fileName, "' in './adb_geometries/stage2'"))
       if(!testing){
         done <- readline(" -> press any key when done: ")
       }
       # make sure that the file is really there
-      assertFileExists(x = filePath, access = "r", extension = "gpkg")
+      assertFileExists(x = filePath, extension = "gpkg")
     }
 
     # to check that what has been given in 'nation' and 'nameCol' is in fact a
