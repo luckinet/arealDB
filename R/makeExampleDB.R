@@ -22,7 +22,7 @@
 #'
 #' @importFrom checkmate assertChoice assertDirectoryExists
 #' @importFrom readr read_csv
-#' @importFrom tabshiftr setHeader setFormat setIDVar setObsVar
+#' @importFrom tabshiftr setFormat setIDVar setObsVar
 #' @export
 
 makeExampleDB <- function(until = NULL, path = NULL, verbose = FALSE){
@@ -153,7 +153,6 @@ makeExampleDB <- function(until = NULL, path = NULL, verbose = FALSE){
   if(any(theSteps %in% "regTable")){
 
     meta_madeUp_1 <- tabshiftr::schema_default %>%
-      setHeader(rows = 1) %>%
       setIDVar(name = "al1", columns = 1) %>%
       setIDVar(name = "year", columns = 2) %>%
       setIDVar(name = "commodities", columns = 3) %>%
@@ -161,7 +160,6 @@ makeExampleDB <- function(until = NULL, path = NULL, verbose = FALSE){
       setObsVar(name = "production", unit = "t", columns = 5)
 
     meta_madeUp_2 <- tabshiftr::schema_default %>%
-      setHeader(rows = 1) %>%
       setFormat(decimal = ".", na_values = c("", "NA")) %>%
       setIDVar(name = "al1", columns = 1) %>%
       setIDVar(name = "al2", columns = 2) %>%

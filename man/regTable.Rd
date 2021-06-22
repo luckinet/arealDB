@@ -115,13 +115,13 @@ makeExampleDB(until = "regGeometry")
 library(tabshiftr)
 library(magrittr)
 
-schema_madeUp <- setHeader(rows = 1) \%>\%
+schema_madeUp <-
   setIDVar(name = "al1", columns = 1) \%>\%
   setIDVar(name = "year", columns = 2) \%>\%
   setIDVar(name = "commodities", columns = 3) \%>\%
-  setObsVar(name = "harvested", unit = "ha",
+  setObsVar(name = "harvested",
             factor = 1, columns = 4) \%>\%
-  setObsVar(name = "production", unit = "t",
+  setObsVar(name = "production",
             factor = 1, columns = 5)
 
 regTable(nation = "Estonia",

@@ -67,13 +67,13 @@
 #' library(tabshiftr)
 #' library(magrittr)
 #'
-#' schema_madeUp <- setHeader(rows = 1) %>%
+#' schema_madeUp <-
 #'   setIDVar(name = "al1", columns = 1) %>%
 #'   setIDVar(name = "year", columns = 2) %>%
 #'   setIDVar(name = "commodities", columns = 3) %>%
-#'   setObsVar(name = "harvested", unit = "ha",
+#'   setObsVar(name = "harvested",
 #'             factor = 1, columns = 4) %>%
-#'   setObsVar(name = "production", unit = "t",
+#'   setObsVar(name = "production",
 #'             factor = 1, columns = 5)
 #'
 #' regTable(nation = "Estonia",
@@ -452,6 +452,7 @@ regTable <- function(nation = NULL, subset = NULL, dSeries = NULL, gSeries = NUL
                   metadata_link = metadataLink,
                   metadata_path = metadataPath,
                   notes = notes)
+
     if(!any(inv_tables$source_file %in% fileName) | overwrite){
       # in case the user wants to update, attach the new information to the table inv_sourceData.csv
       updateTable(index = doc, name = "inv_tables", matchCols = c("source_file"))

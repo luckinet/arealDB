@@ -8,7 +8,7 @@ test_that("variables are matched", {
 
   makeExampleDB(until = "normGeometry")
 
-  meta_madeUp_1 <- setHeader(rows = 1) %>%
+  meta_madeUp_1 <-
     setIDVar(name = "al1", columns = 1) %>%
     setIDVar(name = "year", columns = 2) %>%
     setIDVar(name = "commodities", columns = 3) %>%

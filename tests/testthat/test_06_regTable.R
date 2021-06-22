@@ -9,7 +9,7 @@ test_that("a table inventory entry is produced", {
 
   makeExampleDB(until = "regGeometry")
 
-  meta_maia_1 <- setHeader(rows = 1) %>%
+  meta_maia_1 <-
     setIDVar(name = "al1", columns = 1) %>%
     setIDVar(name = "year", columns = 2) %>%
     setIDVar(name = "commodities", columns = 3) %>%
@@ -44,7 +44,7 @@ test_that("function asks for details, if not provided", {
   makeExampleDB(until = "regGeometry")
   options(adb_testing = TRUE)
 
-  meta_maia_1 <- setHeader(rows = 1) %>%
+  meta_maia_1 <-
     setIDVar(name = "al1", columns = 1) %>%
     setIDVar(name = "year", columns = 2) %>%
     setIDVar(name = "commodities", columns = 3) %>%
