@@ -1,6 +1,7 @@
 # arealDB 0.3.9
  
 * bugfix of access-rights management
+* adapt to changes in tabshiftr
 
 # arealDB 0.3.8
 
