@@ -11,7 +11,7 @@ status](https://ci.appveyor.com/api/projects/status/github/EhrmannS/arealDB?bran
 [![Coverage
 Status](https://img.shields.io/codecov/c/github/EhrmannS/arealDB/master.svg)](https://codecov.io/github/EhrmannS/arealDB?branch=master)
 [![](http://cranlogs.r-pkg.org/badges/grand-total/arealDB)](https://cran.r-project.org/package=arealDB)
-[![Lifecycle:maturing](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://www.tidyverse.org/lifecycle/#maturing)
+[![Lifecycle:maturing](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://lifecycle.r-lib.org/articles/stages.html)
 
 ## Overview
 
