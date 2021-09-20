@@ -109,7 +109,7 @@ When processing areal data tables, carry out the following steps:
 }
 \examples{
 # build the example database
-makeExampleDB(until = "regGeometry")
+makeExampleDB(until = "regGeometry", path = tempdir())
 
 # the schema description for this table
 library(tabshiftr)

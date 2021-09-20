@@ -48,7 +48,7 @@ into the geospatial database.
 }
 \examples{
 # start the example database
-makeExampleDB(until = "setVariables")
+makeExampleDB(until = "setVariables", path = tempdir())
 
 regDataseries(name = "gadm",
               description = "Database of Global Administrative Areas",

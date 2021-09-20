@@ -86,7 +86,7 @@ When processing geometries to which areal data shall be linked,
 }
 \examples{
 # build the example database
-makeExampleDB(until = "regDataseries")
+makeExampleDB(until = "regDataseries", path = tempdir())
 
 # The GADM dataset comes as *.zip archive
 regGeometry(nation = "NAME_0",
