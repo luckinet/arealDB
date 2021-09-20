@@ -37,7 +37,7 @@ makeExampleDB <- function(until = NULL, path = NULL, verbose = FALSE){
   theSteps <- steps[1:which(steps %in% until)]
 
   if(is.null(path)){
-    path <- paste0(tempdir(), "/newDB")
+    path <- tempdir()
   }
 
   if(file.exists(path)){

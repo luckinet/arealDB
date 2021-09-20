@@ -46,7 +46,7 @@
 #'   'inv_geometries.csv' in case \code{update = TRUE}.
 #' @examples
 #' # build the example database
-#' makeExampleDB(until = "regDataseries")
+#' makeExampleDB(until = "regDataseries", path = tempdir())
 #'
 #' # The GADM dataset comes as *.zip archive
 #' regGeometry(nation = "NAME_0",

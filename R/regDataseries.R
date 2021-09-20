@@ -20,7 +20,7 @@
 #'   'inv_dataseries.csv' in case \code{update = TRUE}.
 #' @examples
 #' # start the example database
-#' makeExampleDB(until = "setVariables")
+#' makeExampleDB(until = "setVariables", path = tempdir())
 #'
 #' regDataseries(name = "gadm",
 #'               description = "Database of Global Administrative Areas",

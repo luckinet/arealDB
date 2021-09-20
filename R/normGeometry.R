@@ -60,14 +60,14 @@
 #' library(sf)
 #'
 #' # build the example database
-#' makeExampleDB(until = "regGeometry")
+#' makeExampleDB(until = "regGeometry", path = tempdir())
 #'
 #' # normalise all geometries ...
 #' normGeometry(nation = "estonia", update = TRUE)
 #'
 #' # ... and check the result
-#' st_layers(paste0(tempdir(), "/newDB/adb_geometries/stage3/Estonia.gpkg"))
-#' output <- st_read(paste0(tempdir(), "/newDB/adb_geometries/stage3/Estonia.gpkg"))
+#' st_layers(paste0(tempdir(), "/adb_geometries/stage3/Estonia.gpkg"))
+#' output <- st_read(paste0(tempdir(), "/adb_geometries/stage3/Estonia.gpkg"))
 #' @importFrom checkmate assertFileExists assertIntegerish assertLogical
 #'   assertCharacter assertChoice testFileExists
 #' @importFrom dplyr filter distinct select mutate rowwise filter_at vars

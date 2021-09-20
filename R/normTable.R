@@ -55,14 +55,14 @@
 #'   that includes all thematic areal data.
 #' @examples
 #' # build the example database
-#' makeExampleDB(until = "normGeometry")
+#' makeExampleDB(until = "normGeometry", path = tempdir())
 #'
 #' # normalise all available data tables, harmonising commodities
 #' # according to the FAO commodity list ...
 #' normTable(faoID = list(commodities = "target"), update = TRUE)
 #'
 #' # ... and check the result
-#' output <- readRDS(paste0(tempdir(), "/newDB/adb_tables/stage3/Estonia.rds"))
+#' output <- readRDS(paste0(tempdir(), "/adb_tables/stage3/Estonia.rds"))
 #' @importFrom checkmate assertNames assertFileExists assertLogical
 #' @importFrom rlang exprs
 #' @importFrom tabshiftr reorganise
@@ -201,8 +201,12 @@ normTable <- function(input = NULL, ..., source = "tabID", pattern = NULL,
 
     # reorganise data
     message("\n--> reading new data table ...")
-    thisTable <- read.csv(file = thisInput, header = FALSE, as.is = TRUE, na.strings = algorithm@format$na, encoding = "UTF-8") %>%
+    thisTable <- read.csv(file = thisInput, header = FALSE, strip.white = TRUE, as.is = TRUE, na.strings = algorithm@format$na, encoding = "UTF-8") %>%
       as_tibble()
+    # thisTable <- read_csv(file = thisInput,
+    #                       col_names = FALSE,
+    #                       col_types = cols(.default = "c"),
+    #                       na = algorithm@format$na)
     message("    reorganising table with '", thisSchema, "' ...")
     temp <- thisTable %>%
       reorganise(schema = algorithm)
@@ -225,7 +229,7 @@ normTable <- function(input = NULL, ..., source = "tabID", pattern = NULL,
     message("    harmonising nation names ...")
     nations <- translateTerms(terms = unique(temp$al1),
                               index = "tt_nations",
-                              source = list("tabID" = tabID),
+                              source = list("geoID" = geoID),
                               limit = subNations,
                               verbose = verbose) %>%
       filter(!target %in% c("ignore", "missing")) %>%

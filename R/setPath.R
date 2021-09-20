@@ -12,7 +12,7 @@
 #'   directory structure of the new areal database and a new environment that
 #'   contains the database metadata.
 #' @examples
-#' setPath(root = paste0(tempdir(), "/newDB"))
+#' setPath(root = tempdir())
 #' @importFrom checkmate testDirectory testFileExists
 #' @importFrom readr write_csv
 #' @export

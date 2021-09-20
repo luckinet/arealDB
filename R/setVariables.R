@@ -37,7 +37,7 @@
 #' inPath <- system.file("test_datasets", package = "arealDB", mustWork = TRUE)
 #'
 #' # start the example database
-#' makeExampleDB(until = "setPath")
+#' makeExampleDB(until = "setPath", path = tempdir())
 #'
 #' # create index from an already existing table
 #' comm <- read_csv(file = paste0(inPath, "/id_commodities.csv"),
