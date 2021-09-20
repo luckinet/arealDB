@@ -1,7 +1,6 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
 ToDo.Rmd
-^\.travis\.yml$
 paper
 replication_script
 ^\.gitlab-ci\.yml$
@@ -16,3 +15,4 @@ replication_script
 ^pkgdown$
 ^CRAN-RELEASE$
 ^cran-comments\.md$
+^\.github$
