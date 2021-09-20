@@ -28,8 +28,9 @@ or the latest development version from github:
 devtools::install_github("EhrmannS/arealDB")
 ```
 
-2)  Read the [preprint](https://arxiv.org/abs/1909.06610) for an
-    in-depth description of the procedure.
+2)  Read the
+    [paper](https://www.sciencedirect.com/science/article/abs/pii/S1364815220307751)
+    for an in-depth description of the procedure.
 
 ## Examples
 
