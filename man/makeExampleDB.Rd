@@ -28,10 +28,12 @@ No return value, called for the side effect of creating an example
 This function helps setting up an example database up until a certain point.
 }
 \examples{
+\dontrun{
 # to merely register a set of files
 makeExampleDB(until = "regTable")
 
 # to build the full example database
 makeExampleDB()
 
+}
 }

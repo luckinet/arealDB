@@ -14,12 +14,14 @@
 #' @return No return value, called for the side effect of creating an example
 #'   database at the specified \code{path}.
 #' @examples
+#' \dontrun{
 #' # to merely register a set of files
 #' makeExampleDB(until = "regTable")
 #'
 #' # to build the full example database
 #' makeExampleDB()
 #'
+#' }
 #' @importFrom checkmate assertChoice assertDirectoryExists
 #' @importFrom readr read_csv
 #' @importFrom tabshiftr setFormat setIDVar setObsVar
