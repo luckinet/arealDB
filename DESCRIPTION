@@ -7,26 +7,34 @@ Description: Many relevant applications in the environmental and socioeconomic
     thematic scope of any single data source, data must be integrated from several 
     heterogeneous sources. Inconsistent concepts, definitions, or messy data tables 
     make this a tedious and error-prone process. 'arealDB' tackles those problems and 
-    helps the user to integrate a harmonised databases of areal data. Read the pre-print 
-    at Ehrmann, Seppelt & Meyer (2020) <arXiv:1909.06610>.
-Version: 0.3.9
+    helps the user to integrate a harmonised databases of areal data. Read the paper
+    at Ehrmann, Seppelt & Meyer (2020) <doi:10.1016/j.envsoft.2020.104799>.
+Version: 0.3.10
 Authors@R: c(
-    person("Steffen", "Ehrmann", 
-           email = "steffen.science@funroll-loops.de", 
-           role = c("aut", "cre"), 
-           comment = c(ORCID = "0000-0002-2958-0796")),
-    person("Arne", "Rümmler", 
-           email = "arne.ruemmler@tu-dresden.de",
-           role = c("aut", "ctb"),
-           comment = c(ORCID = "0000-0001-8637-9071")), 
-    person("Felipe", "Melges",
-           email = "felipe.cozimmelges@wur.nl",
-           role = c("ctb"),
-           comment = c(ORCID = "0000-0003-0833-8973")),
-    person("Carsten", "Meyer",
-           email = "carsten.meyer@idiv.de", 
-           role = c("aut"), 
-           comment = c(ORCID = "0000-0003-3927-5856")))
+    person(
+        given = "Steffen",
+        family = "Ehrmann",
+        role = c("aut", "cre"),
+        email = "steffen@funroll-loops.de",
+        comment = c(ORCID = "0000-0002-2958-0796")),
+    person(
+        given = "Arne", 
+        family = "Rümmler", 
+        email = "arne.ruemmler@tu-dresden.de",
+        role = c("aut", "ctb"),
+        comment = c(ORCID = "0000-0001-8637-9071")), 
+    person(
+        given = "Felipe", 
+        family = "Melges",
+        email = "felipe.cozimmelges@wur.nl",
+        role = c("ctb"),
+        comment = c(ORCID = "0000-0003-0833-8973")),
+    person(
+        given = "Carsten", 
+        family = "Meyer",
+        email = "carsten.meyer@idiv.de", 
+        role = c("aut"), 
+        comment = c(ORCID = "0000-0003-3927-5856")))
 URL: https://github.com/EhrmannS/arealDB
 BugReports: https://github.com/EhrmannS/arealDB/issues
 Depends:
