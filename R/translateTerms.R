@@ -102,7 +102,7 @@ translateTerms <- function(terms, index = NULL, source = NULL, strict = FALSE,
   for(i in seq_along(terms)){
 
     # figure out which version of each term matches
-    newTerm <- terms[i]
+    newTerm <- trimws(terms[i])
     doFuzzy <- FALSE
     matchTerm <- NULL
     if(tolower(newTerm) %in% tolower(index$origin)){
