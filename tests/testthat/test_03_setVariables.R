@@ -6,7 +6,8 @@ context("setVariables")
 
 test_that("setting an imported table works", {
 
-  makeExampleDB(until = "setPath")
+  dbpath <- paste0(tempdir(), "/newDB")
+  makeExampleDB(until = "setPath", path = dbpath)
   inPath <- system.file("test_datasets", package = "arealDB", mustWork = TRUE)
 
   input <- read_csv(file = paste0(inPath, "/id_units.csv"), col_types = "iccc")
@@ -16,11 +17,13 @@ test_that("setting an imported table works", {
   expect_tibble(x = output, nrows = 12, col.names = "strict")
   expect_names(names(output), must.include = c("anID", "target", "descr", "origin"))
   expect_names(list.files(path = getOption("adb_path")), must.include = c("id_territories.csv", "tt_territories.csv"))
+
 })
 
 test_that("Error if arguments have wrong value", {
 
-  makeExampleDB(until = "setPath")
+  dbpath <- paste0(tempdir(), "/newDB")
+  makeExampleDB(until = "setPath", path = dbpath)
   inPath <- system.file("test_datasets", package = "arealDB", mustWork = TRUE)
 
   input <- read_csv(file = paste0(inPath, "/id_units.csv"), col_types = "iccc")

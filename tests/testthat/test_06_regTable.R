@@ -7,7 +7,8 @@ context("regTable")
 
 test_that("a table inventory entry is produced", {
 
-  makeExampleDB(until = "regGeometry")
+  dbpath <- paste0(tempdir(), "/newDB")
+  makeExampleDB(until = "regGeometry", path = dbpath)
 
   meta_maia_1 <-
     setIDVar(name = "al1", columns = 1) %>%
@@ -37,11 +38,13 @@ test_that("a table inventory entry is produced", {
                                   "next_update", "update_frequency", "metadata_link",
                                   "metadata_path", "notes"))
   expect_file_exists(x = paste0(getOption("adb_path"), "/adb_tables/meta/schemas/schema_1.rds"))
+
 })
 
 test_that("function asks for details, if not provided", {
 
-  makeExampleDB(until = "regGeometry")
+  dbpath <- paste0(tempdir(), "/newDB")
+  makeExampleDB(until = "regGeometry", path = dbpath)
   options(adb_testing = TRUE)
 
   meta_maia_1 <-
@@ -66,4 +69,5 @@ test_that("function asks for details, if not provided", {
   expect_equal(object = output[10], expected = "please type in when the table gets its next update (YYYY-MM-DD): \n")
   expect_equal(object = output[11], expected = "if there is already metadata available:\n -> type in the weblink to the metadataset: \n")
   expect_equal(object = output[12], expected = "if there was an existing metadataset downloaded:\n -> type in the local path to the metadataset: \n")
+
 })

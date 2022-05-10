@@ -5,7 +5,8 @@ context("normGeometry")
 
 test_that("geometries can be normalised", {
 
-  makeExampleDB(until = "regTable")
+  dbpath <- paste0(tempdir(), "/newDB")
+  makeExampleDB(until = "regTable", path = dbpath)
 
   inPath <- system.file("test_datasets", package = "arealDB", mustWork = TRUE)
 
@@ -57,4 +58,5 @@ test_that("geometries can be normalised", {
   expect_class(x = final, classes = c("sf"))
   expect_data_frame(x = final, nrows = 12, ncols = 9)
   expect_names(x = names(final), identical.to = c("nation", "name", "level", "ahID", "geoID", "al1_id", "al2_id", "al3_id", "geom"))
+
 })

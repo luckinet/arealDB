@@ -4,7 +4,8 @@ context("translateTerms")
 
 test_that("already known terms are correct", {
 
-  makeExampleDB(until = "setPath")
+  dbpath <- paste0(tempdir(), "/newDB")
+  makeExampleDB(until = "setPath", path = dbpath)
   options(adb_testing = TRUE)
 
   input <- c("albania", "botswana", "estonia", "germany")
@@ -18,7 +19,8 @@ test_that("already known terms are correct", {
 
 test_that("Error if arguments have wrong value", {
 
-  makeExampleDB(until = "setPath")
+  dbpath <- paste0(tempdir(), "/newDB")
+  makeExampleDB(until = "setPath", path = dbpath)
 
   input <- c("albania", "botswana", "estonia", "germany")
 

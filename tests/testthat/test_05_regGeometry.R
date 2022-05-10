@@ -5,7 +5,8 @@ context("regGeometry")
 
 test_that("a geometry inventory entry is produced", {
 
-  makeExampleDB(until = "regDataseries")
+  dbpath <- paste0(tempdir(), "/newDB")
+  makeExampleDB(until = "regDataseries", path = dbpath)
 
   output <- regGeometry(nation = "NAME_0",
                         gSeries = "gadm",
@@ -22,11 +23,13 @@ test_that("a geometry inventory entry is produced", {
   expect_names(x = names(output), must.include = c("geoID", "datID", "level", "source_file",
                         "layer", "nation_column", "unit_column", "orig_file", "orig_link",
                         "download_date", "next_update", "update_frequency", "notes"))
+
 })
 
 test_that("function asks for details, if not provided", {
 
-  makeExampleDB(until = "regDataseries")
+  dbpath <- paste0(tempdir(), "/newDB")
+  makeExampleDB(until = "regDataseries", path = dbpath)
   options(adb_testing = TRUE)
 
   expect_message(object = regGeometry())
@@ -40,4 +43,5 @@ test_that("function asks for details, if not provided", {
   expect_equal(object = output[6], expected = "please type in the weblink from which the archive was downloaded: \n")
   expect_equal(object = output[7], expected = "please type in the frequency in which the table gets updated ...\n")
   expect_equal(object = output[8], expected = "please type in when the geometry gets its next update (YYYY-MM-DD): \n")
-})
+
+  })

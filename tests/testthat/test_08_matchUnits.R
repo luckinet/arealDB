@@ -9,7 +9,8 @@ context("matchUnits")
 
 test_that("units are matched", {
 
-  makeExampleDB(until = "normGeometry")
+  dbpath <- paste0(tempdir(), "/newDB")
+  makeExampleDB(until = "normGeometry", path = dbpath)
 
   meta_madeUp_1 <-
     setIDVar(name = "al1", columns = 1) %>%
@@ -51,4 +52,5 @@ test_that("units are matched", {
   expect_tibble(x = output, nrows = 224, ncols = 15, col.names = "strict")
   expect_character(x = output$ahID, any.missing = FALSE)
   expect_names(x = names(output), permutation.of = c("al1_alt", "al2_alt", "year", "commodities", "harvested", "production", "id", "tabID", "geoID", "al1_name", "al1_id", "al2_name", "al2_id", "al3_id", "ahID"))
+
 })

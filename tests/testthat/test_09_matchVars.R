@@ -6,7 +6,8 @@ context("matchVars")
 
 test_that("variables are matched", {
 
-  makeExampleDB(until = "normGeometry")
+  dbpath <- paste0(tempdir(), "/newDB")
+  makeExampleDB(until = "normGeometry", path = dbpath)
 
   meta_madeUp_1 <-
     setIDVar(name = "al1", columns = 1) %>%
@@ -28,5 +29,6 @@ test_that("variables are matched", {
   expect_tibble(x = output, nrows = 56, ncols = 11, col.names = "strict")
   expect_double(x = output$faoID, any.missing = FALSE)
   expect_names(x = names(output), permutation.of = c("al1_alt", "year", "commodities", "harvested", "production", "id", "tabID", "geoID", "al1_name", "ahID", "faoID"))
+
 })
 
