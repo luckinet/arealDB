@@ -31,6 +31,7 @@
 #' @importFrom readr read_csv write_csv
 #' @importFrom rlang enexpr
 #' @importFrom utils edit View adist file.edit
+#' @export
 
 translateTerms <- function(terms, index = NULL, source = NULL, strict = FALSE,
                            fuzzy_terms = NULL, fuzzy_dist = 5, limit = NULL,

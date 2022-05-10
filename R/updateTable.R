@@ -11,6 +11,7 @@
 #' @importFrom readr write_csv
 #' @importFrom dplyr union arrange row_number across
 #' @importFrom tidyselect all_of
+#' @export
 
 updateTable <- function(index = NULL, name = NULL, matchCols = NULL, backup = TRUE){
 
@@ -22,19 +23,22 @@ updateTable <- function(index = NULL, name = NULL, matchCols = NULL, backup = TR
   assertCharacter(x = name)
 
   # first archive the original index
-  theTime <- paste0(strsplit(x = format(Sys.time(), format="%Y%m%d_%H%M%S"), split = "[ ]")[[1]], collapse = "_")
+  theTime <- paste0(strsplit(x = format(Sys.time(), format = "%Y%m%d_%H%M%S"), split = "[ ]")[[1]], collapse = "_")
 
   # if a file already exists, join the new data to that
-  if(testFileExists(x = paste0(intPaths, "/", name, ".csv"))){
-    oldIndex <- read_csv(paste0(intPaths, "/", name, ".csv"), col_types = getColTypes(input = index))
+  tabPath <- paste0(intPaths, "/", name, ".csv")
 
-    if(backup){
+  if (testFileExists(x = tabPath)) {
+    oldIndex <- read_csv(tabPath, col_types = getColTypes(input = index))
+    # somehow the file in tabPath is locked here, in Windows, so that it can't be overwritten below', I assume...
+
+    if (backup) {
       write_csv(x = oldIndex,
                 file = paste0(intPaths, "/log/", name, "_", theTime, ".csv"),
                 na = "", append = FALSE)
     }
 
-    if(is.null(matchCols)){
+    if (is.null(matchCols)) {
       matchCols <- names(oldIndex)
       matchCols <- matchCols[!matchCols %in% "notes"]
     } else {
@@ -45,11 +49,13 @@ updateTable <- function(index = NULL, name = NULL, matchCols = NULL, backup = TR
     index <- union(oldIndex, index) %>%
       group_by(across(all_of(matchCols))) %>%
       filter(row_number() == n()) %>%
-      arrange(!!as.name(colnames(index)[1]))
+      arrange(!!as.name(colnames(index)[1])) %>%
+      ungroup()
   }
 
   # store it
   write_csv(x = index,
-            file = paste0(intPaths, "/", name, ".csv"),
+            file = tabPath,
             na = "")
+
 }
