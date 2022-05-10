@@ -1,50 +1,48 @@
 #' Build an example database
 #'
-#' This function helps setting up an example database up until a certain point.
+#' This function helps setting up an example database up until a certain step.
+#' @param path [\code{character(1)}]\cr The database gets created by default in
+#'   tempdir(), but if you want it in a particular location, specify that in
+#'   this argument.
 #' @param until [\code{character(1)}]\cr The database building step in terms of
 #'   the function names until which the example database shall be built, one of
 #'   \code{"setPath"}, \code{"setVariables"}, \code{"regDataseries"},
 #'   \code{"regGeometry"}, \code{"regTable"}, \code{"normGeometry"} or
 #'   \code{"normTable"}.
-#' @param path [\code{character(1)}]\cr The database gets created by default in
-#'   tempdir(), but if you want it in a particular location, specify that in
-#'   this argument.
 #' @param verbose [\code{logical(1)}]\cr be verbose about building the example
 #'   database (default \code{FALSE}).
 #' @return No return value, called for the side effect of creating an example
 #'   database at the specified \code{path}.
 #' @examples
 #' \dontrun{
-#' # to merely register a set of files
-#' makeExampleDB(until = "regTable")
-#'
 #' # to build the full example database
-#' makeExampleDB()
+#' makeExampleDB(path = tempdir())
+#'
+#' # to make the example database until a certain step
+#' makeExampleDB(path = tempdir(), until = "regDataseries")
 #'
 #' }
-#' @importFrom checkmate assertChoice assertDirectoryExists
+#' @importFrom checkmate assertChoice testDirectoryExists
 #' @importFrom readr read_csv
 #' @importFrom tabshiftr setFormat setIDVar setObsVar
 #' @export
 
-makeExampleDB <- function(until = NULL, path = NULL, verbose = FALSE){
+makeExampleDB <- function(path = NULL, until = NULL, verbose = FALSE){
+
+  # library(arealDB); library(tabshiftr); library(checkmate); library(tidyverse)
 
   inPath <- system.file("test_datasets", package = "arealDB", mustWork = TRUE)
   steps <- c("setPath", "setVariables", "regDataseries", "regGeometry", "regTable", "normGeometry", "normTable")
-  if(is.null(until)){
+  if (is.null(until)) {
     until <- "normTable"
   }
   assertChoice(x = until, choices = steps)
 
-  theSteps <- steps[1:which(steps %in% until)]
-
-  if(is.null(path)){
-    path <- tempdir()
-  }
-
-  if(file.exists(path)){
+  if(testDirectoryExists(path)){
     unlink(path, recursive = TRUE)
   }
+
+  theSteps <- steps[1:which(steps %in% until)]
 
   # enable testing, this inserts values to readLine() calls that would otherwise
   # not be answered by the test
@@ -52,14 +50,18 @@ makeExampleDB <- function(until = NULL, path = NULL, verbose = FALSE){
   on.exit(options(oldOptions))
   options(adb_testing = TRUE)
 
-  if(any(theSteps %in% "setPath")){
+  if (any(theSteps %in% "setPath")) {
 
     setPath(root = path)
-    assertDirectoryExists(x = path, access = "rw")
   }
 
   file.copy(from = paste0(inPath, "/example_geom.7z"),
             to = paste0(path, "/adb_geometries/stage1/example_geom.7z"))
+  file.copy(from = paste0(inPath, "/example_table.7z"),
+            to = paste0(path, "/adb_tables/stage1/example_table.7z"))
+  file.copy(from = paste0(inPath, "/example_schema.rds"),
+            to = paste0(path, "/adb_tables/meta/schemas/example_schema.rds"))
+
   file.copy(from = paste0(inPath, "/example_geom1.gpkg"),
             to = paste0(path, "/adb_geometries/stage2/_1__gadm.gpkg"))
   file.copy(from = paste0(inPath, "/example_geom2.gpkg"),
@@ -69,18 +71,13 @@ makeExampleDB <- function(until = NULL, path = NULL, verbose = FALSE){
   file.copy(from = paste0(inPath, "/example_geom4.gpkg"),
             to = paste0(path, "/adb_geometries/stage2/_3__madeUp.gpkg"))
 
-  file.copy(from = paste0(inPath, "/example_table.7z"),
-            to = paste0(path, "/adb_tables/stage1/example_table.7z"))
   file.copy(from = paste0(inPath, "/example_table1.csv"),
             to = paste0(path, "/adb_tables/stage2/est_1_barleyMaize_1990_2017_madeUp.csv"))
   file.copy(from = paste0(inPath, "/example_table2.csv"),
             to = paste0(path, "/adb_tables/stage2/est_2_barleyMaize_1990_2017_madeUp.csv"))
 
-  file.copy(from = paste0(inPath, "/example_schema.rds"),
-            to = paste0(path, "/adb_tables/meta/schemas/example_schema.rds"))
 
-
-  if(any(theSteps %in% "setVariables")){
+  if (any(theSteps %in% "setVariables")) {
     territories <- read_csv(file = paste0(inPath, "/id_units.csv"), col_types = "iccc")
     setVariables(input = territories, variable = "territories",
                  pid = "anID", origin = "origin", target = "names")
@@ -90,7 +87,7 @@ makeExampleDB <- function(until = NULL, path = NULL, verbose = FALSE){
                  pid = "faoID", target = "simpleName")
   }
 
-  if(any(theSteps %in% "regDataseries")){
+  if (any(theSteps %in% "regDataseries")) {
     regDataseries(name = "gadm",
                   description = "Database of Global Administrative Areas",
                   homepage = "https://gadm.org/index.html",
