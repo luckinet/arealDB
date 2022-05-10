@@ -43,10 +43,13 @@ setPath <- function(root = NULL){
   if(!testDirectory(x = file.path(root, "log"), access = "rw")){
     dir.create(file.path(root, "log"))
   }
-
-  if(!testDirectory(x = file.path(root, "adb_tables", "incoming"), access = "rw")){
-    dir.create(file.path(root, "adb_tables", "incoming"))
+  if(!testDirectory(x = file.path(root, "incoming"), access = "rw")){
+    dir.create(file.path(root, "incoming"))
   }
+
+  # if(!testDirectory(x = file.path(root, "adb_tables", "incoming"), access = "rw")){
+  #   dir.create(file.path(root, "adb_tables", "incoming"))
+  # }
   if(!testDirectory(x = file.path(root, "adb_tables", "meta"), access = "rw")){
     dir.create(file.path(root, "adb_tables", "meta"))
   }
@@ -65,9 +68,9 @@ setPath <- function(root = NULL){
   if(!testDirectory(x = file.path(root, "adb_tables", "stage3"), access = "rw")){
     dir.create(file.path(root, "adb_tables", "stage3"))
   }
-  if(!testDirectory(x = file.path(root, "adb_geometries", "incoming"), access = "rw")){
-    dir.create(file.path(root, "adb_geometries", "incoming"))
-  }
+  # if(!testDirectory(x = file.path(root, "adb_geometries", "incoming"), access = "rw")){
+  #   dir.create(file.path(root, "adb_geometries", "incoming"))
+  # }
   if(!testDirectory(x = file.path(root, "adb_geometries", "meta"), access = "rw")){
     dir.create(file.path(root, "adb_geometries", "meta"))
   }
