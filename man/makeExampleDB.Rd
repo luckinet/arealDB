@@ -4,18 +4,18 @@
 \alias{makeExampleDB}
 \title{Build an example database}
 \usage{
-makeExampleDB(until = NULL, path = NULL, verbose = FALSE)
+makeExampleDB(path = NULL, until = NULL, verbose = FALSE)
 }
 \arguments{
+\item{path}{[\code{character(1)}]\cr The database gets created by default in
+tempdir(), but if you want it in a particular location, specify that in
+this argument.}
+
 \item{until}{[\code{character(1)}]\cr The database building step in terms of
 the function names until which the example database shall be built, one of
 \code{"setPath"}, \code{"setVariables"}, \code{"regDataseries"},
 \code{"regGeometry"}, \code{"regTable"}, \code{"normGeometry"} or
 \code{"normTable"}.}
-
-\item{path}{[\code{character(1)}]\cr The database gets created by default in
-tempdir(), but if you want it in a particular location, specify that in
-this argument.}
 
 \item{verbose}{[\code{logical(1)}]\cr be verbose about building the example
 database (default \code{FALSE}).}
@@ -25,15 +25,15 @@ No return value, called for the side effect of creating an example
   database at the specified \code{path}.
 }
 \description{
-This function helps setting up an example database up until a certain point.
+This function helps setting up an example database up until a certain step.
 }
 \examples{
 \dontrun{
-# to merely register a set of files
-makeExampleDB(until = "regTable")
-
 # to build the full example database
-makeExampleDB()
+makeExampleDB(path = tempdir())
+
+# to make the example database until a certain step
+makeExampleDB(path = tempdir(), until = "regDataseries")
 
 }
 }
