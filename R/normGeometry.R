@@ -76,7 +76,8 @@
 #' @importFrom rlang sym exprs
 #' @importFrom readr read_csv
 #' @importFrom sf st_layers read_sf st_write st_join st_buffer st_equals st_sf
-#'   st_transform st_crs st_geometry_type st_area st_intersection st_drivers
+#'   st_transform st_crs st_crs<- st_geometry_type st_area st_intersection
+#'   st_drivers NA_crs_
 #' @importFrom stringr str_split
 #' @importFrom tibble as_tibble
 #' @importFrom tidyr unite
@@ -288,12 +289,21 @@ normGeometry <- function(input = NULL, ..., thresh = 10, outType = "gpkg",
           targetGeom <- read_sf(dsn = paste0(intPaths, "/adb_geometries/stage3/", tempNation, ".gpkg"),
                                 layer = sort(targetLayers$name)[theLevel],
                                 stringsAsFactors = FALSE)
+
+          if(st_crs(targetGeom)$input == "Undefined Cartesian SRS"){
+            st_crs(targetGeom) <- NA_crs_
+          }
+
           if(theLevel > 1){
             parentGeom <- read_sf(dsn = paste0(intPaths, "/adb_geometries/stage3/", tempNation, ".gpkg"),
                                   layer = sort(targetLayers$name)[theLevel-1],
                                   stringsAsFactors = FALSE)
           } else {
             parentGeom <- NULL
+          }
+
+          if(st_crs(parentGeom)$input == "Undefined Cartesian SRS"){
+            st_crs(parentGeom) <- NA_crs_
           }
 
           # reproject new geom ----
