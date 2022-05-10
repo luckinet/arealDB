@@ -15,7 +15,7 @@ Authors@R: c(
         given = "Steffen",
         family = "Ehrmann",
         role = c("aut", "cre"),
-        email = "steffen@funroll-loops.de",
+        email = "steffen.ehrmann@posteo.de",
         comment = c(ORCID = "0000-0002-2958-0796")),
     person(
         given = "Arne", 
@@ -60,4 +60,4 @@ Suggests:
     knitr,
     rmarkdown,
     covr
-RoxygenNote: 7.1.1
+RoxygenNote: 7.1.2
