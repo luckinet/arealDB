@@ -87,11 +87,8 @@ Arguments in \code{...} are so-called matching lists. This argument
 makeExampleDB(until = "normGeometry", path = tempdir())
 
 # normalise all available data tables, harmonising commodities
-# according to the FAO commodity list ...
+# according to the FAO commodity list
 normTable(faoID = list(commodities = "target"), update = TRUE)
-
-# ... and check the result
-output <- readRDS(paste0(tempdir(), "/adb_tables/stage3/Estonia.rds"))
 }
 \seealso{
 Other normalisers: 

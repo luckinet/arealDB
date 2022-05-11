@@ -89,12 +89,8 @@ library(sf)
 # build the example database
 makeExampleDB(until = "regGeometry", path = tempdir())
 
-# normalise all geometries ...
+# normalise all geometries
 normGeometry(nation = "estonia", update = TRUE)
-
-# ... and check the result
-st_layers(paste0(tempdir(), "/adb_geometries/stage3/Estonia.gpkg"))
-output <- st_read(paste0(tempdir(), "/adb_geometries/stage3/Estonia.gpkg"))
 }
 \seealso{
 Other normalisers: 
