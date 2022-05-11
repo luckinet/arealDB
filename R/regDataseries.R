@@ -19,14 +19,16 @@
 #' @return Returns a tibble of the new entry that is appended to
 #'   'inv_dataseries.csv' in case \code{update = TRUE}.
 #' @examples
-#' # start the example database
-#' makeExampleDB(until = "setVariables", path = tempdir())
+#' if(dev.interactive()){
+#'   # start the example database
+#'   makeExampleDB(until = "setVariables", path = tempdir())
 #'
-#' regDataseries(name = "gadm",
-#'               description = "Database of Global Administrative Areas",
-#'               homepage = "https://gadm.org/index.html",
-#'               licence_link = "https://gadm.org/license.html",
-#'               update = TRUE)
+#'   regDataseries(name = "gadm",
+#'                 description = "Database of Global Administrative Areas",
+#'                 homepage = "https://gadm.org/index.html",
+#'                 licence_link = "https://gadm.org/license.html",
+#'                 update = TRUE)
+#' }
 #' @importFrom readr read_csv
 #' @importFrom checkmate assertDataFrame assertNames assertCharacter
 #'   assertLogical

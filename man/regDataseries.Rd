@@ -47,12 +47,14 @@ This function registers a new dataseries of both, geometries or areal data
 into the geospatial database.
 }
 \examples{
-# start the example database
-makeExampleDB(until = "setVariables", path = tempdir())
+if(dev.interactive()){
+  # start the example database
+  makeExampleDB(until = "setVariables", path = tempdir())
 
-regDataseries(name = "gadm",
-              description = "Database of Global Administrative Areas",
-              homepage = "https://gadm.org/index.html",
-              licence_link = "https://gadm.org/license.html",
-              update = TRUE)
+  regDataseries(name = "gadm",
+                description = "Database of Global Administrative Areas",
+                homepage = "https://gadm.org/index.html",
+                licence_link = "https://gadm.org/license.html",
+                update = TRUE)
+}
 }

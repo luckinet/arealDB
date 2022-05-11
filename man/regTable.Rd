@@ -108,35 +108,37 @@ When processing areal data tables, carry out the following steps:
   \code{tabshiftr}.
 }
 \examples{
-# build the example database
-makeExampleDB(until = "regGeometry", path = tempdir())
+if(dev.interactive()){
+  # build the example database
+  makeExampleDB(until = "regGeometry", path = tempdir())
 
-# the schema description for this table
-library(tabshiftr)
-library(magrittr)
+  # the schema description for this table
+  library(tabshiftr)
+  library(magrittr)
 
-schema_madeUp <-
-  setIDVar(name = "al1", columns = 1) \%>\%
-  setIDVar(name = "year", columns = 2) \%>\%
-  setIDVar(name = "commodities", columns = 3) \%>\%
-  setObsVar(name = "harvested",
-            factor = 1, columns = 4) \%>\%
-  setObsVar(name = "production",
-            factor = 1, columns = 5)
+  schema_madeUp <-
+    setIDVar(name = "al1", columns = 1) \%>\%
+    setIDVar(name = "year", columns = 2) \%>\%
+    setIDVar(name = "commodities", columns = 3) \%>\%
+    setObsVar(name = "harvested",
+              factor = 1, columns = 4) \%>\%
+    setObsVar(name = "production",
+              factor = 1, columns = 5)
 
-regTable(nation = "Estonia",
-         subset = "barleyMaize",
-         dSeries = "madeUp",
-         gSeries = "gadm",
-         level = 1,
-         begin = 1990,
-         end = 2017,
-         schema = schema_madeUp,
-         archive = "example_table.7z|example_table1.csv",
-         archiveLink = "...",
-         nextUpdate = "2019-10-01",
-         updateFrequency = "quarterly",
-         metadataLink = "...",
-         metadataPath = "my/local/path",
-         update = TRUE)
+  regTable(nation = "Estonia",
+           subset = "barleyMaize",
+           dSeries = "madeUp",
+           gSeries = "gadm",
+           level = 1,
+           begin = 1990,
+           end = 2017,
+           schema = schema_madeUp,
+           archive = "example_table.7z|example_table1.csv",
+           archiveLink = "...",
+           nextUpdate = "2019-10-01",
+           updateFrequency = "quarterly",
+           metadataLink = "...",
+           metadataPath = "my/local/path",
+           update = TRUE)
+}
 }

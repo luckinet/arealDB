@@ -45,33 +45,35 @@
 #' @return Returns a tibble of the entry that is appended to
 #'   'inv_geometries.csv' in case \code{update = TRUE}.
 #' @examples
-#' # build the example database
-#' makeExampleDB(until = "regDataseries", path = tempdir())
+#' if(dev.interactive()){
+#'   # build the example database
+#'   makeExampleDB(until = "regDataseries", path = tempdir())
 #'
-#' # The GADM dataset comes as *.zip archive
-#' regGeometry(nation = "NAME_0",
-#'             gSeries = "gadm",
-#'             level = 1,
-#'             layer = "example_geom1",
-#'             nameCol = "NAME_0",
-#'             archive = "example_geom.7z|example_geom1.gpkg",
-#'             archiveLink = "https://gadm.org/",
-#'             nextUpdate = "2019-10-01",
-#'             updateFrequency = "quarterly",
-#'             update = TRUE)
+#'   # The GADM dataset comes as *.zip archive
+#'   regGeometry(nation = "NAME_0",
+#'               gSeries = "gadm",
+#'               level = 1,
+#'               layer = "example_geom1",
+#'               nameCol = "NAME_0",
+#'               archive = "example_geom.7z|example_geom1.gpkg",
+#'               archiveLink = "https://gadm.org/",
+#'               nextUpdate = "2019-10-01",
+#'               updateFrequency = "quarterly",
+#'               update = TRUE)
 #'
-#' # The second administrative level in GADM contains names in the columns
-#' # NAME_0 and NAME_1
-#' regGeometry(nation = "NAME_0",
-#'             gSeries = "gadm",
-#'             level = 2,
-#'             layer = "example_geom2",
-#'             nameCol = "NAME_0|NAME_1",
-#'             archive = "example_geom.7z|example_geom2.gpkg",
-#'             archiveLink = "https://gadm.org/",
-#'             nextUpdate = "2019-10-01",
-#'             updateFrequency = "quarterly",
-#'             update = TRUE)
+#'   # The second administrative level in GADM contains names in the columns
+#'   # NAME_0 and NAME_1
+#'   regGeometry(nation = "NAME_0",
+#'               gSeries = "gadm",
+#'               level = 2,
+#'               layer = "example_geom2",
+#'               nameCol = "NAME_0|NAME_1",
+#'               archive = "example_geom.7z|example_geom2.gpkg",
+#'               archiveLink = "https://gadm.org/",
+#'               nextUpdate = "2019-10-01",
+#'               updateFrequency = "quarterly",
+#'               update = TRUE)
+#' }
 #' @importFrom checkmate assertNames assertCharacter assertIntegerish
 #'   assertFileExists testChoice assertLogical
 #' @importFrom readr read_csv
