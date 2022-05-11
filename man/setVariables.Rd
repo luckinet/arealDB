@@ -59,15 +59,17 @@ This is the second function that is run in a project, as it creates
   "original" to be used for fuzzy matching.}
 }
 \examples{
-library(readr)
-inPath <- system.file("test_datasets", package = "arealDB", mustWork = TRUE)
+if(dev.interactive()){
+  library(readr)
+  inPath <- system.file("test_datasets", package = "arealDB", mustWork = TRUE)
 
-# start the example database
-makeExampleDB(until = "setPath", path = tempdir())
+  # start the example database
+  makeExampleDB(until = "setPath", path = tempdir())
 
-# create index from an already existing table
-comm <- read_csv(file = paste0(inPath, "/id_commodities.csv"),
-                 col_types = "iccc")
-setVariables(input = comm, variable = "commodities",
-             pid = "faoID", target = "simpleName")
+  # create index from an already existing table
+  comm <- read_csv(file = paste0(inPath, "/id_commodities.csv"),
+                   col_types = "iccc")
+  setVariables(input = comm, variable = "commodities",
+               pid = "faoID", target = "simpleName")
+}
 }

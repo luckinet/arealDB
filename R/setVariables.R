@@ -33,17 +33,19 @@
 #'   project root directory with name \code{paste0(type, "_", variable,
 #'   ".csv")}.
 #' @examples
-#' library(readr)
-#' inPath <- system.file("test_datasets", package = "arealDB", mustWork = TRUE)
+#' if(dev.interactive()){
+#'   library(readr)
+#'   inPath <- system.file("test_datasets", package = "arealDB", mustWork = TRUE)
 #'
-#' # start the example database
-#' makeExampleDB(until = "setPath", path = tempdir())
+#'   # start the example database
+#'   makeExampleDB(until = "setPath", path = tempdir())
 #'
-#' # create index from an already existing table
-#' comm <- read_csv(file = paste0(inPath, "/id_commodities.csv"),
-#'                  col_types = "iccc")
-#' setVariables(input = comm, variable = "commodities",
-#'              pid = "faoID", target = "simpleName")
+#'   # create index from an already existing table
+#'   comm <- read_csv(file = paste0(inPath, "/id_commodities.csv"),
+#'                    col_types = "iccc")
+#'   setVariables(input = comm, variable = "commodities",
+#'                pid = "faoID", target = "simpleName")
+#' }
 #' @importFrom checkmate assertCharacter
 #' @importFrom stringr str_detect str_locate str_sub
 #' @export
