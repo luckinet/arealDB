@@ -20,7 +20,7 @@ reference:
       - setVariables
       - makeExampleDB
   - title: register data
-    desc: functions that register data and metadata  (stage two)
+    desc: functions that register data and metadata (stage two)
     contents:
       - regDataseries
       - regGeometry
@@ -33,7 +33,14 @@ reference:
   - title: datasets
     contents:
       - countries
-
+  - title: helpers
+    contents:
+      - getColTypes
+      - matchUnits
+      - matchVars
+      - testCompressed
+      - translateTerms
+      - updateTable
 
 navbar:
   left:
