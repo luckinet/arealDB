@@ -54,12 +54,17 @@
 #'   each nation in the registered data tables a comma-separated values file
 #'   that includes all thematic areal data.
 #' @examples
-#' # build the example database
-#' makeExampleDB(until = "normGeometry", path = tempdir())
+#' if(dev.interactive()){
+#'   # build the example database
+#'   makeExampleDB(until = "normGeometry", path = tempdir())
 #'
-#' # normalise all available data tables, harmonising commodities
-#' # according to the FAO commodity list
-#' normTable(faoID = list(commodities = "target"), update = TRUE)
+#'   # normalise all available data tables, harmonising commodities
+#'   # according to the FAO commodity list ...
+#'   normTable(faoID = list(commodities = "target"), update = TRUE)
+#'
+#'   # ... and check the result
+#'   output <- readRDS(paste0(tempdir(), "/adb_tables/stage3/Estonia.rds"))
+#' }
 #' @importFrom checkmate assertNames assertFileExists assertLogical
 #' @importFrom rlang exprs
 #' @importFrom tabshiftr reorganise
