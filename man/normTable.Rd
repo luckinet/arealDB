@@ -18,11 +18,11 @@ normTable(
 \arguments{
 \item{input}{[\code{character(1)}]\cr path of the file to normalise. If this
 is left empty, all files at stage two as subset by \code{pattern} are
-chosen}
+chosen.}
 
-\item{...}{[\code{list(.)}]\cr matching lists that capture the variables by
-which to match and the new column names containing the resulting ID; see
-Details.}
+\item{...}{[\code{list(.)}]\cr optional spatial subset formed from the
+variables "nation", "un_member", "continent", "region" or "subregion" with
+the respective value, see \code{\link{countries}}.}
 
 \item{source}{[\code{charcter(1)}]\cr the source from which translations of
 terms should be sought. By default the recent \code{"tabID"}, but when the
@@ -60,36 +60,22 @@ This function harmonises and integrates so far unprocessed data
 Harmonise and integrate data tables into standardised format
 }
 \details{
-Arguments in \code{...} are so-called matching lists. This argument
-  captures three kinds of information: \enumerate{\item the 'variable' that
-  should be matched with a matching list, \item the 'targetColumn' in that
-  matching list that should be included in the final table in the place of
-  'variable' and \item the 'targetID' (column name) of that new variable.}
-
-  targetID = list(variable = targetColumn)
-
-  'variable' must be present as column in \code{input} and a table that is
-  named "id_variable.csv" (where 'variable' is replaced by the variable name)
-  must be available in the root directory of the project. This should have
-  been created with \code{\link{setVariables}}.
-
-  To normalise data tables, this function proceeds as follows: \enumerate{
-  \item Read in \code{input} and extract initial metadata from the file name.
-  \item Employ the function \code{tabshiftr::\link{reorganise}} to reshape
-  \code{input} according to the respective schema description. \item Match
-  the territorial units in \code{input} via \code{\link{matchUnits}}. \item
-  If \code{...} has been provided with variables to match, those are matched
-  via \code{\link{matchVars}}. \item Harmonise territorial unit names. \item
-  If \code{update = TRUE}, store the processed data table at stage three.}
+To normalise data tables, this function proceeds as follows:
+  \enumerate{ \item Read in \code{input} and extract initial metadata from
+  the file name. \item Employ the function
+  \code{tabshiftr::\link{reorganise}} to reshape \code{input} according to
+  the respective schema description. \item Match the territorial units in
+  \code{input} via \code{\link{matchUnits}}. \item Harmonise territorial unit
+  names. \item If \code{update = TRUE}, store the processed data table at
+  stage three.}
 }
 \examples{
 if(dev.interactive()){
   # build the example database
   makeExampleDB(until = "normGeometry", path = tempdir())
 
-  # normalise all available data tables, harmonising commodities
-  # according to the FAO commodity list ...
-  normTable(faoID = list(commodities = "target"), update = TRUE)
+  # normalise all available data tables ...
+  normTable(update = TRUE)
 
   # ... and check the result
   output <- readRDS(paste0(tempdir(), "/adb_tables/stage3/Estonia.rds"))
