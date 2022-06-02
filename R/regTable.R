@@ -225,6 +225,13 @@ regTable <- function(nation = NULL, subset = NULL, dSeries = NULL, gSeries = NUL
     }
   }
 
+  # if(!testFileExists(x = paste0(intPaths, "/meta/translation_tables/", dSeries, "_", gSeries, ".rds")))
+
+
+
+
+
+
   if(is.null(level)){
     message("please type in the administrative level of the units: ")
     if(!testing){
@@ -266,7 +273,7 @@ regTable <- function(nation = NULL, subset = NULL, dSeries = NULL, gSeries = NUL
     if(!testing){
       schema <- readline()
     } else {
-      schema <- readRDS(file = paste0(intPaths, "/adb_tables/meta/schemas/example_schema.rds"))
+      schema <- readRDS(file = paste0(intPaths, "/meta/schemas/example_schema.rds"))
     }
     if(length(schema) < 1){
       schema = NA_character_
@@ -316,7 +323,7 @@ regTable <- function(nation = NULL, subset = NULL, dSeries = NULL, gSeries = NUL
   }
 
   # make a schema description
-  write_rds(x = schema, file = paste0(intPaths, "/adb_tables/meta/schemas/", theSchemaName, ".rds"))
+  write_rds(x = schema, file = paste0(intPaths, "/meta/schemas/", theSchemaName, ".rds"))
 
   if(is.null(archiveLink)){
     message("please type in the weblink from which the archive was downloaded: ")
