@@ -3,10 +3,10 @@
 #' Harmonise and integrate data tables into standardised format
 #' @param input [\code{character(1)}]\cr path of the file to normalise. If this
 #'   is left empty, all files at stage two as subset by \code{pattern} are
-#'   chosen
-#' @param ... [\code{list(.)}]\cr matching lists that capture the variables by
-#'   which to match and the new column names containing the resulting ID; see
-#'   Details.
+#'   chosen.
+#' @param ... [\code{list(.)}]\cr optional spatial subset formed from the
+#'   variables "nation", "un_member", "continent", "region" or "subregion" with
+#'   the respective value, see \code{\link{countries}}.
 #' @param source [\code{charcter(1)}]\cr the source from which translations of
 #'   terms should be sought. By default the recent \code{"tabID"}, but when the
 #'   same terms occur in several tables of a dataseries, chose \code{"datID"}.
@@ -27,27 +27,14 @@
 #' @param verbose [\code{logical(1)}]\cr be verbose about translating terms
 #'   (default \code{FALSE}). Furthermore, you can use
 #'   \code{\link{suppressMessages}} to make this function completely silent.
-#' @details Arguments in \code{...} are so-called matching lists. This argument
-#'   captures three kinds of information: \enumerate{\item the 'variable' that
-#'   should be matched with a matching list, \item the 'targetColumn' in that
-#'   matching list that should be included in the final table in the place of
-#'   'variable' and \item the 'targetID' (column name) of that new variable.}
-#'
-#'   targetID = list(variable = targetColumn)
-#'
-#'   'variable' must be present as column in \code{input} and a table that is
-#'   named "id_variable.csv" (where 'variable' is replaced by the variable name)
-#'   must be available in the root directory of the project. This should have
-#'   been created with \code{\link{setVariables}}.
-#'
-#'   To normalise data tables, this function proceeds as follows: \enumerate{
-#'   \item Read in \code{input} and extract initial metadata from the file name.
-#'   \item Employ the function \code{tabshiftr::\link{reorganise}} to reshape
-#'   \code{input} according to the respective schema description. \item Match
-#'   the territorial units in \code{input} via \code{\link{matchUnits}}. \item
-#'   If \code{...} has been provided with variables to match, those are matched
-#'   via \code{\link{matchVars}}. \item Harmonise territorial unit names. \item
-#'   If \code{update = TRUE}, store the processed data table at stage three.}
+#' @details To normalise data tables, this function proceeds as follows:
+#'   \enumerate{ \item Read in \code{input} and extract initial metadata from
+#'   the file name. \item Employ the function
+#'   \code{tabshiftr::\link{reorganise}} to reshape \code{input} according to
+#'   the respective schema description. \item Match the territorial units in
+#'   \code{input} via \code{\link{matchUnits}}. \item Harmonise territorial unit
+#'   names. \item If \code{update = TRUE}, store the processed data table at
+#'   stage three.}
 #' @family normalisers
 #' @return This function harmonises and integrates so far unprocessed data
 #'   tables at stage two into stage three of the areal database. It produces for
@@ -58,9 +45,8 @@
 #'   # build the example database
 #'   makeExampleDB(until = "normGeometry", path = tempdir())
 #'
-#'   # normalise all available data tables, harmonising commodities
-#'   # according to the FAO commodity list ...
-#'   normTable(faoID = list(commodities = "target"), update = TRUE)
+#'   # normalise all available data tables ...
+#'   normTable(update = TRUE)
 #'
 #'   # ... and check the result
 #'   output <- readRDS(paste0(tempdir(), "/adb_tables/stage3/Estonia.rds"))
@@ -91,7 +77,10 @@ normTable <- function(input = NULL, ..., source = "tabID", pattern = NULL,
 
   # get objects
   inv_tables <- read_csv(paste0(intPaths, "/inv_tables.csv"), col_types = "iiiccccDccccc")
+  inv_dataseries <- read_csv(paste0(intPaths, "/inv_dataseries.csv"), col_types = "icccccc")
   vars <- exprs(..., .named = TRUE)
+
+  # return(vars)
 
   if(update){
     if(keepOrig){
@@ -119,7 +108,7 @@ normTable <- function(input = NULL, ..., source = "tabID", pattern = NULL,
   assertChoice(x = source, choices = c("tabID", "datID"))
   assertList(x = vars)
 
-  out <- NULL
+  ret <- NULL
   for(i in seq_along(input)){
 
     thisInput <- input[i]
@@ -145,7 +134,7 @@ normTable <- function(input = NULL, ..., source = "tabID", pattern = NULL,
       stop(paste0("  ! the file '", file_name, "' has not been registered yet."))
     }
 
-    algorithm = readRDS(file = paste0(intPaths, "/adb_tables/meta/schemas/", thisSchema, ".rds"))
+    algorithm = readRDS(file = paste0(intPaths, "/meta/schemas/", thisSchema, ".rds"))
     if(!exists(x = "algorithm")){
       stop(paste0("please create the schema desciption '", algorithm, "' for the file '", file_name, "'.\n  --> See '?meta_default' for details"))
     }
@@ -163,6 +152,8 @@ normTable <- function(input = NULL, ..., source = "tabID", pattern = NULL,
                     inv_tables$tabID[grep(pattern = file_name, x = inv_tables$source_file)])
     geoID <- ifelse(length(inv_tables$geoID) == 0, 1,
                     inv_tables$geoID[grep(pattern = file_name, x = inv_tables$source_file)])
+    datID <- ifelse(length(inv_tables$datID) == 0, 1,
+                    inv_tables$datID[grep(pattern = file_name, x = inv_tables$source_file)])
     joinVars <- c("tabID", "geoID", joinVars)
 
     # potentially subset nation values
@@ -205,10 +196,7 @@ normTable <- function(input = NULL, ..., source = "tabID", pattern = NULL,
     message("\n--> reading new data table ...")
     thisTable <- read.csv(file = thisInput, header = FALSE, strip.white = TRUE, as.is = TRUE, na.strings = algorithm@format$na, encoding = "UTF-8") %>%
       as_tibble()
-    # thisTable <- read_csv(file = thisInput,
-    #                       col_names = FALSE,
-    #                       col_types = cols(.default = "c"),
-    #                       na = algorithm@format$na)
+
     message("    reorganising table with '", thisSchema, "' ...")
     temp <- thisTable %>%
       reorganise(schema = algorithm)
@@ -225,7 +213,18 @@ normTable <- function(input = NULL, ..., source = "tabID", pattern = NULL,
     }
 
     temp <- temp %>%
-      filter_at(vars(starts_with("al")), all_vars(!is.na(.)))
+      filter_at(vars(starts_with("al")), all_vars(!is.na(.))) %>%
+      mutate(tabID = tabID,
+             geoID = geoID)
+
+    if(source == "tabID"){
+      theSource <- list("tabID" = tabID)
+    } else {
+      theSource <- list("datID" = inv_tables$datID[inv_tables$tabID %in% tabID])
+    }
+
+
+    ################### move this also to an ontology (and not use translateTerms anymore)
 
     # translate nations in input
     message("    harmonising nation names ...")
@@ -241,6 +240,14 @@ normTable <- function(input = NULL, ..., source = "tabID", pattern = NULL,
       select(-al1) %>%
       filter(!is.na(target)) %>%
       select(al1 = target, everything())
+
+    temp_units <- temp %>%
+      matchUnits(source = theSource)
+    joinVars <- c("ahID", joinVars)
+
+    ###################
+
+
     if(!is.null(subNations)){
       temp <- temp %>%
         filter(al1 %in% subNations)
@@ -260,31 +267,20 @@ normTable <- function(input = NULL, ..., source = "tabID", pattern = NULL,
       moveFile <- TRUE
     }
 
-    if(source == "tabID"){
-      theSource <- list("tabID" = tabID)
-    } else {
-      theSource <- list("datID" = inv_tables$datID[inv_tables$tabID %in% tabID])
-    }
-
-    temp_units <- temp %>%
-      mutate(tabID = tabID,
-             geoID = geoID) %>%
-      matchUnits(source = theSource)
-    joinVars <- c("ahID", joinVars)
 
     # if a matching list for other variables is defined, match those
-    if(length(vars) != 0){
-      joinVars <- tibble(orig = joinVars) %>%
-        mutate(new = if_else(orig %in% names(vars[[1]]), names(vars), orig)) %>%
-        pull(new)
-      message()
-      temp_all <- temp_units %>%
-        matchVars(source = theSource, !!!vars)
-    } else {
-      temp_all <- temp_units
-    }
+    # if(length(vars) != 0){
+    #   joinVars <- tibble(orig = joinVars) %>%
+    #     mutate(new = if_else(orig %in% names(vars[[1]]), names(vars), orig)) %>%
+    #     pull(new)
+    #   message()
+    #   temp_all <- temp_units %>%
+    #     matchVars(source = theSource, !!!vars)
+    # } else {
+      # temp_all <- temp_units
+    # }
 
-    temp <- temp_all %>%
+    temp <- temp_units %>%
       select(tabID, geoID, ahID, everything())
 
     # in case the user wants to update, update the data table
@@ -294,6 +290,21 @@ normTable <- function(input = NULL, ..., source = "tabID", pattern = NULL,
       varNames <- names(algorithm@variables)
       outVars <- c("tabID", "geoID", "ahID", names(vars), varNames[!varNames %in% c(grep("al", names(algorithm@variables), value = TRUE), names(vars[[1]]))])
     }
+
+    # if(!keepOrig){
+    #
+    #   tempOut <- temp %>%
+    #     select(all_of(outVars)) %>%
+    #     filter_at(.vars = outVars, all_vars(!is.na(.)))
+    #
+    # } else {
+
+    tempOut <- temp  %>%
+      select(all_of(outVars), everything())
+
+    # }
+
+
     if(update){
 
       theNations <- temp %>%
@@ -352,30 +363,14 @@ normTable <- function(input = NULL, ..., source = "tabID", pattern = NULL,
       }
 
 
-    } else {
-
-      if(!keepOrig){
-
-        tempOut <- temp %>%
-          select(all_of(outVars)) %>%
-          filter_at(.vars = outVars, all_vars(!is.na(.)))
-
-      } else {
-
-        tempOut <- temp  %>%
-          select(all_of(outVars), everything())
-
-      }
-
-      out <- bind_rows(out, tempOut)
     }
+
+    ret <- bind_rows(ret, tempOut)
 
     gc()
 
   }
 
-  if(!update){
-    return(out)
-  }
+  invisible(ret)
 
 }
