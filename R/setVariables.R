@@ -48,7 +48,6 @@
 #' }
 #' @importFrom checkmate assertCharacter
 #' @importFrom stringr str_detect str_locate str_sub
-#' @export
 
 setVariables <- function(input = NULL, variable = NULL, type = "both", pid = NULL,
                          origin = NULL, target = NULL){

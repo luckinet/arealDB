@@ -12,12 +12,12 @@
 #'   directory structure of the new areal database and a new environment that
 #'   contains the database metadata.
 #' @examples
-#' setPath(root = tempdir())
+#' start_arealDB(root = tempdir())
 #' @importFrom checkmate testDirectory testFileExists
 #' @importFrom readr write_csv
 #' @export
 
-setPath <- function(root = NULL){
+start_arealDB <- function(root = NULL){
 
   assertCharacter(x = root, len = 1)
 
@@ -31,7 +31,8 @@ setPath <- function(root = NULL){
   # test whether the required directories exist and create them if they don't exist
   if(!testDirectory(x = root, access = "rw")){
     dir.create(file.path(root))
-    message("I have created a new project directory.\n  -> please run 'setVariables()' to create a translation table for territories.")
+    # message("I have created a new project directory.\n  -> please run 'setVariables()' to create a translation table for territories.")
+    message("I have created a new project directory.")
   }
 
   if(!testDirectory(x = file.path(root, "adb_tables"), access = "rw")){
@@ -46,16 +47,16 @@ setPath <- function(root = NULL){
   if(!testDirectory(x = file.path(root, "incoming"), access = "rw")){
     dir.create(file.path(root, "incoming"))
   }
+  if(!testDirectory(x = file.path(root, "meta"), access = "rw")){
+    dir.create(file.path(root, "meta"))
+  }
+  if(!testDirectory(x = file.path(root, "meta", "schemas"), access = "rw")){
+    dir.create(file.path(root, "meta", "schemas"))
+  }
+  if(!testDirectory(x = file.path(root, "meta", "translation_tables"), access = "rw")){
+    dir.create(file.path(root, "meta", "translation_tables"))
+  }
 
-  # if(!testDirectory(x = file.path(root, "adb_tables", "incoming"), access = "rw")){
-  #   dir.create(file.path(root, "adb_tables", "incoming"))
-  # }
-  if(!testDirectory(x = file.path(root, "adb_tables", "meta"), access = "rw")){
-    dir.create(file.path(root, "adb_tables", "meta"))
-  }
-   if(!testDirectory(x = file.path(root, "adb_tables", "meta", "schemas"), access = "rw")){
-    dir.create(file.path(root, "adb_tables", "meta", "schemas"))
-  }
   if(!testDirectory(x = file.path(root, "adb_tables", "stage1"), access = "rw")){
     dir.create(file.path(root, "adb_tables", "stage1"))
   }
@@ -68,12 +69,7 @@ setPath <- function(root = NULL){
   if(!testDirectory(x = file.path(root, "adb_tables", "stage3"), access = "rw")){
     dir.create(file.path(root, "adb_tables", "stage3"))
   }
-  # if(!testDirectory(x = file.path(root, "adb_geometries", "incoming"), access = "rw")){
-  #   dir.create(file.path(root, "adb_geometries", "incoming"))
-  # }
-  if(!testDirectory(x = file.path(root, "adb_geometries", "meta"), access = "rw")){
-    dir.create(file.path(root, "adb_geometries", "meta"))
-  }
+
   if(!testDirectory(x = file.path(root, "adb_geometries", "stage1"), access = "rw")){
     dir.create(file.path(root, "adb_geometries", "stage1"))
   }
@@ -138,14 +134,10 @@ setPath <- function(root = NULL){
   }
 
   # and also the translation table for nations
-  if(!testFileExists(x = file.path(root, "tt_nations.csv"))){
-    tt_nations <- tibble(origin = NA_character_,
-                         target = countries$unit,
-                         source = "original",
-                         ID = NA_character_,
-                         notes = NA_character_)
+  if(!testFileExists(x = paste0(root, "/meta/translation_tables/tt_nations.csv"))){
+    tt_nations <- tibble(original = countries$unit)
     write_csv(x = tt_nations,
-              file = paste0(root, "/tt_nations.csv"),
+              file = paste0(root, "/meta/translation_tables/tt_nations.csv"),
               na = "")
   }
 
@@ -153,4 +145,14 @@ setPath <- function(root = NULL){
   on.exit(options(oldOptions))
 
   options(adb_path = root)
+}
+
+
+#' @describeIn start_arealDB deprecated way of starting an areal database
+#' @export
+
+setPath <- function(root = NULL) {
+  .Deprecated("start_arealDB")
+
+  setPath(root = root)
 }
