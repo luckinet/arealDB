@@ -26,8 +26,50 @@
 #' @importFrom tibble tibble
 #' @importFrom tidyselect matches everything contains all_of
 #' @importFrom utils tail txtProgressBar setTxtProgressBar
+#' @export
 
 matchUnits <- function(input = NULL, source = NULL, verbose = FALSE){
+
+
+
+  # # 2. set variables ----
+  # #
+  # # this file is a simple copy of "tt_nations.csv" of the recent arealDB run
+  # nations <- read_csv(file = paste0(DBDir, "tt_nations.csv"),
+  #                     col_types = "ccccc")
+  # # this file is a simple copy of "tt_territories.csv" of the previous arealDB run
+  # prevTerr <- read_csv(file = paste0(dataDir, "areal_data/already_processed/sandbox_previous_territory_translations.csv"),
+  #                      col_types = "cccic")
+  # # this file is a simple copy of "tt_nations.csv" of the previous arealDB run
+  # prevNation <- read_csv(file = paste0(dataDir, "areal_data/already_processed/sandbox_previous_nation_translations.csv"),
+  #                        col_types = "cccic")
+  #
+  # # `setPath()` already creates a translation table for the nation names. The
+  # # official nation names are taken from the 'United Nations geoscheme'
+  # # (https://en.wikipedia.org/wiki/United_Nations_geoscheme). Since we use GADM
+  # # geometries to build the areal database, we add the UN nation names to the
+  # # translation table of territories to harmonise the UN geoscheme with the GADM
+  # # nation-list.
+  # nations %>%
+  #   setVariables(variable = "territories",
+  #                type = "tt",
+  #                origin = "origin",
+  #                target = "target")
+  #
+  # # set previously made translations of territories and nations
+  # prevTerr %>%
+  #   setVariables(variable = "territories",
+  #                type = "tt",
+  #                origin = "origin",
+  #                target = "target")
+  # prevNation %>%
+  #   select(origin, target) %>%
+  #   distinct() %>%
+  #   filter(!is.na(origin)) %>%
+  #   setVariables(variable = "nations",
+  #                type = "tt",
+  #                origin = "origin",
+  #                target = "target")
 
   # set internal objects
   intPaths <- paste0(getOption(x = "adb_path"), "/adb_geometries/")
