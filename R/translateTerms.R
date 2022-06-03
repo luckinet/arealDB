@@ -316,8 +316,6 @@ translateTerms <- function(terms, index = NULL, source = NULL, strict = FALSE,
           filter(target == "missing") %>%
           bind_rows(invalid)
 
-
-
         if(testing){
           newOut <- toTranslate <- tibble(target = character(),
                                           origin = character(),

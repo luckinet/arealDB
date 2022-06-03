@@ -6,7 +6,7 @@
 #'   this argument.
 #' @param until [\code{character(1)}]\cr The database building step in terms of
 #'   the function names until which the example database shall be built, one of
-#'   \code{"setPath"}, \code{"setVariables"}, \code{"regDataseries"},
+#'   \code{"start_arealDB"}, \code{"setVariables"}, \code{"regDataseries"},
 #'   \code{"regGeometry"}, \code{"regTable"}, \code{"normGeometry"} or
 #'   \code{"normTable"}.
 #' @param verbose [\code{logical(1)}]\cr be verbose about building the example
@@ -32,7 +32,7 @@ makeExampleDB <- function(path = NULL, until = NULL, verbose = FALSE){
   # library(arealDB); library(tabshiftr); library(checkmate); library(tidyverse)
 
   inPath <- system.file("test_datasets", package = "arealDB", mustWork = TRUE)
-  steps <- c("setPath", "setVariables", "regDataseries", "regGeometry", "regTable", "normGeometry", "normTable")
+  steps <- c("start_arealDB", "setVariables", "regDataseries", "regGeometry", "regTable", "normGeometry", "normTable")
   if (is.null(until)) {
     until <- "normTable"
   }
@@ -50,9 +50,8 @@ makeExampleDB <- function(path = NULL, until = NULL, verbose = FALSE){
   on.exit(options(oldOptions))
   options(adb_testing = TRUE)
 
-  if (any(theSteps %in% "setPath")) {
-
-    setPath(root = path)
+  if (any(theSteps %in% "start_arealDB")) {
+    start_arealDB(root = path)
   }
 
   file.copy(from = paste0(inPath, "/example_geom.7z"),
@@ -60,7 +59,7 @@ makeExampleDB <- function(path = NULL, until = NULL, verbose = FALSE){
   file.copy(from = paste0(inPath, "/example_table.7z"),
             to = paste0(path, "/adb_tables/stage1/example_table.7z"))
   file.copy(from = paste0(inPath, "/example_schema.rds"),
-            to = paste0(path, "/adb_tables/meta/schemas/example_schema.rds"))
+            to = paste0(path, "/meta/schemas/example_schema.rds"))
 
   file.copy(from = paste0(inPath, "/example_geom1.gpkg"),
             to = paste0(path, "/adb_geometries/stage2/_1__gadm.gpkg"))
@@ -76,16 +75,20 @@ makeExampleDB <- function(path = NULL, until = NULL, verbose = FALSE){
   file.copy(from = paste0(inPath, "/example_table2.csv"),
             to = paste0(path, "/adb_tables/stage2/est_2_barleyMaize_1990_2017_madeUp.csv"))
 
+  file.copy(from = paste0(inPath, "/id_territories.csv"),
+            to = paste0(path, "/id_territories.csv"))
+  file.copy(from = paste0(inPath, "/tt_territories.csv"),
+            to = paste0(path, "/tt_territories.csv"))
 
-  if (any(theSteps %in% "setVariables")) {
-    territories <- read_csv(file = paste0(inPath, "/id_units.csv"), col_types = "iccc")
-    setVariables(input = territories, variable = "territories",
-                 pid = "anID", origin = "origin", target = "names")
+  # if (any(theSteps %in% "setVariables")) {
+    # territories <- read_csv(file = paste0(inPath, "/id_units.csv"), col_types = "iccc")
+    # setVariables(input = territories, variable = "territories",
+    #              pid = "anID", origin = "origin", target = "names")
 
-    comm <- read_csv(file = paste0(inPath, "/id_commodities.csv"), col_types = "iccc")
-    setVariables(input = comm, variable = "commodities",
-                 pid = "faoID", target = "simpleName")
-  }
+    # comm <- read_csv(file = paste0(inPath, "/id_commodities.csv"), col_types = "iccc")
+    # setVariables(input = comm, variable = "commodities",
+                 # pid = "faoID", target = "simpleName")
+  # }
 
   if (any(theSteps %in% "regDataseries")) {
     regDataseries(name = "gadm",
@@ -207,8 +210,7 @@ makeExampleDB <- function(path = NULL, until = NULL, verbose = FALSE){
   }
 
   if(any(theSteps %in% "normTable")){
-    normTable(faoID = list(commodities = "target"),
-              update = TRUE, verbose = verbose)
+    normTable(update = TRUE, verbose = verbose)
   }
 
 }

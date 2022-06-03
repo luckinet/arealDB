@@ -169,7 +169,7 @@ normGeometry <- function(input = NULL, ..., thresh = 10, outType = "gpkg",
       nations <- translateTerms(terms = theNations,
                                 index = "tt_nations",
                                 source = list("geoID" = newGID),
-                                verbose = verbose)%>%
+                                verbose = verbose) %>%
         mutate(valid = if_else(target == "ignore", FALSE, if_else(target %in% countries$unit, TRUE, FALSE))) %>%
         select(!!nationCol := origin, target, valid)
       theNations <- nations[[nationCol]][nations$valid]

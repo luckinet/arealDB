@@ -134,10 +134,14 @@ start_arealDB <- function(root = NULL){
   }
 
   # and also the translation table for nations
-  if(!testFileExists(x = paste0(root, "/meta/translation_tables/tt_nations.csv"))){
-    tt_nations <- tibble(original = countries$unit)
+  if(!testFileExists(x = paste0(root, "/tt_nations.csv"))){
+    tt_nations <- tibble(origin = NA_character_,
+                         target = countries$unit,
+                         source = "original",
+                         ID = NA_character_,
+                         notes = NA_character_)
     write_csv(x = tt_nations,
-              file = paste0(root, "/meta/translation_tables/tt_nations.csv"),
+              file = paste0(root, "/tt_nations.csv"),
               na = "")
   }
 
