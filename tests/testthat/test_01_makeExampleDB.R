@@ -7,7 +7,7 @@ context("makeExampleDB")
 test_that("make example DB until setPath", {
 
   dbpath <- paste0(tempdir(), "/newDB")
-  makeExampleDB(until = "setPath", path = dbpath)
+  makeExampleDB(until = "start_arealDB", path = dbpath)
 
   expect_file_exists(x = paste0(dbpath, "/inv_dataseries.csv"))
   expect_file_exists(x = paste0(dbpath, "/inv_geometries.csv"))
@@ -18,21 +18,21 @@ test_that("make example DB until setPath", {
 
   assert_file_exists(x = paste0(dbpath, "/adb_geometries/stage1/example_geom.7z"))
   assert_file_exists(x = paste0(dbpath, "/adb_tables/stage1/example_table.7z"))
-  assert_file_exists(x = paste0(dbpath, "/adb_tables/meta/schemas/example_schema.rds"))
+  assert_file_exists(x = paste0(dbpath, "/meta/schemas/example_schema.rds"))
 
 })
 
-test_that("make example DB until setVariables", {
-
-  dbpath <- paste0(tempdir(), "/newDB")
-  makeExampleDB(until = "setVariables", path = dbpath)
-
-  expect_file_exists(x = paste0(dbpath, "/id_commodities.csv"))
-  expect_file_exists(x = paste0(dbpath, "/tt_commodities.csv"))
-  expect_file_exists(x = paste0(dbpath, "/id_territories.csv"))
-  expect_file_exists(x = paste0(dbpath, "/tt_territories.csv"))
-
-})
+# test_that("make example DB until setVariables", {
+#
+#   # dbpath <- paste0(tempdir(), "/newDB")
+#   # makeExampleDB(until = "setVariables", path = dbpath)
+#   #
+#   # expect_file_exists(x = paste0(dbpath, "/id_commodities.csv"))
+#   # expect_file_exists(x = paste0(dbpath, "/tt_commodities.csv"))
+#   # expect_file_exists(x = paste0(dbpath, "/id_territories.csv"))
+#   # expect_file_exists(x = paste0(dbpath, "/tt_territories.csv"))
+#
+# })
 
 test_that("make example DB until regDataseries", {
 

@@ -7,7 +7,7 @@ context("setVariables")
 test_that("setting an imported table works", {
 
   dbpath <- paste0(tempdir(), "/newDB")
-  makeExampleDB(until = "setPath", path = dbpath)
+  makeExampleDB(until = "start_arealDB", path = dbpath)
   inPath <- system.file("test_datasets", package = "arealDB", mustWork = TRUE)
 
   input <- read_csv(file = paste0(inPath, "/id_units.csv"), col_types = "iccc")
@@ -23,7 +23,7 @@ test_that("setting an imported table works", {
 test_that("Error if arguments have wrong value", {
 
   dbpath <- paste0(tempdir(), "/newDB")
-  makeExampleDB(until = "setPath", path = dbpath)
+  makeExampleDB(until = "start_arealDB", path = dbpath)
   inPath <- system.file("test_datasets", package = "arealDB", mustWork = TRUE)
 
   input <- read_csv(file = paste0(inPath, "/id_units.csv"), col_types = "iccc")

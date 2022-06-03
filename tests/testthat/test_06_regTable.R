@@ -37,7 +37,7 @@ test_that("a table inventory entry is produced", {
                                   "schema", "orig_file", "orig_link", "download_date",
                                   "next_update", "update_frequency", "metadata_link",
                                   "metadata_path", "notes"))
-  expect_file_exists(x = paste0(getOption("adb_path"), "/adb_tables/meta/schemas/schema_1.rds"))
+  expect_file_exists(x = paste0(getOption("adb_path"), "/meta/schemas/schema_1.rds"))
 
 })
 
