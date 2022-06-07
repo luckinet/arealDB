@@ -5,8 +5,7 @@
 
 [![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/arealDB)](https://cran.r-project.org/package=arealDB)
 [![R-CMD-check](https://github.com/luckinet/arealDB/workflows/R-CMD-check/badge.svg)](https://github.com/luckinet/arealDB/actions)
-[![Coverage
-Status](https://img.shields.io/codecov/c/github/luckinet/arealDB/master.svg)](https://codecov.io/github/luckinet/arealDB?branch=master)
+[![Codecov test coverage](https://codecov.io/gh/luckinet/arealDB/branch/master/graph/badge.svg)](https://app.codecov.io/gh/luckinet/arealDB?branch=master)
 [![](http://cranlogs.r-pkg.org/badges/grand-total/arealDB)](https://cran.r-project.org/package=arealDB)
 [![Lifecycle:maturing](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://www.tidyverse.org/lifecycle/#maturing)
 
