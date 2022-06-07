@@ -376,7 +376,7 @@ normGeometry <- function(input = NULL, ..., thresh = 10, outType = "gpkg",
           # then get the overlap with the targetGeom
           overlap_with_target <- suppressMessages(suppressWarnings(
             sourceGeom %>%
-              st_buffer(dist = 0)%>% # is needed sometimes to clarify "self-intersection" problems: https://gis.stackexchange.com/questions/163445/getting-topologyexception-input-geom-1-is-invalid-which-is-due-to-self-intersec
+              st_buffer(dist = 0) %>% # is needed sometimes to clarify "self-intersection" problems: https://gis.stackexchange.com/questions/163445/getting-topologyexception-input-geom-1-is-invalid-which-is-due-to-self-intersec
               st_intersection(y = targetGeom) %>%
               mutate(area = as.numeric(st_area(.))) %>%
               arrange(sourceFID) %>%
