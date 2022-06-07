@@ -79,7 +79,7 @@
 #' @importFrom readr read_csv
 #' @importFrom sf st_layers read_sf st_write st_join st_buffer st_equals st_sf
 #'   st_transform st_crs st_crs<- st_geometry_type st_area st_intersection
-#'   st_drivers NA_crs_
+#'   st_drivers NA_crs_ st_is_valid st_make_valid
 #' @importFrom stringr str_split
 #' @importFrom tibble as_tibble
 #' @importFrom tidyr unite
@@ -270,6 +270,12 @@ normGeometry <- function(input = NULL, ..., thresh = 10, outType = "gpkg",
           } else{
             message("  ! The geometry contains only POLYGON features but no unique names to summarise them.")
           }
+        }
+
+        # in case the object is not fully valid (e.g., degenerate edges), make
+        # it valid
+        if(!all(st_is_valid(sourceGeom))){
+          sourceGeom <- st_make_valid(x = sourceGeom)
         }
 
         # file exists? ----
