@@ -79,11 +79,11 @@
     <dl><dt>input</dt>
 <dd><p>[<code>character(1)</code>]<br> path of the file to normalise. If this
 is left empty, all files at stage two as subset by <code>pattern</code> are
-chosen</p></dd>
+chosen.</p></dd>
 <dt>...</dt>
-<dd><p>[<code>list(.)</code>]<br> matching lists that capture the variables by
-which to match and the new column names containing the resulting ID; see
-Details.</p></dd>
+<dd><p>[<code>list(.)</code>]<br> optional spatial subset formed from the
+variables "nation", "un_member", "continent", "region" or "subregion" with
+the respective value, see <code><a href="countries.html">countries</a></code>.</p></dd>
 <dt>source</dt>
 <dd><p>[<code>charcter(1)</code>]<br> the source from which translations of
 terms should be sought. By default the recent <code>"tabID"</code>, but when the
@@ -120,25 +120,17 @@ error-prone data-format but can only be read by R efficiently).</p></dd>
     </div>
     <div id="details">
     <h2>Details</h2>
-    <p>Arguments in <code>...</code> are so-called matching lists. This argument
-  captures three kinds of information:</p><ol><li><p>the 'targetColumn' in that
-  matching list that should be included in the final table in the place of
-  'variable' and</p></li>
-<li><p>the 'targetID' (column name) of that new variable.</p></li>
-</ol><p>targetID = list(variable = targetColumn)</p>
-<p>'variable' must be present as column in <code>input</code> and a table that is
-  named "id_variable.csv" (where 'variable' is replaced by the variable name)
-  must be available in the root directory of the project. This should have
-  been created with <code><a href="setVariables.html">setVariables</a></code>.</p>
-<p>To normalise data tables, this function proceeds as follows:</p><ol><li><p>Read in <code>input</code> and extract initial metadata from the file name.</p></li>
-<li><p>Employ the function <code><a href="https://rdrr.io/pkg/tabshiftr/man/reorganise.html" class="external-link">tabshiftr::reorganise</a></code> to reshape
-  <code>input</code> according to the respective schema description.</p></li>
-<li><p>Match
-  the territorial units in <code>input</code> via <code><a href="matchUnits.html">matchUnits</a></code>.</p></li>
-<li><p>If <code>...</code> has been provided with variables to match, those are matched
-  via <code><a href="matchVars.html">matchVars</a></code>.</p></li>
-<li><p>Harmonise territorial unit names.</p></li>
-<li><p>If <code>update = TRUE</code>, store the processed data table at stage three.</p></li>
+    <p>To normalise data tables, this function proceeds as follows:</p><ol><li><p>Read in <code>input</code> and extract initial metadata from
+  the file name.</p></li>
+<li><p>Employ the function
+  <code><a href="https://rdrr.io/pkg/tabshiftr/man/reorganise.html" class="external-link">tabshiftr::reorganise</a></code> to reshape <code>input</code> according to
+  the respective schema description.</p></li>
+<li><p>Match the territorial units in
+  <code>input</code> via <code><a href="matchUnits.html">matchUnits</a></code>.</p></li>
+<li><p>Harmonise territorial unit
+  names.</p></li>
+<li><p>If <code>update = TRUE</code>, store the processed data table at
+  stage three.</p></li>
 </ol></div>
     <div id="see-also">
     <h2>See also</h2>
@@ -152,9 +144,8 @@ error-prone data-format but can only be read by R efficiently).</p></dd>
 <span class="r-in">  <span class="co"># build the example database</span></span>
 <span class="r-in">  <span class="fu"><a href="makeExampleDB.html">makeExampleDB</a></span><span class="op">(</span>until <span class="op">=</span> <span class="st">"normGeometry"</span>, path <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
 <span class="r-in"></span>
-<span class="r-in">  <span class="co"># normalise all available data tables, harmonising commodities</span></span>
-<span class="r-in">  <span class="co"># according to the FAO commodity list ...</span></span>
-<span class="r-in">  <span class="fu">normTable</span><span class="op">(</span>faoID <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>commodities <span class="op">=</span> <span class="st">"target"</span><span class="op">)</span>, update <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span class="r-in">  <span class="co"># normalise all available data tables ...</span></span>
+<span class="r-in">  <span class="fu">normTable</span><span class="op">(</span>update <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span class="r-in"></span>
 <span class="r-in">  <span class="co"># ... and check the result</span></span>
 <span class="r-in">  <span class="va">output</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"/adb_tables/stage3/Estonia.rds"</span><span class="op">)</span><span class="op">)</span></span>
