@@ -306,12 +306,13 @@ normGeometry <- function(input = NULL, ..., thresh = 10, outType = "gpkg",
             parentGeom <- read_sf(dsn = paste0(intPaths, "/adb_geometries/stage3/", tempNation, ".gpkg"),
                                   layer = sort(targetLayers$name)[theLevel-1],
                                   stringsAsFactors = FALSE)
+
+            if(st_crs(parentGeom)$input == "Undefined Cartesian SRS"){
+              st_crs(parentGeom) <- NA_crs_
+            }
+
           } else {
             parentGeom <- NULL
-          }
-
-          if(st_crs(parentGeom)$input == "Undefined Cartesian SRS"){
-            st_crs(parentGeom) <- NA_crs_
           }
 
           # reproject new geom ----
