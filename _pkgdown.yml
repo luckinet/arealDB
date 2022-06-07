@@ -36,8 +36,9 @@ reference:
   - title: helpers
     contents:
       - getColTypes
+      - get_variable
+      - select_path
       - matchUnits
-      - matchVars
       - testCompressed
       - translateTerms
       - updateTable
