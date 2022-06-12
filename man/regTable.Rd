@@ -5,7 +5,7 @@
 \title{Register a new areal data table}
 \usage{
 regTable(
-  nation = NULL,
+  ...,
   subset = NULL,
   dSeries = NULL,
   gSeries = NULL,
@@ -25,8 +25,8 @@ regTable(
 )
 }
 \arguments{
-\item{nation}{[\code{character(1)}]\cr the nation for which the areal data
-are valid.}
+\item{...}{[\code{character(1)}]\cr name and value of the topmost unit under
+which the table shall be registered.}
 
 \item{subset}{[\code{character(1)}]\cr optional argument to specify which
 subset the file contains. This could be a subset of territorial units (e.g.

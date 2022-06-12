@@ -5,13 +5,16 @@
 \alias{setPath}
 \title{Set the root path}
 \usage{
-start_arealDB(root = NULL)
+start_arealDB(root = NULL, gazetteer = NULL)
 
 setPath(root = NULL)
 }
 \arguments{
 \item{root}{[\code{character(1)}]\cr path to the root directory that contains
 or shall contain an areal database.}
+
+\item{gazetteer}{[\code{character(1)}]\cr path to the gazetteer that holds
+the (hierarchical) information of territorial units used in this database.}
 }
 \value{
 No return value, called for the side effect of creating the
@@ -34,5 +37,7 @@ This is the first function that is run in a project, as it initiates
 }}
 
 \examples{
-start_arealDB(root = tempdir())
+start_arealDB(root = tempdir(),
+              gazetteer = system.file("test_datasets/territories.rds",
+                                      package = "arealDB"))
 }

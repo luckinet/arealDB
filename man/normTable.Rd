@@ -6,12 +6,9 @@
 \usage{
 normTable(
   input = NULL,
-  ...,
-  source = "tabID",
+  outType = "rds",
   pattern = NULL,
   update = FALSE,
-  keepOrig = FALSE,
-  outType = "rds",
   verbose = FALSE
 )
 }
@@ -20,13 +17,10 @@ normTable(
 is left empty, all files at stage two as subset by \code{pattern} are
 chosen.}
 
-\item{...}{[\code{list(.)}]\cr optional spatial subset formed from the
-variables "nation", "un_member", "continent", "region" or "subregion" with
-the respective value, see \code{\link{countries}}.}
-
-\item{source}{[\code{charcter(1)}]\cr the source from which translations of
-terms should be sought. By default the recent \code{"tabID"}, but when the
-same terms occur in several tables of a dataseries, chose \code{"datID"}.}
+\item{outType}{[\code{logical(1)}]\cr the output file-type, currently
+implemented options are either \emph{*.csv} (more exchangeable for a
+workflow based on several programs) or \emph{*.rds} (smaller and less
+error-prone data-format but can only be read by R efficiently).}
 
 \item{pattern}{[\code{character(1)}]\cr an optional regular expression. Only
 dataset names which match the regular expression will be returned.}
@@ -36,15 +30,6 @@ be updated (\code{TRUE}) or the function should merely return the new
 object (\code{FALSE}, default). This is helpful to check whether the
 metadata specification and the provided file(s) (translation and ID tables)
 are properly specified.}
-
-\item{keepOrig}{[\code{logical(1)}]\cr to keep the original units and
-variable names in the output (\code{TRUE}) or to remove them (\code{FALSE},
-default). Useful for debugging.}
-
-\item{outType}{[\code{logical(1)}]\cr the output file-type, currently
-implemented options are either \emph{*.csv} (more exchangeable for a
-workflow based on several programs) or \emph{*.rds} (smaller and less
-error-prone data-format but can only be read by R efficiently).}
 
 \item{verbose}{[\code{logical(1)}]\cr be verbose about translating terms
 (default \code{FALSE}). Furthermore, you can use
@@ -65,7 +50,7 @@ To normalise data tables, this function proceeds as follows:
   the file name. \item Employ the function
   \code{tabshiftr::\link{reorganise}} to reshape \code{input} according to
   the respective schema description. \item Match the territorial units in
-  \code{input} via \code{\link{matchUnits}}. \item Harmonise territorial unit
+  \code{input} via . \item Harmonise territorial unit
   names. \item If \code{update = TRUE}, store the processed data table at
   stage three.}
 }

@@ -6,10 +6,9 @@
 \usage{
 normGeometry(
   input = NULL,
-  ...,
+  pattern = NULL,
   thresh = 10,
   outType = "gpkg",
-  pattern = NULL,
   update = FALSE,
   verbose = FALSE
 )
@@ -19,10 +18,8 @@ normGeometry(
 is left empty, all files at stage two as subset by \code{pattern} are
 chosen.}
 
-\item{...}{[\code{character(.)}]\cr a subset of administrative units as given
-by \code{nation}, \code{continent}, \code{region}, \code{subregion} or
-\code{un_member = TRUE/FALSE}. Valid selection criteria and their values
-are in the object \code{\link{countries}}.}
+\item{pattern}{[\code{character(1)}]\cr an optional regular expression. Only
+dataset names which match the regular expression will be returned.}
 
 \item{thresh}{[\code{integerish(1)}]\cr the deviation of percentage of
 overlap above which to consider two territorial units "different".}
@@ -32,9 +29,6 @@ overlap above which to consider two territorial units "different".}
 are stored in the same file, otherwise the different layers are provided
 separately. For an R-based workflow, \code{"rds"} could be an efficient
 option.}
-
-\item{pattern}{[\code{character(1)}]\cr an optional regular expression. Only
-dataset names which match the regular expression will be returned.}
 
 \item{update}{[\code{logical(1)}]\cr whether or not the physical files should
 be updated (\code{TRUE}) or the function should merely return the geometry

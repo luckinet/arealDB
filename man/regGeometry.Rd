@@ -5,7 +5,7 @@
 \title{Register a new geometry entry}
 \usage{
 regGeometry(
-  nation = NULL,
+  ...,
   subset = NULL,
   gSeries = NULL,
   level = NULL,
@@ -21,8 +21,10 @@ regGeometry(
 )
 }
 \arguments{
-\item{nation}{[\code{character(1)}]\cr either the nation name or the column
-of the file's attribute table that contains nations.}
+\item{...}{[\code{character(1)}]\cr named argument selecting the main
+territory into which this geometry is nested. The name of this must be a
+class of the territory-ontology and the value must be one of the territory
+names of that class, e.g. \emph{nation = "Argentina"}.}
 
 \item{subset}{[\code{character(1)}]\cr optional argument to specify which
 subset the file contains. This could be a subset of territorial units (e.g.
