@@ -4,12 +4,6 @@
 #' @param input [\code{character(1)}]\cr path of the file to normalise. If this
 #'   is left empty, all files at stage two as subset by \code{pattern} are
 #'   chosen.
-#' @param ... [\code{list(.)}]\cr optional spatial subset formed from the
-#'   variables "nation", "un_member", "continent", "region" or "subregion" with
-#'   the respective value, see \code{\link{countries}}.
-#' @param source [\code{charcter(1)}]\cr the source from which translations of
-#'   terms should be sought. By default the recent \code{"tabID"}, but when the
-#'   same terms occur in several tables of a dataseries, chose \code{"datID"}.
 #' @param pattern [\code{character(1)}]\cr an optional regular expression. Only
 #'   dataset names which match the regular expression will be returned.
 #' @param update [\code{logical(1)}]\cr whether or not the physical files should
@@ -17,9 +11,6 @@
 #'   object (\code{FALSE}, default). This is helpful to check whether the
 #'   metadata specification and the provided file(s) (translation and ID tables)
 #'   are properly specified.
-#' @param keepOrig [\code{logical(1)}]\cr to keep the original units and
-#'   variable names in the output (\code{TRUE}) or to remove them (\code{FALSE},
-#'   default). Useful for debugging.
 #' @param outType [\code{logical(1)}]\cr the output file-type, currently
 #'   implemented options are either \emph{*.csv} (more exchangeable for a
 #'   workflow based on several programs) or \emph{*.rds} (smaller and less
@@ -32,7 +23,7 @@
 #'   the file name. \item Employ the function
 #'   \code{tabshiftr::\link{reorganise}} to reshape \code{input} according to
 #'   the respective schema description. \item Match the territorial units in
-#'   \code{input} via \code{\link{matchUnits}}. \item Harmonise territorial unit
+#'   \code{input} via . \item Harmonise territorial unit
 #'   names. \item If \code{update = TRUE}, store the processed data table at
 #'   stage three.}
 #' @family normalisers
@@ -52,9 +43,10 @@
 #'   output <- readRDS(paste0(tempdir(), "/adb_tables/stage3/Estonia.rds"))
 #' }
 #' @importFrom checkmate assertNames assertFileExists assertLogical
-#' @importFrom rlang exprs
+#' @importFrom ontologics load_ontology
+#' @importFrom rlang exprs :=
 #' @importFrom tabshiftr reorganise
-#' @importFrom dplyr mutate select pull full_join
+#' @importFrom dplyr mutate select pull full_join bind_rows
 #' @importFrom magrittr %>%
 #' @importFrom readr read_csv cols
 #' @importFrom stringr str_split
@@ -62,12 +54,14 @@
 #' @importFrom utils read.csv
 #' @export
 
-normTable <- function(input = NULL, ..., source = "tabID", pattern = NULL,
-                      update = FALSE, keepOrig = FALSE, outType = "rds",
-                      verbose = FALSE){
+normTable <- function(input = NULL, outType = "rds", pattern = NULL,
+                      update = FALSE, verbose = FALSE){
+
+  # input <- NULL; outType = "rds"; pattern = NULL; update = TRUE; verbose = FALSE
 
   # set internal paths
   intPaths <- getOption(x = "adb_path")
+  gazPath <- paste0(getOption(x = "gazetteer_path"))
 
   if(is.null(input)){
     input <- list.files(path = paste0(intPaths, "/adb_tables/stage2"), full.names = TRUE, pattern = pattern)
@@ -75,38 +69,31 @@ normTable <- function(input = NULL, ..., source = "tabID", pattern = NULL,
     assertFileExists(x = input, access = "r")
   }
 
-  # get objects
+  # set internal objects
+  moveFile <- TRUE
+
+  # get tables
   inv_tables <- read_csv(paste0(intPaths, "/inv_tables.csv"), col_types = "iiiccccDccccc")
   inv_dataseries <- read_csv(paste0(intPaths, "/inv_dataseries.csv"), col_types = "icccccc")
-  vars <- exprs(..., .named = TRUE)
-
-  # return(vars)
-
-  if(update){
-    if(keepOrig){
-      warning("to ensure database consistency, non-standard columns are removed (keepOrig = FALSE).\n-> Set update = FALSE to keep all original columns.\n")
-      keepOrig <- FALSE
-    }
-  }
-
-  # make spatial subset
-  spatSub <- c("nation", "un_member", "continent", "region", "subregion")
-  if(any(names(vars) %in% spatSub)){
-    subsets <- vars[names(vars) %in% spatSub]
-    vars <- vars[!names(vars) %in% spatSub]
-  } else {
-    subsets <- NULL
-  }
+  inv_geometries <- read_csv(paste0(intPaths, "/inv_geometries.csv"), col_types = "iiicccccDDcc")
+  gazetteer <- load_ontology(ontoDir = gazPath) %>%
+    rowwise() %>%
+    mutate(level = str_split(code, "[.]", simplify = TRUE) %>% length())
 
   # check validity of arguments
-  assertNames(x = colnames(inv_tables), permutation.of = c("tabID", "geoID", "datID", "source_file",
-                                                           "schema", "orig_file", "orig_link", "download_date",
-                                                           "next_update", "update_frequency", "metadata_link",
-                                                           "metadata_path", "notes"))
+  assertNames(x = colnames(inv_tables),
+              permutation.of = c("tabID", "datID", "geoID", "source_file", "schema",
+                                 "orig_file", "orig_link", "download_date", "next_update",
+                                 "update_frequency", "metadata_link", "metadata_path", "notes"))
+  assertNames(x = colnames(inv_dataseries),
+              permutation.of = c("datID", "name", "description", "homepage",
+                                 "licence_link", "licence_path", "notes"))
+  assertNames(x = colnames(inv_geometries),
+              permutation.of = c("geoID", "datID", "level", "source_file", "layer",
+                                 "hierarchy", "orig_file", "orig_link", "download_date",
+                                 "next_update", "update_frequency", "notes"))
   assertLogical(x = update, len = 1)
   assertNames(x = outType, subset.of = c("csv", "rds"))
-  assertChoice(x = source, choices = c("tabID", "datID"))
-  assertList(x = vars)
 
   ret <- NULL
   for(i in seq_along(input)){
@@ -128,8 +115,15 @@ normTable <- function(input = NULL, ..., source = "tabID", pattern = NULL,
     # get some variables
     lut <- inv_tables[grep(pattern = paste0("^", file_name, "$"), x = inv_tables$source_file),]
     if(file_name %in% lut$source_file){
-      newGID <- lut$geoID
+      geoID <- lut$geoID
+      tabID <- lut$tabID
       thisSchema <- lut$schema
+
+      dSeries <- inv_dataseries$name[inv_dataseries$datID == lut$datID]
+
+      oldNames <- str_split(string = inv_geometries$hierarchy[inv_geometries$geoID == geoID],
+                            pattern = "\\|")[[1]]
+      unitCols <- unique(gazetteer$class[gazetteer$level %in% 1:length(oldNames)])
     } else{
       stop(paste0("  ! the file '", file_name, "' has not been registered yet."))
     }
@@ -137,59 +131,6 @@ normTable <- function(input = NULL, ..., source = "tabID", pattern = NULL,
     algorithm = readRDS(file = paste0(intPaths, "/meta/schemas/", thisSchema, ".rds"))
     if(!exists(x = "algorithm")){
       stop(paste0("please create the schema desciption '", algorithm, "' for the file '", file_name, "'.\n  --> See '?meta_default' for details"))
-    }
-    joinVars <- unlist(lapply(seq_along(algorithm@variables), function(x){
-      if(algorithm@variables[[x]]$type == "id"){
-        theName <- names(algorithm@variables)[[x]]
-        if(!grepl(pattern = "al\\d", x = theName)){
-          theName
-        }
-      }
-    }))
-
-    # get some variables
-    tabID <- ifelse(length(inv_tables$tabID) == 0, 1,
-                    inv_tables$tabID[grep(pattern = file_name, x = inv_tables$source_file)])
-    geoID <- ifelse(length(inv_tables$geoID) == 0, 1,
-                    inv_tables$geoID[grep(pattern = file_name, x = inv_tables$source_file)])
-    datID <- ifelse(length(inv_tables$datID) == 0, 1,
-                    inv_tables$datID[grep(pattern = file_name, x = inv_tables$source_file)])
-    joinVars <- c("tabID", "geoID", joinVars)
-
-    # potentially subset nation values
-    if(length(subsets) > 0){
-      assertChoice(x = names(subsets), choices = c("nation", "un_member", "continent", "region", "subregion"))
-
-      # unify also the nations with which to subset
-      if(any(names(subsets) == "nation")){
-        toUnify <- eval(subsets[[which(names(subsets) == "nation")]])
-        unified <- translateTerms(terms = toUnify,
-                                  index = "tt_nations",
-                                  source = list("tabID" = tabID),
-                                  verbose = verbose) %>%
-          pull(target)
-        subsets[[which(names(subsets) == "nation")]] <- unified
-      }
-      subNations <- countries %>%
-        filter_at(vars(!!names(subsets)), any_vars(. %in% as.character(subsets[[1]]))) %>%
-        pull(nation)
-
-
-      if(nchar(fields[1]) != 0){
-        theNation <- countries %>%
-          as_tibble() %>%
-          filter(nation == subNations) %>%
-          select(iso_a3) %>%
-          tolower()
-
-        if(fields[1] != theNation){
-          message("\n  ! the file is not part of the subset '", paste0(subNations, collapse = ", "), "'.")
-          next
-        }
-      }
-
-    } else {
-      subNations <- NULL
     }
 
     # reorganise data
@@ -201,159 +142,63 @@ normTable <- function(input = NULL, ..., source = "tabID", pattern = NULL,
     temp <- thisTable %>%
       reorganise(schema = algorithm)
 
-    # make al1 if it doesn't extist (is needed below for subsetting by nation)
-    if(!"al1" %in% names(temp)){
-      message("    reconstructing 'al1' ...")
-      if(nchar(fields[1]) == 0){
-        stop("  ! the data table '", file_name, "' seems to include several nations but the schema description doesn't contain the variable 'al1'.")
-      } else {
-        temp$al1 <- countries$unit[which(countries$iso_a3 == toupper(fields[1]))]
-        temp <- temp %>% select(al1, everything())
-      }
-    }
+    message("    harmonising territory names ...")
+    temp <- match_gazetteer(table = temp, columns = unitCols, dataseries = dSeries, from_meta = FALSE)
+    # re-load gazetteer (to contain also updates)
+    gazetteer <- load_ontology(ontoDir = gazPath) %>%
+      rowwise() %>%
+      mutate(level = str_split(code, "[.]", simplify = TRUE) %>% length())
 
     temp <- temp %>%
-      filter_at(vars(starts_with("al")), all_vars(!is.na(.))) %>%
       mutate(tabID = tabID,
              geoID = geoID)
 
-    if(source == "tabID"){
-      theSource <- list("tabID" = tabID)
-    } else {
-      theSource <- list("datID" = inv_tables$datID[inv_tables$tabID %in% tabID])
-    }
-
-
-    ################### move this also to an ontology (and not use translateTerms anymore)
-
-    # translate nations in input
-    message("    harmonising nation names ...")
-    nations <- translateTerms(terms = unique(temp$al1),
-                              index = "tt_nations",
-                              source = list("geoID" = geoID),
-                              limit = subNations,
-                              verbose = verbose) %>%
-      filter(!target %in% c("ignore", "missing")) %>%
-      select(target, origin)
-
-    temp <- left_join(temp, nations, by = c("al1" = "origin")) %>%
-      select(-al1) %>%
-      filter(!is.na(target)) %>%
-      select(al1 = target, everything())
-
-    temp_units <- temp %>%
-      matchUnits(source = theSource)
-    joinVars <- c("ahID", joinVars)
-
-    ###################
-
-
-    if(!is.null(subNations)){
-      temp <- temp %>%
-        filter(al1 %in% subNations)
-
-      # if there no more elements, jump to next 'input'
-      if(dim(temp)[1] == 0){
-        message("  ! the file is not part of the subset '", paste0(subNations, collapse = ", "), "'.")
-        next
-      }
-
-      if(nchar(fields[1]) != 0){
-        moveFile <- TRUE
-      } else {
-        moveFile <- FALSE
-      }
-    } else {
-      moveFile <- TRUE
-    }
-
-
-    # if a matching list for other variables is defined, match those
-    # if(length(vars) != 0){
-    #   joinVars <- tibble(orig = joinVars) %>%
-    #     mutate(new = if_else(orig %in% names(vars[[1]]), names(vars), orig)) %>%
-    #     pull(new)
-    #   message()
-    #   temp_all <- temp_units %>%
-    #     matchVars(source = theSource, !!!vars)
-    # } else {
-      # temp_all <- temp_units
-    # }
-
-    temp <- temp_units %>%
-      select(tabID, geoID, ahID, everything())
-
-    # in case the user wants to update, update the data table
-    if(length(vars) == 0) {
-      outVars <- c("tabID", "geoID", "ahID", names(vars), names(algorithm@variables)[-c(grep("al", names(algorithm@variables)))])
-    } else {
-      varNames <- names(algorithm@variables)
-      outVars <- c("tabID", "geoID", "ahID", names(vars), varNames[!varNames %in% c(grep("al", names(algorithm@variables), value = TRUE), names(vars[[1]]))])
-    }
-
-    # if(!keepOrig){
-    #
-    #   tempOut <- temp %>%
-    #     select(all_of(outVars)) %>%
-    #     filter_at(.vars = outVars, all_vars(!is.na(.)))
-    #
-    # } else {
-
-    tempOut <- temp  %>%
-      select(all_of(outVars), everything())
-
-    # }
-
-
+    # produce output
     if(update){
 
-      theNations <- temp %>%
-        filter(!is.na(ahID)) %>%
-        pull(al1_name) %>%
+      topUnits <- temp %>%
+        pull(unitCols[1]) %>%
         unique()
 
-      for(j in seq_along(theNations)){
+      for(j in seq_along(topUnits)){
 
         tempOut <- temp %>%
-          filter(al1_name == theNations[j])
-        tempOut <- tempOut %>%
-          select(all_of(outVars)) %>%
-          filter_at(.vars = outVars, all_vars(!is.na(.)))
+          filter(.data[[unitCols[1]]] == topUnits[j]) %>%
+          left_join(gazetteer %>% select(code, !!unitCols[length(unitCols)] := label_en)) %>%
+          unite(col = "ahName", all_of(unitCols), sep = ".") %>%
+          mutate(id = seq_along(ahName)) %>%
+          select(id, ahName, ahID = code, tabID, geoID, everything()) %>%
+          distinct()
 
         # append output to previous file
-        avail <- list.files(path = paste0(intPaths, "/adb_tables/stage3/"), pattern = paste0("^", theNations[j], "."))
+        avail <- list.files(path = paste0(intPaths, "/adb_tables/stage3/"), pattern = paste0("^", topUnits[j], "."))
 
         if(length(avail) == 1){
 
           if(outType == "csv"){
-            prevData <- read_csv(file = paste0(intPaths, "/adb_tables/stage3/", theNations[j], ".csv"),
+            prevData <- read_csv(file = paste0(intPaths, "/adb_tables/stage3/", topUnits[j], ".csv"),
                                  col_types = cols(id = "i", tabID = "i", geoID = "i", ahID = "c", year = "c", .default = "d"))
           } else {
-            prevData <- readRDS(file = paste0(intPaths, "/adb_tables/stage3/", theNations[j], ".rds"))
+            prevData <- readRDS(file = paste0(intPaths, "/adb_tables/stage3/", topUnits[j], ".rds"))
           }
+
+
           out <- tempOut %>%
             bind_rows(prevData, .) %>%
-            select(-id) %>%
-            distinct() %>%
-            mutate(id = seq_along(year)) %>%
-            select(id, everything())
-
-        } else if(length(avail > 1)){
-          # stop("the nation '", theNations[j], "' exists several times in the output folder '/adb_tablse/stage3/'.")
+            mutate(id = seq_along(ahName))
+        } else if(length(avail) > 1){
+          # stop("the nation '", topUnits[j], "' exists several times in the output folder '/adb_tablse/stage3/'.")
         } else {
-          out <- tempOut %>%
-            distinct() %>%
-            mutate(id = seq_along(year)) %>%
-            select(id, everything())
+          out <- tempOut
         }
 
         # write file to 'stage3' and move to folder 'processed'
         if(outType == "csv"){
           write_csv(x = out,
-                    file = paste0(intPaths, "/adb_tables/stage3/", theNations[j], ".csv"),
+                    file = paste0(intPaths, "/adb_tables/stage3/", topUnits[j], ".csv"),
                     na = "")
         } else if(outType == "rds"){
-          saveRDS(object = out, file = paste0(intPaths, "/adb_tables/stage3/", theNations[j], ".rds"))
+          saveRDS(object = out, file = paste0(intPaths, "/adb_tables/stage3/", topUnits[j], ".rds"))
         }
       }
 
@@ -365,7 +210,7 @@ normTable <- function(input = NULL, ..., source = "tabID", pattern = NULL,
 
     }
 
-    ret <- bind_rows(ret, tempOut)
+    ret <- bind_rows(ret, out)
 
     gc()
 

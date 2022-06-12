@@ -4,6 +4,8 @@
 #' path.
 #' @param root [\code{character(1)}]\cr path to the root directory that contains
 #'   or shall contain an areal database.
+#' @param gazetteer [\code{character(1)}]\cr path to the gazetteer that holds
+#'   the (hierarchical) information of territorial units used in this database.
 #' @details This is the first function that is run in a project, as it initiates
 #'   the areal database by creating the default sub-directories and initial
 #'   inventory tables. When a database has already been set up, this function is
@@ -12,14 +14,19 @@
 #'   directory structure of the new areal database and a new environment that
 #'   contains the database metadata.
 #' @examples
-#' start_arealDB(root = tempdir())
+#' start_arealDB(root = tempdir(),
+#'               gazetteer = system.file("test_datasets/territories.rds",
+#'                                       package = "arealDB"))
 #' @importFrom checkmate testDirectory testFileExists
 #' @importFrom readr write_csv
 #' @export
 
-start_arealDB <- function(root = NULL){
+start_arealDB <- function(root = NULL, gazetteer = NULL){
 
   assertCharacter(x = root, len = 1)
+  if(!getOption("adb_testing")){
+    assertFileExists(x = gazetteer, access = "rw", extension = "rds")
+  }
 
   # shitty windows workaround, because a directory may not have a trailing slash
   # for the function "file.exists()" used in assertDirectory()
@@ -31,7 +38,6 @@ start_arealDB <- function(root = NULL){
   # test whether the required directories exist and create them if they don't exist
   if(!testDirectory(x = root, access = "rw")){
     dir.create(file.path(root))
-    # message("I have created a new project directory.\n  -> please run 'setVariables()' to create a translation table for territories.")
     message("I have created a new project directory.")
   }
 
@@ -53,8 +59,8 @@ start_arealDB <- function(root = NULL){
   if(!testDirectory(x = file.path(root, "meta", "schemas"), access = "rw")){
     dir.create(file.path(root, "meta", "schemas"))
   }
-  if(!testDirectory(x = file.path(root, "meta", "translation_tables"), access = "rw")){
-    dir.create(file.path(root, "meta", "translation_tables"))
+  if(!testDirectory(x = file.path(root, "meta", "concepts"), access = "rw")){
+    dir.create(file.path(root, "meta", "concepts"))
   }
 
   if(!testDirectory(x = file.path(root, "adb_tables", "stage1"), access = "rw")){
@@ -96,6 +102,7 @@ start_arealDB <- function(root = NULL){
               file = paste0(root, "/inv_dataseries.csv"),
               na = "")
   }
+
   if(!testFileExists(x = file.path(root, "inv_tables.csv"))){
     census <- tibble(tabID = integer(),
                      geoID = integer(),
@@ -114,14 +121,14 @@ start_arealDB <- function(root = NULL){
               file = paste0(root, "/inv_tables.csv"),
               na = "")
   }
+
   if(!testFileExists(x = file.path(root, "inv_geometries.csv"))){
     geometries <- tibble(geoID = integer(),
                          datID = integer(),
                          level = integer(),
                          source_file = character(),
                          layer = character(),
-                         nation_column = character(),
-                         unit_column = character(),
+                         hierarchy = character(),
                          orig_file = character(),
                          orig_link = character(),
                          download_date = date(),
@@ -133,22 +140,11 @@ start_arealDB <- function(root = NULL){
               na = "")
   }
 
-  # and also the translation table for nations
-  if(!testFileExists(x = paste0(root, "/tt_nations.csv"))){
-    tt_nations <- tibble(origin = NA_character_,
-                         target = countries$unit,
-                         source = "original",
-                         ID = NA_character_,
-                         notes = NA_character_)
-    write_csv(x = tt_nations,
-              file = paste0(root, "/tt_nations.csv"),
-              na = "")
-  }
-
   oldOptions <- options()
   on.exit(options(oldOptions))
 
   options(adb_path = root)
+  options(gazetteer_path = gazetteer)
 }
 
 
