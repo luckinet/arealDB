@@ -51,10 +51,12 @@ Imports:
     rlang,
     sf,
     stringr,
-    tibble, 
+    tibble,
     tidyr,
     tidyselect,
-    tabshiftr
+    tabshiftr,
+    ontologics,
+    purrr
 Suggests: 
     testthat,
     knitr,
