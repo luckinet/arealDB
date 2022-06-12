@@ -24,15 +24,16 @@
 #' }
 #' @importFrom checkmate assertChoice testDirectoryExists
 #' @importFrom readr read_csv
+#' @importFrom ontologics get_concept new_concept set_mapping
 #' @importFrom tabshiftr setFormat setIDVar setObsVar
 #' @export
 
 makeExampleDB <- function(path = NULL, until = NULL, verbose = FALSE){
 
-  # library(arealDB); library(tabshiftr); library(checkmate); library(tidyverse)
+  # library(arealDB); library(tabshiftr); library(checkmate); library(tidyverse); library(sf); library(tools); library(ontologics); path <- paste0(tempdir(), "/newDB"); until = "normTable"; verbose = FALSE
 
   inPath <- system.file("test_datasets", package = "arealDB", mustWork = TRUE)
-  steps <- c("start_arealDB", "setVariables", "regDataseries", "regGeometry", "regTable", "normGeometry", "normTable")
+  steps <- c("start_arealDB", "match_gazetter", "regDataseries", "regGeometry", "regTable", "normGeometry", "normTable")
   if (is.null(until)) {
     until <- "normTable"
   }
@@ -42,6 +43,7 @@ makeExampleDB <- function(path = NULL, until = NULL, verbose = FALSE){
     unlink(path, recursive = TRUE)
   }
 
+  terrOnto <- paste0(path, "/territories.rds")
   theSteps <- steps[1:which(steps %in% until)]
 
   # enable testing, this inserts values to readLine() calls that would otherwise
@@ -51,16 +53,16 @@ makeExampleDB <- function(path = NULL, until = NULL, verbose = FALSE){
   options(adb_testing = TRUE)
 
   if (any(theSteps %in% "start_arealDB")) {
-    start_arealDB(root = path)
+    start_arealDB(root = path, gazetteer = terrOnto)
   }
 
+  # load input data
   file.copy(from = paste0(inPath, "/example_geom.7z"),
             to = paste0(path, "/adb_geometries/stage1/example_geom.7z"))
   file.copy(from = paste0(inPath, "/example_table.7z"),
             to = paste0(path, "/adb_tables/stage1/example_table.7z"))
-  file.copy(from = paste0(inPath, "/example_schema.rds"),
-            to = paste0(path, "/meta/schemas/example_schema.rds"))
 
+  # load geometries
   file.copy(from = paste0(inPath, "/example_geom1.gpkg"),
             to = paste0(path, "/adb_geometries/stage2/_1__gadm.gpkg"))
   file.copy(from = paste0(inPath, "/example_geom2.gpkg"),
@@ -70,25 +72,25 @@ makeExampleDB <- function(path = NULL, until = NULL, verbose = FALSE){
   file.copy(from = paste0(inPath, "/example_geom4.gpkg"),
             to = paste0(path, "/adb_geometries/stage2/_3__madeUp.gpkg"))
 
+  # load tables (and schema)
+  file.copy(from = paste0(inPath, "/example_schema.rds"),
+            to = paste0(path, "/meta/schemas/example_schema.rds"))
   file.copy(from = paste0(inPath, "/example_table1.csv"),
-            to = paste0(path, "/adb_tables/stage2/est_1_barleyMaize_1990_2017_madeUp.csv"))
+            to = paste0(path, "/adb_tables/stage2/_1_barleyMaize_1990_2017_madeUp.csv"))
   file.copy(from = paste0(inPath, "/example_table2.csv"),
-            to = paste0(path, "/adb_tables/stage2/est_2_barleyMaize_1990_2017_madeUp.csv"))
+            to = paste0(path, "/adb_tables/stage2/aNation_2_barleyMaize_1990_2017_madeUp.csv"))
 
-  file.copy(from = paste0(inPath, "/id_territories.csv"),
-            to = paste0(path, "/id_territories.csv"))
-  file.copy(from = paste0(inPath, "/tt_territories.csv"),
-            to = paste0(path, "/tt_territories.csv"))
+  # load gazetteer
+  if(any(theSteps %in% "match_gazetter")){
+    file.copy(from = paste0(inPath, "/territories.rds"),
+              to = terrOnto)
+    file.copy(from = paste0(inPath, "/match_madeUp.csv"),
+              to = paste0(path, "/meta/concepts/match_madeUp.csv"))
+    file.copy(from = paste0(inPath, "/match_gadm.csv"),
+              to = paste0(path, "/meta/concepts/match_gadm.csv"))
 
-  # if (any(theSteps %in% "setVariables")) {
-    # territories <- read_csv(file = paste0(inPath, "/id_units.csv"), col_types = "iccc")
-    # setVariables(input = territories, variable = "territories",
-    #              pid = "anID", origin = "origin", target = "names")
-
-    # comm <- read_csv(file = paste0(inPath, "/id_commodities.csv"), col_types = "iccc")
-    # setVariables(input = comm, variable = "commodities",
-                 # pid = "faoID", target = "simpleName")
-  # }
+    match_gazetteer(from_meta = TRUE)
+  }
 
   if (any(theSteps %in% "regDataseries")) {
     regDataseries(name = "gadm",
@@ -106,8 +108,7 @@ makeExampleDB <- function(path = NULL, until = NULL, verbose = FALSE){
 
   if(any(theSteps %in% "regGeometry")){
 
-    regGeometry(nation = "NAME_0",
-                gSeries = "gadm",
+    regGeometry(gSeries = "gadm",
                 level = 1,
                 layer = "example_geom1",
                 nameCol = "NAME_0",
@@ -117,8 +118,7 @@ makeExampleDB <- function(path = NULL, until = NULL, verbose = FALSE){
                 updateFrequency = "quarterly",
                 update = TRUE)
 
-    regGeometry(nation = "NAME_0",
-                gSeries = "gadm",
+    regGeometry(gSeries = "gadm",
                 level = 2,
                 layer = "example_geom2",
                 nameCol = "NAME_0|NAME_1",
@@ -128,8 +128,7 @@ makeExampleDB <- function(path = NULL, until = NULL, verbose = FALSE){
                 updateFrequency = "quarterly",
                 update = TRUE)
 
-    regGeometry(nation = "NAME_0",
-                gSeries = "gadm",
+    regGeometry(gSeries = "gadm",
                 level = 3,
                 layer = "example_geom3",
                 nameCol = "NAME_0|NAME_1|NAME_2",
@@ -139,8 +138,7 @@ makeExampleDB <- function(path = NULL, until = NULL, verbose = FALSE){
                 updateFrequency = "quarterly",
                 update = TRUE)
 
-    regGeometry(nation = "NAME_0",
-                gSeries = "madeUp",
+    regGeometry(gSeries = "madeUp",
                 level = 3,
                 layer = "example_geom4",
                 nameCol = "NAME_0|NAME_1|NAME_2",
@@ -155,7 +153,7 @@ makeExampleDB <- function(path = NULL, until = NULL, verbose = FALSE){
   if(any(theSteps %in% "regTable")){
 
     meta_madeUp_1 <- tabshiftr::schema_default %>%
-      setIDVar(name = "al1", columns = 1) %>%
+      setIDVar(name = "nation", columns = 1) %>%
       setIDVar(name = "year", columns = 2) %>%
       setIDVar(name = "commodities", columns = 3) %>%
       setObsVar(name = "harvested", unit = "ha", columns = 4) %>%
@@ -163,15 +161,14 @@ makeExampleDB <- function(path = NULL, until = NULL, verbose = FALSE){
 
     meta_madeUp_2 <- tabshiftr::schema_default %>%
       setFormat(decimal = ".", na_values = c("", "NA")) %>%
-      setIDVar(name = "al1", columns = 1) %>%
-      setIDVar(name = "al2", columns = 2) %>%
+      setIDVar(name = "nation", columns = 1) %>%
+      setIDVar(name = "county", columns = 2) %>%
       setIDVar(name = "year", columns = 3) %>%
       setIDVar(name = "commodities", columns = 4) %>%
       setObsVar(name = "harvested", unit = "ha", columns = 5) %>%
       setObsVar(name = "production", unit = "t", columns = 6)
 
-    regTable(nation = "Estonia",
-             subset = "barleyMaize",
+    regTable(subset = "barleyMaize",
              dSeries = "madeUp",
              gSeries = "gadm",
              level = 1,
@@ -186,7 +183,7 @@ makeExampleDB <- function(path = NULL, until = NULL, verbose = FALSE){
              metadataPath = "my/local/path",
              update = TRUE)
 
-    regTable(nation = "Estonia",
+    regTable(nation = "aNation",
              subset = "barleyMaize",
              dSeries = "madeUp",
              gSeries = "gadm",
@@ -204,9 +201,9 @@ makeExampleDB <- function(path = NULL, until = NULL, verbose = FALSE){
 
   }
 
+  # ... and then try to read them in via match_gazetteer above
   if(any(theSteps %in% "normGeometry")){
-    normGeometry(nation = "Estonia",
-                 update = TRUE, verbose = verbose)
+    normGeometry(update = TRUE, verbose = verbose)
   }
 
   if(any(theSteps %in% "normTable")){
