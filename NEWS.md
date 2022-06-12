@@ -1,3 +1,5 @@
+# arealDB 0.4.0
+
 # arealDB 0.3.9
  
 * bugfix of access-rights management
