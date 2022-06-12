@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">arealDB</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.10</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.4.0</span>
       </span>
     </div>
 
@@ -64,12 +64,9 @@
     <div id="ref-usage">
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">normTable</span><span class="op">(</span>
   input <span class="op">=</span> <span class="cn">NULL</span>,
-  <span class="va">...</span>,
-  source <span class="op">=</span> <span class="st">"tabID"</span>,
+  outType <span class="op">=</span> <span class="st">"rds"</span>,
   pattern <span class="op">=</span> <span class="cn">NULL</span>,
   update <span class="op">=</span> <span class="cn">FALSE</span>,
-  keepOrig <span class="op">=</span> <span class="cn">FALSE</span>,
-  outType <span class="op">=</span> <span class="st">"rds"</span>,
   verbose <span class="op">=</span> <span class="cn">FALSE</span>
 <span class="op">)</span></code></pre></div>
     </div>
@@ -80,14 +77,11 @@
 <dd><p>[<code>character(1)</code>]<br> path of the file to normalise. If this
 is left empty, all files at stage two as subset by <code>pattern</code> are
 chosen.</p></dd>
-<dt>...</dt>
-<dd><p>[<code>list(.)</code>]<br> optional spatial subset formed from the
-variables "nation", "un_member", "continent", "region" or "subregion" with
-the respective value, see <code><a href="countries.html">countries</a></code>.</p></dd>
-<dt>source</dt>
-<dd><p>[<code>charcter(1)</code>]<br> the source from which translations of
-terms should be sought. By default the recent <code>"tabID"</code>, but when the
-same terms occur in several tables of a dataseries, chose <code>"datID"</code>.</p></dd>
+<dt>outType</dt>
+<dd><p>[<code>logical(1)</code>]<br> the output file-type, currently
+implemented options are either <em>*.csv</em> (more exchangeable for a
+workflow based on several programs) or <em>*.rds</em> (smaller and less
+error-prone data-format but can only be read by R efficiently).</p></dd>
 <dt>pattern</dt>
 <dd><p>[<code>character(1)</code>]<br> an optional regular expression. Only
 dataset names which match the regular expression will be returned.</p></dd>
@@ -97,15 +91,6 @@ be updated (<code>TRUE</code>) or the function should merely return the new
 object (<code>FALSE</code>, default). This is helpful to check whether the
 metadata specification and the provided file(s) (translation and ID tables)
 are properly specified.</p></dd>
-<dt>keepOrig</dt>
-<dd><p>[<code>logical(1)</code>]<br> to keep the original units and
-variable names in the output (<code>TRUE</code>) or to remove them (<code>FALSE</code>,
-default). Useful for debugging.</p></dd>
-<dt>outType</dt>
-<dd><p>[<code>logical(1)</code>]<br> the output file-type, currently
-implemented options are either <em>*.csv</em> (more exchangeable for a
-workflow based on several programs) or <em>*.rds</em> (smaller and less
-error-prone data-format but can only be read by R efficiently).</p></dd>
 <dt>verbose</dt>
 <dd><p>[<code>logical(1)</code>]<br> be verbose about translating terms
 (default <code>FALSE</code>). Furthermore, you can use
@@ -126,7 +111,7 @@ error-prone data-format but can only be read by R efficiently).</p></dd>
   <code><a href="https://rdrr.io/pkg/tabshiftr/man/reorganise.html" class="external-link">tabshiftr::reorganise</a></code> to reshape <code>input</code> according to
   the respective schema description.</p></li>
 <li><p>Match the territorial units in
-  <code>input</code> via <code><a href="matchUnits.html">matchUnits</a></code>.</p></li>
+  <code>input</code> via .</p></li>
 <li><p>Harmonise territorial unit
   names.</p></li>
 <li><p>If <code>update = TRUE</code>, store the processed data table at

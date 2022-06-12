@@ -16,9 +16,6 @@
     <loc>http://EhrmannS.github.io/arealDB/news/index.html</loc>
   </url>
   <url>
-    <loc>http://EhrmannS.github.io/arealDB/reference/countries.html</loc>
-  </url>
-  <url>
     <loc>http://EhrmannS.github.io/arealDB/reference/getColTypes.html</loc>
   </url>
   <url>
@@ -31,7 +28,7 @@
     <loc>http://EhrmannS.github.io/arealDB/reference/makeExampleDB.html</loc>
   </url>
   <url>
-    <loc>http://EhrmannS.github.io/arealDB/reference/matchUnits.html</loc>
+    <loc>http://EhrmannS.github.io/arealDB/reference/match_gazetteer.html</loc>
   </url>
   <url>
     <loc>http://EhrmannS.github.io/arealDB/reference/normGeometry.html</loc>
@@ -52,16 +49,10 @@
     <loc>http://EhrmannS.github.io/arealDB/reference/select_path.html</loc>
   </url>
   <url>
-    <loc>http://EhrmannS.github.io/arealDB/reference/setVariables.html</loc>
-  </url>
-  <url>
     <loc>http://EhrmannS.github.io/arealDB/reference/start_arealDB.html</loc>
   </url>
   <url>
     <loc>http://EhrmannS.github.io/arealDB/reference/testCompressed.html</loc>
-  </url>
-  <url>
-    <loc>http://EhrmannS.github.io/arealDB/reference/translateTerms.html</loc>
   </url>
   <url>
     <loc>http://EhrmannS.github.io/arealDB/reference/updateTable.html</loc>

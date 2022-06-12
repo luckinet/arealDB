@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">arealDB</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.3.10</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.4.0</span>
       </span>
     </div>
 
@@ -63,7 +63,7 @@
 
     <div id="ref-usage">
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">regTable</span><span class="op">(</span>
-  nation <span class="op">=</span> <span class="cn">NULL</span>,
+  <span class="va">...</span>,
   subset <span class="op">=</span> <span class="cn">NULL</span>,
   dSeries <span class="op">=</span> <span class="cn">NULL</span>,
   gSeries <span class="op">=</span> <span class="cn">NULL</span>,
@@ -85,9 +85,9 @@
 
     <div id="arguments">
     <h2>Arguments</h2>
-    <dl><dt>nation</dt>
-<dd><p>[<code>character(1)</code>]<br> the nation for which the areal data
-are valid.</p></dd>
+    <dl><dt>...</dt>
+<dd><p>[<code>character(1)</code>]<br> name and value of the topmost unit under
+which the table shall be registered.</p></dd>
 <dt>subset</dt>
 <dd><p>[<code>character(1)</code>]<br> optional argument to specify which
 subset the file contains. This could be a subset of territorial units (e.g.
