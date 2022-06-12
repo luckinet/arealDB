@@ -46,8 +46,9 @@ regDataseries <- function(name = NULL, description = NULL, homepage = NULL,
   testing <- getOption(x = "adb_testing")
 
   # check validity of arguments
-  assertDataFrame(x = inv_dataseries)
-  assertNames(x = colnames(inv_dataseries), permutation.of = c("datID", "name", "description", "homepage", "licence_link", "licence_path", "notes"))
+  assertNames(x = colnames(inv_dataseries),
+              permutation.of = c("datID", "name", "description", "homepage",
+                                 "licence_link", "licence_path", "notes"))
   assertCharacter(x = name, ignore.case = TRUE, any.missing = FALSE, len = 1, null.ok = TRUE)
   assertCharacter(x = description, ignore.case = TRUE, any.missing = FALSE, len = 1, null.ok = TRUE)
   assertCharacter(x = homepage, ignore.case = TRUE, any.missing = FALSE, len = 1, null.ok = TRUE)
