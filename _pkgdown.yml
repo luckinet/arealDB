@@ -16,8 +16,8 @@ reference:
   - title: start database
     desc: functions to start a database (stage one)
     contents:
-      - setPath
-      - setVariables
+      - start_arealDB
+      - match_gazetteer
       - makeExampleDB
   - title: register data
     desc: functions that register data and metadata (stage two)
@@ -30,17 +30,12 @@ reference:
     contents:
       - normGeometry
       - normTable
-  - title: datasets
-    contents:
-      - countries
   - title: helpers
     contents:
       - getColTypes
       - get_variable
       - select_path
-      - matchUnits
       - testCompressed
-      - translateTerms
       - updateTable
 
 navbar:
