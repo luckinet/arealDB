@@ -2,13 +2,15 @@
 #'
 #' This function registers a new geometry of territorial units into the
 #' geospatial database.
-#' @param nation [\code{character(1)}]\cr either the nation name or the column
-#'   of the file's attribute table that contains nations.
 #' @param subset [\code{character(1)}]\cr optional argument to specify which
 #'   subset the file contains. This could be a subset of territorial units (e.g.
 #'   only one municipality) or of a target variable.
 #' @param gSeries [\code{character(1)}]\cr the name of the geometry dataseries
 #'   (see \code{\link{regDataseries}}).
+#' @param ... [\code{character(1)}]\cr named argument selecting the main
+#'   territory into which this geometry is nested. The name of this must be a
+#'   class of the territory-ontology and the value must be one of the territory
+#'   names of that class, e.g. \emph{nation = "Argentina"}.
 #' @param level [\code{integerish(1)}]\cr the administrative level at which the
 #'   geometry is recorded.
 #' @param layer [\code{character}]\cr the name of the file's layer from which
@@ -83,7 +85,7 @@
 #' @importFrom tibble tibble
 #' @export
 
-regGeometry <- function(nation = NULL, subset = NULL, gSeries = NULL, level = NULL,
+regGeometry <- function(..., subset = NULL, gSeries = NULL, level = NULL,
                         layer = NULL, nameCol = NULL, archive = NULL, archiveLink = NULL,
                         nextUpdate = NULL, updateFrequency = NULL, notes = NULL,
                         update = FALSE, overwrite = FALSE){
@@ -95,7 +97,7 @@ regGeometry <- function(nation = NULL, subset = NULL, gSeries = NULL, level = NU
   inv_dataseries <- read_csv(paste0(intPaths, "/inv_dataseries.csv"), col_types = "icccccc")
   inv_geometries <- read_csv(paste0(intPaths, "/inv_geometries.csv"), col_types = "iiiccccccDccc")
 
-   if(dim(inv_dataseries)[1] == 0){
+  if(dim(inv_dataseries)[1] == 0){
     stop("'inv_dataseries.csv' does not contain any entries!")
   }
 
@@ -103,35 +105,30 @@ regGeometry <- function(nation = NULL, subset = NULL, gSeries = NULL, level = NU
   testing <- getOption(x = "adb_testing")
 
   # check validity of arguments
+  assertNames(x = colnames(inv_dataseries),
+              permutation.of = c("datID", "name", "description", "homepage",
+                                 "licence_link", "licence_path", "notes"))
   assertNames(x = colnames(inv_geometries),
               permutation.of = c("geoID", "datID", "level", "source_file", "layer",
-                                 "nation_column", "unit_column", "orig_file", "orig_link", "download_date",
+                                 "hierarchy", "orig_file", "orig_link", "download_date",
                                  "next_update", "update_frequency", "notes"))
-  assertCharacter(x = nation, ignore.case = TRUE, any.missing = FALSE, len = 1, null.ok = TRUE)
   assertCharacter(x = subset, any.missing = FALSE, null.ok = TRUE)
   assertCharacter(x = gSeries, ignore.case = TRUE, any.missing = FALSE, len = 1, null.ok = TRUE)
   assertIntegerish(x = level, any.missing = FALSE, len = 1, lower = 1, null.ok = TRUE)
   assertCharacter(x = layer, any.missing = FALSE, null.ok = TRUE)
   assertCharacter(x = archive, any.missing = FALSE, null.ok = TRUE)
   assertCharacter(x = archiveLink, any.missing = FALSE, null.ok = TRUE)
-  # maybe assertDate
   assertCharacter(x = nextUpdate, any.missing = FALSE, null.ok = TRUE)
   assertCharacter(x = updateFrequency, any.missing = FALSE, null.ok = TRUE)
   assertCharacter(x = notes, ignore.case = TRUE, any.missing = FALSE, len = 1, null.ok = TRUE)
   assertLogical(x = update, len = 1)
   assertLogical(x = overwrite, len = 1)
 
-  # ask for missing and required arguments
-  if(is.null(nation)){
-    message("please type in either a nation or the name of the column that contains nation names: ")
-    if(!testing){
-      nation <- readline()
-    } else {
-      nation <- countries$nation[11]
-    }
-    if(is.na(nation)){
-      nation = NA_character_
-    }
+  broadest <- exprs(..., .named = TRUE)
+  if(length(broadest) > 0){
+    mainPoly <- broadest[[1]]
+  } else {
+    mainPoly <- ""
   }
 
   if(!is.null(subset)){
@@ -200,22 +197,8 @@ regGeometry <- function(nation = NULL, subset = NULL, gSeries = NULL, level = NU
     }
   }
 
-  # determine nation value
-  if(!testChoice(x = nation, choices = countries$nation)){
-    theNation <- NULL
-  } else{
-    nations <- nation
-    assertChoice(x = nations, choices = countries$nation)
-    theNation <- countries %>%
-      as_tibble() %>%
-      filter(nation == nations) %>%
-      distinct(iso_a3) %>%
-      tolower()
-    nation <- ""
-  }
-
   # put together file name and get confirmation that file should exist now
-  fileName <- paste0(theNation, "_", level, "_", subset, "_", gSeries, ".gpkg")
+  fileName <- paste0(mainPoly, "_", level, "_", subset, "_", gSeries, ".gpkg")
   filePath <- paste0(intPaths, "/adb_geometries/stage2/", fileName)
   filesTrace <- str_split(archive, "\\|")[[1]]
 
@@ -315,10 +298,9 @@ regGeometry <- function(nation = NULL, subset = NULL, gSeries = NULL, level = NU
 
     # to check that what has been given in 'nation' and 'nameCol' is in fact a
     # column in the geometry, load it
-    if(is.null(theNation)){
+    if(is.null(mainPoly)){
       theGeometry <- read_sf(dsn = filePath,
                              stringsAsFactors = FALSE)
-      assertChoice(x = nation, choices = colnames(theGeometry))
     }
 
     nameCols <- str_split(string = nameCol, pattern = "\\|")[[1]]
@@ -349,8 +331,7 @@ regGeometry <- function(nation = NULL, subset = NULL, gSeries = NULL, level = NU
                   level = level,
                   source_file = fileName,
                   layer = layer,
-                  nation_column = nation,
-                  unit_column = nameCol,
+                  hierarchy = nameCol,
                   orig_file = archive,
                   orig_link = archiveLink,
                   download_date = Sys.Date(),

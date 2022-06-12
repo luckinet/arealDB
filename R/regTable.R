@@ -1,8 +1,8 @@
 #' Register a new areal data table
 #'
 #' This function registers a new areal data table into the geospatial database.
-#' @param nation [\code{character(1)}]\cr the nation for which the areal data
-#'   are valid.
+#' @param ... [\code{character(1)}]\cr name and value of the topmost unit under
+#'   which the table shall be registered.
 #' @param subset [\code{character(1)}]\cr optional argument to specify which
 #'   subset the file contains. This could be a subset of territorial units (e.g.
 #'   only one municipality) or of a target variable.
@@ -103,7 +103,7 @@
 #' @importFrom tibble tibble
 #' @export
 
-regTable <- function(nation = NULL, subset = NULL, dSeries = NULL, gSeries = NULL,
+regTable <- function(..., subset = NULL, dSeries = NULL, gSeries = NULL,
                      level = NULL, begin = NULL, end = NULL, schema = NULL,
                      archive = NULL, archiveLink = NULL, nextUpdate = NULL,
                      updateFrequency = NULL, metadataLink = NULL, metadataPath = NULL,
@@ -115,7 +115,7 @@ regTable <- function(nation = NULL, subset = NULL, dSeries = NULL, gSeries = NUL
   # get tables
   inv_tables <- read_csv(paste0(intPaths, "/inv_tables.csv"), col_types = "iiiccccDccccc")
   inv_dataseries <- read_csv(paste0(intPaths, "/inv_dataseries.csv"), col_types = "icccccc")
-  inv_geometries <- read_csv(paste0(intPaths, "/inv_geometries.csv"), col_types = "iiiccccccDDcc")
+  inv_geometries <- read_csv(paste0(intPaths, "/inv_geometries.csv"), col_types = "iiicccccDDcc")
 
   if(dim(inv_dataseries)[1] == 0){
     stop("'inv_dataseries.csv' does not contain any entries!")
@@ -139,9 +139,8 @@ regTable <- function(nation = NULL, subset = NULL, dSeries = NULL, gSeries = NUL
                                  "licence_link", "licence_path", "notes"))
   assertNames(x = colnames(inv_geometries),
               permutation.of = c("geoID", "datID", "level", "source_file", "layer",
-                                 "nation_column", "unit_column", "orig_file", "orig_link", "download_date",
+                                 "hierarchy", "orig_file", "orig_link", "download_date",
                                  "next_update", "update_frequency", "notes"))
-  assertCharacter(x = nation, ignore.case = TRUE, any.missing = FALSE, len = 1, null.ok = TRUE)
   assertCharacter(x = subset, any.missing = FALSE, null.ok = TRUE)
   assertCharacter(x = dSeries, ignore.case = TRUE, any.missing = FALSE, len = 1, null.ok = TRUE)
   assertCharacter(x = gSeries, ignore.case = TRUE, any.missing = FALSE, len = 1, null.ok = TRUE)
@@ -158,6 +157,13 @@ regTable <- function(nation = NULL, subset = NULL, dSeries = NULL, gSeries = NUL
   assertCharacter(x = notes, ignore.case = TRUE, any.missing = FALSE, len = 1, null.ok = TRUE)
   assertLogical(x = update, len = 1)
   assertLogical(x = overwrite, len = 1)
+
+  broadest <- exprs(..., .named = TRUE)
+  if(length(broadest) > 0){
+    mainPoly <- broadest[[1]]
+  } else {
+    mainPoly <- ""
+  }
 
   schemaName <- as.character(substitute(schema))
 
@@ -225,12 +231,6 @@ regTable <- function(nation = NULL, subset = NULL, dSeries = NULL, gSeries = NUL
     }
   }
 
-  # if(!testFileExists(x = paste0(intPaths, "/meta/translation_tables/", dSeries, "_", gSeries, ".rds")))
-
-
-
-
-
 
   if(is.null(level)){
     message("please type in the administrative level of the units: ")
@@ -293,21 +293,8 @@ regTable <- function(nation = NULL, subset = NULL, dSeries = NULL, gSeries = NUL
     }
   }
 
-  # determine nation value
-  if(!testChoice(x = nation, choices = countries$nation)){
-    theNation <- NULL
-  } else{
-    nations <- nation
-    assertChoice(x = nations, choices = countries$nation)
-    theNation <- countries %>%
-      as_tibble() %>%
-      filter(unit == nations) %>%
-      distinct(iso_a3) %>%
-      tolower()
-  }
-
   # put together file name and get confirmation that file should exist now
-  fileName <- paste0(theNation, "_", level, "_", subset, "_", begin, "_", end, "_", dSeries, ".csv")
+  fileName <- paste0(mainPoly, "_", level, "_", subset, "_", begin, "_", end, "_", dSeries, ".csv")
   filePath <- paste0(intPaths, "/adb_tables/stage2/", fileName)
   fileArchive <- str_split(archive, "\\|")[[1]]
 
