@@ -1,11 +1,12 @@
 library(testthat)
 library(checkmate)
-context("setPath")
+context("start_arealDB")
 
 test_that("path has been added to the global options", {
 
+  inPath <- system.file("test_datasets", package = "arealDB", mustWork = TRUE)
   dbpath <- paste0(tempdir(), "/newDB")
-  start_arealDB(root = dbpath)
+  start_arealDB(root = dbpath, gazetteer =  paste0(inPath, "/territories.rds"))
 
   out <- getOption("adb_path")
   expect_character(x = out)

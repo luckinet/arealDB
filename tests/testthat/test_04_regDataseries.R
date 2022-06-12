@@ -6,7 +6,7 @@ context("regDataseries")
 test_that("a dataseries inventory entry can be produced", {
 
   dbpath <- paste0(tempdir(), "/newDB")
-  makeExampleDB(until = "setVariables", path = dbpath)
+  makeExampleDB(until = "match_gazetter", path = dbpath)
   inPath <- system.file("test_datasets", package = "arealDB", mustWork = TRUE)
 
   output <- regDataseries(name = "gadm",
@@ -28,7 +28,7 @@ test_that("a dataseries inventory entry can be produced", {
 test_that("function asks for details, if not provided", {
 
   dbpath <- paste0(tempdir(), "/newDB")
-  makeExampleDB(until = "setVariables", path = dbpath)
+  makeExampleDB(until = "match_gazetter", path = dbpath)
 
   expect_message(object = regDataseries())
   output <- capture_messages(code = regDataseries())

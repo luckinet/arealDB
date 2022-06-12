@@ -4,7 +4,7 @@ library(readr)
 context("makeExampleDB")
 
 
-test_that("make example DB until setPath", {
+test_that("make example DB until start_arealDB", {
 
   dbpath <- paste0(tempdir(), "/newDB")
   makeExampleDB(until = "start_arealDB", path = dbpath)
@@ -22,17 +22,20 @@ test_that("make example DB until setPath", {
 
 })
 
-# test_that("make example DB until setVariables", {
-#
-#   # dbpath <- paste0(tempdir(), "/newDB")
-#   # makeExampleDB(until = "setVariables", path = dbpath)
-#   #
-#   # expect_file_exists(x = paste0(dbpath, "/id_commodities.csv"))
-#   # expect_file_exists(x = paste0(dbpath, "/tt_commodities.csv"))
-#   # expect_file_exists(x = paste0(dbpath, "/id_territories.csv"))
-#   # expect_file_exists(x = paste0(dbpath, "/tt_territories.csv"))
-#
-# })
+test_that("make example DB until match_gazetter", {
+
+  dbpath <- paste0(tempdir(), "/newDB")
+  makeExampleDB(until = "match_gazetter", path = dbpath)
+
+  expect_file_exists(x = paste0(dbpath, "/territories.rds"))
+  temp <- read_rds(paste0(dbpath, "/territories.rds"))
+
+  expect_list(x = temp, len = 2)
+  expect_names(x = names(temp), permutation.of = c("attributes", "mappings"))
+  expect_names(x = names(temp$attributes), permutation.of = c("code", "source", "label_en", "class"))
+  expect_names(x = names(temp$mappings), permutation.of = c("code", "broader", "label_en", "class", "external"))
+
+})
 
 test_that("make example DB until regDataseries", {
 
@@ -51,8 +54,8 @@ test_that("make example DB until regGeometry", {
 
   makeExampleDB(until = "regGeometry", path = dbpath)
 
-  geoID <- read_csv(file = paste0(dbpath, "/inv_geometries.csv"), col_types = "iiiccccccDDcc")
-  expect_true(object = all(dim(geoID) == c(4, 13)))
+  geoID <- read_csv(file = paste0(dbpath, "/inv_geometries.csv"), col_types = "iiicccccDDcc")
+  expect_true(object = all(dim(geoID) == c(4, 12)))
 
   expect_file_exists(x = paste0(dbpath, "/adb_geometries/stage2/_1__gadm.gpkg"))
   expect_file_exists(x = paste0(dbpath, "/adb_geometries/stage2/_2__gadm.gpkg"))
@@ -70,8 +73,8 @@ test_that("make example DB until regTable", {
   geoID <- read_csv(file = paste0(dbpath, "/inv_tables.csv"), col_types = "iiiccccDDcccc")
   expect_true(object = all(dim(geoID) == c(2, 13)))
 
-  expect_file_exists(x = paste0(dbpath, "/adb_tables/stage2/est_1_barleyMaize_1990_2017_madeUp.csv"))
-  expect_file_exists(x = paste0(dbpath, "/adb_tables/stage2/est_2_barleyMaize_1990_2017_madeUp.csv"))
+  expect_file_exists(x = paste0(dbpath, "/adb_tables/stage2/_1_barleyMaize_1990_2017_madeUp.csv"))
+  expect_file_exists(x = paste0(dbpath, "/adb_tables/stage2/aNation_2_barleyMaize_1990_2017_madeUp.csv"))
 
 })
 
@@ -81,7 +84,7 @@ test_that("make example DB until normGeometry", {
 
   makeExampleDB(until = "normGeometry", path = dbpath)
 
-  expect_file_exists(x = paste0(dbpath, "/adb_geometries/stage3/Estonia.gpkg"))
+  expect_file_exists(x = paste0(dbpath, "/adb_geometries/stage3/a_nation.gpkg"))
 
 })
 
@@ -91,7 +94,7 @@ test_that("make example DB until normTable", {
 
   makeExampleDB(until = "normTable", path = dbpath)
 
-  expect_file_exists(x = paste0(dbpath, "/adb_tables/stage3/Estonia.rds"))
+  expect_file_exists(x = paste0(dbpath, "/adb_tables/stage3/a_nation.rds"))
 
 })
 

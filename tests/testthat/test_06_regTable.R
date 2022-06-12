@@ -1,7 +1,6 @@
 library(testthat)
 library(checkmate)
 library(tabshiftr)
-library(magrittr)
 context("regTable")
 
 
@@ -17,7 +16,7 @@ test_that("a table inventory entry is produced", {
     setObsVar(name = "harvested", unit = "ha", columns = 4) %>%
     setObsVar(name = "production", unit = "t", columns = 5)
 
-  output <- regTable(nation = "Estonia",
+  output <- regTable(#nation = "Estonia",
                      subset = "barleyMaize",
                      dSeries = "madeUp",
                      gSeries = "gadm",
