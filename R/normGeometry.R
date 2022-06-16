@@ -50,8 +50,8 @@
 #' @family normalisers
 #' @return This function harmonises and integrates so far unprocessed geometries
 #'   at stage two into stage three of the geospatial database. It produces for
-#'   each nation in the registered geometries a spatial file of the specified
-#'   file-type.
+#'   each main polygon (e.g. nation) in the registered geometries a spatial file
+#'   of the specified file-type.
 #' @examples
 #' if(dev.interactive()){
 #'   library(sf)
@@ -88,7 +88,7 @@
 normGeometry <- function(input = NULL, pattern = NULL, thresh = 10,
                          outType = "gpkg", update = FALSE, verbose = FALSE){
 
-  # input = NULL; pattern = NULL; thresh = 10; outType = "gpkg"; update = TRUE; verbose = FALSE
+  # input = NULL; pattern = NULL; thresh = 10; outType = "gpkg"; update = TRUE; verbose = FALSE; library(sf)
 
   # set internal paths
   intPaths <- paste0(getOption(x = "adb_path"))
@@ -106,11 +106,14 @@ normGeometry <- function(input = NULL, pattern = NULL, thresh = 10,
   # get tables
   inv_geometries <- read_csv(paste0(intPaths, "/inv_geometries.csv"), col_types = "iiicccccDDcc")
   inv_dataseries <- read_csv(paste0(intPaths, "/inv_dataseries.csv"), col_types = "icccccc")
-  gazetteer <- load_ontology(ontoDir = gazPath) %>%
+  gazetteer <- load_ontology(path = gazPath) %>%
     rowwise() %>%
     mutate(level = str_split(code, "[.]", simplify = TRUE) %>% length())
 
   # check validity of arguments
+  assertIntegerish(x = thresh, any.missing = FALSE)
+  assertLogical(x = update, len = 1)
+  assertNames(x = outType, subset.of = c(tolower(st_drivers()$name), "rds"))
   assertNames(x = colnames(inv_geometries),
               permutation.of = c("geoID", "datID", "level", "source_file", "layer",
                                  "hierarchy", "orig_file", "orig_link", "download_date",
@@ -118,9 +121,6 @@ normGeometry <- function(input = NULL, pattern = NULL, thresh = 10,
   assertNames(x = colnames(inv_dataseries),
               permutation.of = c("datID", "name", "description", "homepage",
                                  "licence_link", "licence_path", "notes"))
-  assertIntegerish(x = thresh, any.missing = FALSE)
-  assertLogical(x = update, len = 1)
-  assertNames(x = outType, subset.of = c(tolower(st_drivers()$name), "rds"))
 
   outLut <- NULL
   for(i in seq_along(input)){
@@ -164,10 +164,11 @@ normGeometry <- function(input = NULL, pattern = NULL, thresh = 10,
     }
 
     # match concepts with gazetteer (and update those concepts in it)
-    newGeom <- match_gazetteer(table = newGeom, columns = unitCols, dataseries = dSeries, from_meta = FALSE)
-    # still need to check why "Gemeinde 1.3" and "Gemeinde 1.4" are only defined as new concepts, but a mapping of the madeUp dataseries to these "new harmonised" concepts is not made
+    newGeom <- match_gazetteer(table = newGeom,
+                               columns = unitCols,
+                               dataseries = dSeries)
     # re-load gazetteer (to contain also updates)
-    gazetteer <- load_ontology(ontoDir = gazPath) %>%
+    gazetteer <- load_ontology(path = gazPath) %>%
       rowwise() %>%
       mutate(level = str_split(code, "[.]", simplify = TRUE) %>% length())
 

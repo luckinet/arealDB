@@ -76,7 +76,7 @@ normTable <- function(input = NULL, outType = "rds", pattern = NULL,
   inv_tables <- read_csv(paste0(intPaths, "/inv_tables.csv"), col_types = "iiiccccDccccc")
   inv_dataseries <- read_csv(paste0(intPaths, "/inv_dataseries.csv"), col_types = "icccccc")
   inv_geometries <- read_csv(paste0(intPaths, "/inv_geometries.csv"), col_types = "iiicccccDDcc")
-  gazetteer <- load_ontology(ontoDir = gazPath) %>%
+  gazetteer <- load_ontology(path = gazPath) %>%
     rowwise() %>%
     mutate(level = str_split(code, "[.]", simplify = TRUE) %>% length())
 
@@ -145,7 +145,7 @@ normTable <- function(input = NULL, outType = "rds", pattern = NULL,
     message("    harmonising territory names ...")
     temp <- match_gazetteer(table = temp, columns = unitCols, dataseries = dSeries, from_meta = FALSE)
     # re-load gazetteer (to contain also updates)
-    gazetteer <- load_ontology(ontoDir = gazPath) %>%
+    gazetteer <- load_ontology(path = gazPath) %>%
       rowwise() %>%
       mutate(level = str_split(code, "[.]", simplify = TRUE) %>% length())
 
