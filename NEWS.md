@@ -1,4 +1,9 @@
-# arealDB 0.4.0
+# arealDB 0.4.0 - ontology update
+
+* instead of using id and translation tables, concepts are from now on handled via the ontologics package.
+* functions `setVariables` and `translateTables` are discontinued, instead the function `match_gazetteer` handles matching of concepts.
+* the package has been streamlined so that functions `regGeometry` and `regTable` don't require a `nation = ` argument anymore, but this can be any other type of "main" polygon.
+* new function `get_variable` to extract concepts from stage2 tables.
 
 # arealDB 0.3.9
  
@@ -19,7 +24,7 @@
 # arealDB 0.3.6
 
 * streamline translations to reduce the amount of items that have to be translated (specifically, only translate nations in normTable() that have been subsetted, not the whole list of nations)
-* repeat translation of terms as long as some are still (accidently) missing.
+* repeat translation of terms as long as some are still (accidentally) missing.
 * improve updating of tables (concerning the functions reg*(), setVariables(), translateTerms()).
 
 # arealDB 0.3.5

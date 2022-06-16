@@ -1,4 +1,4 @@
-#' Extract concepts from a dataseries
+#' Extract concepts in stage2 tables
 #'
 #' This function matches the values of a variable with an index and returns the
 #' specified IDs.
