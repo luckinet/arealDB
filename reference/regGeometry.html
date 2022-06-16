@@ -88,31 +88,49 @@ geospatial database.</p>
 territory into which this geometry is nested. The name of this must be a
 class of the territory-ontology and the value must be one of the territory
 names of that class, e.g. <em>nation = "Argentina"</em>.</p></dd>
+
+
 <dt>subset</dt>
 <dd><p>[<code>character(1)</code>]<br> optional argument to specify which
 subset the file contains. This could be a subset of territorial units (e.g.
 only one municipality) or of a target variable.</p></dd>
+
+
 <dt>gSeries</dt>
 <dd><p>[<code>character(1)</code>]<br> the name of the geometry dataseries
 (see <code><a href="regDataseries.html">regDataseries</a></code>).</p></dd>
+
+
 <dt>level</dt>
 <dd><p>[<code>integerish(1)</code>]<br> the administrative level at which the
 geometry is recorded.</p></dd>
+
+
 <dt>layer</dt>
 <dd><p>[<code>character</code>]<br> the name of the file's layer from which
 the geometry should be created (if applicable).</p></dd>
+
+
 <dt>nameCol</dt>
 <dd><p>[<code>character(.)</code>]<br> the columns in which the names of
 administrative units are to be found, delimited by <code>"|"</code>; see
 Examples.</p></dd>
+
+
 <dt>archive</dt>
 <dd><p>[<code>character(1)</code>]<br> the original file (perhaps a *.zip)
 from which the geometry emerges.</p></dd>
+
+
 <dt>archiveLink</dt>
 <dd><p>[<code>character(1)</code>]<br> download-link of the archive.</p></dd>
+
+
 <dt>nextUpdate</dt>
 <dd><p>[<code>character(1)</code>]<br> value describing the next
 anticipated update of this dataset (in YYYY-MM-DD format).</p></dd>
+
+
 <dt>updateFrequency</dt>
 <dd><p>[<code>character(1)</code>]<br> value describing the
 frequency with which the dataset is updated, according to the ISO 19115
@@ -120,19 +138,28 @@ Codelist, MD_MaintenanceFrequencyCode. Possible values are: 'continual',
 'daily', 'weekly', 'fortnightly', 'quarterly', 'biannually', 'annually',
 'asNeeded', 'irregular', 'notPlanned', 'unknown', 'periodic',
 'semimonthly', 'biennially'.</p></dd>
+
+
 <dt>notes</dt>
 <dd><p>[<code>character(1)</code>]<br> optional notes that are assigned to all
 features of this geometry.</p></dd>
+
+
 <dt>update</dt>
 <dd><p>[<code>logical(1)</code>]<br> whether or not the file
 'inv_geometries.csv' should be updated.</p></dd>
+
+
 <dt>overwrite</dt>
 <dd><p>[<code>logical(1)</code>]<br> whether or not the geometry to
 register shall overwrite a potentially already existing older version.</p></dd>
+
 </dl></div>
     <div id="value">
     <h2>Value</h2>
-    <p>Returns a tibble of the entry that is appended to
+    
+
+<p>Returns a tibble of the entry that is appended to
   'inv_geometries.csv' in case <code>update = TRUE</code>.</p>
     </div>
     <div id="details">
@@ -200,7 +227,7 @@ register shall overwrite a potentially already existing older version.</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.4.</p>
 </div>
 
       </footer></div>
