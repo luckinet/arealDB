@@ -77,7 +77,7 @@
 #'               update = TRUE)
 #' }
 #' @importFrom checkmate assertNames assertCharacter assertIntegerish
-#'   assertFileExists testChoice assertLogical
+#'   assertFileExists testChoice assertLogical testSubset
 #' @importFrom readr read_csv
 #' @importFrom dplyr filter distinct
 #' @importFrom stringr str_split
@@ -92,6 +92,7 @@ regGeometry <- function(..., subset = NULL, gSeries = NULL, level = NULL,
 
   # set internal paths
   intPaths <- paste0(getOption(x = "adb_path"))
+  gazPath <- paste0(getOption(x = "gazetteer_path"))
 
   # get tables
   inv_dataseries <- read_csv(paste0(intPaths, "/inv_dataseries.csv"), col_types = "icccccc")
@@ -105,16 +106,9 @@ regGeometry <- function(..., subset = NULL, gSeries = NULL, level = NULL,
   testing <- getOption(x = "adb_testing")
 
   # check validity of arguments
-  assertNames(x = colnames(inv_dataseries),
-              permutation.of = c("datID", "name", "description", "homepage",
-                                 "licence_link", "licence_path", "notes"))
-  assertNames(x = colnames(inv_geometries),
-              permutation.of = c("geoID", "datID", "level", "source_file", "layer",
-                                 "hierarchy", "orig_file", "orig_link", "download_date",
-                                 "next_update", "update_frequency", "notes"))
+  assertIntegerish(x = level, any.missing = FALSE, len = 1, lower = 1, null.ok = TRUE)
   assertCharacter(x = subset, any.missing = FALSE, null.ok = TRUE)
   assertCharacter(x = gSeries, ignore.case = TRUE, any.missing = FALSE, len = 1, null.ok = TRUE)
-  assertIntegerish(x = level, any.missing = FALSE, len = 1, lower = 1, null.ok = TRUE)
   assertCharacter(x = layer, any.missing = FALSE, null.ok = TRUE)
   assertCharacter(x = archive, any.missing = FALSE, null.ok = TRUE)
   assertCharacter(x = archiveLink, any.missing = FALSE, null.ok = TRUE)
@@ -123,12 +117,25 @@ regGeometry <- function(..., subset = NULL, gSeries = NULL, level = NULL,
   assertCharacter(x = notes, ignore.case = TRUE, any.missing = FALSE, len = 1, null.ok = TRUE)
   assertLogical(x = update, len = 1)
   assertLogical(x = overwrite, len = 1)
+  assertNames(x = colnames(inv_dataseries),
+              permutation.of = c("datID", "name", "description", "homepage",
+                                 "licence_link", "licence_path", "notes"))
+  assertNames(x = colnames(inv_geometries),
+              permutation.of = c("geoID", "datID", "level", "source_file", "layer",
+                                 "hierarchy", "orig_file", "orig_link", "download_date",
+                                 "next_update", "update_frequency", "notes"))
 
   broadest <- exprs(..., .named = TRUE)
   if(length(broadest) > 0){
     mainPoly <- broadest[[1]]
   } else {
     mainPoly <- ""
+  }
+
+  gaz <- read_rds(gazPath)
+  if(!testSubset(x = names(broadest), choices = unique(gaz$attributes$class))){
+    stop("please specify a main category that is part of the classes in the gazetteer (",
+         paste0(unique(gaz$attributes$class)[1:4], collapse = ", "), ")")
   }
 
   if(!is.null(subset)){
