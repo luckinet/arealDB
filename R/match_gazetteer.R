@@ -9,10 +9,13 @@
 #' @importFrom stringr str_replace_all
 #' @importFrom dplyr bind_cols
 #' @importFrom tidyr separate_rows separate
+#' @importFrom sf st_drop_geometry
 #' @importFrom utils tail
 #' @export
 
 match_gazetteer <- function(table = NULL, columns = NULL, dataseries = NULL, from_meta = FALSE){
+
+  # table = newGeom; columns = unitCols; dataseries = dSeries; from_meta = FALSE
 
   intPaths <- paste0(getOption(x = "adb_path"))
   gazPath <- paste0(getOption(x = "gazetteer_path"))
@@ -46,10 +49,10 @@ match_gazetteer <- function(table = NULL, columns = NULL, dataseries = NULL, fro
                           sort_in = c("cut out these concepts and sort them \neither into 'close' or into 'nested'", "", "sort_in"))
 
     # determine those concepts, that are not yet defined in the gazetteer
-    missingConcepts <- get_concept(label_en = concepts, missing = TRUE, ontoDir = gazPath)
+    missingConcepts <- get_concept(terms = concepts, missing = TRUE, path = gazPath)
 
     # build a table of external concepts and of harmonised concepts these should be overwritten with
-    if(!is.null(missingConcepts)){
+    if(dim(missingConcepts)[1] != 0){
 
       relate <- harmonised %>%
         select(code, harmonised = label_en, class) %>%
@@ -116,7 +119,7 @@ match_gazetteer <- function(table = NULL, columns = NULL, dataseries = NULL, fro
                     broader = nestedConcepts$harmonised,
                     class = nestedConcepts$class,
                     source = dataseries,
-                    ontoDir = gazPath)
+                    path = gazPath)
 
         related <- related %>%
           bind_rows(tibble(harmonised = nestedConcepts$nested,
@@ -136,7 +139,7 @@ match_gazetteer <- function(table = NULL, columns = NULL, dataseries = NULL, fro
                     match = "close",
                     source = dataseries,
                     certainty = 3,
-                    ontoDir = gazPath)
+                    path = gazPath)
 
       }
     }
@@ -144,23 +147,27 @@ match_gazetteer <- function(table = NULL, columns = NULL, dataseries = NULL, fro
   }
 
   if(!from_meta){
-    # finally, extract the harmonised concepts ...
-    oldConcepts <- tibble(external = concepts)
-    newConcepts <- get_concept(label_en = concepts, ontoDir = gazPath)
 
-    conceptMatches <- newConcepts %>%
-      select(harmonised = label_en) %>%
-      bind_cols(oldConcepts)
 
-    # ... and assign them to the respective columns ...
     for(i in seq_along(columns)){
 
+      theColumn <- columns[i]
+      theConcepts <- table %>%
+        as_tibble() %>%
+        select(all_of(theColumn)) %>%
+        arrange(!!sym(theColumn))
+
+      # finally, extract the harmonised concepts ...
+      newConcepts <- get_concept(terms = unique(unlist(theConcepts, use.names = FALSE)), path = gazPath) %>%
+        rename(!!sym(theColumn) := external)
+
+      # ... and assign them to the respective column ...
       table <- suppressMessages(table %>%
-                                  left_join(conceptMatches %>%
-                                              rename(!!columns[i] := external)) %>%
-                                  select(-columns[i]) %>%
-                                  rename(!!columns[i] := harmonised) %>%
-                                  select(columns, everything()))
+                                  left_join(newConcepts, by = theColumn) %>%
+                                  select(-theColumn) %>%
+                                  rename(!!theColumn := label_en) %>%
+                                  select(columns, everything())  %>%
+                                  select(-code, -broader, -class, -source))
 
     }
 
