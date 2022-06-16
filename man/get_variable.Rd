@@ -2,7 +2,7 @@
 % Please edit documentation in R/get_variable.R
 \name{get_variable}
 \alias{get_variable}
-\title{Extract concepts from a dataseries}
+\title{Extract concepts in stage2 tables}
 \usage{
 get_variable(variable = NULL, dataseries = NULL)
 }

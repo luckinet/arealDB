@@ -43,8 +43,8 @@ properly specified.}
 \value{
 This function harmonises and integrates so far unprocessed geometries
   at stage two into stage three of the geospatial database. It produces for
-  each nation in the registered geometries a spatial file of the specified
-  file-type.
+  each main polygon (e.g. nation) in the registered geometries a spatial file
+  of the specified file-type.
 }
 \description{
 Harmonise and integrate geometries in a standardised format
