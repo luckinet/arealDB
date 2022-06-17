@@ -155,21 +155,35 @@ match_gazetteer <- function(table = NULL, columns = NULL, dataseries = NULL, fro
       theConcepts <- table %>%
         as_tibble() %>%
         select(all_of(theColumn)) %>%
+        distinct() %>%
         arrange(!!sym(theColumn))
 
       # finally, extract the harmonised concepts ...
-      newConcepts <- get_concept(terms = unique(unlist(theConcepts, use.names = FALSE)), path = gazPath) %>%
+      newConcepts <- get_concept(terms = unlist(theConcepts, use.names = FALSE), path = gazPath) %>%
         rename(!!sym(theColumn) := external)
 
       # ... and assign them to the respective column ...
-      table <- suppressMessages(table %>%
-                                  left_join(newConcepts, by = theColumn) %>%
-                                  select(-theColumn) %>%
-                                  rename(!!theColumn := label_en) %>%
-                                  select(columns, everything())  %>%
-                                  select(-code, -broader, -class, -source))
+      if(i == 1){
+        temp <- table %>%
+          left_join(newConcepts, by = theColumn) %>%
+          mutate(broader = code) %>%
+          select(-class, -source, -code)
+      } else {
+        temp <- temp %>%
+          left_join(newConcepts, by = c(theColumn, "broader")) %>%
+          mutate(broader = code) %>%
+          select(-class, -source, -code)
+      }
+
+      temp <- temp %>%
+        select(-theColumn) %>%
+        rename(!!theColumn := label_en)
 
     }
+    table <- temp %>%
+      # separate(col = broader, into = paste0(columns, "_id"), sep = "[.]") %>%
+      select(columns, everything()) %>%
+      select(-broader)
 
     # ... and store the newly defined matches as a dataseries specific matching table
     if(testFileExists(paste0(intPaths, "/meta/concepts/match_", dataseries, ".csv"))){
