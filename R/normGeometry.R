@@ -13,6 +13,8 @@
 #'   option.
 #' @param pattern [\code{character(1)}]\cr an optional regular expression. Only
 #'   dataset names which match the regular expression will be returned.
+#' @param ... [\code{character(1)}]\cr argument-value combination to filter the
+#'   new geometries by.
 #' @param update [\code{logical(1)}]\cr whether or not the physical files should
 #'   be updated (\code{TRUE}) or the function should merely return the geometry
 #'   inventory of the handled files (\code{FALSE}, default). This is helpful to
@@ -88,7 +90,7 @@
 normGeometry <- function(input = NULL, pattern = NULL, ..., thresh = 10,
                          outType = "gpkg", update = FALSE, verbose = FALSE){
 
-  # input = NULL; pattern = NULL; thresh = 10; outType = "gpkg"; update = TRUE; verbose = FALSE; library(sf)
+  # input = NULL; pattern = "gadm"; sbst <- list(al1 = "Angola"); thresh = 10; outType = "gpkg"; update = TRUE; verbose = FALSE; library(sf)
 
   # set internal paths
   intPaths <- paste0(getOption(x = "adb_path"))
@@ -166,6 +168,7 @@ normGeometry <- function(input = NULL, pattern = NULL, ..., thresh = 10,
 
     # potentially filter
     if(length(sbst) != 0){
+      moveFile <- FALSE
 
       for(k in seq_along(sbst)){
         if(!names(sbst)[k] %in% names(inGeom)){
@@ -174,7 +177,7 @@ normGeometry <- function(input = NULL, pattern = NULL, ..., thresh = 10,
         }
 
         inGeom <- inGeom %>%
-          filter(!!sym(names(sbst)[k] %in% sbst[[k]]))
+          filter(!!sym(names(sbst)[k]) %in% sbst[[k]])
       }
     }
 

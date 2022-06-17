@@ -7,6 +7,7 @@
 normGeometry(
   input = NULL,
   pattern = NULL,
+  ...,
   thresh = 10,
   outType = "gpkg",
   update = FALSE,
@@ -20,6 +21,9 @@ chosen.}
 
 \item{pattern}{[\code{character(1)}]\cr an optional regular expression. Only
 dataset names which match the regular expression will be returned.}
+
+\item{...}{[\code{character(1)}]\cr argument-value combination to filter the
+new geometries by.}
 
 \item{thresh}{[\code{integerish(1)}]\cr the deviation of percentage of
 overlap above which to consider two territorial units "different".}
