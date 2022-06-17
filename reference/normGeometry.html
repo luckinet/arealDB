@@ -65,6 +65,7 @@
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">normGeometry</span><span class="op">(</span>
   input <span class="op">=</span> <span class="cn">NULL</span>,
   pattern <span class="op">=</span> <span class="cn">NULL</span>,
+  <span class="va">...</span>,
   thresh <span class="op">=</span> <span class="fl">10</span>,
   outType <span class="op">=</span> <span class="st">"gpkg"</span>,
   update <span class="op">=</span> <span class="cn">FALSE</span>,
@@ -83,6 +84,11 @@ chosen.</p></dd>
 <dt>pattern</dt>
 <dd><p>[<code>character(1)</code>]<br> an optional regular expression. Only
 dataset names which match the regular expression will be returned.</p></dd>
+
+
+<dt>...</dt>
+<dd><p>[<code>character(1)</code>]<br> argument-value combination to filter the
+new geometries by.</p></dd>
 
 
 <dt>thresh</dt>
