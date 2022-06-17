@@ -182,8 +182,7 @@ match_gazetteer <- function(table = NULL, columns = NULL, dataseries = NULL, fro
     }
     table <- temp %>%
       # separate(col = broader, into = paste0(columns, "_id"), sep = "[.]") %>%
-      select(columns, everything()) %>%
-      select(-broader)
+      select(columns, code = broader, everything())
 
     # ... and store the newly defined matches as a dataseries specific matching table
     if(testFileExists(paste0(intPaths, "/meta/concepts/match_", dataseries, ".csv"))){

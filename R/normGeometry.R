@@ -220,11 +220,11 @@ normGeometry <- function(input = NULL, pattern = NULL, ..., thresh = 10,
         if(severalTop){
           sourceGeom <- newGeom %>%
             filter_at(vars(all_of(topCol)), all_vars(. %in% tempUnit)) %>%
-            select(all_of(unitCols))
+            select(all_of(unitCols), code)
           assertChoice(x = topCol, choices = names(sourceGeom), .var.name = "names(nation_column)")
         } else{
           sourceGeom <- newGeom %>%
-            select(all_of(unitCols))
+            select(all_of(unitCols), code)
         }
 
         # dissolve ----
@@ -244,10 +244,10 @@ normGeometry <- function(input = NULL, pattern = NULL, ..., thresh = 10,
                 group_by(across(all_of(unitCols))) %>%
                 summarise() %>%
                 ungroup()
-            } else {
-              sourceGeom <- sourceGeom %>%
-                select(!!unitCols)
-            }
+            } #else {
+            #   sourceGeom <- sourceGeom %>%
+            #     select(!!unitCols)
+            # }
           } else{
             message("  ! The geometry contains only POLYGON features but no unique names to summarise them.")
           }
@@ -469,10 +469,14 @@ normGeometry <- function(input = NULL, pattern = NULL, ..., thresh = 10,
 
         } else {
 
+          # tempGaz <- gazetteer %>%
+          #   filter(class %in% unitCols[i]) %>%
+          #   select(code, !!unitCols[length(unitCols)] := label_en)
+
           message("    Creating new basis dataset at level ", theLevel, ".")
           outGeom <- suppressMessages(
             sourceGeom %>%
-              left_join(gazetteer %>% select(code, !!unitCols[length(unitCols)] := label_en)) %>%
+              # left_join(tempGaz) %>%
               unite(col = "ahName", unitCols, sep = ".") %>%
               mutate(level = theLevel,
                      geoID = newGID) %>%
