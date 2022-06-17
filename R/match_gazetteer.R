@@ -40,6 +40,7 @@ match_gazetteer <- function(table = NULL, columns = NULL, dataseries = NULL, fro
 
     }) %>%
       unlist()
+    concepts <- concepts[!is.na(concepts)]
 
     explanation <- tibble(code = c("filter by this column to jump \nto the subset you need to edit", "", "code"),
                           harmonised = c("concepts to which the new \nterms should be related", "", "harmonised"),
