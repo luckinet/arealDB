@@ -85,7 +85,7 @@
 #' @importFrom tidyselect starts_with all_of
 #' @export
 
-normGeometry <- function(input = NULL, pattern = NULL, thresh = 10,
+normGeometry <- function(input = NULL, pattern = NULL, ..., thresh = 10,
                          outType = "gpkg", update = FALSE, verbose = FALSE){
 
   # input = NULL; pattern = NULL; thresh = 10; outType = "gpkg"; update = TRUE; verbose = FALSE; library(sf)
@@ -102,6 +102,7 @@ normGeometry <- function(input = NULL, pattern = NULL, thresh = 10,
 
   # set internal objects
   moveFile <- TRUE
+  sbst <- exprs(..., .named = TRUE)
 
   # get tables
   inv_geometries <- read_csv(paste0(intPaths, "/inv_geometries.csv"), col_types = "iiicccccDDcc")
@@ -156,15 +157,30 @@ normGeometry <- function(input = NULL, pattern = NULL, thresh = 10,
     # read the object
     message("\n--> reading new geometries from '", file_name, "' ...")
     newLayers <- st_layers(dsn = thisInput)
-    newGeom <- read_sf(dsn = thisInput,
+    inGeom <- read_sf(dsn = thisInput,
                        layer = theLayer,
                        stringsAsFactors = FALSE)
     for(k in seq_along(unitCols)){
-      names(newGeom)[[which(names(newGeom) == oldNames[k])]] <- unitCols[k]
+      names(inGeom)[[which(names(inGeom) == oldNames[k])]] <- unitCols[k]
     }
 
+    # potentially filter
+    if(length(sbst) != 0){
+
+      for(k in seq_along(sbst)){
+        if(!names(sbst)[k] %in% names(inGeom)){
+          warning(paste0("'", names(sbst)[k], "' is not a column in the new geometry -> ignoring the filter."))
+          next
+        }
+
+        inGeom <- inGeom %>%
+          filter(!!sym(names(sbst)[k] %in% sbst[[k]]))
+      }
+    }
+
+
     # match concepts with gazetteer (and update those concepts in it)
-    newGeom <- match_gazetteer(table = newGeom,
+    newGeom <- match_gazetteer(table = inGeom,
                                columns = unitCols,
                                dataseries = dSeries)
     # re-load gazetteer (to contain also updates)
