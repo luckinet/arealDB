@@ -2,7 +2,7 @@ pandoc: 2.7.3
 pkgdown: 2.0.4
 pkgdown_sha: ~
 articles: {}
-last_built: 2022-06-21T09:38Z
+last_built: 2022-06-21T11:45Z
 urls:
   reference: http://EhrmannS.github.io/arealDB/reference
   article: http://EhrmannS.github.io/arealDB/articles
