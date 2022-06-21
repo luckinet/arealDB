@@ -90,7 +90,7 @@
 normGeometry <- function(input = NULL, pattern = NULL, ..., thresh = 10,
                          outType = "gpkg", update = FALSE, verbose = FALSE){
 
-  # input = NULL; pattern = NULL; sbst <- list(); thresh = 10; outType = "gpkg"; update = TRUE; verbose = FALSE; library(sf)
+  # input = paste0(getOption("adb_path"), "/adb_geometries/stage2/_3__madeUp.gpkg"); pattern = NULL; sbst <- list(); thresh = 10; outType = "gpkg"; update = TRUE; verbose = FALSE; library(sf)
 
   # set internal paths
   intPaths <- paste0(getOption(x = "adb_path"))
@@ -151,6 +151,7 @@ normGeometry <- function(input = NULL, pattern = NULL, ..., thresh = 10,
       # if there are several columns that contain units, split them and make
       oldNames <- str_split(string = lut$hierarchy, pattern = "\\|")[[1]]
       unitCols <- unique(gazetteer$class[gazetteer$level %in% 1:length(oldNames)])
+      unitCols <- unitCols[!is.na(unitCols)]
       topCol <- unitCols[1]
     } else{
       stop(paste0("  ! the file '", file_name, "' has not been registered yet."))
@@ -375,7 +376,7 @@ normGeometry <- function(input = NULL, pattern = NULL, ..., thresh = 10,
               mutate(valid = abs(deviation) < thresh) %>%
               ungroup() %>%
               as_tibble() %>%
-              select(-geom, -!!unitCols, -targetFID, -target_area, -area, -overlap_area, -deviation) %>%
+              select(-geom, -!!unitCols, -targetFID, -target_area, -area, -overlap_area, -deviation, -code) %>%
               arrange(sourceFID)
           ))
 
@@ -406,14 +407,14 @@ normGeometry <- function(input = NULL, pattern = NULL, ..., thresh = 10,
           validUnits <- sourceOverlap %>%
             filter(valid) %>%
             mutate(geoID = newGID) %>%
-            select(-sourceFID, -valid, -!!unitCols) %>%
+            select(-sourceFID, -valid, -!!unitCols, -code) %>%
             st_sf()
 
           # get geoms that are invalid because their overlap is smaller than
           # threshold
           invalidUnits <- sourceOverlap %>%
             filter(!valid) %>%
-            select(-sourceFID, -valid)
+            select(-sourceFID, -valid, -code)
 
           # ensure that the number of valid and invalidUnits equals to the source units
           if(dim(sourceGeom)[1] != (dim(validUnits)[1] + dim(invalidUnits)[1])){
@@ -450,7 +451,7 @@ normGeometry <- function(input = NULL, pattern = NULL, ..., thresh = 10,
           newUnits <- invalidUnits %>%
             select(-ahName, -ahID) %>%
             mutate(geoID = newGID) %>%
-            left_join(gazetteer %>% select(code, !!unitCols[length(unitCols)] := label_en)) %>%
+            left_join(gazetteer %>% filter(!is.na(class)) %>% select(code, !!unitCols[length(unitCols)] := label_en)) %>%
             unite(col = "ahName", unitCols, sep = ".") %>%
             st_sf() %>%
             select(ahName, ahID = code, level, geoID)
@@ -469,14 +470,10 @@ normGeometry <- function(input = NULL, pattern = NULL, ..., thresh = 10,
 
         } else {
 
-          # tempGaz <- gazetteer %>%
-          #   filter(class %in% unitCols[i]) %>%
-          #   select(code, !!unitCols[length(unitCols)] := label_en)
 
           message("    Creating new basis dataset at level ", theLevel, ".")
           outGeom <- suppressMessages(
             sourceGeom %>%
-              # left_join(tempGaz) %>%
               unite(col = "ahName", unitCols, sep = ".") %>%
               mutate(level = theLevel,
                      geoID = newGID) %>%

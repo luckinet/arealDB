@@ -57,7 +57,7 @@
 normTable <- function(input = NULL, outType = "rds", pattern = NULL,
                       update = FALSE, verbose = FALSE){
 
-  # input <- NULL; outType = "rds"; pattern = ds[1]; update = TRUE; verbose = FALSE
+  # input <- NULL; outType = "rds"; pattern = NULL; update = TRUE; verbose = FALSE
 
   # set internal paths
   intPaths <- getOption(x = "adb_path")
@@ -76,7 +76,7 @@ normTable <- function(input = NULL, outType = "rds", pattern = NULL,
   inv_tables <- read_csv(paste0(intPaths, "/inv_tables.csv"), col_types = "iiiccccDccccc")
   inv_dataseries <- read_csv(paste0(intPaths, "/inv_dataseries.csv"), col_types = "icccccc")
   inv_geometries <- read_csv(paste0(intPaths, "/inv_geometries.csv"), col_types = "iiicccccDDcc")
-  gazetteer <- load_ontology(path = gazPath) %>%
+  gazetteer <- load_ontology(path = gazPath)@labels %>%
     rowwise() %>%
     mutate(level = str_split(code, "[.]", simplify = TRUE) %>% length())
 
@@ -124,6 +124,7 @@ normTable <- function(input = NULL, outType = "rds", pattern = NULL,
       oldNames <- str_split(string = inv_geometries$hierarchy[inv_geometries$geoID == geoID],
                             pattern = "\\|")[[1]]
       unitCols <- unique(gazetteer$class[gazetteer$level %in% 1:length(oldNames)])
+      unitCols <- unitCols[!is.na(unitCols)]
     } else{
       stop(paste0("  ! the file '", file_name, "' has not been registered yet."))
     }
@@ -143,7 +144,7 @@ normTable <- function(input = NULL, outType = "rds", pattern = NULL,
       reorganise(schema = algorithm)
 
     message("    harmonising territory names ...")
-    tempHarm <- match_gazetteer(table = temp, columns = unitCols, dataseries = dSeries, from_meta = FALSE)
+    temp <- match_gazetteer(table = temp, columns = unitCols, dataseries = dSeries, from_meta = FALSE)
     # re-load gazetteer (to contain also updates)
     gazetteer <- load_ontology(path = gazPath)@labels %>%
       rowwise() %>%
