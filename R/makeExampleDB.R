@@ -24,7 +24,6 @@
 #' }
 #' @importFrom checkmate assertChoice testDirectoryExists
 #' @importFrom readr read_csv
-#' @importFrom ontologics get_concept new_concept set_mapping
 #' @importFrom tabshiftr setFormat setIDVar setObsVar
 #' @export
 

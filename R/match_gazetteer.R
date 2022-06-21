@@ -4,7 +4,7 @@
 #' @param columns [\code{character(1)}]\cr the columns containing the concepts
 #' @param dataseries [\code{character(1)}]\cr
 #' @param from_meta [\code{logical(1)}]\cr
-#' @importFrom ontologics get_concept new_concept set_mapping
+#' @importFrom ontologics get_concept new_concept new_mapping new_source
 #' @importFrom purrr map
 #' @importFrom stringr str_replace_all
 #' @importFrom dplyr bind_cols
@@ -15,15 +15,21 @@
 
 match_gazetteer <- function(table = NULL, columns = NULL, dataseries = NULL, from_meta = FALSE){
 
-  # table = newGeom; columns = unitCols; dataseries = dSeries; from_meta = FALSE
+  # table = NULL; columns = NULL; dataseries = NULL; from_meta = TRUE
 
   intPaths <- paste0(getOption(x = "adb_path"))
   gazPath <- paste0(getOption(x = "gazetteer_path"))
 
-  gaz <- read_rds(gazPath)
-  harmonised <- gaz$mappings
-  theClasses <- unique(harmonised$class)
+  gaz <- load_ontology(name = "territories", path = gazPath)
+  # bla <- gaz@concepts %>%
+  #   left_join(gaz@labels, by = "code") %>%
+  #   left_join(gaz@sources %>% select(sourceID, sourceName), by = "sourceID") %>%
+  #   left_join(gaz@mappings, by = "code")
 
+  # harmonised <- gaz$mappings
+  theClasses <- gaz@classes$class
+
+  # first, identify from where to take matches ----
   if(from_meta){
 
     toMatch <- list.files(paste0(intPaths, "/meta/concepts/"), full.names = TRUE)
@@ -50,7 +56,7 @@ match_gazetteer <- function(table = NULL, columns = NULL, dataseries = NULL, fro
                           sort_in = c("cut out these concepts and sort them \neither into 'close' or into 'nested'", "", "sort_in"))
 
     # determine those concepts, that are not yet defined in the gazetteer
-    missingConcepts <- get_concept(terms = concepts, missing = TRUE, path = gazPath)
+    missingConcepts <- get_concept(terms = concepts, missing = TRUE, ontology = gaz)
 
     # build a table of external concepts and of harmonised concepts these should be overwritten with
     if(dim(missingConcepts)[1] != 0){
@@ -62,12 +68,13 @@ match_gazetteer <- function(table = NULL, columns = NULL, dataseries = NULL, fro
                nested = NA_character_,
                sort_in = NA_character_)
 
-      sortIn <- tibble(code = NA_character_,
-                       harmonised = NA_character_,
-                       class = NA_character_,
-                       close = NA_character_,
-                       nested = NA_character_,
-                       sort_in = missingConcepts)
+      sortIn <- missingConcepts %>%
+        select(sort_in = external) %>%
+        mutate(code = NA_character_,
+               harmonised = NA_character_,
+               class = NA_character_,
+               close = NA_character_,
+               nested = NA_character_)
 
       # put together the object that shall be edited by the user ...
       explanation %>%
@@ -88,6 +95,7 @@ match_gazetteer <- function(table = NULL, columns = NULL, dataseries = NULL, fro
 
   }
 
+  # ... then align these matches with the ontology ----
   for(i in seq_along(toMatch)){
 
     if(from_meta){
@@ -107,6 +115,11 @@ match_gazetteer <- function(table = NULL, columns = NULL, dataseries = NULL, fro
 
     if(!is.null(related)){
 
+      # make a new dataseries, in case it doesn't exist yet
+      if(!dataseries %in% gaz@sources$sourceName){
+        gaz <- new_source(name = dataseries, ontology = gaz)
+      }
+
       # in case there are concepts that are merely nested into other concepts,
       # set these as new harmonised concepts
       if(any(!is.na(related$nested))){
@@ -116,15 +129,16 @@ match_gazetteer <- function(table = NULL, columns = NULL, dataseries = NULL, fro
           separate_rows(nested, sep = ", ") %>%
           mutate(class = theClasses[which(theClasses %in% class) + 1])
 
-        new_concept(new = nestedConcepts$nested,
-                    broader = nestedConcepts$harmonised,
-                    class = nestedConcepts$class,
-                    source = dataseries,
-                    path = gazPath)
+        gaz <- get_concept(terms = nestedConcepts$harmonised, ontology = gaz) %>%
+          new_concept(new = nestedConcepts$nested,
+                      broader = .,
+                      class = nestedConcepts$class,
+                      source = dataseries,
+                      ontology = gaz)
 
-        related <- related %>%
-          bind_rows(tibble(harmonised = nestedConcepts$nested,
-                           close = nestedConcepts$nested))
+        # related <- related %>%
+        #   bind_rows(tibble(harmonised = nestedConcepts$nested,
+        #                    close = nestedConcepts$nested))
 
       }
 
@@ -135,18 +149,23 @@ match_gazetteer <- function(table = NULL, columns = NULL, dataseries = NULL, fro
         temp <- related %>%
           filter(!is.na(close))
 
-        set_mapping(concept = temp$harmonised,
-                    external = temp$close,
-                    match = "close",
-                    source = dataseries,
-                    certainty = 3,
-                    path = gazPath)
+        gaz <- get_concept(terms = temp$harmonised, ontology = gaz) %>%
+          new_mapping(concept = .,
+                      new = temp$close,
+                      match = "close",
+                      source = dataseries,
+                      certainty = 3,
+                      ontology = gaz)
 
       }
+
+      write_rds(x = gaz, file = gazPath)
     }
+
 
   }
 
+  # ... and finally extract the respective concepts and merge them with the input table ----
   if(!from_meta){
 
 
@@ -160,7 +179,7 @@ match_gazetteer <- function(table = NULL, columns = NULL, dataseries = NULL, fro
         arrange(!!sym(theColumn))
 
       # finally, extract the harmonised concepts ...
-      newConcepts <- get_concept(terms = unlist(theConcepts, use.names = FALSE), path = gazPath) %>%
+      newConcepts <- get_concept(terms = unlist(theConcepts, use.names = FALSE), ontology = gaz) %>%
         rename(!!sym(theColumn) := external)
 
       # ... and assign them to the respective column ...
@@ -168,12 +187,12 @@ match_gazetteer <- function(table = NULL, columns = NULL, dataseries = NULL, fro
         temp <- table %>%
           left_join(newConcepts, by = theColumn) %>%
           mutate(broader = code) %>%
-          select(-class, -source, -code)
+          select(-class, -sourceName, -code)
       } else {
         temp <- temp %>%
           left_join(newConcepts, by = c(theColumn, "broader")) %>%
           mutate(broader = code) %>%
-          select(-class, -source, -code)
+          select(-class, -sourceName, -code)
       }
 
       temp <- temp %>%
@@ -183,7 +202,7 @@ match_gazetteer <- function(table = NULL, columns = NULL, dataseries = NULL, fro
     }
     table <- temp %>%
       # separate(col = broader, into = paste0(columns, "_id"), sep = "[.]") %>%
-      select(columns, code = broader, everything())
+      select(all_of(columns), code = broader, everything())
 
     # ... and store the newly defined matches as a dataseries specific matching table
     if(testFileExists(paste0(intPaths, "/meta/concepts/match_", dataseries, ".csv"))){

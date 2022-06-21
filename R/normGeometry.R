@@ -90,7 +90,7 @@
 normGeometry <- function(input = NULL, pattern = NULL, ..., thresh = 10,
                          outType = "gpkg", update = FALSE, verbose = FALSE){
 
-  # input = NULL; pattern = "gadm"; sbst <- list(al1 = "Angola"); thresh = 10; outType = "gpkg"; update = TRUE; verbose = FALSE; library(sf)
+  # input = NULL; pattern = NULL; sbst <- list(); thresh = 10; outType = "gpkg"; update = TRUE; verbose = FALSE; library(sf)
 
   # set internal paths
   intPaths <- paste0(getOption(x = "adb_path"))
@@ -109,7 +109,7 @@ normGeometry <- function(input = NULL, pattern = NULL, ..., thresh = 10,
   # get tables
   inv_geometries <- read_csv(paste0(intPaths, "/inv_geometries.csv"), col_types = "iiicccccDDcc")
   inv_dataseries <- read_csv(paste0(intPaths, "/inv_dataseries.csv"), col_types = "icccccc")
-  gazetteer <- load_ontology(path = gazPath) %>%
+  gazetteer <- load_ontology(path = gazPath)@labels %>%
     rowwise() %>%
     mutate(level = str_split(code, "[.]", simplify = TRUE) %>% length())
 
@@ -187,7 +187,7 @@ normGeometry <- function(input = NULL, pattern = NULL, ..., thresh = 10,
                                columns = unitCols,
                                dataseries = dSeries)
     # re-load gazetteer (to contain also updates)
-    gazetteer <- load_ontology(path = gazPath) %>%
+    gazetteer <- load_ontology(path = gazPath)@labels %>%
       rowwise() %>%
       mutate(level = str_split(code, "[.]", simplify = TRUE) %>% length())
 

@@ -30,10 +30,12 @@ test_that("make example DB until match_gazetter", {
   expect_file_exists(x = paste0(dbpath, "/territories.rds"))
   temp <- read_rds(paste0(dbpath, "/territories.rds"))
 
-  expect_list(x = temp, len = 2)
-  expect_names(x = names(temp), permutation.of = c("attributes", "mappings"))
-  expect_names(x = names(temp$attributes), permutation.of = c("code", "source", "label_en", "class"))
-  expect_names(x = names(temp$mappings), permutation.of = c("code", "broader", "label_en", "class", "external"))
+  expect_class(x = temp, classes = "onto")
+  expect_tibble(x = temp@classes, nrows = 3, ncols = 2)
+  expect_tibble(x = temp@sources, nrows = 3, ncols = 6)
+  expect_tibble(x = temp@concepts, nrows = 30, ncols = 3)
+  expect_tibble(x = temp@labels, nrows = 30, ncols = 3)
+  expect_tibble(x = temp@mappings, nrows = 13, ncols = 2)
 
 })
 

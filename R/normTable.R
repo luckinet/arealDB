@@ -57,7 +57,7 @@
 normTable <- function(input = NULL, outType = "rds", pattern = NULL,
                       update = FALSE, verbose = FALSE){
 
-  # input <- NULL; outType = "rds"; pattern = NULL; update = TRUE; verbose = FALSE
+  # input <- NULL; outType = "rds"; pattern = ds[1]; update = TRUE; verbose = FALSE
 
   # set internal paths
   intPaths <- getOption(x = "adb_path")
@@ -143,9 +143,9 @@ normTable <- function(input = NULL, outType = "rds", pattern = NULL,
       reorganise(schema = algorithm)
 
     message("    harmonising territory names ...")
-    temp <- match_gazetteer(table = temp, columns = unitCols, dataseries = dSeries, from_meta = FALSE)
+    tempHarm <- match_gazetteer(table = temp, columns = unitCols, dataseries = dSeries, from_meta = FALSE)
     # re-load gazetteer (to contain also updates)
-    gazetteer <- load_ontology(path = gazPath) %>%
+    gazetteer <- load_ontology(path = gazPath)@labels %>%
       rowwise() %>%
       mutate(level = str_split(code, "[.]", simplify = TRUE) %>% length())
 
