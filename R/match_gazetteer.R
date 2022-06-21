@@ -15,7 +15,7 @@
 
 match_gazetteer <- function(table = NULL, columns = NULL, dataseries = NULL, from_meta = FALSE){
 
-  # table = NULL; columns = NULL; dataseries = NULL; from_meta = TRUE
+  # table = inGeom; columns = unitCols; dataseries = dSeries; from_meta = FALSE
 
   intPaths <- paste0(getOption(x = "adb_path"))
   gazPath <- paste0(getOption(x = "gazetteer_path"))
@@ -26,7 +26,6 @@ match_gazetteer <- function(table = NULL, columns = NULL, dataseries = NULL, fro
   #   left_join(gaz@sources %>% select(sourceID, sourceName), by = "sourceID") %>%
   #   left_join(gaz@mappings, by = "code")
 
-  # harmonised <- gaz$mappings
   theClasses <- gaz@classes$class
 
   # first, identify from where to take matches ----
@@ -61,7 +60,7 @@ match_gazetteer <- function(table = NULL, columns = NULL, dataseries = NULL, fro
     # build a table of external concepts and of harmonised concepts these should be overwritten with
     if(dim(missingConcepts)[1] != 0){
 
-      relate <- harmonised %>%
+      relate <- gaz@labels %>%
         select(code, harmonised = label_en, class) %>%
         mutate(code = paste0("_", str_replace_all(string = code, "[.]", "_")),
                close = NA_character_,
@@ -196,7 +195,7 @@ match_gazetteer <- function(table = NULL, columns = NULL, dataseries = NULL, fro
       }
 
       temp <- temp %>%
-        select(-theColumn) %>%
+        select(-all_of(theColumn)) %>%
         rename(!!theColumn := label_en)
 
     }
