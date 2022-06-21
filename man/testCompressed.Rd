@@ -10,7 +10,7 @@ testCompressed(x)
 \item{x}{[\code{character(1)}]\cr the file name.}
 }
 \description{
-Test whether a file is a compressed file
+(internal function not for user interaction)
 }
 \details{
 This function looks at the file-extension and if it is one of

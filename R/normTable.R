@@ -5,7 +5,7 @@
 #'   is left empty, all files at stage two as subset by \code{pattern} are
 #'   chosen.
 #' @param pattern [\code{character(1)}]\cr an optional regular expression. Only
-#'   dataset names which match the regular expression will be returned.
+#'   dataset names which match the regular expression will be processed.
 #' @param update [\code{logical(1)}]\cr whether or not the physical files should
 #'   be updated (\code{TRUE}) or the function should merely return the new
 #'   object (\code{FALSE}, default). This is helpful to check whether the
@@ -22,15 +22,17 @@
 #'   \enumerate{ \item Read in \code{input} and extract initial metadata from
 #'   the file name. \item Employ the function
 #'   \code{tabshiftr::\link{reorganise}} to reshape \code{input} according to
-#'   the respective schema description. \item Match the territorial units in
-#'   \code{input} via . \item Harmonise territorial unit
+#'   the respective schema description. \item The territorial names are matched
+#'   with the gazetteer to harmonise new territorial names (at this step, the
+#'   function might ask the user to edit the file 'matching.csv' to align new
+#'   names with already harmonised names). \item Harmonise territorial unit
 #'   names. \item If \code{update = TRUE}, store the processed data table at
 #'   stage three.}
-#' @family normalisers
+#' @family normalise functions
 #' @return This function harmonises and integrates so far unprocessed data
 #'   tables at stage two into stage three of the areal database. It produces for
-#'   each nation in the registered data tables a comma-separated values file
-#'   that includes all thematic areal data.
+#'   each main polygon (e.g. nation) in the registered data tables a file that
+#'   includes all thematic areal data.
 #' @examples
 #' if(dev.interactive()){
 #'   # build the example database
@@ -54,10 +56,8 @@
 #' @importFrom utils read.csv
 #' @export
 
-normTable <- function(input = NULL, outType = "rds", pattern = NULL,
+normTable <- function(input = NULL, pattern = NULL, outType = "rds",
                       update = FALSE, verbose = FALSE){
-
-  # input <- NULL; outType = "rds"; pattern = NULL; update = TRUE; verbose = FALSE
 
   # set internal paths
   intPaths <- getOption(x = "adb_path")

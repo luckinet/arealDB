@@ -18,8 +18,8 @@ the (hierarchical) information of territorial units used in this database.}
 }
 \value{
 No return value, called for the side effect of creating the
-  directory structure of the new areal database and a new environment that
-  contains the database metadata.
+  directory structure of the new areal database and tables that contain the
+  database metadata.
 }
 \description{
 Initiate a geospatial database or register a database that exists at the root
@@ -37,7 +37,9 @@ This is the first function that is run in a project, as it initiates
 }}
 
 \examples{
-start_arealDB(root = tempdir(),
+start_arealDB(root = paste0(tempdir(), "/newDB"),
               gazetteer = system.file("test_datasets/territories.rds",
                                       package = "arealDB"))
+
+getOption("adb_path"); getOption("gazetteer_path")
 }

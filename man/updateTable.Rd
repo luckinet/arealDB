@@ -18,5 +18,6 @@ which to match.}
 \code{log} directory.}
 }
 \description{
-Update any inventory, index or translation table of an areal database.
+Update any inventory, index or translation table of an areal database
+(internal function not meant for user interaction).
 }

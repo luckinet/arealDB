@@ -1,13 +1,16 @@
-#' Extract concepts in stage2 tables
+#' Extract concepts in stage 2 tables
 #'
-#' This function matches the values of a variable with an index and returns the
-#' specified IDs.
+#' Tables at stage 2 are not yet harmonised and thus there is no unified way of
+#' extracting information (this is only given at stage 3). In case these
+#' information are required before the tables are harmonised, this function
+#' allows to extract them.
 #' @param variable [\code{character(.)}]\cr name of the variable for which to
 #'   extract concepts.
 #' @param dataseries [\code{integerish(1)}]\cr name of the dataseries from which
 #'   to extract the variables' concepts.
-#' @return The table provided in \code{input}, where the given variable is
-#'   replaced by the column that is specified by the argument name.
+#' @details This function pulls the schema description of all files of the given
+#'   dataseries to harmonise the table and extact the \code{variable} values.
+#' @return the unique values at stage 2 of the specified dataseries
 #' @importFrom checkmate assertChoice
 #' @importFrom dplyr pull
 #' @export

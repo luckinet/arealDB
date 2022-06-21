@@ -12,7 +12,7 @@
 #'   separately. For an R-based workflow, \code{"rds"} could be an efficient
 #'   option.
 #' @param pattern [\code{character(1)}]\cr an optional regular expression. Only
-#'   dataset names which match the regular expression will be returned.
+#'   dataset names which match the regular expression will be processed.
 #' @param ... [\code{character(1)}]\cr argument-value combination to filter the
 #'   new geometries by.
 #' @param update [\code{logical(1)}]\cr whether or not the physical files should
@@ -25,31 +25,34 @@
 #'   \code{\link{suppressMessages}} to make this function completely silent.
 #' @details To normalise geometries, this function proceeds as follows:
 #'   \enumerate{ \item Read in \code{input} and extract initial metadata from
-#'   the file name. \item Loop through every nation potentially included in the
-#'   file that shall be processed and carry out the following steps: \itemize{
-#'   \item In case the geometries are provided as a list of simple feature
-#'   POLYGONS, they are dissolved into a single MULTIPOLYGON per nation. \item
-#'   In case the nation to which a geometry belongs has not yet been created at
-#'   stage three, the following steps are carried out: \enumerate{ \item Check
-#'   whether the recent dataset is GADM, to build the initial administrative
-#'   hierarchy from GADM geometries, and stop if this is not the case. \item
-#'   Extract the full hierarchy of all territorial units that are part of the
-#'   geometry. \item Reconstruct ahID from the intermediate spatial objects and
-#'   from the metadata. } \item In case the nation to which the geometry belongs
-#'   has already been created, the following steps are carried out: \enumerate{
-#'   \item Check whether the new geometries have the same coordinate reference
-#'   system as the already existing database and re-project the new geometries
-#'   if this is not the case. \item Check whether all new geometries are already
-#'   exactly matched spatially and stop if that is the case. \item Check whether
-#'   the new geometries are all within the already defined parents, and save
-#'   those that are not as a new geometry. \item Calculate spatial overlap and
-#'   distinguish the geometries into those that overlap with more and those with
-#'   less than \code{thresh}. \item For all units that did match, copy ahID from
-#'   the geometries they overlap. \item For all units that did not match,
-#'   rebuild metadata and a new ahID. } \item If update = TRUE, store the
-#'   processed geometry at stage three.} \item Move the geometry to the folder
-#'   '/processed', if it is fully processed.}
-#' @family normalisers
+#'   the file name. \item In case filters are set, the new geometry is filtered
+#'   by those. \item The territorial names are matched with the gazetteer to
+#'   harmonise new territorial names (at this step, the function might ask the
+#'   user to edit the file 'matching.csv' to align new names with already
+#'   harmonised names). \item Loop through every nation potentially included in
+#'   the file that shall be processed and carry out the following steps:
+#'   \itemize{ \item In case the geometries are provided as a list of simple
+#'   feature POLYGONS, they are dissolved into a single MULTIPOLYGON per main
+#'   polygon. \item In case the nation to which a geometry belongs has not yet
+#'   been created at stage three, the following steps are carried out:
+#'   \enumerate{ \item Store the current geometry as basis of the respective
+#'   level (the user needs to make sure that all following levels of the same
+#'   dataseries are perfectly nested into those parent territories, for example
+#'   by using the GADM dataset) } \item In case the nation to which the geometry
+#'   belongs has already been created, the following steps are carried out:
+#'   \enumerate{ \item Check whether the new geometries have the same coordinate
+#'   reference system as the already existing database and re-project the new
+#'   geometries if this is not the case. \item Check whether all new geometries
+#'   are already exactly matched spatially and stop if that is the case. \item
+#'   Check whether the new geometries are all within the already defined
+#'   parents, and save those that are not as a new geometry. \item Calculate
+#'   spatial overlap and distinguish the geometries into those that overlap with
+#'   more and those with less than \code{thresh}. \item For all units that did
+#'   match, copy ahID from the geometries they overlap. \item For all units that
+#'   did not match, rebuild metadata and a new ahID. } \item If update = TRUE,
+#'   store the processed geometry at stage three.} \item Move the geometry to
+#'   the folder '/processed', if it is fully processed.}
+#' @family normalise functions
 #' @return This function harmonises and integrates so far unprocessed geometries
 #'   at stage two into stage three of the geospatial database. It produces for
 #'   each main polygon (e.g. nation) in the registered geometries a spatial file

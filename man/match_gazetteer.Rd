@@ -2,7 +2,7 @@
 % Please edit documentation in R/match_gazetteer.R
 \name{match_gazetteer}
 \alias{match_gazetteer}
-\title{Match concepts in a table with a gazetteer}
+\title{Match territories in a table with a gazetteer}
 \usage{
 match_gazetteer(
   table = NULL,
@@ -12,14 +12,19 @@ match_gazetteer(
 )
 }
 \arguments{
-\item{table}{[\code{character(1)}]\cr a table that contains columns that should be harmonised by matching it with the gazetteer.}
+\item{table}{[\code{character(1)}]\cr a table that contains columns that
+should be harmonised by matching with the gazetteer.}
 
 \item{columns}{[\code{character(1)}]\cr the columns containing the concepts}
 
-\item{dataseries}{[\code{character(1)}]\cr}
+\item{dataseries}{[\code{character(1)}]\cr the source dataseries from which
+territories are sourced.}
 
-\item{from_meta}{[\code{logical(1)}]\cr}
+\item{from_meta}{[\code{logical(1)}]\cr whether or not to load the matches
+from previous matching tables, or construct them from \code{table} and
+\code{columns}.}
 }
 \description{
-Match concepts in a table with a gazetteer
+This function takes a table to replace the values of various columns with
+harmonised values listed in the project specific gazetteer.
 }

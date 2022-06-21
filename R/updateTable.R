@@ -1,6 +1,7 @@
 #' Update a table
 #'
-#' Update any inventory, index or translation table of an areal database.
+#' Update any inventory, index or translation table of an areal database
+#' (internal function not meant for user interaction).
 #' @param index [\code{tibble(1)}]\cr the table to use as update.
 #' @param name [\code{character(1)}]\cr name of the table that shall be updated.
 #' @param matchCols [\code{character(.)}]\cr the columns in the old file by
@@ -11,7 +12,6 @@
 #' @importFrom readr write_csv
 #' @importFrom dplyr union arrange row_number across
 #' @importFrom tidyselect all_of
-#' @export
 
 updateTable <- function(index = NULL, name = NULL, matchCols = NULL, backup = TRUE){
 

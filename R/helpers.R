@@ -1,5 +1,6 @@
 #' Get the column types of a tibble
 #'
+#' (internal function not for user interaction)
 #' @param input [\code{tibble(1)}]\cr tibble from which to get column types.
 #' @importFrom checkmate assertDataFrame
 #' @importFrom tibble tibble
@@ -27,6 +28,7 @@ getColTypes <- function(input = NULL){
 
 #' Test whether a file is a compressed file
 #'
+#' (internal function not for user interaction)
 #' @param x [\code{character(1)}]\cr the file name.
 #' @details This function looks at the file-extension and if it is one of
 #'   \code{.gz}, \code{.bz2}, \code{.tar} \code{.zip}, \code{.tgz}, \code{.gzip}

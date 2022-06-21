@@ -27,8 +27,17 @@ No return value, called for the side effect of creating an example
 \description{
 This function helps setting up an example database up until a certain step.
 }
+\details{
+Setting up a database with an R-based tool can appear to be
+  cumbersome and too complex and thus intimidating. By creating an example
+  database, this functions allows interested users to learn step by step how
+  to build a database of areal data. Moreover, all functions in this package
+  contain verbose information and ask for information that would be missing
+  or lead to an inconsistent database, before a failure renders hours of work
+  useless.
+}
 \examples{
-\dontrun{
+if(dev.interactive()){
 # to build the full example database
 makeExampleDB(path = tempdir())
 

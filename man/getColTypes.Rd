@@ -10,5 +10,5 @@ getColTypes(input = NULL)
 \item{input}{[\code{tibble(1)}]\cr tibble from which to get column types.}
 }
 \description{
-Get the column types of a tibble
+(internal function not for user interaction)
 }

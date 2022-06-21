@@ -40,6 +40,10 @@ devtools::install_github("EhrmannS/arealDB")
 2) Read the [paper](https://www.sciencedirect.com/science/article/abs/pii/S1364815220307751) for an in-depth description of the procedure.
 
 
+## Getting started
+
+*work in process*
+
 ## Examples
 
-For examples, please refer currently to the [appendix/source](https://arxiv.org/format/1909.06610) of the preprint.
+For a detailed example, please refer to the replication script [appendix/source](https://arxiv.org/format/1909.06610) of the pre-print.

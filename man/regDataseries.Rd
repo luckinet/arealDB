@@ -16,7 +16,7 @@ regDataseries(
 )
 }
 \arguments{
-\item{name}{[\code{character(1)}]\cr the dataseries abbreviation.}
+\item{name}{[\code{character(1)}]\cr the dataseries abbreviation or name.}
 
 \item{description}{[\code{character(1)}]\cr the "long name" or "brief
 description" of the dataseries.}
@@ -33,7 +33,8 @@ the licence text is stored.}
 \item{notes}{[\code{character(1)}]\cr optional notes.}
 
 \item{update}{[\code{logical(1)}]\cr whether or not the file
-'inv_dataseries.csv' should be updated.}
+'inv_dataseries.csv' should be updated (obligatory to continue registering
+geometries or tables associated to this dataseries).}
 
 \item{overwrite}{[\code{logical(1)}]\cr whether or not the dataseries to
 register shall overwrite a potentially already existing older version.}
@@ -44,12 +45,13 @@ Returns a tibble of the new entry that is appended to
 }
 \description{
 This function registers a new dataseries of both, geometries or areal data
-into the geospatial database.
+into the geospatial database. This contains the name and relevant meta-data
+of a dataseries to enable provenance tracking and reproducability.
 }
 \examples{
 if(dev.interactive()){
   # start the example database
-  makeExampleDB(until = "setVariables", path = tempdir())
+  makeExampleDB(until = "match_gazetteer", path = tempdir())
 
   regDataseries(name = "gadm",
                 description = "Database of Global Administrative Areas",
@@ -58,3 +60,9 @@ if(dev.interactive()){
                 update = TRUE)
 }
 }
+\seealso{
+Other register functions: 
+\code{\link{regGeometry}()},
+\code{\link{regTable}()}
+}
+\concept{register functions}

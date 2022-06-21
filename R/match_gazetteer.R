@@ -1,9 +1,15 @@
-#' Match concepts in a table with a gazetteer
+#' Match territories in a table with a gazetteer
 #'
-#' @param table [\code{character(1)}]\cr a table that contains columns that should be harmonised by matching it with the gazetteer.
+#' This function takes a table to replace the values of various columns with
+#' harmonised values listed in the project specific gazetteer.
+#' @param table [\code{character(1)}]\cr a table that contains columns that
+#'   should be harmonised by matching with the gazetteer.
 #' @param columns [\code{character(1)}]\cr the columns containing the concepts
-#' @param dataseries [\code{character(1)}]\cr
-#' @param from_meta [\code{logical(1)}]\cr
+#' @param dataseries [\code{character(1)}]\cr the source dataseries from which
+#'   territories are sourced.
+#' @param from_meta [\code{logical(1)}]\cr whether or not to load the matches
+#'   from previous matching tables, or construct them from \code{table} and
+#'   \code{columns}.
 #' @importFrom ontologics get_concept new_concept new_mapping new_source
 #' @importFrom purrr map
 #' @importFrom stringr str_replace_all
@@ -13,18 +19,13 @@
 #' @importFrom utils tail
 #' @export
 
-match_gazetteer <- function(table = NULL, columns = NULL, dataseries = NULL, from_meta = FALSE){
-
-  # table = inGeom; columns = unitCols; dataseries = dSeries; from_meta = FALSE
+match_gazetteer <- function(table = NULL, columns = NULL, dataseries = NULL,
+                            from_meta = FALSE){
 
   intPaths <- paste0(getOption(x = "adb_path"))
   gazPath <- paste0(getOption(x = "gazetteer_path"))
 
   gaz <- load_ontology(name = "territories", path = gazPath)
-  # bla <- gaz@concepts %>%
-  #   left_join(gaz@labels, by = "code") %>%
-  #   left_join(gaz@sources %>% select(sourceID, sourceName), by = "sourceID") %>%
-  #   left_join(gaz@mappings, by = "code")
 
   theClasses <- gaz@classes$class
 
@@ -135,10 +136,6 @@ match_gazetteer <- function(table = NULL, columns = NULL, dataseries = NULL, fro
                       source = dataseries,
                       ontology = gaz)
 
-        # related <- related %>%
-        #   bind_rows(tibble(harmonised = nestedConcepts$nested,
-        #                    close = nestedConcepts$nested))
-
       }
 
       # in case there are close matches with already harmonised concept, set the
@@ -200,7 +197,6 @@ match_gazetteer <- function(table = NULL, columns = NULL, dataseries = NULL, fro
 
     }
     table <- temp %>%
-      # separate(col = broader, into = paste0(columns, "_id"), sep = "[.]") %>%
       select(all_of(columns), code = broader, everything())
 
     # ... and store the newly defined matches as a dataseries specific matching table

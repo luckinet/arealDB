@@ -2,7 +2,7 @@
 % Please edit documentation in R/get_variable.R
 \name{get_variable}
 \alias{get_variable}
-\title{Extract concepts in stage2 tables}
+\title{Extract concepts in stage 2 tables}
 \usage{
 get_variable(variable = NULL, dataseries = NULL)
 }
@@ -14,10 +14,15 @@ extract concepts.}
 to extract the variables' concepts.}
 }
 \value{
-The table provided in \code{input}, where the given variable is
-  replaced by the column that is specified by the argument name.
+the unique values at stage 2 of the specified dataseries
 }
 \description{
-This function matches the values of a variable with an index and returns the
-specified IDs.
+Tables at stage 2 are not yet harmonised and thus there is no unified way of
+extracting information (this is only given at stage 3). In case these
+information are required before the tables are harmonised, this function
+allows to extract them.
+}
+\details{
+This function pulls the schema description of all files of the given
+  dataseries to harmonise the table and extact the \code{variable} values.
 }

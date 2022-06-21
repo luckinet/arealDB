@@ -2,15 +2,15 @@
 #'
 #' This function registers a new geometry of territorial units into the
 #' geospatial database.
+#' @param ... [\code{character(1)}]\cr optional named argument selecting the
+#'   main territory into which this geometry is nested. The name of this must be
+#'   a class of the gazetteer and the value must be one of the territory names
+#'   of that class, e.g. \emph{nation = "Estonia"}.
 #' @param subset [\code{character(1)}]\cr optional argument to specify which
 #'   subset the file contains. This could be a subset of territorial units (e.g.
 #'   only one municipality) or of a target variable.
 #' @param gSeries [\code{character(1)}]\cr the name of the geometry dataseries
 #'   (see \code{\link{regDataseries}}).
-#' @param ... [\code{character(1)}]\cr named argument selecting the main
-#'   territory into which this geometry is nested. The name of this must be a
-#'   class of the territory-ontology and the value must be one of the territory
-#'   names of that class, e.g. \emph{nation = "Argentina"}.
 #' @param level [\code{integerish(1)}]\cr the administrative level at which the
 #'   geometry is recorded.
 #' @param layer [\code{character}]\cr the name of the file's layer from which
@@ -36,24 +36,24 @@
 #' @param overwrite [\code{logical(1)}]\cr whether or not the geometry to
 #'   register shall overwrite a potentially already existing older version.
 #' @details When processing geometries to which areal data shall be linked,
-#'   carry out the following steps: \enumerate{ \item Determine the
-#'   \code{nation}, a \code{subset} (if applicable), the dataseries of the
-#'   geometry and the administrative \code{level}, and provide them as arguments
-#'   to this function. \item Run the function. \item Export the shapefile with
-#'   the following properties: \itemize{ \item Format: GeoPackage \item File
-#'   name: What is provided as message by this function \item CRS: EPSG:4326 -
-#'   WGS 84 \item make sure that 'all fields are exported'} \item Confirm that
-#'   you have saved the file.}
+#'   carry out the following steps: \enumerate{ \item Determine the main
+#'   territory (such as a nation, or any other polygon), a \code{subset} (if
+#'   applicable), the dataseries of the geometry and the administrative
+#'   \code{level}, and provide them as arguments to this function. \item Run the
+#'   function. \item Export the shapefile with the following properties:
+#'   \itemize{ \item Format: GeoPackage \item File name: What is provided as
+#'   message by this function \item CRS: EPSG:4326 - WGS 84 \item make sure that
+#'   'all fields are exported'} \item Confirm that you have saved the file.}
 #' @return Returns a tibble of the entry that is appended to
 #'   'inv_geometries.csv' in case \code{update = TRUE}.
+#' @family register functions
 #' @examples
 #' if(dev.interactive()){
 #'   # build the example database
 #'   makeExampleDB(until = "regDataseries", path = tempdir())
 #'
-#'   # The GADM dataset comes as *.zip archive
-#'   regGeometry(nation = "NAME_0",
-#'               gSeries = "gadm",
+#'   # The GADM dataset comes as *.7z archive
+#'   regGeometry(gSeries = "gadm",
 #'               level = 1,
 #'               layer = "example_geom1",
 #'               nameCol = "NAME_0",
@@ -65,8 +65,7 @@
 #'
 #'   # The second administrative level in GADM contains names in the columns
 #'   # NAME_0 and NAME_1
-#'   regGeometry(nation = "NAME_0",
-#'               gSeries = "gadm",
+#'   regGeometry(gSeries = "gadm",
 #'               level = 2,
 #'               layer = "example_geom2",
 #'               nameCol = "NAME_0|NAME_1",

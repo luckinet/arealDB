@@ -11,12 +11,14 @@
 #'   inventory tables. When a database has already been set up, this function is
 #'   used to register that path in the options of the current R session.
 #' @return  No return value, called for the side effect of creating the
-#'   directory structure of the new areal database and a new environment that
-#'   contains the database metadata.
+#'   directory structure of the new areal database and tables that contain the
+#'   database metadata.
 #' @examples
-#' start_arealDB(root = tempdir(),
+#' start_arealDB(root = paste0(tempdir(), "/newDB"),
 #'               gazetteer = system.file("test_datasets/territories.rds",
 #'                                       package = "arealDB"))
+#'
+#' getOption("adb_path"); getOption("gazetteer_path")
 #' @importFrom checkmate testDirectory testFileExists
 #' @importFrom readr write_csv
 #' @export

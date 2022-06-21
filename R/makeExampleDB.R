@@ -11,10 +11,17 @@
 #'   \code{"normTable"}.
 #' @param verbose [\code{logical(1)}]\cr be verbose about building the example
 #'   database (default \code{FALSE}).
+#' @details Setting up a database with an R-based tool can appear to be
+#'   cumbersome and too complex and thus intimidating. By creating an example
+#'   database, this functions allows interested users to learn step by step how
+#'   to build a database of areal data. Moreover, all functions in this package
+#'   contain verbose information and ask for information that would be missing
+#'   or lead to an inconsistent database, before a failure renders hours of work
+#'   useless.
 #' @return No return value, called for the side effect of creating an example
 #'   database at the specified \code{path}.
 #' @examples
-#' \dontrun{
+#' if(dev.interactive()){
 #' # to build the full example database
 #' makeExampleDB(path = tempdir())
 #'
@@ -29,10 +36,8 @@
 
 makeExampleDB <- function(path = NULL, until = NULL, verbose = FALSE){
 
-  # library(arealDB); library(tabshiftr); library(checkmate); library(tidyverse); library(sf); library(tools); library(ontologics); path <- paste0(tempdir(), "/newDB"); until = "normGeometry"; verbose = FALSE
-
   inPath <- system.file("test_datasets", package = "arealDB", mustWork = TRUE)
-  steps <- c("start_arealDB", "match_gazetter", "regDataseries", "regGeometry", "regTable", "normGeometry", "normTable")
+  steps <- c("start_arealDB", "match_gazetteer", "regDataseries", "regGeometry", "regTable", "normGeometry", "normTable")
   if (is.null(until)) {
     until <- "normTable"
   }
@@ -80,7 +85,7 @@ makeExampleDB <- function(path = NULL, until = NULL, verbose = FALSE){
             to = paste0(path, "/adb_tables/stage2/aNation_2_barleyMaize_1990_2017_madeUp.csv"))
 
   # load gazetteer
-  if(any(theSteps %in% "match_gazetter")){
+  if(any(theSteps %in% "match_gazetteer")){
     file.copy(from = paste0(inPath, "/territories.rds"),
               to = terrOnto)
     file.copy(from = paste0(inPath, "/match_madeUp.csv"),

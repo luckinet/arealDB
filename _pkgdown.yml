@@ -32,16 +32,11 @@ reference:
       - normTable
   - title: helpers
     contents:
-      - getColTypes
       - get_variable
       - select_path
-      - testCompressed
-      - updateTable
 
 navbar:
   left:
-    - text: "Get Started"
-      href: articles/arealDB.html
     - text: "Reference"
       href: reference/index.html
     - text: "Changelog"

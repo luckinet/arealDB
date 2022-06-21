@@ -6,8 +6,8 @@
 \usage{
 normTable(
   input = NULL,
-  outType = "rds",
   pattern = NULL,
+  outType = "rds",
   update = FALSE,
   verbose = FALSE
 )
@@ -17,13 +17,13 @@ normTable(
 is left empty, all files at stage two as subset by \code{pattern} are
 chosen.}
 
+\item{pattern}{[\code{character(1)}]\cr an optional regular expression. Only
+dataset names which match the regular expression will be processed.}
+
 \item{outType}{[\code{logical(1)}]\cr the output file-type, currently
 implemented options are either \emph{*.csv} (more exchangeable for a
 workflow based on several programs) or \emph{*.rds} (smaller and less
 error-prone data-format but can only be read by R efficiently).}
-
-\item{pattern}{[\code{character(1)}]\cr an optional regular expression. Only
-dataset names which match the regular expression will be returned.}
 
 \item{update}{[\code{logical(1)}]\cr whether or not the physical files should
 be updated (\code{TRUE}) or the function should merely return the new
@@ -38,8 +38,8 @@ are properly specified.}
 \value{
 This function harmonises and integrates so far unprocessed data
   tables at stage two into stage three of the areal database. It produces for
-  each nation in the registered data tables a comma-separated values file
-  that includes all thematic areal data.
+  each main polygon (e.g. nation) in the registered data tables a file that
+  includes all thematic areal data.
 }
 \description{
 Harmonise and integrate data tables into standardised format
@@ -49,8 +49,10 @@ To normalise data tables, this function proceeds as follows:
   \enumerate{ \item Read in \code{input} and extract initial metadata from
   the file name. \item Employ the function
   \code{tabshiftr::\link{reorganise}} to reshape \code{input} according to
-  the respective schema description. \item Match the territorial units in
-  \code{input} via . \item Harmonise territorial unit
+  the respective schema description. \item The territorial names are matched
+  with the gazetteer to harmonise new territorial names (at this step, the
+  function might ask the user to edit the file 'matching.csv' to align new
+  names with already harmonised names). \item Harmonise territorial unit
   names. \item If \code{update = TRUE}, store the processed data table at
   stage three.}
 }
@@ -67,7 +69,7 @@ if(dev.interactive()){
 }
 }
 \seealso{
-Other normalisers: 
+Other normalise functions: 
 \code{\link{normGeometry}()}
 }
-\concept{normalisers}
+\concept{normalise functions}

@@ -2,7 +2,9 @@
 #'
 #' This function registers a new areal data table into the geospatial database.
 #' @param ... [\code{character(1)}]\cr name and value of the topmost unit under
-#'   which the table shall be registered.
+#'   which the table shall be registered. The name of this must be a class of
+#'   the gazetteer and the value must be one of the territory names of that
+#'   class, e.g. \emph{nation = "Estonia"}.
 #' @param subset [\code{character(1)}]\cr optional argument to specify which
 #'   subset the file contains. This could be a subset of territorial units (e.g.
 #'   only one municipality) or of a target variable.
@@ -40,16 +42,17 @@
 #' @param overwrite [\code{logical(1)}]\cr whether or not the geometry to
 #'   register shall overwrite a potentially already existing older version.
 #' @details When processing areal data tables, carry out the following steps:
-#'   \enumerate{ \item Determine the \code{nation}, a \code{subset} (if
-#'   applicable), the administrative \code{level} and the \code{dataseries} of
-#'   the areal data and of the geometry, and provide them as arguments to this
-#'   function. \item Provide a \code{begin} and \code{end} date for the areal
-#'   data. \item Run the function. \item (Re)Save the table with the following
-#'   properties: \itemize{\item Format: csv \item Encoding: UTF-8 \item File
-#'   name: What is provided as message by this function \item make sure that the
-#'   file is not modified or reshaped. This will happen during data
-#'   normalisation via the schema description, which expects the original
-#'   table.} \item Confirm that you have saved the file.}
+#'   \enumerate{ \item Determine the main territory (such as a nation, or any
+#'   other polygon), a \code{subset} (if applicable), the administrative
+#'   \code{level} and the dataseries of the areal data and of the geometry, and
+#'   provide them as arguments to this function. \item Provide a \code{begin}
+#'   and \code{end} date for the areal data. \item Run the function. \item
+#'   (Re)Save the table with the following properties: \itemize{\item Format:
+#'   csv \item Encoding: UTF-8 \item File name: What is provided as message by
+#'   this function \item make sure that the file is not modified or reshaped.
+#'   This will happen during data normalisation via the schema description,
+#'   which expects the original table.} \item Confirm that you have saved the
+#'   file.}
 #'
 #'   Every areal data dataseries (\code{dSeries}) may come as a slight
 #'   permutation of a particular table arrangement. The function
@@ -59,6 +62,7 @@
 #'   \code{tabshiftr}.
 #' @return Returns a tibble of the entry that is appended to 'inv_tables.csv' in
 #'   case \code{update = TRUE}.
+#' @family register functions
 #' @examples
 #' if(dev.interactive()){
 #'   # build the example database
@@ -66,7 +70,6 @@
 #'
 #'   # the schema description for this table
 #'   library(tabshiftr)
-#'   library(magrittr)
 #'
 #'   schema_madeUp <-
 #'     setIDVar(name = "al1", columns = 1) %>%
