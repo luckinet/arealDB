@@ -37,7 +37,7 @@
 makeExampleDB <- function(path = NULL, until = NULL, verbose = FALSE){
 
   inPath <- system.file("test_datasets", package = "arealDB", mustWork = TRUE)
-  steps <- c("start_arealDB", "match_gazetteer", "regDataseries", "regGeometry", "regTable", "normGeometry", "normTable")
+  steps <- c("start_arealDB", "match_ontology", "regDataseries", "regGeometry", "regTable", "normGeometry", "normTable")
   if (is.null(until)) {
     until <- "normTable"
   }
@@ -85,7 +85,7 @@ makeExampleDB <- function(path = NULL, until = NULL, verbose = FALSE){
             to = paste0(path, "/adb_tables/stage2/aNation_2_barleyMaize_1990_2017_madeUp.csv"))
 
   # load gazetteer
-  if(any(theSteps %in% "match_gazetteer")){
+  if(any(theSteps %in% "match_ontology")){
     file.copy(from = paste0(inPath, "/territories.rds"),
               to = terrOnto)
     file.copy(from = paste0(inPath, "/match_madeUp.csv"),
@@ -93,7 +93,7 @@ makeExampleDB <- function(path = NULL, until = NULL, verbose = FALSE){
     file.copy(from = paste0(inPath, "/match_gadm.csv"),
               to = paste0(path, "/meta/concepts/match_gadm.csv"))
 
-    match_gazetteer(from_meta = TRUE)
+    match_ontology(ontology = terrOnto, from_meta = TRUE)
   }
 
   if (any(theSteps %in% "regDataseries")) {
@@ -205,7 +205,7 @@ makeExampleDB <- function(path = NULL, until = NULL, verbose = FALSE){
 
   }
 
-  # ... and then try to read them in via match_gazetteer above
+  # ... and then try to read them in via match_ontology above
   if(any(theSteps %in% "normGeometry")){
     normGeometry(update = TRUE, verbose = verbose)
   }
