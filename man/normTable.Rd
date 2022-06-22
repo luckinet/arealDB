@@ -7,6 +7,7 @@
 normTable(
   input = NULL,
   pattern = NULL,
+  ...,
   outType = "rds",
   update = FALSE,
   verbose = FALSE
@@ -19,6 +20,9 @@ chosen.}
 
 \item{pattern}{[\code{character(1)}]\cr an optional regular expression. Only
 dataset names which match the regular expression will be processed.}
+
+\item{...}{[\code{character(1)}]\cr argument-value combination to filter the
+new tables by.}
 
 \item{outType}{[\code{logical(1)}]\cr the output file-type, currently
 implemented options are either \emph{*.csv} (more exchangeable for a
