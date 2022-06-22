@@ -6,6 +6,8 @@
 #'   chosen.
 #' @param pattern [\code{character(1)}]\cr an optional regular expression. Only
 #'   dataset names which match the regular expression will be processed.
+#' @param ... [\code{character(1)}]\cr argument-value combination to filter the
+#'   new tables by.
 #' @param update [\code{logical(1)}]\cr whether or not the physical files should
 #'   be updated (\code{TRUE}) or the function should merely return the new
 #'   object (\code{FALSE}, default). This is helpful to check whether the
@@ -56,7 +58,7 @@
 #' @importFrom utils read.csv
 #' @export
 
-normTable <- function(input = NULL, pattern = NULL, outType = "rds",
+normTable <- function(input = NULL, pattern = NULL, ..., outType = "rds",
                       update = FALSE, verbose = FALSE){
 
   # set internal paths
@@ -71,6 +73,7 @@ normTable <- function(input = NULL, pattern = NULL, outType = "rds",
 
   # set internal objects
   moveFile <- TRUE
+  sbst <- exprs(..., .named = TRUE)
 
   # get tables
   inv_tables <- read_csv(paste0(intPaths, "/inv_tables.csv"), col_types = "iiiccccDccccc")
@@ -144,11 +147,30 @@ normTable <- function(input = NULL, pattern = NULL, outType = "rds",
       reorganise(schema = algorithm)
 
     message("    harmonising territory names ...")
-    temp <- match_gazetteer(table = temp, columns = unitCols, dataseries = dSeries, from_meta = FALSE)
+    temp <- match_ontology(table = temp,
+                           columns = unitCols,
+                           dataseries = dSeries,
+                           ontology = gazPath)
     # re-load gazetteer (to contain also updates)
     gazetteer <- load_ontology(name = "gadm", path = gazPath)@labels %>%
       rowwise() %>%
       mutate(level = str_split(code, "[.]", simplify = TRUE) %>% length())
+
+    # potentially filter
+    if(length(sbst) != 0){
+      message("    fltering table ...")
+      moveFile <- FALSE
+
+      for(k in seq_along(sbst)){
+        if(!names(sbst)[k] %in% names(temp)){
+          warning(paste0("'", names(sbst)[k], "' is not a column in the new table -> ignoring the filter."))
+          next
+        }
+
+        temp <- temp %>%
+          filter(.data[[names(sbst)[k]]] %in% as.character(sbst[[k]]))
+      }
+    }
 
     temp <- temp %>%
       mutate(tabID = tabID,
