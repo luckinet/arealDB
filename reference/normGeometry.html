@@ -23,9 +23,6 @@
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav"><li>
-  <a href="../articles/arealDB.html">Get Started</a>
-</li>
-<li>
   <a href="../reference/index.html">Reference</a>
 </li>
 <li>
@@ -83,7 +80,7 @@ chosen.</p></dd>
 
 <dt>pattern</dt>
 <dd><p>[<code>character(1)</code>]<br> an optional regular expression. Only
-dataset names which match the regular expression will be returned.</p></dd>
+dataset names which match the regular expression will be processed.</p></dd>
 
 
 <dt>...</dt>
@@ -131,44 +128,47 @@ properly specified.</p></dd>
     <h2>Details</h2>
     <p>To normalise geometries, this function proceeds as follows:</p><ol><li><p>Read in <code>input</code> and extract initial metadata from
   the file name.</p></li>
-<li><p>Loop through every nation potentially included in the
-  file that shall be processed and carry out the following steps:</p><ul><li><p>In case the geometries are provided as a list of simple feature
-  POLYGONS, they are dissolved into a single MULTIPOLYGON per nation.</p></li>
-<li><p>In case the nation to which a geometry belongs has not yet been created at
-  stage three, the following steps are carried out:</p><ol><li><p>Check
-  whether the recent dataset is GADM, to build the initial administrative
-  hierarchy from GADM geometries, and stop if this is not the case.</p></li>
-<li><p>Extract the full hierarchy of all territorial units that are part of the
-  geometry.</p></li>
-<li><p>Reconstruct ahID from the intermediate spatial objects and
-  from the metadata.</p></li>
+<li><p>In case filters are set, the new geometry is filtered
+  by those.</p></li>
+<li><p>The territorial names are matched with the gazetteer to
+  harmonise new territorial names (at this step, the function might ask the
+  user to edit the file 'matching.csv' to align new names with already
+  harmonised names).</p></li>
+<li><p>Loop through every nation potentially included in
+  the file that shall be processed and carry out the following steps:</p><ul><li><p>In case the geometries are provided as a list of simple
+  feature POLYGONS, they are dissolved into a single MULTIPOLYGON per main
+  polygon.</p></li>
+<li><p>In case the nation to which a geometry belongs has not yet
+  been created at stage three, the following steps are carried out:</p><ol><li><p>Store the current geometry as basis of the respective
+  level (the user needs to make sure that all following levels of the same
+  dataseries are perfectly nested into those parent territories, for example
+  by using the GADM dataset)</p></li>
 </ol></li>
-<li><p>In case the nation to which the geometry belongs
-  has already been created, the following steps are carried out:</p><ol><li><p>Check whether the new geometries have the same coordinate reference
-  system as the already existing database and re-project the new geometries
-  if this is not the case.</p></li>
-<li><p>Check whether all new geometries are already
-  exactly matched spatially and stop if that is the case.</p></li>
-<li><p>Check whether
-  the new geometries are all within the already defined parents, and save
-  those that are not as a new geometry.</p></li>
-<li><p>Calculate spatial overlap and
-  distinguish the geometries into those that overlap with more and those with
-  less than <code>thresh</code>.</p></li>
-<li><p>For all units that did match, copy ahID from
-  the geometries they overlap.</p></li>
-<li><p>For all units that did not match,
-  rebuild metadata and a new ahID.</p></li>
+<li><p>In case the nation to which the geometry
+  belongs has already been created, the following steps are carried out:</p><ol><li><p>Check whether the new geometries have the same coordinate
+  reference system as the already existing database and re-project the new
+  geometries if this is not the case.</p></li>
+<li><p>Check whether all new geometries
+  are already exactly matched spatially and stop if that is the case.</p></li>
+<li><p>Check whether the new geometries are all within the already defined
+  parents, and save those that are not as a new geometry.</p></li>
+<li><p>Calculate
+  spatial overlap and distinguish the geometries into those that overlap with
+  more and those with less than <code>thresh</code>.</p></li>
+<li><p>For all units that did
+  match, copy ahID from the geometries they overlap.</p></li>
+<li><p>For all units that
+  did not match, rebuild metadata and a new ahID.</p></li>
 </ol></li>
-<li><p>If update = TRUE, store the
-  processed geometry at stage three.</p></li>
+<li><p>If update = TRUE,
+  store the processed geometry at stage three.</p></li>
 </ul></li>
-<li><p>Move the geometry to the folder
-  '/processed', if it is fully processed.</p></li>
+<li><p>Move the geometry to
+  the folder '/processed', if it is fully processed.</p></li>
 </ol></div>
     <div id="see-also">
     <h2>See also</h2>
-    <div class="dont-index"><p>Other normalisers: 
+    <div class="dont-index"><p>Other normalise functions: 
 <code><a href="normTable.html">normTable</a>()</code></p></div>
     </div>
 

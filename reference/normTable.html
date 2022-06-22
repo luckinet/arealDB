@@ -23,9 +23,6 @@
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav"><li>
-  <a href="../articles/arealDB.html">Get Started</a>
-</li>
-<li>
   <a href="../reference/index.html">Reference</a>
 </li>
 <li>
@@ -64,8 +61,8 @@
     <div id="ref-usage">
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">normTable</span><span class="op">(</span>
   input <span class="op">=</span> <span class="cn">NULL</span>,
-  outType <span class="op">=</span> <span class="st">"rds"</span>,
   pattern <span class="op">=</span> <span class="cn">NULL</span>,
+  outType <span class="op">=</span> <span class="st">"rds"</span>,
   update <span class="op">=</span> <span class="cn">FALSE</span>,
   verbose <span class="op">=</span> <span class="cn">FALSE</span>
 <span class="op">)</span></code></pre></div>
@@ -79,16 +76,16 @@ is left empty, all files at stage two as subset by <code>pattern</code> are
 chosen.</p></dd>
 
 
+<dt>pattern</dt>
+<dd><p>[<code>character(1)</code>]<br> an optional regular expression. Only
+dataset names which match the regular expression will be processed.</p></dd>
+
+
 <dt>outType</dt>
 <dd><p>[<code>logical(1)</code>]<br> the output file-type, currently
 implemented options are either <em>*.csv</em> (more exchangeable for a
 workflow based on several programs) or <em>*.rds</em> (smaller and less
 error-prone data-format but can only be read by R efficiently).</p></dd>
-
-
-<dt>pattern</dt>
-<dd><p>[<code>character(1)</code>]<br> an optional regular expression. Only
-dataset names which match the regular expression will be returned.</p></dd>
 
 
 <dt>update</dt>
@@ -111,8 +108,8 @@ are properly specified.</p></dd>
 
 <p>This function harmonises and integrates so far unprocessed data
   tables at stage two into stage three of the areal database. It produces for
-  each nation in the registered data tables a comma-separated values file
-  that includes all thematic areal data.</p>
+  each main polygon (e.g. nation) in the registered data tables a file that
+  includes all thematic areal data.</p>
     </div>
     <div id="details">
     <h2>Details</h2>
@@ -121,8 +118,10 @@ are properly specified.</p></dd>
 <li><p>Employ the function
   <code><a href="https://rdrr.io/pkg/tabshiftr/man/reorganise.html" class="external-link">tabshiftr::reorganise</a></code> to reshape <code>input</code> according to
   the respective schema description.</p></li>
-<li><p>Match the territorial units in
-  <code>input</code> via .</p></li>
+<li><p>The territorial names are matched
+  with the gazetteer to harmonise new territorial names (at this step, the
+  function might ask the user to edit the file 'matching.csv' to align new
+  names with already harmonised names).</p></li>
 <li><p>Harmonise territorial unit
   names.</p></li>
 <li><p>If <code>update = TRUE</code>, store the processed data table at
@@ -130,7 +129,7 @@ are properly specified.</p></dd>
 </ol></div>
     <div id="see-also">
     <h2>See also</h2>
-    <div class="dont-index"><p>Other normalisers: 
+    <div class="dont-index"><p>Other normalise functions: 
 <code><a href="normGeometry.html">normGeometry</a>()</code></p></div>
     </div>
 

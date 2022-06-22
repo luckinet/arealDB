@@ -23,9 +23,6 @@
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav"><li>
-  <a href="../articles/arealDB.html">Get Started</a>
-</li>
-<li>
   <a href="../reference/index.html">Reference</a>
 </li>
 <li>
@@ -87,7 +84,9 @@
     <h2>Arguments</h2>
     <dl><dt>...</dt>
 <dd><p>[<code>character(1)</code>]<br> name and value of the topmost unit under
-which the table shall be registered.</p></dd>
+which the table shall be registered. The name of this must be a class of
+the gazetteer and the value must be one of the territory names of that
+class, e.g. <em>nation = "Estonia"</em>.</p></dd>
 
 
 <dt>subset</dt>
@@ -183,29 +182,34 @@ register shall overwrite a potentially already existing older version.</p></dd>
     </div>
     <div id="details">
     <h2>Details</h2>
-    <p>When processing areal data tables, carry out the following steps:</p><ol><li><p>Determine the <code>nation</code>, a <code>subset</code> (if
-  applicable), the administrative <code>level</code> and the <code>dataseries</code> of
-  the areal data and of the geometry, and provide them as arguments to this
-  function.</p></li>
-<li><p>Provide a <code>begin</code> and <code>end</code> date for the areal
-  data.</p></li>
+    <p>When processing areal data tables, carry out the following steps:</p><ol><li><p>Determine the main territory (such as a nation, or any
+  other polygon), a <code>subset</code> (if applicable), the administrative
+  <code>level</code> and the dataseries of the areal data and of the geometry, and
+  provide them as arguments to this function.</p></li>
+<li><p>Provide a <code>begin</code>
+  and <code>end</code> date for the areal data.</p></li>
 <li><p>Run the function.</p></li>
-<li><p>(Re)Save the table with the following
-  properties:</p><ul><li><p>Encoding: UTF-8</p></li>
-<li><p>File
-  name: What is provided as message by this function</p></li>
-<li><p>make sure that the
-  file is not modified or reshaped. This will happen during data
-  normalisation via the schema description, which expects the original
-  table.</p></li>
+<li><p>(Re)Save the table with the following properties:</p><ul><li><p>Encoding: UTF-8</p></li>
+<li><p>File name: What is provided as message by
+  this function</p></li>
+<li><p>make sure that the file is not modified or reshaped.
+  This will happen during data normalisation via the schema description,
+  which expects the original table.</p></li>
 </ul></li>
-<li><p>Confirm that you have saved the file.</p></li>
+<li><p>Confirm that you have saved the
+  file.</p></li>
 </ol><p>Every areal data dataseries (<code>dSeries</code>) may come as a slight
   permutation of a particular table arrangement. The function
   <code><a href="normTable.html">normTable</a></code> expects internally a schema description (a list
   that describes the position of the data components) for each data table,
   which is saved as <code>paste0("meta_", dSeries, TAB_NUMBER)</code>. See package
   <code>tabshiftr</code>.</p>
+    </div>
+    <div id="see-also">
+    <h2>See also</h2>
+    <div class="dont-index"><p>Other register functions: 
+<code><a href="regDataseries.html">regDataseries</a>()</code>,
+<code><a href="regGeometry.html">regGeometry</a>()</code></p></div>
     </div>
 
     <div id="ref-examples">
@@ -216,7 +220,6 @@ register shall overwrite a potentially already existing older version.</p></dd>
 <span class="r-in"></span>
 <span class="r-in">  <span class="co"># the schema description for this table</span></span>
 <span class="r-in">  <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/EhrmannS/tabshiftr" class="external-link">tabshiftr</a></span><span class="op">)</span></span>
-<span class="r-in">  <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://magrittr.tidyverse.org" class="external-link">magrittr</a></span><span class="op">)</span></span>
 <span class="r-in"></span>
 <span class="r-in">  <span class="va">schema_madeUp</span> <span class="op">&lt;-</span></span>
 <span class="r-in">    <span class="fu"><a href="https://rdrr.io/pkg/tabshiftr/man/setIDVar.html" class="external-link">setIDVar</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"al1"</span>, columns <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op"><a href="https://rdrr.io/pkg/tabshiftr/man/pipe.html" class="external-link">%&gt;%</a></span></span>

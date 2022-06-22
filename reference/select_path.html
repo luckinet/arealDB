@@ -24,9 +24,6 @@ arguments that path that corresponds to the recent nodename."><!-- mathjax --><s
 
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav"><li>
-  <a href="../articles/arealDB.html">Get Started</a>
-</li>
-<li>
   <a href="../reference/index.html">Reference</a>
 </li>
 <li>
@@ -74,17 +71,21 @@ arguments that path that corresponds to the recent nodename.</p>
 
 
 <dt>default</dt>
-<dd><p>[`character(1)`][character]<br> a fallback path that should be
+<dd><p>[<code>character(1)</code>]<br> a fallback path that should be
 used in case the matching nodename is not mounted.</p></dd>
 
 </dl></div>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span>
-<span class="r-in"><span class="va">myPath</span> <span class="op">&lt;-</span> <span class="fu">select_path</span><span class="op">(</span>local <span class="op">=</span> <span class="st">"/path/on/local/machine/"</span>,</span>
-<span class="r-in">                      hpc <span class="op">=</span> <span class="st">"/path/on/remote/machine/"</span>,</span>
-<span class="r-in">                      default <span class="op">=</span> <span class="st">"/fallback/path/if/nothing/else/found/"</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="kw">if</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/grDevices/dev.interactive.html" class="external-link">dev.interactive</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">{</span></span>
+<span class="r-in">  <span class="co"># select path in response to nodename</span></span>
+<span class="r-in">  <span class="va">myPath</span> <span class="op">&lt;-</span> <span class="fu">select_path</span><span class="op">(</span>local <span class="op">=</span> <span class="st">"/path/on/local/machine/"</span>,</span>
+<span class="r-in">                        hpc <span class="op">=</span> <span class="st">"/path/on/remote/machine/"</span>,</span>
+<span class="r-in">                        default <span class="op">=</span> <span class="st">"/fallback/path/if/nothing/else/found/"</span><span class="op">)</span></span>
+<span class="r-in"></span>
+<span class="r-in">  <span class="co"># and start the database there</span></span>
+<span class="r-in">  <span class="fu"><a href="start_arealDB.html">start_arealDB</a></span><span class="op">(</span>root <span class="op">=</span> <span class="va">myPath</span>, <span class="va">...</span><span class="op">)</span></span>
 <span class="r-in"><span class="op">}</span></span>
 </code></pre></div>
     </div>
