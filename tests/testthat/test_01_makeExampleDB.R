@@ -22,10 +22,10 @@ test_that("make example DB until start_arealDB", {
 
 })
 
-test_that("make example DB until match_gazetteer", {
+test_that("make example DB until match_ontology", {
 
   dbpath <- paste0(tempdir(), "/newDB")
-  makeExampleDB(until = "match_gazetteer", path = dbpath)
+  makeExampleDB(until = "match_ontology", path = dbpath)
 
   expect_file_exists(x = paste0(dbpath, "/territories.rds"))
   temp <- read_rds(paste0(dbpath, "/territories.rds"))

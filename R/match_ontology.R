@@ -1,4 +1,4 @@
-#' Match territories in a table with a gazetteer
+#' Match territories in a table with an ontology/gazetteer
 #'
 #' This function takes a table to replace the values of various columns with
 #' harmonised values listed in the project specific gazetteer.
@@ -7,25 +7,39 @@
 #' @param columns [\code{character(1)}]\cr the columns containing the concepts
 #' @param dataseries [\code{character(1)}]\cr the source dataseries from which
 #'   territories are sourced.
+#' @param ontology [\code{onto}]\cr either a path where the ontology/gazetteer
+#'   is stored, or an already loaded ontology.
 #' @param from_meta [\code{logical(1)}]\cr whether or not to load the matches
 #'   from previous matching tables, or construct them from \code{table} and
 #'   \code{columns}.
-#' @importFrom ontologics get_concept new_concept new_mapping new_source
+#' @importFrom ontologics load_ontology get_concept new_concept new_mapping
+#'   new_source
 #' @importFrom purrr map
 #' @importFrom stringr str_replace_all
 #' @importFrom dplyr bind_cols
 #' @importFrom tidyr separate_rows separate
 #' @importFrom sf st_drop_geometry
-#' @importFrom utils tail
+#' @importFrom utils tail head
 #' @export
 
-match_gazetteer <- function(table = NULL, columns = NULL, dataseries = NULL,
-                            from_meta = FALSE){
+match_ontology <- function(table = NULL, columns = NULL, dataseries = NULL,
+                           ontology = NULL, from_meta = FALSE){
 
   intPaths <- paste0(getOption(x = "adb_path"))
-  gazPath <- paste0(getOption(x = "gazetteer_path"))
+  # gazPath <- paste0(getOption(x = "gazetteer_path"))
 
-  gaz <- load_ontology(name = "territories", path = gazPath)
+  if(inherits(x = ontology, what = "onto")){
+    gazPath <- NULL
+  } else {
+    assertFileExists(x = ontology, access = "rw", extension = "rds")
+    gazPath <- ontology
+    theName <- tail(str_split(string = ontology, "/")[[1]], 1)
+    theName <- head(str_split(string = theName, pattern = "[.]")[[1]], 1)
+
+    gaz <- load_ontology(name = theName, path = gazPath)
+  }
+
+  # gaz <- load_ontology(name = "territories", path = gazPath)
 
   theClasses <- gaz@classes$class
 
