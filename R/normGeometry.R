@@ -93,8 +93,6 @@
 normGeometry <- function(input = NULL, pattern = NULL, ..., thresh = 10,
                          outType = "gpkg", update = FALSE, verbose = FALSE){
 
-  # input = NULL; pattern = "gadm"; sbst <- list(); thresh = 10; outType = "gpkg"; update = TRUE; verbose = FALSE; library(sf)
-
   # set internal paths
   intPaths <- paste0(getOption(x = "adb_path"))
   gazPath <- paste0(getOption(x = "gazetteer_path"))
@@ -181,15 +179,16 @@ normGeometry <- function(input = NULL, pattern = NULL, ..., thresh = 10,
         }
 
         inGeom <- inGeom %>%
-          filter(!!sym(names(sbst)[k]) %in% sbst[[k]])
+          filter(.data[[names(sbst)[k]]] %in% as.character(sbst[[k]]))
       }
     }
 
 
     # match concepts with gazetteer (and update those concepts in it)
-    newGeom <- match_gazetteer(table = inGeom,
-                               columns = unitCols,
-                               dataseries = dSeries)
+    newGeom <- match_ontology(table = inGeom,
+                              columns = unitCols,
+                              dataseries = dSeries,
+                              ontology = gazPath)
     # re-load gazetteer (to contain also updates)
     gazetteer <- load_ontology(name = "gadm", path = gazPath)@labels %>%
       rowwise() %>%
