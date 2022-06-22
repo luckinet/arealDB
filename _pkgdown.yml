@@ -34,6 +34,9 @@ reference:
     contents:
       - get_variable
       - select_path
+      - getColTypes
+      - testCompressed
+      - updateTable
 
 navbar:
   left:
