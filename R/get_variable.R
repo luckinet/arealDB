@@ -40,7 +40,7 @@ get_variable <- function(variable = NULL, dataseries = NULL){
     message("    from table '", sources[i], "' ...")
 
     algorithm <- readRDS(file = paste0(intPaths, "/meta/schemas/", schemas[i], ".rds"))
-    thisTable <- read.csv(file = paste0(intPaths, "/adb_tables/stage2/processed/", sources[i]),
+    thisTable <- read.csv(file = paste0(intPaths, "/adb_tables/stage2/", sources[i]),
                           header = FALSE,
                           strip.white = TRUE,
                           as.is = TRUE,
