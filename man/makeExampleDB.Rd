@@ -39,7 +39,7 @@ Setting up a database with an R-based tool can appear to be
 \examples{
 if(dev.interactive()){
 # to build the full example database
-makeExampleDB(path = tempdir())
+makeExampleDB(path = paste0(tempdir(), "/newDB"))
 
 # to make the example database until a certain step
 makeExampleDB(path = tempdir(), until = "regDataseries")

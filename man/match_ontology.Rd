@@ -9,7 +9,8 @@ match_ontology(
   columns = NULL,
   dataseries = NULL,
   ontology = NULL,
-  from_meta = FALSE
+  from_meta = FALSE,
+  verbose = FALSE
 )
 }
 \arguments{
@@ -27,6 +28,9 @@ is stored, or an already loaded ontology.}
 \item{from_meta}{[\code{logical(1)}]\cr whether or not to load the matches
 from previous matching tables, or construct them from \code{table} and
 \code{columns}.}
+
+\item{verbose}{[\code{logical(1)}]\cr whether or not to give detailed
+information on the prcess of this function.}
 }
 \description{
 This function takes a table to replace the values of various columns with
