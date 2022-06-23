@@ -61,6 +61,8 @@
 normTable <- function(input = NULL, pattern = NULL, ..., outType = "rds",
                       update = FALSE, verbose = FALSE){
 
+  # input = NULL; pattern = NULL; sbst <- list(); outType = "rds"; update = TRUE; verbose = FALSE
+
   # set internal paths
   intPaths <- getOption(x = "adb_path")
   gazPath <- paste0(getOption(x = "gazetteer_path"))
@@ -81,7 +83,7 @@ normTable <- function(input = NULL, pattern = NULL, ..., outType = "rds",
   inv_geometries <- read_csv(paste0(intPaths, "/inv_geometries.csv"), col_types = "iiicccccDDcc")
   gazetteer <- load_ontology(name = "gadm", path = gazPath)@labels %>%
     rowwise() %>%
-    mutate(level = str_split(code, "[.]", simplify = TRUE) %>% length())
+    mutate(level = str_split(code, "[.]", simplify = TRUE) %>% length() - 1)
 
   # check validity of arguments
   assertNames(x = colnames(inv_tables),
@@ -154,7 +156,7 @@ normTable <- function(input = NULL, pattern = NULL, ..., outType = "rds",
     # re-load gazetteer (to contain also updates)
     gazetteer <- load_ontology(name = "gadm", path = gazPath)@labels %>%
       rowwise() %>%
-      mutate(level = str_split(code, "[.]", simplify = TRUE) %>% length())
+      mutate(level = str_split(code, "[.]", simplify = TRUE) %>% length() - 1)
 
     # potentially filter
     if(length(sbst) != 0){

@@ -93,6 +93,8 @@
 normGeometry <- function(input = NULL, pattern = NULL, ..., thresh = 10,
                          outType = "gpkg", update = FALSE, verbose = FALSE){
 
+  # input = NULL; pattern = NULL; sbst <- list(); thresh = 10; outType = "gpkg"; update = TRUE; verbose = FALSE
+
   # set internal paths
   intPaths <- paste0(getOption(x = "adb_path"))
   gazPath <- paste0(getOption(x = "gazetteer_path"))
@@ -112,7 +114,7 @@ normGeometry <- function(input = NULL, pattern = NULL, ..., thresh = 10,
   inv_dataseries <- read_csv(paste0(intPaths, "/inv_dataseries.csv"), col_types = "icccccc")
   gazetteer <- load_ontology(name = "gadm", path = gazPath)@labels %>%
     rowwise() %>%
-    mutate(level = str_split(code, "[.]", simplify = TRUE) %>% length())
+    mutate(level = str_split(code, "[.]", simplify = TRUE) %>% length() - 1)
 
   # check validity of arguments
   assertIntegerish(x = thresh, any.missing = FALSE)
@@ -192,7 +194,7 @@ normGeometry <- function(input = NULL, pattern = NULL, ..., thresh = 10,
     # re-load gazetteer (to contain also updates)
     gazetteer <- load_ontology(name = "gadm", path = gazPath)@labels %>%
       rowwise() %>%
-      mutate(level = str_split(code, "[.]", simplify = TRUE) %>% length())
+      mutate(level = str_split(code, "[.]", simplify = TRUE) %>% length() - 1)
 
 
     # determine top-most value
