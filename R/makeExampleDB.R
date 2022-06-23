@@ -23,7 +23,7 @@
 #' @examples
 #' if(dev.interactive()){
 #' # to build the full example database
-#' makeExampleDB(path = tempdir())
+#' makeExampleDB(path = paste0(tempdir(), "/newDB"))
 #'
 #' # to make the example database until a certain step
 #' makeExampleDB(path = tempdir(), until = "regDataseries")
@@ -35,6 +35,8 @@
 #' @export
 
 makeExampleDB <- function(path = NULL, until = NULL, verbose = FALSE){
+
+  # library(arealDB); library(ontologics); library(tidyverse); library(checkmate); library(tabshiftr); library(sf); path <- paste0(tempdir(), "/newDB"); until = NULL; verbose = FALSE
 
   inPath <- system.file("test_datasets", package = "arealDB", mustWork = TRUE)
   steps <- c("start_arealDB", "match_ontology", "regDataseries", "regGeometry", "regTable", "normGeometry", "normTable")
@@ -85,9 +87,10 @@ makeExampleDB <- function(path = NULL, until = NULL, verbose = FALSE){
             to = paste0(path, "/adb_tables/stage2/aNation_2_barleyMaize_1990_2017_madeUp.csv"))
 
   # load gazetteer
+  file.copy(from = paste0(inPath, "/territories.rds"),
+            to = terrOnto)
+
   if(any(theSteps %in% "match_ontology")){
-    file.copy(from = paste0(inPath, "/territories.rds"),
-              to = terrOnto)
     file.copy(from = paste0(inPath, "/match_madeUp.csv"),
               to = paste0(path, "/meta/concepts/match_madeUp.csv"))
     file.copy(from = paste0(inPath, "/match_gadm.csv"),
