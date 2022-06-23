@@ -12,6 +12,8 @@
 #' @param from_meta [\code{logical(1)}]\cr whether or not to load the matches
 #'   from previous matching tables, or construct them from \code{table} and
 #'   \code{columns}.
+#' @param verbose [\code{logical(1)}]\cr whether or not to give detailed
+#'   information on the prcess of this function.
 #' @importFrom ontologics load_ontology get_concept new_concept new_mapping
 #'   new_source
 #' @importFrom purrr map
@@ -23,10 +25,12 @@
 #' @export
 
 match_ontology <- function(table = NULL, columns = NULL, dataseries = NULL,
-                           ontology = NULL, from_meta = FALSE){
+                           ontology = NULL, from_meta = FALSE, verbose = FALSE){
+
+  assertLogical(x = from_meta, len = 1, any.missing = FALSE)
+  assertLogical(x = verbose, len = 1, any.missing = FALSE)
 
   intPaths <- paste0(getOption(x = "adb_path"))
-  # gazPath <- paste0(getOption(x = "gazetteer_path"))
 
   if(inherits(x = ontology, what = "onto")){
     gazPath <- NULL
@@ -39,16 +43,17 @@ match_ontology <- function(table = NULL, columns = NULL, dataseries = NULL,
     gaz <- load_ontology(name = theName, path = gazPath)
   }
 
-  # gaz <- load_ontology(name = "territories", path = gazPath)
-
   theClasses <- gaz@classes$class
 
   # first, identify from where to take matches ----
   if(from_meta){
 
-    toMatch <- list.files(paste0(intPaths, "/meta/concepts/"), full.names = TRUE)
+    toMatch <- list.files(paste0(intPaths, "/meta/concepts"), full.names = TRUE)
 
   } else {
+    assertDataFrame(x = table)
+    assertCharacter(x = columns, any.missing = FALSE)
+    assertCharacter(x = dataseries, len = 1, any.missing = FALSE)
 
     toMatch <- "table"
 
@@ -62,49 +67,47 @@ match_ontology <- function(table = NULL, columns = NULL, dataseries = NULL,
       unlist()
     concepts <- concepts[!is.na(concepts)]
 
-    explanation <- tibble(code = c("filter by this column to jump \nto the subset you need to edit", "", "code"),
-                          harmonised = c("concepts to which the new \nterms should be related", "", "harmonised"),
-                          class = c("the class of harmonised concepts", "", "class"),
-                          close = c("in case a new concept is a \nclose match to the harmonised concept, \npaste it next to that concept", "", "close"),
-                          nested = c("in case a new concept is not \nthe same as any harmonised concept, \npaste it next to that concept \ninto which it is nested", "", "nested"),
-                          sort_in = c("cut out these concepts and sort them \neither into 'close' or into 'nested'", "", "sort_in"))
-
     # determine those concepts, that are not yet defined in the gazetteer
     missingConcepts <- get_concept(terms = concepts, missing = TRUE, ontology = gaz)
+    inclConcepts <- get_concept(terms = concepts, ontology = gaz)
 
     # build a table of external concepts and of harmonised concepts these should be overwritten with
     if(dim(missingConcepts)[1] != 0){
 
       relate <- gaz@labels %>%
         select(code, harmonised = label_en, class) %>%
-        mutate(code = paste0("_", str_replace_all(string = code, "[.]", "_")),
-               close = NA_character_,
+        left_join(inclConcepts %>% select(code, harmonised = label_en, class, close = external),
+                  by = c("code", "harmonised", "class")) %>%
+        filter(!is.na(class)) %>%
+        mutate(code = str_replace_all(string = code, "[.]", "_"),
                nested = NA_character_,
                sort_in = NA_character_)
 
       sortIn <- missingConcepts %>%
-        select(sort_in = external) %>%
         mutate(code = NA_character_,
                harmonised = NA_character_,
                class = NA_character_,
                close = NA_character_,
-               nested = NA_character_)
+               nested = NA_character_) %>%
+        select(code, harmonised, class, close, nested, sort_in = external)
 
       # put together the object that shall be edited by the user ...
-      explanation %>%
-        bind_rows(sortIn) %>%
+      sortIn %>%
         bind_rows(relate) %>%
-        write_csv(file = paste0(intPaths, "/matching.csv"), quote = "all", na = "", col_names = FALSE)
+        write_csv(file = paste0(intPaths, "/matching.csv"), quote = "all", na = "")
 
       # ... and make them aware of their duty
       message("please edit the file '", paste0(intPaths, "/matching.csv"), "'")
+      if(verbose){
+        message("column description and tips \n\ncode       : filter by this column to jump to the subset you need to edit\nharmonised : concepts to which the new terms should be related \nclass      : the class of harmonised concepts \nclose      : in case a new concept is a close match to the harmonised concept, paste \n             it next to that concept, delimit several concepts with a '|' \nnested     : in case a new concept is not the same as any harmonised concept, paste \n             it next to that concept into which it is nested, delimit \n             several concepts with a '|' \nsort_in    : cut out these concepts and sort them either into 'close' or into 'nested' \n\n-> values that were already successfully matched by previous translations are listed here, \nhowever, altering them here doesn't change the ontology. \n\n-> any row that doesn't contain a value in the column 'code' will be discarded. Hence, \nif you want a value to be ignored, simply don't paste it anywhere. \n\n-> do not change the values in the columns 'code', 'harmonised' and 'class', as they \nare important to insert the new matches into the ontology.")
+      }
       done <- readline(" -> press any key when done: ")
 
     } else {
       # write an empty table
-      tibble(code = c("", "", "code"),
-             note = c("", "", "nothing to match for the current table")) %>%
-        write_csv(file = paste0(intPaths, "/matching.csv"), quote = "all", na = "", col_names = FALSE)
+      tibble(code = NA_character_,
+             note = NA_character_) %>%
+        write_csv(file = paste0(intPaths, "/matching.csv"), quote = "all", na = "")
     }
 
   }
@@ -119,7 +122,7 @@ match_ontology <- function(table = NULL, columns = NULL, dataseries = NULL,
       dataseries <- str_split(dataseries, "_")[[1]]
       dataseries <- str_split(dataseries[2], "[.]")[[1]][1]
     } else {
-      related <- read_csv(paste0(intPaths, "/matching.csv"), col_types = cols(.default = "c"), skip = 2) %>%
+      related <- read_csv(paste0(intPaths, "/matching.csv"), col_types = cols(.default = "c")) %>%
         filter(!is.na(code))
 
       if(dim(related)[1] == 0){
@@ -140,7 +143,7 @@ match_ontology <- function(table = NULL, columns = NULL, dataseries = NULL,
 
         nestedConcepts <- related %>%
           filter(!is.na(nested)) %>%
-          separate_rows(nested, sep = ", ") %>%
+          separate_rows(nested, sep = "\\|") %>%
           mutate(class = theClasses[which(theClasses %in% class) + 1])
 
         gaz <- get_concept(terms = nestedConcepts$harmonised, ontology = gaz) %>%
@@ -222,18 +225,26 @@ match_ontology <- function(table = NULL, columns = NULL, dataseries = NULL,
 
     if(!is.null(related)){
 
+      allNewConcepts <- get_concept(terms = concepts, ontology = gaz)
+
       newMatches <- related %>%
         select(-sort_in, -code, -class) %>%
         filter(!is.na(close) | !is.na(nested)) %>%
-        left_join(newConcepts, by = c("harmonised" = "label_en")) %>%
-        separate(col = external, into = c("source", "match"), sep = "_", extra = "drop") %>%
-        mutate(code = paste0("_", str_replace_all(string = code, "[.]", "_")),
+        left_join(allNewConcepts, by = c("harmonised" = "label_en")) %>%
+        # filter(!is.na(code)) %>%
+        # separate(col = external, into = c("source", "match"), sep = "_", extra = "drop") %>%
+        mutate(code = str_replace_all(string = code, "[.]", "_"),
                source = dataseries) %>%
-        select(code, harmonised, class, close, nested, source, match)
+        # select(code, harmonised, class, close, nested, source, match)
+        select(code, harmonised, class, close, nested, source)
 
       prevMatches %>%
         bind_rows(newMatches) %>%
+        group_by(code, harmonised, class, close, source) %>%
+        mutate(nested = paste0(na.omit(nested), collapse = "|")) %>%
+        ungroup() %>%
         distinct() %>%
+        arrange(code) %>%
         write_csv(file = paste0(intPaths, "/meta/concepts/match_", dataseries, ".csv"), append = FALSE, na = "")
 
     }
