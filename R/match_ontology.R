@@ -22,6 +22,7 @@
 #' @importFrom tidyr separate_rows separate
 #' @importFrom sf st_drop_geometry
 #' @importFrom utils tail head
+#' @importFrom stats na.omit
 #' @export
 
 match_ontology <- function(table = NULL, columns = NULL, dataseries = NULL,
