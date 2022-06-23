@@ -1,3 +1,4 @@
+library(arealDB)
 library(testthat)
 library(checkmate)
 library(readr)
@@ -33,8 +34,8 @@ test_that("make example DB until match_ontology", {
   expect_class(x = temp, classes = "onto")
   expect_tibble(x = temp@classes, nrows = 3, ncols = 2)
   expect_tibble(x = temp@sources, nrows = 3, ncols = 6)
-  expect_tibble(x = temp@concepts, nrows = 30, ncols = 3)
-  expect_tibble(x = temp@labels, nrows = 30, ncols = 3)
+  expect_tibble(x = temp@concepts, nrows = 28, ncols = 3)
+  expect_tibble(x = temp@labels, nrows = 28, ncols = 3)
   expect_tibble(x = temp@mappings, nrows = 13, ncols = 2)
 
 })

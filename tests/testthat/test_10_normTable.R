@@ -1,3 +1,4 @@
+library(arealDB)
 library(testthat)
 library(tabshiftr)
 library(readr)
