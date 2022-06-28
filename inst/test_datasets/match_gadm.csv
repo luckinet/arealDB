@@ -1,6 +1,6 @@
 code,harmonised,class,close,nested,source
-_001,a_nation,nation,aNation,"",gadm
-_001_001,county_1,county,county1,"",gadm
-_001_002,county_2,county,county2,"",gadm
-_001_003,county_3,county,county3,"",gadm
-_001_004,county_4,county,county4,"",gadm
+.001,a_nation,nation,aNation,,gadm
+.001.001,county_1,county,county1,,gadm
+.001.002,county_2,county,county2,,gadm
+.001.003,county_3,county,county3,,gadm
+.001.004,county_4,county,county4,,gadm
