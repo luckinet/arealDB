@@ -42,7 +42,7 @@ if(dev.interactive()){
 makeExampleDB(path = paste0(tempdir(), "/newDB"))
 
 # to make the example database until a certain step
-makeExampleDB(path = tempdir(), until = "regDataseries")
+makeExampleDB(path = paste0(tempdir(), "/newDB"), until = "regDataseries")
 
 }
 }
