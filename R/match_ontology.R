@@ -28,6 +28,8 @@
 match_ontology <- function(table = NULL, columns = NULL, dataseries = NULL,
                            ontology = NULL, from_meta = FALSE, verbose = FALSE){
 
+  # table = NULL; columns = NULL; dataseries = NULL; ontology = terrOnto; from_meta = TRUE; guess_class = TRUE; verbose = FALSE
+
   assertLogical(x = from_meta, len = 1, any.missing = FALSE)
   assertLogical(x = verbose, len = 1, any.missing = FALSE)
 
@@ -41,10 +43,10 @@ match_ontology <- function(table = NULL, columns = NULL, dataseries = NULL,
     theName <- tail(str_split(string = ontology, "/")[[1]], 1)
     theName <- head(str_split(string = theName, pattern = "[.]")[[1]], 1)
 
-    gaz <- load_ontology(name = theName, path = gazPath)
+    gaz <- load_ontology(path = gazPath)
   }
 
-  theClasses <- gaz@classes$class
+  theClasses <- gaz@classes
 
   # first, identify from where to take matches ----
   if(from_meta){
@@ -80,7 +82,7 @@ match_ontology <- function(table = NULL, columns = NULL, dataseries = NULL,
         left_join(inclConcepts %>% select(code, harmonised = label_en, class, close = external),
                   by = c("code", "harmonised", "class")) %>%
         filter(!is.na(class)) %>%
-        mutate(code = str_replace_all(string = code, "[.]", "_"),
+        mutate(#code = str_replace_all(string = code, "[.]", "_"),
                nested = NA_character_,
                sort_in = NA_character_)
 
@@ -100,7 +102,7 @@ match_ontology <- function(table = NULL, columns = NULL, dataseries = NULL,
       # ... and make them aware of their duty
       message("please edit the file '", paste0(intPaths, "/matching.csv"), "'")
       if(verbose){
-        message("column description and tips \n\ncode       : filter by this column to jump to the subset you need to edit\nharmonised : concepts to which the new terms should be related \nclass      : the class of harmonised concepts \nclose      : in case a new concept is a close match to the harmonised concept, paste \n             it next to that concept, delimit several concepts with a '|' \nnested     : in case a new concept is not the same as any harmonised concept, paste \n             it next to that concept into which it is nested, delimit \n             several concepts with a '|' \nsort_in    : cut out these concepts and sort them either into 'close' or into 'nested' \n\n-> values that were already successfully matched by previous translations are listed here, \nhowever, altering them here doesn't change the ontology. \n\n-> any row that doesn't contain a value in the column 'code' will be discarded. Hence, \nif you want a value to be ignored, simply don't paste it anywhere. \n\n-> do not change the values in the columns 'code', 'harmonised' and 'class', as they \nare important to insert the new matches into the ontology.")
+        message("column description and tips \n\ncode       : filter by this column to jump to the subset you need to edit\nharmonised : concepts to which the new terms should be related \nclass      : the class of harmonised concepts \nclose      : in case a new concept is a close match to the harmonised concept, paste \n             it next to that concept, delimit several concepts with a '|' \nnested     : in case a new concept is not the same as any harmonised concept, paste \n             it next to that concept into which it is nested, delimit \n             several concepts with a '|' \nsort_in    : cut out these concepts and sort them either into 'close' or into 'nested' \n\n-> values that were already successfully matched by previous translations are listed here, \n   however, altering them here doesn't change the ontology. \n\n-> any row that doesn't contain a value in the column 'code' will be discarded. Hence, \n   if you want a value to be ignored, simply don't paste it anywhere. \n\n-> do not change the values in the columns 'code', 'harmonised' and 'class', as they \n   are important to insert the new matches into the ontology. \n\n-> if a term shall be nested into a position that doesn't have a class, (for example, \n   because that class occurrs the first time with this term) first create that nested \n   class with 'new_class()'.")
       }
       done <- readline(" -> press any key when done: ")
 
@@ -142,15 +144,28 @@ match_ontology <- function(table = NULL, columns = NULL, dataseries = NULL,
       # set these as new harmonised concepts
       if(any(!is.na(related$nested))){
 
-        nestedConcepts <- related %>%
+        temp <- related %>%
           filter(!is.na(nested)) %>%
           separate_rows(nested, sep = "\\|") %>%
-          mutate(class = theClasses[which(theClasses %in% class) + 1])
+          select(-close)
 
-        gaz <- get_concept(terms = nestedConcepts$harmonised, ontology = gaz) %>%
-          new_concept(new = nestedConcepts$nested,
+        newLvl <- get_concept(terms = temp$harmonised, ontology = gaz, tree = TRUE)
+        newLvl <- temp %>%
+          select(-class) %>%
+          left_join(newLvl %>% select(broader, class), by = c("code" = "broader")) %>%
+          group_by(nested) %>%
+          summarise(newClass = unique(class)) %>%
+          ungroup()
+
+        # continue here by testing some more scenarios
+
+        temp <- temp %>%
+          left_join(newLvl, by = "nested")
+
+        gaz <- get_concept(terms = temp$harmonised, ontology = gaz) %>%
+          new_concept(new = temp$nested,
                       broader = .,
-                      class = nestedConcepts$class,
+                      class = temp$newClass,
                       source = dataseries,
                       ontology = gaz)
 
@@ -161,7 +176,8 @@ match_ontology <- function(table = NULL, columns = NULL, dataseries = NULL,
       if(any(!is.na(related$close))){
 
         temp <- related %>%
-          filter(!is.na(close))
+          filter(!is.na(close)) %>%
+          separate_rows(close, sep = "\\|")
 
         gaz <- get_concept(terms = temp$harmonised, ontology = gaz) %>%
           new_mapping(concept = .,
