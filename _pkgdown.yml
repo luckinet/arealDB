@@ -34,7 +34,6 @@ reference:
     contents:
       - get_variable
       - select_path
-      - View_onto
       - getColTypes
       - testCompressed
       - updateTable
