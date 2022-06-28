@@ -112,7 +112,7 @@ normGeometry <- function(input = NULL, pattern = NULL, ..., thresh = 10,
   # get tables
   inv_geometries <- read_csv(paste0(intPaths, "/inv_geometries.csv"), col_types = "iiicccccDDcc")
   inv_dataseries <- read_csv(paste0(intPaths, "/inv_dataseries.csv"), col_types = "icccccc")
-  gazetteer <- load_ontology(name = "gadm", path = gazPath)@labels %>%
+  gazetteer <- load_ontology(path = gazPath)@labels %>%
     rowwise() %>%
     mutate(level = str_split(code, "[.]", simplify = TRUE) %>% length() - 1)
 
@@ -154,7 +154,7 @@ normGeometry <- function(input = NULL, pattern = NULL, ..., thresh = 10,
       # if there are several columns that contain units, split them and make
       oldNames <- str_split(string = lut$hierarchy, pattern = "\\|")[[1]]
       unitCols <- unique(gazetteer$class[gazetteer$level %in% 1:length(oldNames)])
-      unitCols <- unitCols[!is.na(unitCols)]
+      unitCols <- unitCols[!is.na(unitCols) & unitCols != "undefined"]
       topCol <- unitCols[1]
     } else{
       stop(paste0("  ! the file '", file_name, "' has not been registered yet."))
@@ -192,7 +192,7 @@ normGeometry <- function(input = NULL, pattern = NULL, ..., thresh = 10,
                               dataseries = dSeries,
                               ontology = gazPath)
     # re-load gazetteer (to contain also updates)
-    gazetteer <- load_ontology(name = "gadm", path = gazPath)@labels %>%
+    gazetteer <- load_ontology(path = gazPath)@labels %>%
       rowwise() %>%
       mutate(level = str_split(code, "[.]", simplify = TRUE) %>% length() - 1)
 

@@ -81,7 +81,7 @@ normTable <- function(input = NULL, pattern = NULL, ..., outType = "rds",
   inv_tables <- read_csv(paste0(intPaths, "/inv_tables.csv"), col_types = "iiiccccDccccc")
   inv_dataseries <- read_csv(paste0(intPaths, "/inv_dataseries.csv"), col_types = "icccccc")
   inv_geometries <- read_csv(paste0(intPaths, "/inv_geometries.csv"), col_types = "iiicccccDDcc")
-  gazetteer <- load_ontology(name = "gadm", path = gazPath)@labels %>%
+  gazetteer <- load_ontology(path = gazPath)@labels %>%
     rowwise() %>%
     mutate(level = str_split(code, "[.]", simplify = TRUE) %>% length() - 1)
 
@@ -154,7 +154,7 @@ normTable <- function(input = NULL, pattern = NULL, ..., outType = "rds",
                            dataseries = dSeries,
                            ontology = gazPath)
     # re-load gazetteer (to contain also updates)
-    gazetteer <- load_ontology(name = "gadm", path = gazPath)@labels %>%
+    gazetteer <- load_ontology(path = gazPath)@labels %>%
       rowwise() %>%
       mutate(level = str_split(code, "[.]", simplify = TRUE) %>% length() - 1)
 
