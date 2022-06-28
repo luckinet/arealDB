@@ -26,7 +26,7 @@
 #' makeExampleDB(path = paste0(tempdir(), "/newDB"))
 #'
 #' # to make the example database until a certain step
-#' makeExampleDB(path = tempdir(), until = "regDataseries")
+#' makeExampleDB(path = paste0(tempdir(), "/newDB"), until = "regDataseries")
 #'
 #' }
 #' @importFrom checkmate assertChoice testDirectoryExists
@@ -36,7 +36,7 @@
 
 makeExampleDB <- function(path = NULL, until = NULL, verbose = FALSE){
 
-  # library(arealDB); library(ontologics); library(tidyverse); library(checkmate); library(tabshiftr); library(sf); path <- paste0(tempdir(), "/newDB"); until = NULL; verbose = FALSE
+  # library(arealDB); library(ontologics); library(tidyverse); library(checkmate); library(tabshiftr); library(sf); until = NULL; verbose = FALSE; path = paste0(tempdir(), "/newDB")
 
   inPath <- system.file("test_datasets", package = "arealDB", mustWork = TRUE)
   steps <- c("start_arealDB", "match_ontology", "regDataseries", "regGeometry", "regTable", "normGeometry", "normTable")
