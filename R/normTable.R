@@ -61,7 +61,7 @@
 normTable <- function(input = NULL, pattern = NULL, ..., outType = "rds",
                       update = FALSE, verbose = FALSE){
 
-  # input = NULL; pattern = NULL; sbst <- list(); outType = "rds"; update = TRUE; verbose = FALSE
+  # input = NULL; pattern = ds[1]; sbst <- list(); outType = "rds"; update = updateTables; verbose = FALSE
 
   # set internal paths
   intPaths <- getOption(x = "adb_path")
@@ -153,6 +153,9 @@ normTable <- function(input = NULL, pattern = NULL, ..., outType = "rds",
                            columns = unitCols,
                            dataseries = dSeries,
                            ontology = gazPath)
+
+    # somewhere the first level concepts with value ".00x" are saved not as this specific character, but as decimal
+
     # re-load gazetteer (to contain also updates)
     gazetteer <- load_ontology(path = gazPath)@labels %>%
       rowwise() %>%

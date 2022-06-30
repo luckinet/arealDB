@@ -28,7 +28,7 @@
 match_ontology <- function(table = NULL, columns = NULL, dataseries = NULL,
                            ontology = NULL, from_meta = FALSE, verbose = FALSE){
 
-  # table = NULL; columns = NULL; dataseries = NULL; ontology = terrOnto; from_meta = TRUE; guess_class = TRUE; verbose = FALSE
+  # table = temp; columns = unitCols; dataseries = dSeries; ontology = gazPath; from_meta = TRUE; verbose = FALSE
 
   assertLogical(x = from_meta, len = 1, any.missing = FALSE)
   assertLogical(x = verbose, len = 1, any.missing = FALSE)
@@ -47,6 +47,7 @@ match_ontology <- function(table = NULL, columns = NULL, dataseries = NULL,
   }
 
   theClasses <- gaz@classes
+  subClasses <- theClasses$class[1:which(theClasses$class == columns)]
 
   # first, identify from where to take matches ----
   if(from_meta){
@@ -71,8 +72,8 @@ match_ontology <- function(table = NULL, columns = NULL, dataseries = NULL,
     concepts <- concepts[!is.na(concepts)]
 
     # determine those concepts, that are not yet defined in the gazetteer
-    missingConcepts <- get_concept(terms = concepts, missing = TRUE, ontology = gaz)
-    inclConcepts <- get_concept(terms = concepts, ontology = gaz)
+    missingConcepts <- get_concept(terms = concepts, class = columns, missing = TRUE, ontology = gaz)
+    inclConcepts <- get_concept(terms = concepts, class = columns, ontology = gaz)
 
     # build a table of external concepts and of harmonised concepts these should be overwritten with
     if(dim(missingConcepts)[1] != 0){
@@ -84,7 +85,8 @@ match_ontology <- function(table = NULL, columns = NULL, dataseries = NULL,
         filter(!is.na(class)) %>%
         mutate(#code = str_replace_all(string = code, "[.]", "_"),
                nested = NA_character_,
-               sort_in = NA_character_)
+               sort_in = NA_character_) %>%
+        filter(class %in% subClasses)
 
       sortIn <- missingConcepts %>%
         mutate(code = NA_character_,
@@ -149,7 +151,7 @@ match_ontology <- function(table = NULL, columns = NULL, dataseries = NULL,
           separate_rows(nested, sep = "\\|") %>%
           select(-close)
 
-        newLvl <- get_concept(terms = temp$harmonised, ontology = gaz, tree = TRUE)
+        newLvl <- get_concept(terms = temp$harmonised, class = columns, ontology = gaz, tree = TRUE)
         newLvl <- temp %>%
           select(-class) %>%
           left_join(newLvl %>% select(broader, class), by = c("code" = "broader")) %>%
@@ -179,7 +181,7 @@ match_ontology <- function(table = NULL, columns = NULL, dataseries = NULL,
           filter(!is.na(close)) %>%
           separate_rows(close, sep = "\\|")
 
-        gaz <- get_concept(terms = temp$harmonised, ontology = gaz) %>%
+        gaz <- get_concept(terms = temp$harmonised, class = columns, ontology = gaz) %>%
           new_mapping(concept = .,
                       new = temp$close,
                       match = "close",
@@ -209,7 +211,7 @@ match_ontology <- function(table = NULL, columns = NULL, dataseries = NULL,
         arrange(!!sym(theColumn))
 
       # finally, extract the harmonised concepts ...
-      newConcepts <- get_concept(terms = unlist(theConcepts, use.names = FALSE), ontology = gaz) %>%
+      newConcepts <- get_concept(terms = unlist(theConcepts, use.names = FALSE), class = columns, ontology = gaz) %>%
         rename(!!sym(theColumn) := external)
 
       # ... and assign them to the respective column ...
@@ -242,18 +244,19 @@ match_ontology <- function(table = NULL, columns = NULL, dataseries = NULL,
 
     if(!is.null(related)){
 
-      allNewConcepts <- get_concept(terms = concepts, ontology = gaz)
+      allNewConcepts <- get_concept(terms = concepts, class = columns, ontology = gaz)
 
       newMatches <- related %>%
         select(-sort_in, -code, -class) %>%
         filter(!is.na(close) | !is.na(nested)) %>%
+        # separate_rows(close, sep = "\\|") %>%
         left_join(allNewConcepts, by = c("harmonised" = "label_en")) %>%
         # filter(!is.na(code)) %>%
         # separate(col = external, into = c("source", "match"), sep = "_", extra = "drop") %>%
-        mutate(code = str_replace_all(string = code, "[.]", "_"),
-               source = dataseries) %>%
+        mutate(source = dataseries) %>%
         # select(code, harmonised, class, close, nested, source, match)
-        select(code, harmonised, class, close, nested, source)
+        select(code, harmonised, class, close, nested, source) %>%
+        distinct(code, harmonised, class, close, nested, source)
 
       prevMatches %>%
         bind_rows(newMatches) %>%
