@@ -81,9 +81,9 @@ normTable <- function(input = NULL, pattern = NULL, ..., outType = "rds",
   inv_tables <- read_csv(paste0(intPaths, "/inv_tables.csv"), col_types = "iiiccccDccccc")
   inv_dataseries <- read_csv(paste0(intPaths, "/inv_dataseries.csv"), col_types = "icccccc")
   inv_geometries <- read_csv(paste0(intPaths, "/inv_geometries.csv"), col_types = "iiicccccDDcc")
-  gazetteer <- load_ontology(path = gazPath)@labels %>%
-    rowwise() %>%
-    mutate(level = str_split(code, "[.]", simplify = TRUE) %>% length() - 1)
+  gazetteer <- load_ontology(path = gazPath)#@labels %>%
+    # rowwise() %>%
+    # mutate(level = str_split(code, "[.]", simplify = TRUE) %>% length() - 1)
 
   # check validity of arguments
   assertNames(x = colnames(inv_tables),
@@ -128,8 +128,15 @@ normTable <- function(input = NULL, pattern = NULL, ..., outType = "rds",
 
       oldNames <- str_split(string = inv_geometries$hierarchy[inv_geometries$geoID == geoID],
                             pattern = "\\|")[[1]]
-      unitCols <- unique(gazetteer$class[gazetteer$level %in% 1:length(oldNames)])
-      unitCols <- unitCols[!is.na(unitCols)]
+      classID <- gazetteer@classes$external %>%
+        filter(label %in% oldNames)
+
+      unitCols <- gazetteer@classes$harmonised %>%
+        filter(str_detect(string = gazetteer@classes$harmonised$has_exact_match, pattern = classID$id)) %>%
+        pull(label)
+
+      # unitCols <- unique(gazetteer$class[gazetteer$level %in% 1:length(oldNames)])
+      # unitCols <- unitCols[!is.na(unitCols)]
     } else{
       stop(paste0("  ! the file '", file_name, "' has not been registered yet."))
     }
@@ -154,12 +161,10 @@ normTable <- function(input = NULL, pattern = NULL, ..., outType = "rds",
                            dataseries = dSeries,
                            ontology = gazPath)
 
-    # somewhere the first level concepts with value ".00x" are saved not as this specific character, but as decimal
-
     # re-load gazetteer (to contain also updates)
-    gazetteer <- load_ontology(path = gazPath)@labels %>%
-      rowwise() %>%
-      mutate(level = str_split(code, "[.]", simplify = TRUE) %>% length() - 1)
+    gazetteer <- load_ontology(path = gazPath)#@labels %>%
+      # rowwise() %>%
+      # mutate(level = str_split(code, "[.]", simplify = TRUE) %>% length() - 1)
 
     # potentially filter
     if(length(sbst) != 0){
@@ -192,10 +197,10 @@ normTable <- function(input = NULL, pattern = NULL, ..., outType = "rds",
 
         tempOut <- temp %>%
           filter(.data[[unitCols[1]]] == topUnits[j]) %>%
-          left_join(gazetteer %>% select(code, !!unitCols[length(unitCols)] := label_en)) %>%
+          # left_join(gazetteer %>% select(code, !!unitCols[length(unitCols)] := label_en)) %>%
           unite(col = "ahName", all_of(unitCols), sep = ".") %>%
-          mutate(id = seq_along(ahName)) %>%
-          select(id, ahName, ahID = code, tabID, geoID, everything()) %>%
+          mutate(fid = seq_along(ahName)) %>%
+          select(id = fid, ahName, ahID = id, tabID, geoID, everything()) %>%
           distinct()
 
         # append output to previous file
@@ -214,6 +219,8 @@ normTable <- function(input = NULL, pattern = NULL, ..., outType = "rds",
           out <- tempOut %>%
             bind_rows(prevData, .) %>%
             mutate(id = seq_along(ahName))
+
+          here distinct rows only?
         } else if(length(avail) > 1){
           # stop("the nation '", topUnits[j], "' exists several times in the output folder '/adb_tablse/stage3/'.")
         } else {

@@ -28,7 +28,7 @@
 match_ontology <- function(table = NULL, columns = NULL, dataseries = NULL,
                            ontology = NULL, from_meta = FALSE, verbose = FALSE){
 
-  # table = temp; columns = unitCols; dataseries = dSeries; ontology = gazPath; from_meta = TRUE; verbose = FALSE
+  # table = temp; columns = unitCols; dataseries = dSeries; ontology = gazPath; from_meta = FALSE; verbose = FALSE
 
   assertLogical(x = from_meta, len = 1, any.missing = FALSE)
   assertLogical(x = verbose, len = 1, any.missing = FALSE)
@@ -47,7 +47,8 @@ match_ontology <- function(table = NULL, columns = NULL, dataseries = NULL,
   }
 
   theClasses <- gaz@classes
-  subClasses <- theClasses$class[1:which(theClasses$class == columns)]
+  subClasses <- theClasses$harmonised$label[1:which(theClasses$harmonised$label == columns)]
+  parentClass <- theClasses$harmonised$label[which(theClasses$harmonised$label == columns) - 1]
 
   # first, identify from where to take matches ----
   if(from_meta){
@@ -72,29 +73,32 @@ match_ontology <- function(table = NULL, columns = NULL, dataseries = NULL,
     concepts <- concepts[!is.na(concepts)]
 
     # determine those concepts, that are not yet defined in the gazetteer
-    missingConcepts <- get_concept(terms = concepts, class = columns, missing = TRUE, ontology = gaz)
-    inclConcepts <- get_concept(terms = concepts, class = columns, ontology = gaz)
+    missingConcepts <- get_concept(x = tibble(label = concepts, class = columns), missing = TRUE, ontology = gaz, mappings = TRUE)
+
+    get_concept(missing = TRUE) this should also look at mappings
+
+    inclConcepts <- get_concept(x = tibble(label = concepts, class = columns), ontology = gaz, mappings = TRUE)
 
     # build a table of external concepts and of harmonised concepts these should be overwritten with
     if(dim(missingConcepts)[1] != 0){
 
-      relate <- gaz@labels %>%
-        select(code, harmonised = label_en, class) %>%
-        left_join(inclConcepts %>% select(code, harmonised = label_en, class, close = external),
-                  by = c("code", "harmonised", "class")) %>%
+      relate <- gaz@concepts$harmonised %>%
+        select(id, harmonised = label, class) %>%
+        left_join(inclConcepts %>% select(id, harmonised = label, class, close = label),
+                  by = c("id", "harmonised", "class")) %>%
         filter(!is.na(class)) %>%
         mutate(#code = str_replace_all(string = code, "[.]", "_"),
-               nested = NA_character_,
+               narrower = NA_character_,
                sort_in = NA_character_) %>%
         filter(class %in% subClasses)
 
       sortIn <- missingConcepts %>%
-        mutate(code = NA_character_,
+        mutate(id = NA_character_,
                harmonised = NA_character_,
                class = NA_character_,
                close = NA_character_,
-               nested = NA_character_) %>%
-        select(code, harmonised, class, close, nested, sort_in = external)
+               narrower = NA_character_) %>%
+        select(id, harmonised, class, close, narrower, sort_in = label)
 
       # put together the object that shall be edited by the user ...
       sortIn %>%
@@ -104,13 +108,13 @@ match_ontology <- function(table = NULL, columns = NULL, dataseries = NULL,
       # ... and make them aware of their duty
       message("please edit the file '", paste0(intPaths, "/matching.csv"), "'")
       if(verbose){
-        message("column description and tips \n\ncode       : filter by this column to jump to the subset you need to edit\nharmonised : concepts to which the new terms should be related \nclass      : the class of harmonised concepts \nclose      : in case a new concept is a close match to the harmonised concept, paste \n             it next to that concept, delimit several concepts with a '|' \nnested     : in case a new concept is not the same as any harmonised concept, paste \n             it next to that concept into which it is nested, delimit \n             several concepts with a '|' \nsort_in    : cut out these concepts and sort them either into 'close' or into 'nested' \n\n-> values that were already successfully matched by previous translations are listed here, \n   however, altering them here doesn't change the ontology. \n\n-> any row that doesn't contain a value in the column 'code' will be discarded. Hence, \n   if you want a value to be ignored, simply don't paste it anywhere. \n\n-> do not change the values in the columns 'code', 'harmonised' and 'class', as they \n   are important to insert the new matches into the ontology. \n\n-> if a term shall be nested into a position that doesn't have a class, (for example, \n   because that class occurrs the first time with this term) first create that nested \n   class with 'new_class()'.")
+        message("column description and tips \n\ncode       : filter by this column to jump to the subset you need to edit\nharmonised : concepts to which the new terms should be related \nclass      : the class of harmonised concepts \nclose      : in case a new concept is a close match to the harmonised concept, paste \n             it next to that concept, delimit several concepts with a '|' \nnarrower     : in case a new concept is not the same as any harmonised concept, paste \n             it next to that concept into which it is nested, delimit \n             several concepts with a '|' \nsort_in    : cut out these concepts and sort them either into 'close' or into 'narrower' \n\n-> values that were already successfully matched by previous translations are listed here, \n   however, altering them here doesn't change the ontology. \n\n-> any row that doesn't contain a value in the column 'code' will be discarded. Hence, \n   if you want a value to be ignored, simply don't paste it anywhere. \n\n-> do not change the values in the columns 'code', 'harmonised' and 'class', as they \n   are important to insert the new matches into the ontology. \n\n-> if a term shall be nested into a position that doesn't have a class, (for example, \n   because that class occurrs the first time with this term) first create that nested \n   class with 'new_class()'.")
       }
       done <- readline(" -> press any key when done: ")
 
     } else {
       # write an empty table
-      tibble(code = NA_character_,
+      tibble(id = NA_character_,
              note = NA_character_) %>%
         write_csv(file = paste0(intPaths, "/matching.csv"), quote = "all", na = "")
     }
@@ -128,7 +132,7 @@ match_ontology <- function(table = NULL, columns = NULL, dataseries = NULL,
       dataseries <- str_split(dataseries[2], "[.]")[[1]][1]
     } else {
       related <- read_csv(paste0(intPaths, "/matching.csv"), col_types = cols(.default = "c")) %>%
-        filter(!is.na(code))
+        filter(!is.na(id))
 
       if(dim(related)[1] == 0){
         related <- NULL
@@ -138,88 +142,82 @@ match_ontology <- function(table = NULL, columns = NULL, dataseries = NULL,
     if(!is.null(related)){
 
       # make a new dataseries, in case it doesn't exist yet
-      if(!dataseries %in% gaz@sources$sourceName){
+      if(!dataseries %in% gaz@sources$label){
         gaz <- new_source(name = dataseries, ontology = gaz)
       }
 
-      # in case there are concepts that are merely nested into other concepts,
-      # set these as new harmonised concepts
-      if(any(!is.na(related$nested))){
+      nestedMatch <- related %>%
+        filter(!is.na(narrower)) %>%
+        separate_rows(narrower, sep = " \\| ") %>%
+        select(-close)
 
-        temp <- related %>%
-          filter(!is.na(nested)) %>%
-          separate_rows(nested, sep = "\\|") %>%
-          select(-close)
+      closeMatch <- related %>%
+        filter(!is.na(close)) %>%
+        separate_rows(close, sep = " \\| ")
 
-        newLvl <- get_concept(terms = temp$harmonised, class = columns, ontology = gaz, tree = TRUE)
-        newLvl <- temp %>%
+      # in case nested matches are present, derive the mappings table ...
+      if(dim(nestedMatch)[1] != 0){
+
+        newLvl <- get_concept(x = tibble(label = nestedMatch$harmonised, class = columns), ontology = gaz, tree = TRUE)
+        newLvl <- nestedMatch %>%
           select(-class) %>%
-          left_join(newLvl %>% select(broader, class), by = c("code" = "broader")) %>%
-          group_by(nested) %>%
+          left_join(newLvl %>% select(has_broader, class), by = c("id" = "has_broader")) %>%
+          group_by(narrower) %>%
           summarise(newClass = unique(class)) %>%
           ungroup()
 
-        # continue here by testing some more scenarios
+        nestedMatch <- nestedMatch %>%
+          left_join(newLvl, by = "narrower")
 
-        temp <- temp %>%
-          left_join(newLvl, by = "nested")
+        mappings <- get_concept(x = nestedMatch %>% select(label = harmonised, class), ontology = gaz) %>%
+          bind_cols(nestedMatch %>% select(new = narrower)) %>%
+          mutate(target = label,
+                 match = "narrower")
+      } else {
+        mappings <- tibble(id = character(), has_broader = character(), label = character(),
+                           class = character(), new = character(), target = character(), match = character())
+      }
 
-        gaz <- get_concept(terms = temp$harmonised, ontology = gaz) %>%
-          new_concept(new = temp$nested,
-                      broader = .,
-                      class = temp$newClass,
-                      source = dataseries,
-                      ontology = gaz)
+      # in case close matches are present, derive the mappings table ...
+      if(dim(closeMatch)[1] != 0){
+
+        mappings <- get_concept(x = closeMatch %>% select(label = harmonised, class), ontology = gaz) %>%
+          bind_cols(closeMatch %>% select(new = close)) %>%
+          mutate(target = label,
+                 match = "close") %>%
+          bind_rows(mappings)
 
       }
 
-      # in case there are close matches with already harmonised concept, set the
-      # respective mappings
-      if(any(!is.na(related$close))){
-
-        temp <- related %>%
-          filter(!is.na(close)) %>%
-          separate_rows(close, sep = "\\|")
-
-        gaz <- get_concept(terms = temp$harmonised, class = columns, ontology = gaz) %>%
-          new_mapping(concept = .,
-                      new = temp$close,
-                      match = "close",
-                      source = dataseries,
-                      certainty = 3,
-                      ontology = gaz)
-
-      }
+      # ... and store them in the ontology
+      gaz <- new_mapping(new = mappings$new,
+                         target = mappings %>% select(id, label = target, class),
+                         source = dataseries,
+                         match = mappings$match,
+                         certainty = 3,
+                         ontology = gaz)
 
       write_rds(x = gaz, file = gazPath)
     }
-
 
   }
 
   # ... and finally extract the respective concepts and merge them with the input table ----
   if(!from_meta){
 
-
     for(i in seq_along(columns)){
 
       theColumn <- columns[i]
-      theConcepts <- table %>%
-        as_tibble() %>%
-        select(all_of(theColumn)) %>%
-        distinct() %>%
-        arrange(!!sym(theColumn))
 
       # finally, extract the harmonised concepts ...
-      newConcepts <- get_concept(terms = unlist(theConcepts, use.names = FALSE), class = columns, ontology = gaz) %>%
-        rename(!!sym(theColumn) := external)
+      newConcepts <- mappings %>%
+        select(new, target, id) %>%
+        rename(!!sym(theColumn) := new)
 
       # ... and assign them to the respective column ...
       if(i == 1){
         temp <- table %>%
-          left_join(newConcepts, by = theColumn) %>%
-          mutate(broader = code) %>%
-          select(-class, -sourceName, -code)
+          left_join(newConcepts, by = theColumn)
       } else {
         temp <- temp %>%
           left_join(newConcepts, by = c(theColumn, "broader")) %>%
@@ -229,11 +227,11 @@ match_ontology <- function(table = NULL, columns = NULL, dataseries = NULL,
 
       temp <- temp %>%
         select(-all_of(theColumn)) %>%
-        rename(!!theColumn := label_en)
+        rename(!!theColumn := target)
 
     }
-    table <- temp %>%
-      select(all_of(columns), code = broader, everything())
+    out <- temp %>%
+      select(all_of(columns), id, everything())
 
     # ... and store the newly defined matches as a dataseries specific matching table
     if(testFileExists(paste0(intPaths, "/meta/concepts/match_", dataseries, ".csv"))){
@@ -244,32 +242,24 @@ match_ontology <- function(table = NULL, columns = NULL, dataseries = NULL,
 
     if(!is.null(related)){
 
-      allNewConcepts <- get_concept(terms = concepts, class = columns, ontology = gaz)
-
-      newMatches <- related %>%
-        select(-sort_in, -code, -class) %>%
-        filter(!is.na(close) | !is.na(nested)) %>%
-        # separate_rows(close, sep = "\\|") %>%
-        left_join(allNewConcepts, by = c("harmonised" = "label_en")) %>%
-        # filter(!is.na(code)) %>%
-        # separate(col = external, into = c("source", "match"), sep = "_", extra = "drop") %>%
+      newMatches <- mappings %>%
+        group_by(id, has_broader, label, class, match) %>%
+        summarise(new = paste0(new, collapse = " | ")) %>%
+        ungroup() %>%
+        pivot_wider(id_cols = c(id, has_broader, label, class), names_from = match, values_from = new) %>%
         mutate(source = dataseries) %>%
-        # select(code, harmonised, class, close, nested, source, match)
-        select(code, harmonised, class, close, nested, source) %>%
-        distinct(code, harmonised, class, close, nested, source)
+        select(id, harmonised = label, class, close, narrower, source) %>%
+        distinct(id, harmonised, class, close, narrower, source)
 
       prevMatches %>%
         bind_rows(newMatches) %>%
-        group_by(code, harmonised, class, close, source) %>%
-        mutate(nested = paste0(na.omit(nested), collapse = "|")) %>%
-        ungroup() %>%
         distinct() %>%
-        arrange(code) %>%
+        arrange(id) %>%
         write_csv(file = paste0(intPaths, "/meta/concepts/match_", dataseries, ".csv"), append = FALSE, na = "")
 
     }
 
-    return(table)
+    return(out)
 
   } else {
     message("import successful.")
