@@ -73,32 +73,25 @@ match_ontology <- function(table = NULL, columns = NULL, dataseries = NULL,
     concepts <- concepts[!is.na(concepts)]
 
     # determine those concepts, that are not yet defined in the gazetteer
-    missingConcepts <- get_concept(x = tibble(label = concepts, class = columns), missing = TRUE, ontology = gaz, mappings = TRUE)
-
-    get_concept(missing = TRUE) this should also look at mappings
-
-    inclConcepts <- get_concept(x = tibble(label = concepts, class = columns), ontology = gaz, mappings = TRUE)
+    missingConcepts <- get_concept(x = tibble(label = concepts, class = columns), missing = TRUE, ontology = gaz, mappings = c("close", "narrower"))
+    inclConcepts <- get_concept(x = tibble(label = concepts, class = columns), ontology = gaz, mappings = c("close", "narrower"))
 
     # build a table of external concepts and of harmonised concepts these should be overwritten with
     if(dim(missingConcepts)[1] != 0){
 
       relate <- gaz@concepts$harmonised %>%
-        select(id, harmonised = label, class) %>%
-        left_join(inclConcepts %>% select(id, harmonised = label, class, close = label),
-                  by = c("id", "harmonised", "class")) %>%
+        select(id, label, class) %>%
+        left_join(inclConcepts, by = c("id", "label", "class")) %>%
+        # mutate(external_id = NULL) %>%
         filter(!is.na(class)) %>%
-        mutate(#code = str_replace_all(string = code, "[.]", "_"),
-               narrower = NA_character_,
-               sort_in = NA_character_) %>%
         filter(class %in% subClasses)
 
       sortIn <- missingConcepts %>%
-        mutate(id = NA_character_,
-               harmonised = NA_character_,
-               class = NA_character_,
-               close = NA_character_,
-               narrower = NA_character_) %>%
-        select(id, harmonised, class, close, narrower, sort_in = label)
+        select(id, label, class, description, everything()) %>%
+        mutate(#external_id = NULL,
+               sort_in = label,
+               label = NA_character_,
+               class = NA_character_)
 
       # put together the object that shall be edited by the user ...
       sortIn %>%

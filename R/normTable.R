@@ -220,7 +220,8 @@ normTable <- function(input = NULL, pattern = NULL, ..., outType = "rds",
             bind_rows(prevData, .) %>%
             mutate(id = seq_along(ahName))
 
-          here distinct rows only?
+          # here distinct rows only?
+
         } else if(length(avail) > 1){
           # stop("the nation '", topUnits[j], "' exists several times in the output folder '/adb_tablse/stage3/'.")
         } else {
