@@ -32,11 +32,12 @@ test_that("make example DB until match_ontology", {
   temp <- read_rds(paste0(dbpath, "/territories.rds"))
 
   expect_class(x = temp, classes = "onto")
-  expect_tibble(x = temp@classes, nrows = 3, ncols = 2)
-  expect_tibble(x = temp@sources, nrows = 3, ncols = 6)
-  expect_tibble(x = temp@concepts, nrows = 29, ncols = 3)
-  expect_tibble(x = temp@labels, nrows = 29, ncols = 3)
-  expect_tibble(x = temp@mappings, nrows = 29, ncols = 2)
+  expect_list(x = temp@classes, len = 2)
+  expect_tibble(x = temp@classes$harmonised, nrows = 3, ncols = 8)
+  expect_tibble(x = temp@classes$external, nrows = 0, ncols = 4)
+  expect_list(x = temp@concepts, len = 2)
+  expect_tibble(x = temp@concepts$harmonised, nrows = 11, ncols = 9)
+  expect_tibble(x = temp@concepts$external, nrows = 18, ncols = 4)
 
 })
 
