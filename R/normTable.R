@@ -53,7 +53,7 @@
 #' @importFrom dplyr mutate select pull full_join bind_rows
 #' @importFrom magrittr %>%
 #' @importFrom readr read_csv cols
-#' @importFrom stringr str_split
+#' @importFrom stringr str_split str_detect
 #' @importFrom tidyselect everything
 #' @importFrom utils read.csv
 #' @export
@@ -61,7 +61,7 @@
 normTable <- function(input = NULL, pattern = NULL, ..., outType = "rds",
                       update = FALSE, verbose = FALSE){
 
-  # input = NULL; pattern = ds[1]; sbst <- list(); outType = "rds"; update = updateTables; verbose = FALSE
+  # input = NULL; pattern = NULL; sbst <- list(); outType = "rds"; update = TRUE; verbose = FALSE
 
   # set internal paths
   intPaths <- getOption(x = "adb_path")
@@ -81,9 +81,7 @@ normTable <- function(input = NULL, pattern = NULL, ..., outType = "rds",
   inv_tables <- read_csv(paste0(intPaths, "/inv_tables.csv"), col_types = "iiiccccDccccc")
   inv_dataseries <- read_csv(paste0(intPaths, "/inv_dataseries.csv"), col_types = "icccccc")
   inv_geometries <- read_csv(paste0(intPaths, "/inv_geometries.csv"), col_types = "iiicccccDDcc")
-  gazetteer <- load_ontology(path = gazPath)#@labels %>%
-    # rowwise() %>%
-    # mutate(level = str_split(code, "[.]", simplify = TRUE) %>% length() - 1)
+  gazetteer <- load_ontology(path = gazPath)
 
   # check validity of arguments
   assertNames(x = colnames(inv_tables),
@@ -128,15 +126,18 @@ normTable <- function(input = NULL, pattern = NULL, ..., outType = "rds",
 
       oldNames <- str_split(string = inv_geometries$hierarchy[inv_geometries$geoID == geoID],
                             pattern = "\\|")[[1]]
-      classID <- gazetteer@classes$external %>%
-        filter(label %in% oldNames)
 
-      unitCols <- gazetteer@classes$harmonised %>%
-        filter(str_detect(string = gazetteer@classes$harmonised$has_exact_match, pattern = classID$id)) %>%
-        pull(label)
-
-      # unitCols <- unique(gazetteer$class[gazetteer$level %in% 1:length(oldNames)])
-      # unitCols <- unitCols[!is.na(unitCols)]
+      gazetteer <- new_mapping(new = oldNames, target = gazetteer@classes$harmonised %>% slice(1:lut$level),
+                               source = dSeries, match = "exact", certainty = 3, type = "class", ontology = gazetteer)
+      # classID <- gazetteer@classes$external %>%
+      #   filter(label %in% oldNames)
+      #
+      # unitCols <- gazetteer@classes$harmonised %>%
+      #   separate(col = has_exact_match, into = c("match", "certainty"), sep = "[.]") %>%
+      #   filter(match %in% classID$id) %>%
+      #   pull(label)
+      #
+      # topCol <- unitCols[1]
     } else{
       stop(paste0("  ! the file '", file_name, "' has not been registered yet."))
     }
@@ -162,7 +163,7 @@ normTable <- function(input = NULL, pattern = NULL, ..., outType = "rds",
                            ontology = gazPath)
 
     # re-load gazetteer (to contain also updates)
-    gazetteer <- load_ontology(path = gazPath)#@labels %>%
+    # gazetteer <- load_ontology(path = gazPath)#@labels %>%
       # rowwise() %>%
       # mutate(level = str_split(code, "[.]", simplify = TRUE) %>% length() - 1)
 

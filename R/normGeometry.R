@@ -85,7 +85,7 @@
 #'   st_drivers NA_crs_ st_is_valid st_make_valid
 #' @importFrom stringr str_split
 #' @importFrom tibble as_tibble
-#' @importFrom dplyr bind_rows
+#' @importFrom dplyr bind_rows slice
 #' @importFrom tidyr unite
 #' @importFrom tidyselect starts_with all_of
 #' @export
@@ -112,9 +112,7 @@ normGeometry <- function(input = NULL, pattern = NULL, ..., thresh = 10,
   # get tables
   inv_geometries <- read_csv(paste0(intPaths, "/inv_geometries.csv"), col_types = "iiicccccDDcc")
   inv_dataseries <- read_csv(paste0(intPaths, "/inv_dataseries.csv"), col_types = "icccccc")
-  gazetteer <- load_ontology(path = gazPath)@labels %>%
-    rowwise() %>%
-    mutate(level = str_split(code, "[.]", simplify = TRUE) %>% length() - 1)
+  gazetteer <- load_ontology(path = gazPath)
 
   # check validity of arguments
   assertIntegerish(x = thresh, any.missing = FALSE)
@@ -151,10 +149,24 @@ normGeometry <- function(input = NULL, pattern = NULL, ..., thresh = 10,
 
       dSeries <- inv_dataseries$name[inv_dataseries$datID == lut$datID]
 
+      # make a new dataseries, in case it doesn't exist yet
+      if(!dSeries %in% gazetteer@sources$label){
+        gazetteer <- new_source(name = dSeries, ontology = gazetteer)
+      }
+
       # if there are several columns that contain units, split them and make
       oldNames <- str_split(string = lut$hierarchy, pattern = "\\|")[[1]]
-      unitCols <- unique(gazetteer$class[gazetteer$level %in% 1:length(oldNames)])
-      unitCols <- unitCols[!is.na(unitCols) & unitCols != "undefined"]
+
+      gazetteer <- new_mapping(new = oldNames, target = gazetteer@classes$harmonised %>% slice(1:lut$level),
+                               source = dSeries, match = "exact", certainty = 3, type = "class", ontology = gazetteer)
+      classID <- gazetteer@classes$external %>%
+        filter(label %in% oldNames)
+
+      unitCols <- gazetteer@classes$harmonised %>%
+        separate(col = has_exact_match, into = c("match", "certainty"), sep = "[.]") %>%
+        filter(match %in% classID$id) %>%
+        pull(label)
+
       topCol <- unitCols[1]
     } else{
       stop(paste0("  ! the file '", file_name, "' has not been registered yet."))
@@ -192,10 +204,7 @@ normGeometry <- function(input = NULL, pattern = NULL, ..., thresh = 10,
                               dataseries = dSeries,
                               ontology = gazPath)
     # re-load gazetteer (to contain also updates)
-    gazetteer <- load_ontology(path = gazPath)@labels %>%
-      rowwise() %>%
-      mutate(level = str_split(code, "[.]", simplify = TRUE) %>% length() - 1)
-
+    gazetteer <- load_ontology(path = gazPath)
 
     # determine top-most value
     if(fields[1] == ""){
@@ -225,11 +234,11 @@ normGeometry <- function(input = NULL, pattern = NULL, ..., thresh = 10,
         if(severalTop){
           sourceGeom <- newGeom %>%
             filter_at(vars(all_of(topCol)), all_vars(. %in% tempUnit)) %>%
-            select(all_of(unitCols), code)
+            select(all_of(unitCols), id)
           assertChoice(x = topCol, choices = names(sourceGeom), .var.name = "names(nation_column)")
         } else{
           sourceGeom <- newGeom %>%
-            select(all_of(unitCols), code)
+            select(all_of(unitCols), id)
         }
 
         # dissolve ----
@@ -380,7 +389,7 @@ normGeometry <- function(input = NULL, pattern = NULL, ..., thresh = 10,
               mutate(valid = abs(deviation) < thresh) %>%
               ungroup() %>%
               as_tibble() %>%
-              select(-geom, -!!unitCols, -targetFID, -target_area, -area, -overlap_area, -deviation, -code) %>%
+              select(-geom, -!!unitCols, -targetFID, -target_area, -area, -overlap_area, -deviation, -id) %>%
               arrange(sourceFID)
           ))
 
@@ -411,14 +420,14 @@ normGeometry <- function(input = NULL, pattern = NULL, ..., thresh = 10,
           validUnits <- sourceOverlap %>%
             filter(valid) %>%
             mutate(geoID = newGID) %>%
-            select(-sourceFID, -valid, -!!unitCols, -code) %>%
+            select(-sourceFID, -valid, -!!unitCols, -id) %>%
             st_sf()
 
           # get geoms that are invalid because their overlap is smaller than
           # threshold
           invalidUnits <- sourceOverlap %>%
             filter(!valid) %>%
-            select(-sourceFID, -valid, -code)
+            select(-sourceFID, -valid)
 
           # ensure that the number of valid and invalidUnits equals to the source units
           if(dim(sourceGeom)[1] != (dim(validUnits)[1] + dim(invalidUnits)[1])){
@@ -455,10 +464,9 @@ normGeometry <- function(input = NULL, pattern = NULL, ..., thresh = 10,
           newUnits <- invalidUnits %>%
             select(-ahName, -ahID) %>%
             mutate(geoID = newGID) %>%
-            left_join(gazetteer %>% filter(!is.na(class)) %>% select(code, !!unitCols[length(unitCols)] := label_en)) %>%
             unite(col = "ahName", unitCols, sep = ".") %>%
             st_sf() %>%
-            select(ahName, ahID = code, level, geoID)
+            select(ahName, ahID = id, level, geoID)
 
           # combine old and new units
           outGeom <- validUnits %>%
@@ -474,7 +482,6 @@ normGeometry <- function(input = NULL, pattern = NULL, ..., thresh = 10,
 
         } else {
 
-
           message("    Creating new basis dataset at level ", theLevel, ".")
           outGeom <- suppressMessages(
             sourceGeom %>%
@@ -482,7 +489,7 @@ normGeometry <- function(input = NULL, pattern = NULL, ..., thresh = 10,
               mutate(level = theLevel,
                      geoID = newGID) %>%
               ungroup() %>%
-              select(ahName, ahID = code, level, geoID)
+              select(ahName, ahID = id, level, geoID)
             )
 
         }
