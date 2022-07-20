@@ -83,7 +83,7 @@
 #' @importFrom sf st_layers read_sf st_write st_join st_buffer st_equals st_sf
 #'   st_transform st_crs st_crs<- st_geometry_type st_area st_intersection
 #'   st_drivers NA_crs_ st_is_valid st_make_valid
-#' @importFrom stringr str_split
+#' @importFrom stringr str_split str_detect
 #' @importFrom tibble as_tibble
 #' @importFrom dplyr bind_rows slice
 #' @importFrom tidyr unite
@@ -151,18 +151,19 @@ normGeometry <- function(input = NULL, pattern = NULL, ..., thresh = 10,
 
       # make a new dataseries, in case it doesn't exist yet
       if(!dSeries %in% gazetteer@sources$label){
-        gazetteer <- new_source(name = dSeries, ontology = gazetteer)
+        gazetteer <- new_source(name = dSeries, ontology = gazPath)
       }
 
       # if there are several columns that contain units, split them and make
       oldNames <- str_split(string = lut$hierarchy, pattern = "\\|")[[1]]
 
-      gazetteer <- new_mapping(new = oldNames, target = gazetteer@classes$harmonised %>% slice(1:lut$level),
-                               source = dSeries, match = "exact", certainty = 3, type = "class", ontology = gazetteer)
+      gazetteer <- new_mapping(new = oldNames, target = gazetteer@classes$harmonised[1:lut$level,],
+                               source = dSeries, match = "exact", certainty = 3, type = "class", ontology = gazPath)
       classID <- gazetteer@classes$external %>%
-        filter(label %in% oldNames)
+        filter(label %in% oldNames & str_detect(string = id, pattern = dSeries))
 
       unitCols <- gazetteer@classes$harmonised %>%
+        separate_rows(has_exact_match, sep = " \\| ") %>%
         separate(col = has_exact_match, into = c("match", "certainty"), sep = "[.]") %>%
         filter(match %in% classID$id) %>%
         pull(label)
@@ -203,6 +204,7 @@ normGeometry <- function(input = NULL, pattern = NULL, ..., thresh = 10,
                               columns = unitCols,
                               dataseries = dSeries,
                               ontology = gazPath)
+
     # re-load gazetteer (to contain also updates)
     gazetteer <- load_ontology(path = gazPath)
 
