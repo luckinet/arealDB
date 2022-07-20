@@ -10,7 +10,9 @@ globalVariables(c(
   "target_area", "valid", "running", "sourceFID", "targetFID", "overlap_area",
   "orig", "new", "theTerm", "datID", "label_en", "code", "broader", "ahName",
   ".data", "nested", "external", "sort_in", "harmonised", "sourceName", "label",
-  "description", "narrower", "has_broader", "fid"
+  "description", "narrower", "has_broader", "fid", "has_broader_match",
+  "has_close_match", "has_exact_match", "has_narrower_match", "has_exact_match",
+  "unitCols"
 ))
 
 .onAttach <- function(libname, pkgname){
