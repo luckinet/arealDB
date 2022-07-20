@@ -9,7 +9,6 @@ match_ontology(
   columns = NULL,
   dataseries = NULL,
   ontology = NULL,
-  from_meta = FALSE,
   verbose = FALSE
 )
 }
@@ -24,10 +23,6 @@ territories are sourced.}
 
 \item{ontology}{[\code{onto}]\cr either a path where the ontology/gazetteer
 is stored, or an already loaded ontology.}
-
-\item{from_meta}{[\code{logical(1)}]\cr whether or not to load the matches
-from previous matching tables, or construct them from \code{table} and
-\code{columns}.}
 
 \item{verbose}{[\code{logical(1)}]\cr whether or not to give detailed
 information on the prcess of this function.}
