@@ -142,6 +142,10 @@ start_arealDB <- function(root = NULL, gazetteer = NULL){
               na = "")
   }
 
+  if(!testFileExists(x = file.path(root, "/meta/concepts/gazetteer.rds"))){
+    file.copy(from = gazetteer, to = paste0(root, "/meta/concepts/gazetteer.rds"))
+  }
+
   oldOptions <- options()
   on.exit(options(oldOptions))
 
