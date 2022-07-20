@@ -6,9 +6,8 @@
 #'   this argument.
 #' @param until [\code{character(1)}]\cr The database building step in terms of
 #'   the function names until which the example database shall be built, one of
-#'   \code{"start_arealDB"}, \code{"setVariables"}, \code{"regDataseries"},
-#'   \code{"regGeometry"}, \code{"regTable"}, \code{"normGeometry"} or
-#'   \code{"normTable"}.
+#'   \code{"start_arealDB"}, \code{"regDataseries"}, \code{"regGeometry"},
+#'   \code{"regTable"}, \code{"normGeometry"} or \code{"normTable"}.
 #' @param verbose [\code{logical(1)}]\cr be verbose about building the example
 #'   database (default \code{FALSE}).
 #' @details Setting up a database with an R-based tool can appear to be
