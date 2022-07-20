@@ -39,7 +39,7 @@ makeExampleDB <- function(path = NULL, until = NULL, verbose = FALSE){
   # library(arealDB); library(ontologics); library(tidyverse); library(checkmate); library(tabshiftr); library(sf); until = NULL; verbose = FALSE; path = paste0(tempdir(), "/newDB")
 
   inPath <- system.file("test_datasets", package = "arealDB", mustWork = TRUE)
-  steps <- c("start_arealDB", "match_ontology", "regDataseries", "regGeometry", "regTable", "normGeometry", "normTable")
+  steps <- c("start_arealDB", "regDataseries", "regGeometry", "regTable", "normGeometry", "normTable")
   if (is.null(until)) {
     until <- "normTable"
   }
@@ -89,15 +89,11 @@ makeExampleDB <- function(path = NULL, until = NULL, verbose = FALSE){
   # load gazetteer
   file.copy(from = paste0(inPath, "/territories.rds"),
             to = terrOnto)
+  file.copy(from = paste0(inPath, "/match_madeUp.csv"),
+            to = paste0(path, "/meta/concepts/match_madeUp.csv"))
+  file.copy(from = paste0(inPath, "/match_gadm.csv"),
+            to = paste0(path, "/meta/concepts/match_gadm.csv"))
 
-  if(any(theSteps %in% "match_ontology")){
-    file.copy(from = paste0(inPath, "/match_madeUp.csv"),
-              to = paste0(path, "/meta/concepts/match_madeUp.csv"))
-    file.copy(from = paste0(inPath, "/match_gadm.csv"),
-              to = paste0(path, "/meta/concepts/match_gadm.csv"))
-
-    match_ontology(ontology = terrOnto, from_meta = TRUE)
-  }
 
   if (any(theSteps %in% "regDataseries")) {
     regDataseries(name = "gadm",
