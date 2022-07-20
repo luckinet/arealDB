@@ -1,11 +1,12 @@
-code,harmonised,class,close,nested,source
-0.001,a_nation,nation,eine Nation,,madeUp
-.001.001,county_1,county,Kreis 1,Gemeinde 1.3|Gemeinde 1.4,madeUp
-.001.002,county_2,county,Kreis 2,,madeUp
-.001.002,county_2,county,Kreis2|Kreis_2,,madeUp
-.001.002.001,municipality2_1,municipality,Gemeinde 2.1,,madeUp
-.001.003,county_3,county,Kreis 3,,madeUp
-.001.003.001,municipality3,municipality,Gemeinde 3,,madeUp
-.001.004,county_4,county,Kreis 4,,madeUp
-.001.004.001,municipality4_1,municipality,Gemeinde 4.1,,madeUp
-.001.004.002,municipality4_2,municipality,Gemeinde 4.2,,madeUp
+label,class,id,has_broader,description,has_broader_match,has_close_match,has_exact_match,has_narrower_match
+a_nation,nation,.001,,,,eine Nation,,
+county_1,county,.001.001,,,,Kreis 1,,Gemeinde 1.3 | Gemeinde 1.4
+municipality1_1,municipality,.001.001.001,,,,,,
+municipality1_2,municipality,.001.001.002,,,,,,
+county_2,county,.001.002,,,,Kreis 2,,
+municipality2_1,municipality,.001.002.001,,,,Gemeinde 2.1,,
+county_3,county,.001.003,,,,Kreis 3,,
+municipality3,municipality,.001.003.001,,,,Gemeinde 3,,
+county_4,county,.001.004,,,,Kreis 4,,
+municipality4_1,municipality,.001.004.001,,,,Gemeinde 4.1,,
+municipality4_2,municipality,.001.004.002,,,,Gemeinde 4.2,,
