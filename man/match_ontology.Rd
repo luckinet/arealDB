@@ -8,8 +8,7 @@ match_ontology(
   table = NULL,
   columns = NULL,
   dataseries = NULL,
-  ontology = NULL,
-  verbose = FALSE
+  ontology = NULL
 )
 }
 \arguments{
@@ -23,9 +22,6 @@ territories are sourced.}
 
 \item{ontology}{[\code{onto}]\cr either a path where the ontology/gazetteer
 is stored, or an already loaded ontology.}
-
-\item{verbose}{[\code{logical(1)}]\cr whether or not to give detailed
-information on the prcess of this function.}
 }
 \description{
 This function takes a table to replace the values of various columns with

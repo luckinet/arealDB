@@ -9,8 +9,6 @@
 #'   territories are sourced.
 #' @param ontology [\code{onto}]\cr either a path where the ontology/gazetteer
 #'   is stored, or an already loaded ontology.
-#' @param verbose [\code{logical(1)}]\cr whether or not to give detailed
-#'   information on the prcess of this function.
 #' @importFrom checkmate assertFileExists
 #' @importFrom ontologics load_ontology new_source get_concept new_mapping
 #' @importFrom purrr map_dfr
@@ -23,7 +21,7 @@
 #' @export
 
 match_ontology <- function(table = NULL, columns = NULL, dataseries = NULL,
-                           ontology = NULL, verbose = FALSE){
+                           ontology = NULL){
 
   # set internal paths
   intPaths <- paste0(getOption(x = "adb_path"))
@@ -61,7 +59,7 @@ match_ontology <- function(table = NULL, columns = NULL, dataseries = NULL,
   # mapped
   if(any(is.na(harmonisedConc$id))){
 
-    gaz <- new_mapping(new = harmonisedConc$label, target = harmonisedConc %>% select(class), certainty = 3,
+    gaz <- new_mapping(new = harmonisedConc$label, target = harmonisedConc %>% select(class, has_broader), certainty = 3,
                        source = dataseries, ontology = gaz, matchDir = paste0(intPaths, "/meta/concepts/"))
 
     write_rds(x = gaz, file = ontology)
@@ -69,21 +67,26 @@ match_ontology <- function(table = NULL, columns = NULL, dataseries = NULL,
   }
 
   # write the new concepts into 'table'
-  tab <- table %>%
-    st_drop_geometry()
+  if(inherits(x = table, what = "sf")){
+    tab <- table %>%
+      st_drop_geometry()
+  } else {
+    tab <- table
+  }
 
   for(i in seq_along(columns)){
 
     theColumn <- columns[i]
 
     new <- tab %>%
-      select(label = theColumn) %>%
+      select(label = all_of(theColumn)) %>%
       distinct() %>%
       mutate(class = theColumn)
 
     newConcepts <- get_concept(x = new, ontology = gaz, mappings = "all") %>%
       rename(target = label) %>%
-      separate_rows(has_broader_match, has_close_match, has_exact_match, has_narrower_match, sep = " \\| ") %>%
+      separate_rows(has_broader_match, has_close_match, has_exact_match, has_narrower_match,
+                    sep = " \\| ") %>%
       bind_cols(new %>% select(!!theColumn := label)) %>%
       mutate(target = if_else(!class %in% theColumn, !!sym(theColumn), target),
              id = if_else(!class %in% theColumn, paste0(id, gaz@classes$harmonised$id[1]), id)) %>%

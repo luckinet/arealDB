@@ -23,23 +23,23 @@ test_that("make example DB until start_arealDB", {
 
 })
 
-test_that("make example DB until match_ontology", {
-
-  dbpath <- paste0(tempdir(), "/newDB")
-  makeExampleDB(until = "match_ontology", path = dbpath)
-
-  expect_file_exists(x = paste0(dbpath, "/territories.rds"))
-  temp <- read_rds(paste0(dbpath, "/territories.rds"))
-
-  expect_class(x = temp, classes = "onto")
-  expect_list(x = temp@classes, len = 2)
-  expect_tibble(x = temp@classes$harmonised, nrows = 3, ncols = 8)
-  expect_tibble(x = temp@classes$external, nrows = 0, ncols = 4)
-  expect_list(x = temp@concepts, len = 2)
-  expect_tibble(x = temp@concepts$harmonised, nrows = 11, ncols = 9)
-  expect_tibble(x = temp@concepts$external, nrows = 18, ncols = 4)
-
-})
+# test_that("make example DB until match_ontology", {
+#
+#   dbpath <- paste0(tempdir(), "/newDB")
+#   makeExampleDB(until = "match_ontology", path = dbpath)
+#
+#   expect_file_exists(x = paste0(dbpath, "/territories.rds"))
+#   temp <- read_rds(paste0(dbpath, "/territories.rds"))
+#
+#   expect_class(x = temp, classes = "onto")
+#   expect_list(x = temp@classes, len = 2)
+#   expect_tibble(x = temp@classes$harmonised, nrows = 3, ncols = 8)
+#   expect_tibble(x = temp@classes$external, nrows = 0, ncols = 4)
+#   expect_list(x = temp@concepts, len = 2)
+#   expect_tibble(x = temp@concepts$harmonised, nrows = 11, ncols = 9)
+#   expect_tibble(x = temp@concepts$external, nrows = 18, ncols = 4)
+#
+# })
 
 test_that("make example DB until regDataseries", {
 

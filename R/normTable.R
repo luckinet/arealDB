@@ -61,8 +61,6 @@
 normTable <- function(input = NULL, pattern = NULL, ..., outType = "rds",
                       update = FALSE, verbose = FALSE){
 
-  # input = NULL; pattern = NULL; sbst <- list(); outType = "rds"; update = TRUE; verbose = FALSE
-
   # set internal paths
   intPaths <- getOption(x = "adb_path")
   gazPath <- paste0(getOption(x = "gazetteer_path"))
@@ -127,17 +125,16 @@ normTable <- function(input = NULL, pattern = NULL, ..., outType = "rds",
       oldNames <- str_split(string = inv_geometries$hierarchy[inv_geometries$geoID == geoID],
                             pattern = "\\|")[[1]]
 
-      gazetteer <- new_mapping(new = oldNames, target = gazetteer@classes$harmonised %>% slice(1:lut$level),
-                               source = dSeries, match = "exact", certainty = 3, type = "class", ontology = gazetteer)
-      # classID <- gazetteer@classes$external %>%
-      #   filter(label %in% oldNames)
-      #
-      # unitCols <- gazetteer@classes$harmonised %>%
-      #   separate(col = has_exact_match, into = c("match", "certainty"), sep = "[.]") %>%
-      #   filter(match %in% classID$id) %>%
-      #   pull(label)
-      #
-      # topCol <- unitCols[1]
+      classID <- gazetteer@classes$external %>%
+        filter(label %in% oldNames & str_detect(string = id, pattern = dSeries))
+
+      unitCols <- gazetteer@classes$harmonised %>%
+        separate_rows(has_exact_match, sep = " \\| ") %>%
+        separate(col = has_exact_match, into = c("match", "certainty"), sep = "[.]") %>%
+        filter(match %in% classID$id) %>%
+        pull(label)
+
+      topCol <- unitCols[1]
     } else{
       stop(paste0("  ! the file '", file_name, "' has not been registered yet."))
     }
@@ -162,11 +159,6 @@ normTable <- function(input = NULL, pattern = NULL, ..., outType = "rds",
                            dataseries = dSeries,
                            ontology = gazPath)
 
-    # re-load gazetteer (to contain also updates)
-    # gazetteer <- load_ontology(path = gazPath)#@labels %>%
-      # rowwise() %>%
-      # mutate(level = str_split(code, "[.]", simplify = TRUE) %>% length() - 1)
-
     # potentially filter
     if(length(sbst) != 0){
       message("    fltering table ...")
@@ -183,6 +175,10 @@ normTable <- function(input = NULL, pattern = NULL, ..., outType = "rds",
       }
     }
 
+    if("broader" %in% colnames(temp)){
+      temp <- temp %>%
+        select(-broader)
+    }
     temp <- temp %>%
       mutate(tabID = tabID,
              geoID = geoID)
@@ -198,7 +194,6 @@ normTable <- function(input = NULL, pattern = NULL, ..., outType = "rds",
 
         tempOut <- temp %>%
           filter(.data[[unitCols[1]]] == topUnits[j]) %>%
-          # left_join(gazetteer %>% select(code, !!unitCols[length(unitCols)] := label_en)) %>%
           unite(col = "ahName", all_of(unitCols), sep = ".") %>%
           mutate(fid = seq_along(ahName)) %>%
           select(id = fid, ahName, ahID = id, tabID, geoID, everything()) %>%
