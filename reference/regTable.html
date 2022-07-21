@@ -59,25 +59,25 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="fu">regTable</span><span class="op">(</span>
-  <span class="va">...</span>,
-  subset <span class="op">=</span> <span class="cn">NULL</span>,
-  dSeries <span class="op">=</span> <span class="cn">NULL</span>,
-  gSeries <span class="op">=</span> <span class="cn">NULL</span>,
-  level <span class="op">=</span> <span class="cn">NULL</span>,
-  begin <span class="op">=</span> <span class="cn">NULL</span>,
-  end <span class="op">=</span> <span class="cn">NULL</span>,
-  schema <span class="op">=</span> <span class="cn">NULL</span>,
-  archive <span class="op">=</span> <span class="cn">NULL</span>,
-  archiveLink <span class="op">=</span> <span class="cn">NULL</span>,
-  nextUpdate <span class="op">=</span> <span class="cn">NULL</span>,
-  updateFrequency <span class="op">=</span> <span class="cn">NULL</span>,
-  metadataLink <span class="op">=</span> <span class="cn">NULL</span>,
-  metadataPath <span class="op">=</span> <span class="cn">NULL</span>,
-  notes <span class="op">=</span> <span class="cn">NULL</span>,
-  update <span class="op">=</span> <span class="cn">FALSE</span>,
-  overwrite <span class="op">=</span> <span class="cn">FALSE</span>
-<span class="op">)</span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">regTable</span><span class="op">(</span></span>
+<span>  <span class="va">...</span>,</span>
+<span>  subset <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  dSeries <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  gSeries <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  level <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  begin <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  end <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  schema <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  archive <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  archiveLink <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  nextUpdate <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  updateFrequency <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  metadataLink <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  metadataPath <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  notes <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  update <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  overwrite <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -214,38 +214,38 @@ register shall overwrite a potentially already existing older version.</p></dd>
 
     <div id="ref-examples">
     <h2>Examples</h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="kw">if</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/grDevices/dev.interactive.html" class="external-link">dev.interactive</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">{</span></span>
-<span class="r-in">  <span class="co"># build the example database</span></span>
-<span class="r-in">  <span class="fu"><a href="makeExampleDB.html">makeExampleDB</a></span><span class="op">(</span>until <span class="op">=</span> <span class="st">"regGeometry"</span>, path <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in">  <span class="co"># the schema description for this table</span></span>
-<span class="r-in">  <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/EhrmannS/tabshiftr" class="external-link">tabshiftr</a></span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in">  <span class="va">schema_madeUp</span> <span class="op">&lt;-</span></span>
-<span class="r-in">    <span class="fu"><a href="https://rdrr.io/pkg/tabshiftr/man/setIDVar.html" class="external-link">setIDVar</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"al1"</span>, columns <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op"><a href="https://rdrr.io/pkg/tabshiftr/man/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span class="r-in">    <span class="fu"><a href="https://rdrr.io/pkg/tabshiftr/man/setIDVar.html" class="external-link">setIDVar</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"year"</span>, columns <span class="op">=</span> <span class="fl">2</span><span class="op">)</span> <span class="op"><a href="https://rdrr.io/pkg/tabshiftr/man/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span class="r-in">    <span class="fu"><a href="https://rdrr.io/pkg/tabshiftr/man/setIDVar.html" class="external-link">setIDVar</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"commodities"</span>, columns <span class="op">=</span> <span class="fl">3</span><span class="op">)</span> <span class="op"><a href="https://rdrr.io/pkg/tabshiftr/man/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span class="r-in">    <span class="fu"><a href="https://rdrr.io/pkg/tabshiftr/man/setObsVar.html" class="external-link">setObsVar</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"harvested"</span>,</span>
-<span class="r-in">              factor <span class="op">=</span> <span class="fl">1</span>, columns <span class="op">=</span> <span class="fl">4</span><span class="op">)</span> <span class="op"><a href="https://rdrr.io/pkg/tabshiftr/man/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span class="r-in">    <span class="fu"><a href="https://rdrr.io/pkg/tabshiftr/man/setObsVar.html" class="external-link">setObsVar</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"production"</span>,</span>
-<span class="r-in">              factor <span class="op">=</span> <span class="fl">1</span>, columns <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
-<span class="r-in"></span>
-<span class="r-in">  <span class="fu">regTable</span><span class="op">(</span>nation <span class="op">=</span> <span class="st">"Estonia"</span>,</span>
-<span class="r-in">           subset <span class="op">=</span> <span class="st">"barleyMaize"</span>,</span>
-<span class="r-in">           dSeries <span class="op">=</span> <span class="st">"madeUp"</span>,</span>
-<span class="r-in">           gSeries <span class="op">=</span> <span class="st">"gadm"</span>,</span>
-<span class="r-in">           level <span class="op">=</span> <span class="fl">1</span>,</span>
-<span class="r-in">           begin <span class="op">=</span> <span class="fl">1990</span>,</span>
-<span class="r-in">           end <span class="op">=</span> <span class="fl">2017</span>,</span>
-<span class="r-in">           schema <span class="op">=</span> <span class="va">schema_madeUp</span>,</span>
-<span class="r-in">           archive <span class="op">=</span> <span class="st">"example_table.7z|example_table1.csv"</span>,</span>
-<span class="r-in">           archiveLink <span class="op">=</span> <span class="st">"..."</span>,</span>
-<span class="r-in">           nextUpdate <span class="op">=</span> <span class="st">"2019-10-01"</span>,</span>
-<span class="r-in">           updateFrequency <span class="op">=</span> <span class="st">"quarterly"</span>,</span>
-<span class="r-in">           metadataLink <span class="op">=</span> <span class="st">"..."</span>,</span>
-<span class="r-in">           metadataPath <span class="op">=</span> <span class="st">"my/local/path"</span>,</span>
-<span class="r-in">           update <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span class="r-in"><span class="op">}</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/grDevices/dev.interactive.html" class="external-link">dev.interactive</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">{</span></span></span>
+<span class="r-in"><span>  <span class="co"># build the example database</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="makeExampleDB.html">makeExampleDB</a></span><span class="op">(</span>until <span class="op">=</span> <span class="st">"regGeometry"</span>, path <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="co"># the schema description for this table</span></span></span>
+<span class="r-in"><span>  <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/EhrmannS/tabshiftr" class="external-link">tabshiftr</a></span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="va">schema_madeUp</span> <span class="op">&lt;-</span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="https://rdrr.io/pkg/tabshiftr/man/setIDVar.html" class="external-link">setIDVar</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"al1"</span>, columns <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="https://rdrr.io/pkg/tabshiftr/man/setIDVar.html" class="external-link">setIDVar</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"year"</span>, columns <span class="op">=</span> <span class="fl">2</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="https://rdrr.io/pkg/tabshiftr/man/setIDVar.html" class="external-link">setIDVar</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"commodities"</span>, columns <span class="op">=</span> <span class="fl">3</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="https://rdrr.io/pkg/tabshiftr/man/setObsVar.html" class="external-link">setObsVar</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"harvested"</span>,</span></span>
+<span class="r-in"><span>              factor <span class="op">=</span> <span class="fl">1</span>, columns <span class="op">=</span> <span class="fl">4</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="https://rdrr.io/pkg/tabshiftr/man/setObsVar.html" class="external-link">setObsVar</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"production"</span>,</span></span>
+<span class="r-in"><span>              factor <span class="op">=</span> <span class="fl">1</span>, columns <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="fu">regTable</span><span class="op">(</span>nation <span class="op">=</span> <span class="st">"Estonia"</span>,</span></span>
+<span class="r-in"><span>           subset <span class="op">=</span> <span class="st">"barleyMaize"</span>,</span></span>
+<span class="r-in"><span>           dSeries <span class="op">=</span> <span class="st">"madeUp"</span>,</span></span>
+<span class="r-in"><span>           gSeries <span class="op">=</span> <span class="st">"gadm"</span>,</span></span>
+<span class="r-in"><span>           level <span class="op">=</span> <span class="fl">1</span>,</span></span>
+<span class="r-in"><span>           begin <span class="op">=</span> <span class="fl">1990</span>,</span></span>
+<span class="r-in"><span>           end <span class="op">=</span> <span class="fl">2017</span>,</span></span>
+<span class="r-in"><span>           schema <span class="op">=</span> <span class="va">schema_madeUp</span>,</span></span>
+<span class="r-in"><span>           archive <span class="op">=</span> <span class="st">"example_table.7z|example_table1.csv"</span>,</span></span>
+<span class="r-in"><span>           archiveLink <span class="op">=</span> <span class="st">"..."</span>,</span></span>
+<span class="r-in"><span>           nextUpdate <span class="op">=</span> <span class="st">"2019-10-01"</span>,</span></span>
+<span class="r-in"><span>           updateFrequency <span class="op">=</span> <span class="st">"quarterly"</span>,</span></span>
+<span class="r-in"><span>           metadataLink <span class="op">=</span> <span class="st">"..."</span>,</span></span>
+<span class="r-in"><span>           metadataPath <span class="op">=</span> <span class="st">"my/local/path"</span>,</span></span>
+<span class="r-in"><span>           update <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
 </code></pre></div>
     </div>
   </div>
@@ -260,7 +260,7 @@ register shall overwrite a potentially already existing older version.</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.5.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
 </div>
 
       </footer></div>
