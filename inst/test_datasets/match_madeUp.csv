@@ -1,8 +1,6 @@
 label,class,id,has_broader,description,has_broader_match,has_close_match,has_exact_match,has_narrower_match
 a_nation,nation,.001,,,,eine Nation,,
 county_1,county,.001.001,.001,,,Kreis 1,,Gemeinde 1.3 | Gemeinde 1.4
-municipality1_1,municipality,.001.001.001,.001.001,,,,,
-municipality1_2,municipality,.001.001.002,.001.001,,,,,
 county_2,county,.001.002,.001,,,Kreis 2,,
 municipality2_1,municipality,.001.002.001,.001.002,,,Gemeinde 2.1,,
 county_3,county,.001.003,.001,,,Kreis 3,,

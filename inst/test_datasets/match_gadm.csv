@@ -1,12 +1,6 @@
 label,class,id,has_broader,description,has_broader_match,has_close_match,has_exact_match,has_narrower_match
 a_nation,nation,.001,,,,aNation,,
 county_1,county,.001.001,.001,,,county1,,
-municipality1_1,municipality,.001.001.001,.001.001,,,municipality1_1,,
-municipality1_2,municipality,.001.001.002,.001.001,,,municipality1_2,,
 county_2,county,.001.002,.001,,,county2,,
-municipality2_1,municipality,.001.002.001,.001.002,,,municipality2_1,,
 county_3,county,.001.003,.001,,,county3,,
-municipality3,municipality,.001.003.001,.001.003,,,municipality3,,
 county_4,county,.001.004,.001,,,county4,,
-municipality4_1,municipality,.001.004.001,.001.004,,,municipality4_1,,
-municipality4_2,municipality,.001.004.002,.001.004,,,municipality4_2,,
