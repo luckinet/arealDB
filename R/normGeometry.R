@@ -93,7 +93,7 @@
 normGeometry <- function(input = NULL, pattern = NULL, ..., thresh = 10,
                          outType = "gpkg", update = FALSE, verbose = FALSE){
 
-  # input = NULL; pattern = NULL; sbst <- list(); thresh = 10; outType = "gpkg"; update = TRUE; verbose = FALSE
+  # input = NULL; pattern = NULL; sbst <- list(); thresh = 10; outType = "gpkg"; update = TRUE; verbose = FALSE; library(sf); library(tidyverse); library(ontologics)
 
   # set internal paths
   intPaths <- paste0(getOption(x = "adb_path"))
@@ -200,10 +200,12 @@ normGeometry <- function(input = NULL, pattern = NULL, ..., thresh = 10,
 
 
     # match concepts with gazetteer (and update those concepts in it)
+    message("    matching territory names ...")
     newGeom <- match_ontology(table = inGeom,
                               columns = unitCols,
                               dataseries = dSeries,
-                              ontology = gazPath)
+                              ontology = gazPath,
+                              verbose = verbose)
 
     # re-load gazetteer (to contain also updates)
     gazetteer <- load_ontology(path = gazPath)
@@ -213,7 +215,6 @@ normGeometry <- function(input = NULL, pattern = NULL, ..., thresh = 10,
       severalTop <- TRUE
       topUnits <- unique(eval(expr = parse(text = topCol), envir = newGeom)) %>%
         as.character()
-      assertCharacter(x = topUnits, min.len = 1, any.missing = FALSE)
      } else{
       severalTop <- FALSE
       topUnits <- topCol
