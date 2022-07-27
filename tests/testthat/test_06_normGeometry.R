@@ -29,7 +29,8 @@ test_that("geometries can be normalised", {
   expect_file_exists(x = paste0(getOption("adb_path"), "/adb_geometries/stage2/processed/_2__gadm.gpkg"))
 
   # normalise third level ----
-  output <- normGeometry(input = paste0(getOption("adb_path"), "/adb_geometries/stage2/_3__gadm.gpkg"), update = TRUE)
+  output <- normGeometry(input = paste0(getOption("adb_path"), "/adb_geometries/stage2/_3__gadm.gpkg"),
+                         update = TRUE)
   expect_tibble(x = output, nrows = 1, ncols = 12, col.names = "strict")
   expect_names(x = names(output), must.include = c("geoID", "datID", "level", "source_file",
                         "layer", "hierarchy", "orig_file", "orig_link",
@@ -37,7 +38,8 @@ test_that("geometries can be normalised", {
   expect_file_exists(x = paste0(getOption("adb_path"), "/adb_geometries/stage2/processed/_3__gadm.gpkg"))
 
   # normalise a non-gadm dataset that has been attached to the DB ----
-  output <- normGeometry(input = paste0(getOption("adb_path"), "/adb_geometries/stage2/_3__madeUp.gpkg"), update = TRUE)
+  output <- normGeometry(input = paste0(getOption("adb_path"), "/adb_geometries/stage2/_3__madeUp.gpkg"),
+                         update = TRUE)
   expect_tibble(x = output, nrows = 1, ncols = 12, col.names = "strict")
   expect_names(x = names(output), must.include = c("geoID", "datID", "level", "source_file",
                         "layer", "hierarchy", "orig_file", "orig_link",
