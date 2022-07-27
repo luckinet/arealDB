@@ -61,6 +61,8 @@
 normTable <- function(input = NULL, pattern = NULL, ..., outType = "rds",
                       update = FALSE, verbose = FALSE){
 
+  # input = NULL; pattern = ds[1]; sbst <- list(); outType = "rds"; update = TRUE; verbose = FALSE; i = 1
+
   # set internal paths
   intPaths <- getOption(x = "adb_path")
   gazPath <- paste0(getOption(x = "gazetteer_path"))
@@ -118,15 +120,17 @@ normTable <- function(input = NULL, pattern = NULL, ..., outType = "rds",
     if(file_name %in% lut$source_file){
       geoID <- lut$geoID
       tabID <- lut$tabID
+      datID <- lut$datID
       thisSchema <- lut$schema
 
-      dSeries <- inv_dataseries$name[inv_dataseries$datID == lut$datID]
+      gSeries <- inv_dataseries$name[inv_dataseries$datID == geoID]
+      dSeries <- inv_dataseries$name[inv_dataseries$datID == datID]
 
       oldNames <- str_split(string = inv_geometries$hierarchy[inv_geometries$geoID == geoID],
                             pattern = "\\|")[[1]]
 
       classID <- gazetteer@classes$external %>%
-        filter(label %in% oldNames & str_detect(string = id, pattern = dSeries))
+        filter(label %in% oldNames & str_detect(string = id, pattern = gSeries))
 
       unitCols <- gazetteer@classes$harmonised %>%
         separate_rows(has_exact_match, sep = " \\| ") %>%
