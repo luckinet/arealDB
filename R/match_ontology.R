@@ -107,7 +107,8 @@ match_ontology <- function(table = NULL, columns = NULL, dataseries = NULL,
       new <- temp %>%
         st_drop_geometry() %>%
         select(label = all_of(theColumn), has_broader = id) %>%
-        distinct()
+        distinct() %>%
+        arrange(label)
 
       newConcepts <- get_concept(x = new, ontology = gaz, mappings = "all") %>%
         # select(-has_broader_match, -has_close_match, -has_exact_match, -has_narrower_match) %>%
