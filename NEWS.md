@@ -1,3 +1,8 @@
+# arealDB 0.4.1
+
+* rename `match_gazetteer` to `match_ontology` because it can also handle ontologies of other variables
+* various fixes to make matching as convenient as possible.
+
 # arealDB 0.4.0 - ontology update
 
 * instead of using id and translation tables, concepts are from now on handled via the ontologics package.
