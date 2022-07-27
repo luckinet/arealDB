@@ -33,9 +33,9 @@ This is the first function that is run in a project, as it initiates
 }
 \section{Functions}{
 \itemize{
-\item \code{setPath}: deprecated way of starting an areal database
-}}
+\item \code{setPath()}: deprecated way of starting an areal database
 
+}}
 \examples{
 start_arealDB(root = paste0(tempdir(), "/newDB"),
               gazetteer = system.file("test_datasets/territories.rds",
