@@ -77,6 +77,7 @@
 #' }
 #' @importFrom checkmate assertNames assertCharacter assertIntegerish
 #'   assertFileExists testChoice assertLogical testSubset
+#' @importFrom ontologics load_ontology
 #' @importFrom readr read_csv
 #' @importFrom dplyr filter distinct
 #' @importFrom stringr str_split
@@ -131,11 +132,12 @@ regGeometry <- function(..., subset = NULL, gSeries = NULL, level = NULL,
     mainPoly <- ""
   }
 
-  gaz <- read_rds(gazPath)
-  if(!testSubset(x = names(broadest), choices = unique(gaz$attributes$class))){
-    stop("please specify a main category that is part of the classes in the gazetteer (",
-         paste0(unique(gaz$attributes$class)[1:4], collapse = ", "), ")")
-  }
+  gaz <- load_ontology(gazPath)
+  # include here a test that checks whether broaders is actually part of the gazetteer
+  # if(!testSubset(x = names(broadest), choices = unique(gaz$attributes$class))){
+  #   stop("please specify a main category that is part of the classes in the gazetteer (",
+  #        paste0(unique(gaz$attributes$class)[1:4], collapse = ", "), ")")
+  # }
 
   if(!is.null(subset)){
     if(grepl(pattern = "_", x = subset)){
