@@ -34,6 +34,10 @@ get_variable <- function(variable = NULL, dataseries = NULL){
 
   message("--> extracting concepts of variable '", variable,"'...")
 
+  if(length(sources) == 0){
+    stop("no tables have been defined for this dataseries.")
+  }
+
   out <- NULL
   for(i in seq_along(sources)){
 
