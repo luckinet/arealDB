@@ -97,7 +97,7 @@
 #'            update = TRUE)
 #' }
 #' @importFrom readr read_csv write_rds guess_encoding
-#' @importFrom rlang ensym
+#' @importFrom rlang ensym exprs eval_tidy
 #' @importFrom checkmate assertDataFrame assertNames assertCharacter
 #'   assertIntegerish assertSubset assertLogical testChoice assertChoice
 #'   assertFileExists assertClass assertTRUE testDataFrame testNames
@@ -162,8 +162,9 @@ regTable <- function(..., subset = NULL, dSeries = NULL, gSeries = NULL,
   assertLogical(x = overwrite, len = 1)
 
   broadest <- exprs(..., .named = TRUE)
+
   if(length(broadest) > 0){
-    mainPoly <- broadest[[1]]
+    mainPoly <- eval_tidy(broadest[[1]])
   } else {
     mainPoly <- ""
   }
@@ -473,9 +474,14 @@ regTable <- function(..., subset = NULL, dSeries = NULL, gSeries = NULL,
                        })
       isTable <- testDataFrame(x = temp)
       correctNames <- testNames(x = names(temp), must.include = names(schema@variables))
-      schema_ok <- if_else(isTable & correctNames, "yes", temp)
+      if(isTable & correctNames){
+        schema_ok <- TRUE
+      } else {
+        schema_ok <- temp
+
+      }
     } else {
-      schema_ok <- ""
+      schema_ok <- FALSE
     }
 
     diag <- tibble(stage1_name = fileArchive[1],
