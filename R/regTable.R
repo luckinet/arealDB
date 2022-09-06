@@ -460,9 +460,9 @@ regTable <- function(..., subset = NULL, dSeries = NULL, gSeries = NULL,
     return(doc)
   } else {
 
-    stage1Exists <- testFileExists(x = filePath, "r", extension = "csv")
-    stage2Exists <- testFileExists(x = paste0(intPaths, "/adb_tables/stage1/", fileArchive[1]), "r")
-    if(stage1Exists){
+    stage1Exists <- testFileExists(x = paste0(intPaths, "/adb_tables/stage1/", fileArchive[1]), "r")
+    stage2Exists <- testFileExists(x = filePath, "r", extension = "csv")
+    if(stage2Exists){
       thisTable <- as_tibble(read.csv(file = filePath, header = FALSE, as.is = TRUE, na.strings = schema@format$na, encoding = "UTF-8"))
       temp <- tryCatch(expr = reorganise(input = thisTable, schema = schema),
                        error = function(e){
@@ -481,8 +481,8 @@ regTable <- function(..., subset = NULL, dSeries = NULL, gSeries = NULL,
     diag <- tibble(stage1_name = fileArchive[1],
                    stage2_name = fileName,
                    schema_name = schemaName,
-                   stage1_ok = stage2Exists,
-                   stage2_ok = stage1Exists,
+                   stage1_ok = stage1Exists,
+                   stage2_ok = stage2Exists,
                    schema_ok = schema_ok)
 
     updateTable(index = diag, name = "diag_tables", matchCols = c("stage2_name"), backup = FALSE)
