@@ -475,13 +475,13 @@ regTable <- function(..., subset = NULL, dSeries = NULL, gSeries = NULL,
       isTable <- testDataFrame(x = temp)
       correctNames <- testNames(x = names(temp), must.include = names(schema@variables))
       if(isTable & correctNames){
-        schema_ok <- TRUE
+        schema_ok <- "schema ok"
       } else {
         schema_ok <- temp
 
       }
     } else {
-      schema_ok <- FALSE
+      schema_ok <- "not checked"
     }
 
     diag <- tibble(stage1_name = fileArchive[1],
@@ -489,7 +489,7 @@ regTable <- function(..., subset = NULL, dSeries = NULL, gSeries = NULL,
                    schema_name = schemaName,
                    stage1_ok = stage1Exists,
                    stage2_ok = stage2Exists,
-                   schema_ok = schema_ok)
+                   schema = schema_ok)
 
     updateTable(index = diag, name = "diag_tables", matchCols = c("stage2_name"), backup = FALSE)
 
