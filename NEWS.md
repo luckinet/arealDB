@@ -1,3 +1,7 @@
+# arealDB 0.4.2
+
+* when using `regTable` with `update = FALSE`, the schema now has a more explicit diagnostic message.
+
 # arealDB 0.4.1
 
 * rename `match_gazetteer` to `match_ontology` because it can also handle ontologies of other variables
