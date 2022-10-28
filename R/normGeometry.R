@@ -151,7 +151,7 @@ normGeometry <- function(input = NULL, pattern = NULL, ..., thresh = 10,
 
       # make a new dataseries, in case it doesn't exist yet
       if(!dSeries %in% gazetteer@sources$label){
-        gazetteer <- new_source(name = dSeries, ontology = gazPath)
+        gazetteer <- new_source(name = dSeries, ontology = gazPath, date = Sys.Date())
       }
 
       # if there are several columns that contain units, split them and make
