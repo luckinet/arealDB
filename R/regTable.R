@@ -464,7 +464,8 @@ regTable <- function(..., subset = NULL, dSeries = NULL, gSeries = NULL,
     stage1Exists <- testFileExists(x = paste0(intPaths, "/adb_tables/stage1/", fileArchive[1]), "r")
     stage2Exists <- testFileExists(x = filePath, "r", extension = "csv")
     if(stage2Exists){
-      thisTable <- as_tibble(read.csv(file = filePath, header = FALSE, as.is = TRUE, na.strings = schema@format$na, encoding = "UTF-8"))
+      # thisTable <- as_tibble(read.csv(file = filePath, header = FALSE, as.is = TRUE, na.strings = schema@format$na, encoding = "UTF-8"))
+      thisTable <- read_csv(file = filePath, col_names = FALSE, col_types = cols(.default = "c"))
       temp <- tryCatch(expr = reorganise(input = thisTable, schema = schema),
                        error = function(e){
                          return("There was an error message")
