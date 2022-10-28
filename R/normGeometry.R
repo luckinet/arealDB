@@ -73,7 +73,7 @@
 #' }
 #' @importFrom checkmate assertFileExists assertIntegerish assertLogical
 #'   assertCharacter assertChoice testFileExists
-#' @importFrom ontologics load_ontology
+#' @importFrom ontologics load_ontology new_source
 #' @importFrom dplyr filter distinct select mutate rowwise filter_at vars
 #'   all_vars pull group_by arrange summarise mutate_if rename n if_else ungroup
 #'   across
@@ -151,7 +151,7 @@ normGeometry <- function(input = NULL, pattern = NULL, ..., thresh = 10,
 
       # make a new dataseries, in case it doesn't exist yet
       if(!dSeries %in% gazetteer@sources$label){
-        gazetteer <- new_source(name = dSeries, ontology = gazPath, date = Sys.Date())
+        gazetteer <- new_source(name = dSeries, date = Sys.Date(), ontology = gazPath)
       }
 
       # if there are several columns that contain units, split them and make
