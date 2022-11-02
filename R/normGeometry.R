@@ -73,7 +73,8 @@
 #' }
 #' @importFrom checkmate assertFileExists assertIntegerish assertLogical
 #'   assertCharacter assertChoice testFileExists
-#' @importFrom ontologics load_ontology new_source
+#' @importFrom ontologics load_ontology new_source new_mapping get_class
+#'   get_source
 #' @importFrom dplyr filter distinct select mutate rowwise filter_at vars
 #'   all_vars pull group_by arrange summarise mutate_if rename n if_else ungroup
 #'   across
@@ -83,17 +84,18 @@
 #' @importFrom sf st_layers read_sf st_write st_join st_buffer st_equals st_sf
 #'   st_transform st_crs st_crs<- st_geometry_type st_area st_intersection
 #'   st_drivers NA_crs_ st_is_valid st_make_valid
-#' @importFrom stringr str_split str_detect
+#' @importFrom stringr str_split
 #' @importFrom tibble as_tibble
 #' @importFrom dplyr bind_rows slice
 #' @importFrom tidyr unite
 #' @importFrom tidyselect starts_with all_of
+#' @importFrom utils tail
 #' @export
 
 normGeometry <- function(input = NULL, pattern = NULL, ..., thresh = 10,
                          outType = "gpkg", update = FALSE, verbose = FALSE){
 
-  # input = NULL; pattern = NULL; sbst <- list(); thresh = 10; outType = "gpkg"; update = TRUE; verbose = FALSE; library(sf); library(tidyverse); library(ontologics)
+  # input = NULL; pattern = NULL; sbst <- list(); thresh = 10; outType = "gpkg"; update = TRUE; verbose = FALSE
 
   # set internal paths
   intPaths <- paste0(getOption(x = "adb_path"))
@@ -145,27 +147,32 @@ normGeometry <- function(input = NULL, pattern = NULL, ..., thresh = 10,
     if(file_name %in% lut$source_file){
       newGID <- lut$geoID
       theLayer <- lut$layer
-      theLevel <- lut$level
+      theLabel <- lut$label
 
       dSeries <- inv_dataseries$name[inv_dataseries$datID == lut$datID]
 
       # make a new dataseries, in case it doesn't exist yet
-      if(!dSeries %in% gazetteer@sources$label){
-        gazetteer <- new_source(name = dSeries, date = Sys.Date(), ontology = gazPath)
+      if(!dSeries %in% get_source(ontology = gazPath)$label){
+        new_source(name = dSeries, date = Sys.Date(), ontology = gazPath)
       }
 
       # if there are several columns that contain units, split them and make
       oldNames <- str_split(string = lut$hierarchy, pattern = "\\|")[[1]]
 
-      gazetteer <- new_mapping(new = oldNames, target = gazetteer@classes$harmonised[1:lut$level,],
-                               source = dSeries, match = "exact", certainty = 3, type = "class", ontology = gazPath)
-      classID <- gazetteer@classes$external %>%
-        filter(label %in% oldNames & str_detect(string = id, pattern = dSeries))
+      theTarget <- get_class(label = theLabel, ontology = gazPath)
 
-      unitCols <- gazetteer@classes$harmonised %>%
+      new_mapping(new = tail(oldNames, 1), target = theTarget,
+                  source = dSeries, match = "exact", certainty = 3, type = "class", ontology = gazPath)
+
+      classID <- get_class(external = TRUE, regex = TRUE,
+                           label = !!oldNames,
+                           ontology = gazPath)
+
+      unitCols <- get_class(ontology = gazPath) %>%
         separate_rows(has_exact_match, sep = " \\| ") %>%
         separate(col = has_exact_match, into = c("match", "certainty"), sep = "[.]") %>%
         filter(match %in% classID$id) %>%
+        distinct(label) %>%
         pull(label)
 
       topCol <- unitCols[1]
@@ -183,6 +190,13 @@ normGeometry <- function(input = NULL, pattern = NULL, ..., thresh = 10,
       names(inGeom)[[which(names(inGeom) == oldNames[k])]] <- unitCols[k]
     }
 
+    message("    harmonizing nation names ...")
+    inGeom <- matchOntology(table = inGeom,
+                            columns = topCol,
+                            dataseries = dSeries,
+                            ontology = gazPath,
+                            verbose = verbose)
+
     # potentially filter
     if(length(sbst) != 0){
       moveFile <- FALSE
@@ -198,29 +212,16 @@ normGeometry <- function(input = NULL, pattern = NULL, ..., thresh = 10,
       }
     }
 
-
-    # match concepts with gazetteer (and update those concepts in it)
-    message("    matching territory names ...")
-    newGeom <- match_ontology(table = inGeom,
-                              columns = unitCols,
-                              dataseries = dSeries,
-                              ontology = gazPath,
-                              verbose = verbose)
-
-    # re-load gazetteer (to contain also updates)
-    gazetteer <- load_ontology(path = gazPath)
-
     # determine top-most value
     if(fields[1] == ""){
       severalTop <- TRUE
-      topUnits <- unique(eval(expr = parse(text = topCol), envir = newGeom)) %>%
+      topUnits <- unique(eval(expr = parse(text = topCol), envir = inGeom)) %>%
         as.character()
      } else{
       severalTop <- FALSE
-      topUnits <- topCol
+      topUnits <- fields[1]
     }
 
-    # if(length(nations) == 0){
     if(length(topUnits) == 0){
       moveFile <- FALSE
       message("    ! New geometries not part of subset !")
@@ -235,13 +236,15 @@ normGeometry <- function(input = NULL, pattern = NULL, ..., thresh = 10,
 
         # create a geom specifically for the recent top territory
         if(severalTop){
-          sourceGeom <- newGeom %>%
+          sourceGeom <- inGeom %>%
             filter_at(vars(all_of(topCol)), all_vars(. %in% tempUnit)) %>%
-            select(all_of(unitCols), id)
+            # select(all_of(unitCols), id)
+            select(all_of(unitCols))
           assertChoice(x = topCol, choices = names(sourceGeom), .var.name = "names(nation_column)")
         } else{
-          sourceGeom <- newGeom %>%
-            select(all_of(unitCols), id)
+          sourceGeom <- inGeom %>%
+            # select(all_of(unitCols), id)
+            select(all_of(unitCols))
         }
 
         # dissolve ----
@@ -261,10 +264,7 @@ normGeometry <- function(input = NULL, pattern = NULL, ..., thresh = 10,
                 group_by(across(all_of(unitCols))) %>%
                 summarise() %>%
                 ungroup()
-            } #else {
-            #   sourceGeom <- sourceGeom %>%
-            #     select(!!unitCols)
-            # }
+            }
           } else{
             message("  ! The geometry contains only POLYGON features but no unique names to summarise them.")
           }
@@ -282,7 +282,7 @@ normGeometry <- function(input = NULL, pattern = NULL, ..., thresh = 10,
         fileExists <- testFileExists(x = paste0(intPaths, "/adb_geometries/stage3/", tempUnit, ".gpkg"))
         if(fileExists){
           targetLayers <- st_layers(dsn = paste0(intPaths, "/adb_geometries/stage3/", tempUnit, ".gpkg"))
-          if(!grepl(pattern = paste0("level_", theLevel), x = paste0(targetLayers$name, collapse = "|"))){
+          if(!grepl(pattern = theLabel, x = paste0(targetLayers$name, collapse = "|"))){
             fileExists <- FALSE
           }
         }
@@ -290,19 +290,22 @@ normGeometry <- function(input = NULL, pattern = NULL, ..., thresh = 10,
         # ... if yes, read it in, otherwise create it
         if(fileExists){
 
+          topLayer <- targetLayers$name[which.min(targetLayers$features)]
+
           # read target geoms ----
           message("    Reading target geometries")
           targetGeom <- read_sf(dsn = paste0(intPaths, "/adb_geometries/stage3/", tempUnit, ".gpkg"),
-                                layer = sort(targetLayers$name)[theLevel],
+                                layer = theLabel,
                                 stringsAsFactors = FALSE)
 
           if(st_crs(targetGeom)$input == "Undefined Cartesian SRS"){
             st_crs(targetGeom) <- NA_crs_
           }
 
-          if(theLevel > 1){
+          if(theLabel != topLayer){
+            parentLabel <- theTarget$has_broader
             parentGeom <- read_sf(dsn = paste0(intPaths, "/adb_geometries/stage3/", tempUnit, ".gpkg"),
-                                  layer = sort(targetLayers$name)[theLevel-1],
+                                  layer = parentLabel,
                                   stringsAsFactors = FALSE)
 
             if(st_crs(parentGeom)$input == "Undefined Cartesian SRS"){
@@ -342,7 +345,7 @@ normGeometry <- function(input = NULL, pattern = NULL, ..., thresh = 10,
 
           # spatial join with the parent geom (smallest geoID), to determine
           # whether all are within a parent
-          if(theLevel != 1){
+          if(theLabel != topLayer){
             minGeoID <- min(parentGeom$geoID)
             basisParent <- parentGeom[parentGeom$geoID %in% minGeoID,]
             in_parent <- suppressMessages(suppressWarnings(
@@ -367,8 +370,8 @@ normGeometry <- function(input = NULL, pattern = NULL, ..., thresh = 10,
                 filter(isNA) %>%
                 select(unitCols) %>%
                 st_write(dsn = paste0(intPaths, "/adb_geometries/stage2/", newName),
-                         layer = paste0("level_", theLevel),
-                         delete_layer = TRUE,
+                         layer = theLabel,
+                         append = FALSE,
                          quiet = TRUE)
               in_parent <- in_parent %>%
                 filter(!isNA)
@@ -376,6 +379,7 @@ normGeometry <- function(input = NULL, pattern = NULL, ..., thresh = 10,
                 filter(!isNA)
             }
           }
+          # beep(6)
 
           # then get the overlap with the targetGeom
           overlap_with_target <- suppressMessages(suppressWarnings(
@@ -392,7 +396,7 @@ normGeometry <- function(input = NULL, pattern = NULL, ..., thresh = 10,
               mutate(valid = abs(deviation) < thresh) %>%
               ungroup() %>%
               as_tibble() %>%
-              select(-geom, -!!unitCols, -targetFID, -target_area, -area, -overlap_area, -deviation, -id) %>%
+              select(-geom, -!!unitCols, -targetFID, -target_area, -area, -overlap_area, -deviation) %>%
               arrange(sourceFID)
           ))
 
@@ -401,7 +405,7 @@ normGeometry <- function(input = NULL, pattern = NULL, ..., thresh = 10,
           if(dim(sourceGeom)[1] != dim(overlap_with_target)[1]){
             # if we are at level 1, the nation may not overlap, but would still
             # be that nation. So we assume that it is valid nevertheless.
-            if(theLevel == 1){
+            if(theLabel == targetLayers$name[1]){
               overlap_with_target <- targetGeom %>%
                 as_tibble() %>%
                 select(-target_area, -targetFID, -geom) %>%
@@ -420,6 +424,15 @@ normGeometry <- function(input = NULL, pattern = NULL, ..., thresh = 10,
             as_tibble() %>%
             left_join(overlap_with_target, by = "sourceFID")
 
+          # harmonize labels ----
+          message("    harmonizing territory names ...")
+          sourceOverlap <- matchOntology(table = sourceOverlap,
+                                         columns = unitCols,
+                                         dataseries = dSeries,
+                                         ontology = gazPath,
+                                         verbose = verbose)
+
+          # get all the valid geoms
           validUnits <- sourceOverlap %>%
             filter(valid) %>%
             mutate(geoID = newGID) %>%
@@ -441,7 +454,7 @@ normGeometry <- function(input = NULL, pattern = NULL, ..., thresh = 10,
           # geometries to identify whether they are actually inside the parents
           message("    Determining parent IDs spatially")
           matchGeoms <- invalidUnits %>%
-            select(unitCols, geom) %>%
+            select(all_of(unitCols), geom) %>%
             st_sf()
 
           prevIDs <- suppressMessages(suppressWarnings(
@@ -450,12 +463,12 @@ normGeometry <- function(input = NULL, pattern = NULL, ..., thresh = 10,
               st_intersection(y = parentGeom) %>%
               mutate(overlap = as.numeric(st_area(.)/overlap_area*100)) %>%
               as_tibble() %>%
-              group_by(.dots = unitCols, overlap_area) %>%
+              group_by(.dots = all_of(unitCols), overlap_area) %>%
               filter(overlap == max(overlap)) %>%
               select(-geoID) %>%
               unique() %>%
               ungroup() %>%
-              select(-overlap_area, -nation, -level, -geom) %>%
+              select(-overlap_area, -geom) %>%
               unique()
           ))
 
@@ -469,30 +482,40 @@ normGeometry <- function(input = NULL, pattern = NULL, ..., thresh = 10,
             mutate(geoID = newGID) %>%
             unite(col = "ahName", unitCols, sep = ".") %>%
             st_sf() %>%
-            select(ahName, ahID = id, level, geoID)
+            select(ahName, ahID = id, geoID)
 
           # combine old and new units
           outGeom <- validUnits %>%
-            select(ahName, ahID, level, geoID, everything())
+            select(ahName, ahID, geoID, everything())
+
           if(!dim(outGeom)[1] == 0 | !dim(newUnits)[1] == 0){
             outGeom <- outGeom %>%
-              rbind(newUnits)
+              bind_rows(newUnits)
           }
 
           outGeom <- targetGeom %>%
-            rbind(outGeom) %>%
+            bind_rows(outGeom) %>%
             arrange(ahID)
 
         } else {
 
-          message("    Creating new basis dataset at level ", theLevel, ".")
+          message("    Creating new basis dataset for class ", theLabel, ".")
+
+          # harmonize labels ----
+          message("    harmonizing territory names ...")
+          sourceGeom <- matchOntology(table = sourceGeom,
+                                      columns = unitCols,
+                                      dataseries = dSeries,
+                                      ontology = gazPath,
+                                      verbose = verbose)
+
           outGeom <- suppressMessages(
             sourceGeom %>%
-              unite(col = "ahName", unitCols, sep = ".") %>%
-              mutate(level = theLevel,
+              unite(col = "ahName", all_of(unitCols), sep = ".") %>%
+              mutate(onto_class = theLabel,
                      geoID = newGID) %>%
               ungroup() %>%
-              select(ahName, ahID = id, level, geoID)
+              select(ahName, ahID = id, onto_class, geoID)
             )
 
         }
@@ -502,9 +525,8 @@ normGeometry <- function(input = NULL, pattern = NULL, ..., thresh = 10,
           if(outType != "rds"){
             st_write(obj = outGeom,
                      dsn = paste0(intPaths, "/adb_geometries/stage3/", tempUnit, ".", outType),
-                     layer = paste0("level_", theLevel),
-                     delete_layer = TRUE,
-                     append = TRUE,
+                     layer = theLabel,
+                     append = FALSE,
                      quiet = TRUE)
           } else {
             saveRDS(object = outGeom, file = paste0(intPaths, "/adb_geometries/stage3/", tempUnit, ".rds"))

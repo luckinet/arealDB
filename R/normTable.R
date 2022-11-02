@@ -61,7 +61,7 @@
 normTable <- function(input = NULL, pattern = NULL, ..., outType = "rds",
                       update = FALSE, verbose = FALSE){
 
-  # input = NULL; pattern = ds[1]; sbst <- list(); outType = "rds"; update = TRUE; verbose = FALSE; i = 1
+  # input = NULL; pattern = NULL; sbst <- list(); outType = "rds"; update = TRUE; verbose = FALSE
 
   # set internal paths
   intPaths <- getOption(x = "adb_path")
@@ -128,10 +128,11 @@ normTable <- function(input = NULL, pattern = NULL, ..., outType = "rds",
       oldNames <- str_split(string = inv_geometries$hierarchy[inv_geometries$geoID == geoID],
                             pattern = "\\|")[[1]]
 
-      classID <- gazetteer@classes$external %>%
-        filter(label %in% oldNames & str_detect(string = id, pattern = gSeries))
+      classID <- get_class(external = TRUE, regex = TRUE,
+                           label = !!oldNames,
+                           ontology = gazPath)
 
-      unitCols <- gazetteer@classes$harmonised %>%
+      unitCols <- get_class(ontology = gazPath) %>%
         separate_rows(has_exact_match, sep = " \\| ") %>%
         separate(col = has_exact_match, into = c("match", "certainty"), sep = "[.]") %>%
         filter(match %in% classID$id) %>%
@@ -156,15 +157,18 @@ normTable <- function(input = NULL, pattern = NULL, ..., outType = "rds",
     temp <- thisTable %>%
       reorganise(schema = algorithm)
 
-    message("    harmonising territory names ...")
-    temp <- match_ontology(table = temp,
-                           columns = unitCols,
-                           dataseries = dSeries,
-                           ontology = gazPath)
+    message("    harmonizing territory names ...")
+    targetCols <- get_class(ontology = gazPath) %>%
+      pull(label)
+    targetCols <- targetCols[targetCols %in% colnames(temp)]
+    temp <- matchOntology(table = temp,
+                          columns = targetCols,
+                          dataseries = dSeries,
+                          ontology = gazPath)
 
     # potentially filter
     if(length(sbst) != 0){
-      message("    fltering table ...")
+      message("    filtering table ...")
       moveFile <- FALSE
 
       for(k in seq_along(sbst)){
