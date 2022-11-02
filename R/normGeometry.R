@@ -108,18 +108,18 @@ normGeometry <- function(input = NULL, pattern = NULL, ..., thresh = 10,
   # set internal objects
   moveFile <- TRUE
   sbst <- exprs(..., .named = TRUE)
+  # return(sbst)
 
   # get tables
-  inv_geometries <- read_csv(paste0(intPaths, "/inv_geometries.csv"), col_types = "iiicccccDDcc")
+  inv_geometries <- read_csv(paste0(intPaths, "/inv_geometries.csv"), col_types = "iiccccccDDcc")
   inv_dataseries <- read_csv(paste0(intPaths, "/inv_dataseries.csv"), col_types = "icccccc")
-  gazetteer <- load_ontology(path = gazPath)
 
   # check validity of arguments
   assertIntegerish(x = thresh, any.missing = FALSE)
   assertLogical(x = update, len = 1)
   assertNames(x = outType, subset.of = c(tolower(st_drivers()$name), "rds"))
   assertNames(x = colnames(inv_geometries),
-              permutation.of = c("geoID", "datID", "level", "source_file", "layer",
+              permutation.of = c("geoID", "datID", "label", "source_file", "layer",
                                  "hierarchy", "orig_file", "orig_link", "download_date",
                                  "next_update", "update_frequency", "notes"))
   assertNames(x = colnames(inv_dataseries),

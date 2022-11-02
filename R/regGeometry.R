@@ -11,8 +11,8 @@
 #'   only one municipality) or of a target variable.
 #' @param gSeries [\code{character(1)}]\cr the name of the geometry dataseries
 #'   (see \code{\link{regDataseries}}).
-#' @param level [\code{integerish(1)}]\cr the administrative level at which the
-#'   geometry is recorded.
+#' @param label [\code{integerish(1)}]\cr the label in the onology this geometry
+#'   should correspond to.
 #' @param layer [\code{character}]\cr the name of the file's layer from which
 #'   the geometry should be created (if applicable).
 #' @param nameCol [\code{character(.)}]\cr the columns in which the names of
@@ -38,12 +38,12 @@
 #' @details When processing geometries to which areal data shall be linked,
 #'   carry out the following steps: \enumerate{ \item Determine the main
 #'   territory (such as a nation, or any other polygon), a \code{subset} (if
-#'   applicable), the dataseries of the geometry and the administrative
-#'   \code{level}, and provide them as arguments to this function. \item Run the
-#'   function. \item Export the shapefile with the following properties:
-#'   \itemize{ \item Format: GeoPackage \item File name: What is provided as
-#'   message by this function \item CRS: EPSG:4326 - WGS 84 \item make sure that
-#'   'all fields are exported'} \item Confirm that you have saved the file.}
+#'   applicable), the dataseries of the geometry and the ontology \code{label},
+#'   and provide them as arguments to this function. \item Run the function.
+#'   \item Export the shapefile with the following properties: \itemize{ \item
+#'   Format: GeoPackage \item File name: What is provided as message by this
+#'   function \item CRS: EPSG:4326 - WGS 84 \item make sure that 'all fields are
+#'   exported'} \item Confirm that you have saved the file.}
 #' @return Returns a tibble of the entry that is appended to
 #'   'inv_geometries.csv' in case \code{update = TRUE}.
 #' @family register functions
@@ -54,7 +54,7 @@
 #'
 #'   # The GADM dataset comes as *.7z archive
 #'   regGeometry(gSeries = "gadm",
-#'               level = 1,
+#'               label = "al1",
 #'               layer = "example_geom1",
 #'               nameCol = "NAME_0",
 #'               archive = "example_geom.7z|example_geom1.gpkg",
@@ -66,7 +66,7 @@
 #'   # The second administrative level in GADM contains names in the columns
 #'   # NAME_0 and NAME_1
 #'   regGeometry(gSeries = "gadm",
-#'               level = 2,
+#'               label = "al2",
 #'               layer = "example_geom2",
 #'               nameCol = "NAME_0|NAME_1",
 #'               archive = "example_geom.7z|example_geom2.gpkg",
@@ -85,7 +85,7 @@
 #' @importFrom tibble tibble
 #' @export
 
-regGeometry <- function(..., subset = NULL, gSeries = NULL, level = NULL,
+regGeometry <- function(..., subset = NULL, gSeries = NULL, label = NULL,
                         layer = NULL, nameCol = NULL, archive = NULL, archiveLink = NULL,
                         nextUpdate = NULL, updateFrequency = NULL, notes = NULL,
                         update = FALSE, overwrite = FALSE){
@@ -96,7 +96,7 @@ regGeometry <- function(..., subset = NULL, gSeries = NULL, level = NULL,
 
   # get tables
   inv_dataseries <- read_csv(paste0(intPaths, "/inv_dataseries.csv"), col_types = "icccccc")
-  inv_geometries <- read_csv(paste0(intPaths, "/inv_geometries.csv"), col_types = "iiiccccccDccc")
+  inv_geometries <- read_csv(paste0(intPaths, "/inv_geometries.csv"), col_types = "iicccccccDccc")
 
   if(dim(inv_dataseries)[1] == 0){
     stop("'inv_dataseries.csv' does not contain any entries!")
@@ -106,7 +106,7 @@ regGeometry <- function(..., subset = NULL, gSeries = NULL, level = NULL,
   testing <- getOption(x = "adb_testing")
 
   # check validity of arguments
-  assertIntegerish(x = level, any.missing = FALSE, len = 1, lower = 1, null.ok = TRUE)
+  assertCharacter(x = label, any.missing = FALSE, len = 1, null.ok = TRUE)
   assertCharacter(x = subset, any.missing = FALSE, null.ok = TRUE)
   assertCharacter(x = gSeries, ignore.case = TRUE, any.missing = FALSE, len = 1, null.ok = TRUE)
   assertCharacter(x = layer, any.missing = FALSE, null.ok = TRUE)
@@ -121,7 +121,7 @@ regGeometry <- function(..., subset = NULL, gSeries = NULL, level = NULL,
               permutation.of = c("datID", "name", "description", "homepage",
                                  "licence_link", "licence_path", "notes"))
   assertNames(x = colnames(inv_geometries),
-              permutation.of = c("geoID", "datID", "level", "source_file", "layer",
+              permutation.of = c("geoID", "datID", "label", "source_file", "layer",
                                  "hierarchy", "orig_file", "orig_link", "download_date",
                                  "next_update", "update_frequency", "notes"))
 
@@ -181,15 +181,15 @@ regGeometry <- function(..., subset = NULL, gSeries = NULL, level = NULL,
     }
   }
 
-  if(is.null(level)){
-    message("please type in the administrative level of the units: ")
+  if(is.null(label)){
+    message("please type in the ontology label of the units: ")
     if(!testing){
-      level <- readline()
+      label <- readline()
     } else {
-      level <- 1
+      label <- "al1"
     }
-    if(is.na(level)){
-      level = NA_integer_
+    if(is.na(label)){
+      label = NA_character_
     }
   }
 
@@ -206,7 +206,7 @@ regGeometry <- function(..., subset = NULL, gSeries = NULL, level = NULL,
   }
 
   # put together file name and get confirmation that file should exist now
-  fileName <- paste0(mainPoly, "_", level, "_", subset, "_", gSeries, ".gpkg")
+  fileName <- paste0(mainPoly, "_", label, "_", subset, "_", gSeries, ".gpkg")
   filePath <- paste0(intPaths, "/adb_geometries/stage2/", fileName)
   filesTrace <- str_split(archive, "\\|")[[1]]
 
@@ -312,9 +312,9 @@ regGeometry <- function(..., subset = NULL, gSeries = NULL, level = NULL,
     }
 
     nameCols <- str_split(string = nameCol, pattern = "\\|")[[1]]
-    if(length(nameCols) != level){
-      warning("'nameCol' contains less entries (", length(nameCols), ") than implied by the level (", level, ")")
-    }
+    # if(length(nameCols) != label){
+    #   warning("'nameCol' contains less entries (", length(nameCols), ") than implied by the level (", level, ")")
+    # }
 
     # determine which layers exist and ask the user which to chose, if none is
     # given
@@ -336,7 +336,7 @@ regGeometry <- function(..., subset = NULL, gSeries = NULL, level = NULL,
     # construct new documentation
     doc <- tibble(geoID = newGID,
                   datID = dataSeries,
-                  level = level,
+                  label = label,
                   source_file = fileName,
                   layer = layer,
                   hierarchy = nameCol,
@@ -349,7 +349,7 @@ regGeometry <- function(..., subset = NULL, gSeries = NULL, level = NULL,
     if(!any(inv_geometries$source_file %in% fileName) | overwrite){
       # in case the user wants to update, attach the new information to the table
       # inv_geometries.csv
-      updateTable(index = doc, name = "inv_geometries", matchCols = c("source_file", "level"))
+      updateTable(index = doc, name = "inv_geometries", matchCols = c("source_file", "label"))
     }
     return(doc)
   } else {

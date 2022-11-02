@@ -80,8 +80,7 @@ normTable <- function(input = NULL, pattern = NULL, ..., outType = "rds",
   # get tables
   inv_tables <- read_csv(paste0(intPaths, "/inv_tables.csv"), col_types = "iiiccccDccccc")
   inv_dataseries <- read_csv(paste0(intPaths, "/inv_dataseries.csv"), col_types = "icccccc")
-  inv_geometries <- read_csv(paste0(intPaths, "/inv_geometries.csv"), col_types = "iiicccccDDcc")
-  gazetteer <- load_ontology(path = gazPath)
+  inv_geometries <- read_csv(paste0(intPaths, "/inv_geometries.csv"), col_types = "iiccccccDDcc")
 
   # check validity of arguments
   assertNames(x = colnames(inv_tables),
@@ -92,7 +91,7 @@ normTable <- function(input = NULL, pattern = NULL, ..., outType = "rds",
               permutation.of = c("datID", "name", "description", "homepage",
                                  "licence_link", "licence_path", "notes"))
   assertNames(x = colnames(inv_geometries),
-              permutation.of = c("geoID", "datID", "level", "source_file", "layer",
+              permutation.of = c("geoID", "datID", "label", "source_file", "layer",
                                  "hierarchy", "orig_file", "orig_link", "download_date",
                                  "next_update", "update_frequency", "notes"))
   assertLogical(x = update, len = 1)

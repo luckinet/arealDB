@@ -35,7 +35,7 @@
 
 makeExampleDB <- function(path = NULL, until = NULL, verbose = FALSE){
 
-  # library(arealDB); library(ontologics); library(tidyverse); library(checkmate); library(tabshiftr); library(sf); until = NULL; verbose = FALSE; path = paste0(tempdir(), "/newDB")
+  # library(arealDB); library(ontologics); library(tidyverse); library(checkmate); library(tabshiftr); library(sf); until = "normGeometry"; verbose = FALSE; path = paste0(tempdir(), "/newDB")
 
   inPath <- system.file("test_datasets", package = "arealDB", mustWork = TRUE)
   steps <- c("start_arealDB", "regDataseries", "regGeometry", "regTable", "normGeometry", "normTable")
@@ -69,21 +69,21 @@ makeExampleDB <- function(path = NULL, until = NULL, verbose = FALSE){
 
   # load geometries
   file.copy(from = paste0(inPath, "/example_geom1.gpkg"),
-            to = paste0(path, "/adb_geometries/stage2/_1__gadm.gpkg"))
+            to = paste0(path, "/adb_geometries/stage2/_al1__gadm.gpkg"))
   file.copy(from = paste0(inPath, "/example_geom2.gpkg"),
-            to = paste0(path, "/adb_geometries/stage2/_2__gadm.gpkg"))
+            to = paste0(path, "/adb_geometries/stage2/_al2__gadm.gpkg"))
   file.copy(from = paste0(inPath, "/example_geom3.gpkg"),
-            to = paste0(path, "/adb_geometries/stage2/_3__gadm.gpkg"))
+            to = paste0(path, "/adb_geometries/stage2/_al3__gadm.gpkg"))
   file.copy(from = paste0(inPath, "/example_geom4.gpkg"),
-            to = paste0(path, "/adb_geometries/stage2/_3__madeUp.gpkg"))
+            to = paste0(path, "/adb_geometries/stage2/_al3__madeUp.gpkg"))
 
   # load tables (and schema)
   file.copy(from = paste0(inPath, "/example_schema.rds"),
             to = paste0(path, "/meta/schemas/example_schema.rds"))
   file.copy(from = paste0(inPath, "/example_table1.csv"),
-            to = paste0(path, "/adb_tables/stage2/_1_barleyMaize_1990_2017_madeUp.csv"))
+            to = paste0(path, "/adb_tables/stage2/_al1_barleyMaize_1990_2017_madeUp.csv"))
   file.copy(from = paste0(inPath, "/example_table2.csv"),
-            to = paste0(path, "/adb_tables/stage2/aNation_2_barleyMaize_1990_2017_madeUp.csv"))
+            to = paste0(path, "/adb_tables/stage2/aNation_al2_barleyMaize_1990_2017_madeUp.csv"))
 
   # load gazetteer
   file.copy(from = paste0(inPath, "/territories.rds"),
@@ -111,7 +111,7 @@ makeExampleDB <- function(path = NULL, until = NULL, verbose = FALSE){
   if(any(theSteps %in% "regGeometry")){
 
     regGeometry(gSeries = "gadm",
-                level = 1,
+                label = "al1",
                 layer = "example_geom1",
                 nameCol = "NAME_0",
                 archive = "example_geom.7z|example_geom1.gpkg",
@@ -121,7 +121,7 @@ makeExampleDB <- function(path = NULL, until = NULL, verbose = FALSE){
                 update = TRUE)
 
     regGeometry(gSeries = "gadm",
-                level = 2,
+                label = "al2",
                 layer = "example_geom2",
                 nameCol = "NAME_0|NAME_1",
                 archive = "example_geom.7z|example_geom2.gpkg",
@@ -131,7 +131,7 @@ makeExampleDB <- function(path = NULL, until = NULL, verbose = FALSE){
                 update = TRUE)
 
     regGeometry(gSeries = "gadm",
-                level = 3,
+                label = "al3",
                 layer = "example_geom3",
                 nameCol = "NAME_0|NAME_1|NAME_2",
                 archive = "example_geom.7z|example_geom3.gpkg",
@@ -141,7 +141,7 @@ makeExampleDB <- function(path = NULL, until = NULL, verbose = FALSE){
                 update = TRUE)
 
     regGeometry(gSeries = "madeUp",
-                level = 3,
+                label = "al3",
                 layer = "example_geom4",
                 nameCol = "NAME_0|NAME_1|NAME_2",
                 archive = "example_geom.7z|example_geom4.gpkg",
@@ -155,7 +155,7 @@ makeExampleDB <- function(path = NULL, until = NULL, verbose = FALSE){
   if(any(theSteps %in% "regTable")){
 
     meta_madeUp_1 <- tabshiftr::schema_default %>%
-      setIDVar(name = "nation", columns = 1) %>%
+      setIDVar(name = "al1", columns = 1) %>%
       setIDVar(name = "year", columns = 2) %>%
       setIDVar(name = "commodities", columns = 3) %>%
       setObsVar(name = "harvested", unit = "ha", columns = 4) %>%
@@ -163,8 +163,8 @@ makeExampleDB <- function(path = NULL, until = NULL, verbose = FALSE){
 
     meta_madeUp_2 <- tabshiftr::schema_default %>%
       setFormat(decimal = ".", na_values = c("", "NA")) %>%
-      setIDVar(name = "nation", columns = 1) %>%
-      setIDVar(name = "county", columns = 2) %>%
+      setIDVar(name = "al1", columns = 1) %>%
+      setIDVar(name = "al2", columns = 2) %>%
       setIDVar(name = "year", columns = 3) %>%
       setIDVar(name = "commodities", columns = 4) %>%
       setObsVar(name = "harvested", unit = "ha", columns = 5) %>%
@@ -173,7 +173,7 @@ makeExampleDB <- function(path = NULL, until = NULL, verbose = FALSE){
     regTable(subset = "barleyMaize",
              dSeries = "madeUp",
              gSeries = "gadm",
-             level = 1,
+             label = "al1",
              begin = 1990,
              end = 2017,
              schema = meta_madeUp_1,
@@ -189,7 +189,7 @@ makeExampleDB <- function(path = NULL, until = NULL, verbose = FALSE){
              subset = "barleyMaize",
              dSeries = "madeUp",
              gSeries = "gadm",
-             level = 2,
+             label = "al2",
              begin = 1990,
              end = 2017,
              schema = meta_madeUp_2,

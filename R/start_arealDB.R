@@ -127,7 +127,7 @@ start_arealDB <- function(root = NULL, gazetteer = NULL){
   if(!testFileExists(x = file.path(root, "inv_geometries.csv"))){
     geometries <- tibble(geoID = integer(),
                          datID = integer(),
-                         level = integer(),
+                         label = character(),
                          source_file = character(),
                          layer = character(),
                          hierarchy = character(),

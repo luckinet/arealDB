@@ -13,8 +13,8 @@
 #' @param gSeries [\code{character(1)}]\cr optionally, the dataseries of the
 #'   geometries, if the geometry dataseries deviates from the dataseries of the
 #'   areal data (see \code{\link{regDataseries}}).
-#' @param level [\code{integerish(1)}]\cr the administrative level at which the
-#'   boundaries are recorded.
+#' @param label [\code{integerish(1)}]\cr the label in the onology this geometry
+#'   should correspond to.
 #' @param begin [\code{integerish(1)}]\cr the date from which on the data are
 #'   valid.
 #' @param end [\code{integerish(1)}]\cr the date until which the data are valid.
@@ -43,8 +43,8 @@
 #'   register shall overwrite a potentially already existing older version.
 #' @details When processing areal data tables, carry out the following steps:
 #'   \enumerate{ \item Determine the main territory (such as a nation, or any
-#'   other polygon), a \code{subset} (if applicable), the administrative
-#'   \code{level} and the dataseries of the areal data and of the geometry, and
+#'   other polygon), a \code{subset} (if applicable), the ontology
+#'   \code{label} and the dataseries of the areal data and of the geometry, and
 #'   provide them as arguments to this function. \item Provide a \code{begin}
 #'   and \code{end} date for the areal data. \item Run the function. \item
 #'   (Re)Save the table with the following properties: \itemize{\item Format:
@@ -107,7 +107,7 @@
 #' @export
 
 regTable <- function(..., subset = NULL, dSeries = NULL, gSeries = NULL,
-                     level = NULL, begin = NULL, end = NULL, schema = NULL,
+                     label = NULL, begin = NULL, end = NULL, schema = NULL,
                      archive = NULL, archiveLink = NULL, nextUpdate = NULL,
                      updateFrequency = NULL, metadataLink = NULL, metadataPath = NULL,
                      notes = NULL, update = FALSE, overwrite = FALSE){
@@ -118,7 +118,7 @@ regTable <- function(..., subset = NULL, dSeries = NULL, gSeries = NULL,
   # get tables
   inv_tables <- read_csv(paste0(intPaths, "/inv_tables.csv"), col_types = "iiiccccDccccc")
   inv_dataseries <- read_csv(paste0(intPaths, "/inv_dataseries.csv"), col_types = "icccccc")
-  inv_geometries <- read_csv(paste0(intPaths, "/inv_geometries.csv"), col_types = "iiicccccDDcc")
+  inv_geometries <- read_csv(paste0(intPaths, "/inv_geometries.csv"), col_types = "iiccccccDDcc")
 
   if(dim(inv_dataseries)[1] == 0){
     stop("'inv_dataseries.csv' does not contain any entries!")
@@ -141,13 +141,13 @@ regTable <- function(..., subset = NULL, dSeries = NULL, gSeries = NULL,
               permutation.of = c("datID", "name", "description", "homepage",
                                  "licence_link", "licence_path", "notes"))
   assertNames(x = colnames(inv_geometries),
-              permutation.of = c("geoID", "datID", "level", "source_file", "layer",
+              permutation.of = c("geoID", "datID", "label", "source_file", "layer",
                                  "hierarchy", "orig_file", "orig_link", "download_date",
                                  "next_update", "update_frequency", "notes"))
   assertCharacter(x = subset, any.missing = FALSE, null.ok = TRUE)
   assertCharacter(x = dSeries, ignore.case = TRUE, any.missing = FALSE, len = 1, null.ok = TRUE)
   assertCharacter(x = gSeries, ignore.case = TRUE, any.missing = FALSE, len = 1, null.ok = TRUE)
-  assertIntegerish(x = level, any.missing = FALSE, len = 1, null.ok = TRUE)
+  assertCharacter(x = label, any.missing = FALSE, len = 1, null.ok = TRUE)
   assertIntegerish(x = begin, any.missing = FALSE, len = 1, lower = 1900, null.ok = TRUE)
   assertIntegerish(x = end, any.missing = FALSE, len = 1, upper = as.integer(format(Sys.Date(), "%Y")), null.ok = TRUE)
   assertClass(x = schema, classes = "schema", null.ok = TRUE)
@@ -229,22 +229,22 @@ regTable <- function(..., subset = NULL, dSeries = NULL, gSeries = NULL,
 
   } else{
     tempDatID <- inv_dataseries$datID[inv_dataseries$name %in% gSeries]
-    geomSeries <- inv_geometries$geoID[inv_geometries$datID %in% tempDatID & inv_geometries$level == level]
+    geomSeries <- inv_geometries$geoID[inv_geometries$datID %in% tempDatID & inv_geometries$label == label]
     if(length(geomSeries) < 1){
       stop(paste0("! please first register geometries of the series '", gSeries,"' via 'regGeometries()' !"))
     }
   }
 
 
-  if(is.null(level)){
-    message("please type in the administrative level of the units: ")
+  if(is.null(label)){
+    message("please type in the ontology label of the units: ")
     if(!testing){
-      level <- readline()
+      label <- readline()
     } else {
-      level <- 1
+      label <- 1
     }
-    if(is.na(level)){
-      level = NA_integer_
+    if(is.na(label)){
+      label = NA_character_
     }
   }
 
@@ -298,7 +298,7 @@ regTable <- function(..., subset = NULL, dSeries = NULL, gSeries = NULL,
   }
 
   # put together file name and get confirmation that file should exist now
-  fileName <- paste0(mainPoly, "_", level, "_", subset, "_", begin, "_", end, "_", dSeries, ".csv")
+  fileName <- paste0(mainPoly, "_", label, "_", subset, "_", begin, "_", end, "_", dSeries, ".csv")
   filePath <- paste0(intPaths, "/adb_tables/stage2/", fileName)
   fileArchive <- str_split(archive, "\\|")[[1]]
 
