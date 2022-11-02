@@ -9,7 +9,7 @@ regTable(
   subset = NULL,
   dSeries = NULL,
   gSeries = NULL,
-  level = NULL,
+  label = NULL,
   begin = NULL,
   end = NULL,
   schema = NULL,
@@ -41,8 +41,8 @@ only one municipality) or of a target variable.}
 geometries, if the geometry dataseries deviates from the dataseries of the
 areal data (see \code{\link{regDataseries}}).}
 
-\item{level}{[\code{integerish(1)}]\cr the administrative level at which the
-boundaries are recorded.}
+\item{label}{[\code{integerish(1)}]\cr the label in the onology this geometry
+should correspond to.}
 
 \item{begin}{[\code{integerish(1)}]\cr the date from which on the data are
 valid.}
@@ -92,8 +92,8 @@ This function registers a new areal data table into the geospatial database.
 \details{
 When processing areal data tables, carry out the following steps:
   \enumerate{ \item Determine the main territory (such as a nation, or any
-  other polygon), a \code{subset} (if applicable), the administrative
-  \code{level} and the dataseries of the areal data and of the geometry, and
+  other polygon), a \code{subset} (if applicable), the ontology
+  \code{label} and the dataseries of the areal data and of the geometry, and
   provide them as arguments to this function. \item Provide a \code{begin}
   and \code{end} date for the areal data. \item Run the function. \item
   (Re)Save the table with the following properties: \itemize{\item Format:

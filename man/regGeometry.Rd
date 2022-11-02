@@ -8,7 +8,7 @@ regGeometry(
   ...,
   subset = NULL,
   gSeries = NULL,
-  level = NULL,
+  label = NULL,
   layer = NULL,
   nameCol = NULL,
   archive = NULL,
@@ -33,8 +33,8 @@ only one municipality) or of a target variable.}
 \item{gSeries}{[\code{character(1)}]\cr the name of the geometry dataseries
 (see \code{\link{regDataseries}}).}
 
-\item{level}{[\code{integerish(1)}]\cr the administrative level at which the
-geometry is recorded.}
+\item{label}{[\code{integerish(1)}]\cr the label in the onology this geometry
+should correspond to.}
 
 \item{layer}{[\code{character}]\cr the name of the file's layer from which
 the geometry should be created (if applicable).}
@@ -79,12 +79,12 @@ geospatial database.
 When processing geometries to which areal data shall be linked,
   carry out the following steps: \enumerate{ \item Determine the main
   territory (such as a nation, or any other polygon), a \code{subset} (if
-  applicable), the dataseries of the geometry and the administrative
-  \code{level}, and provide them as arguments to this function. \item Run the
-  function. \item Export the shapefile with the following properties:
-  \itemize{ \item Format: GeoPackage \item File name: What is provided as
-  message by this function \item CRS: EPSG:4326 - WGS 84 \item make sure that
-  'all fields are exported'} \item Confirm that you have saved the file.}
+  applicable), the dataseries of the geometry and the ontology \code{label},
+  and provide them as arguments to this function. \item Run the function.
+  \item Export the shapefile with the following properties: \itemize{ \item
+  Format: GeoPackage \item File name: What is provided as message by this
+  function \item CRS: EPSG:4326 - WGS 84 \item make sure that 'all fields are
+  exported'} \item Confirm that you have saved the file.}
 }
 \examples{
 if(dev.interactive()){
@@ -93,7 +93,7 @@ if(dev.interactive()){
 
   # The GADM dataset comes as *.7z archive
   regGeometry(gSeries = "gadm",
-              level = 1,
+              label = "al1",
               layer = "example_geom1",
               nameCol = "NAME_0",
               archive = "example_geom.7z|example_geom1.gpkg",
@@ -105,7 +105,7 @@ if(dev.interactive()){
   # The second administrative level in GADM contains names in the columns
   # NAME_0 and NAME_1
   regGeometry(gSeries = "gadm",
-              level = 2,
+              label = "al2",
               layer = "example_geom2",
               nameCol = "NAME_0|NAME_1",
               archive = "example_geom.7z|example_geom2.gpkg",
