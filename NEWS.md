@@ -1,3 +1,10 @@
+# arealDB 0.4.3
+
+* rename `match_ontology()` to `matchOntology()` and revise it so that it can handle several columns sequentially
+* make use of getters of the ontologics package so that (large) gazetteers are not loaded but only the requried info are pulled from them
+* remove functions `get_variable()` and `select_path()`, the former is integrated into `matchOntology()` and the latter is not relevant anymore.
+
+
 # arealDB 0.4.2
 
 * when using `regTable` with `update = FALSE`, the schema now has a more explicit diagnostic message.
