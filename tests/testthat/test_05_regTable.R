@@ -20,7 +20,7 @@ test_that("a table inventory entry is produced", {
                      subset = "barleyMaize",
                      dSeries = "madeUp",
                      gSeries = "gadm",
-                     level = 1,
+                     label = "al1",
                      schema = meta_maia_1,
                      begin = 1990,
                      end = 2017,
@@ -58,7 +58,7 @@ test_that("function asks for details, if not provided", {
   expect_character(x = output, len = 12, any.missing = FALSE, unique = TRUE)
   expect_equal(object = output[1], expected = "please type in to which data series this table belongs: \n")
   expect_equal(object = output[2], expected = "please type in to which geometry series this table belongs: \n")
-  expect_equal(object = output[3], expected = "please type in the administrative level of the units: \n")
+  expect_equal(object = output[3], expected = "please type in the ontology label of the units: \n")
   expect_equal(object = output[4], expected = "please type in the first year in the table: \n")
   expect_equal(object = output[5], expected = "please type in the last year in the table: \n")
   expect_equal(object = output[6], expected = "please provide the schema description for this table: \n")

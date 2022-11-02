@@ -58,13 +58,13 @@ test_that("make example DB until regGeometry", {
 
   makeExampleDB(until = "regGeometry", path = dbpath)
 
-  geoID <- read_csv(file = paste0(dbpath, "/inv_geometries.csv"), col_types = "iiicccccDDcc")
+  geoID <- read_csv(file = paste0(dbpath, "/inv_geometries.csv"), col_types = "iiccccccDDcc")
   expect_true(object = all(dim(geoID) == c(4, 12)))
 
-  expect_file_exists(x = paste0(dbpath, "/adb_geometries/stage2/_1__gadm.gpkg"))
-  expect_file_exists(x = paste0(dbpath, "/adb_geometries/stage2/_2__gadm.gpkg"))
-  expect_file_exists(x = paste0(dbpath, "/adb_geometries/stage2/_3__gadm.gpkg"))
-  expect_file_exists(x = paste0(dbpath, "/adb_geometries/stage2/_3__madeUp.gpkg"))
+  expect_file_exists(x = paste0(dbpath, "/adb_geometries/stage2/_al1__gadm.gpkg"))
+  expect_file_exists(x = paste0(dbpath, "/adb_geometries/stage2/_al2__gadm.gpkg"))
+  expect_file_exists(x = paste0(dbpath, "/adb_geometries/stage2/_al3__gadm.gpkg"))
+  expect_file_exists(x = paste0(dbpath, "/adb_geometries/stage2/_al3__madeUp.gpkg"))
 
 })
 
@@ -77,8 +77,8 @@ test_that("make example DB until regTable", {
   geoID <- read_csv(file = paste0(dbpath, "/inv_tables.csv"), col_types = "iiiccccDDcccc")
   expect_true(object = all(dim(geoID) == c(2, 13)))
 
-  expect_file_exists(x = paste0(dbpath, "/adb_tables/stage2/_1_barleyMaize_1990_2017_madeUp.csv"))
-  expect_file_exists(x = paste0(dbpath, "/adb_tables/stage2/aNation_2_barleyMaize_1990_2017_madeUp.csv"))
+  expect_file_exists(x = paste0(dbpath, "/adb_tables/stage2/_al1_barleyMaize_1990_2017_madeUp.csv"))
+  expect_file_exists(x = paste0(dbpath, "/adb_tables/stage2/aNation_al2_barleyMaize_1990_2017_madeUp.csv"))
 
 })
 
