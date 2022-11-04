@@ -89,7 +89,8 @@ matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
 
   # make a new dataseries, in case it doesn't exist yet
   if(!dataseries %in% get_source(ontology = gazPath)$label){
-    new_source(name = dataseries, ontology = gazPath)
+    new_source(name = dataseries, date = Sys.Date(),
+               ontology = gazPath)
   }
 
   # prepare object to write into
@@ -112,7 +113,7 @@ matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
       select(label = all_of(theColumn), class, has_broader = theColumns[i-1])
 
     if(i != 1){
-      broaderConc <- get_concept(x = temp %>% select(label = has_broader) %>% distinct(), ontology = gazPath, mappings = "all") %>%
+      broaderConc <- get_concept(table = temp %>% select(label = has_broader) %>% distinct(), ontology = gazPath) %>%
         select(id) %>%
         bind_cols(temp %>% distinct(has_broader))
 
@@ -125,7 +126,7 @@ matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
     # extract all harmonised concepts, including those that may be not available
     # (na) ...
     harmonisedConc <- temp %>%
-      get_concept(x = ., na.rm = FALSE, ontology = gazPath)
+      get_concept(ontology = gazPath)
 
     # ... for if new concepts are still missing from the ontology, they need to be
     # mapped
@@ -150,7 +151,7 @@ matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
         arrange(label) %>%
         mutate(class = theColumn)
 
-      newConcepts <- get_concept(x = new, ontology = gazPath, mappings = "all") %>%
+      newConcepts <- get_concept(table = new, ontology = gazPath) %>%
         select(-has_broader_match, -has_close_match, -has_exact_match, -has_narrower_match) %>%
         rename(target := label) %>%
         select(-class, -description) %>%
@@ -169,7 +170,7 @@ matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
         distinct() %>%
         arrange(label)
 
-      newConcepts <- get_concept(x = new, ontology = gazPath, mappings = "all") %>% #redo gazetteer, make all matches and check in detail whether get_concept gets a clear list that corresponds to 'new'
+      newConcepts <- get_concept(table = new, ontology = gazPath) %>% #redo gazetteer, make all matches and check in detail whether get_concept gets a clear list that corresponds to 'new'
         separate_rows(has_broader_match, has_close_match, has_exact_match, has_narrower_match, sep = " \\| ") %>%
         rename(target := label) %>%
         bind_cols(new %>% select(!!theColumn := label)) %>%

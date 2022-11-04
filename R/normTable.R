@@ -61,7 +61,7 @@
 normTable <- function(input = NULL, pattern = NULL, ..., outType = "rds",
                       update = FALSE, verbose = FALSE){
 
-  # input = NULL; pattern = NULL; sbst <- list(); outType = "rds"; update = TRUE; verbose = FALSE
+  # input = NULL; pattern = ds[1]; sbst <- list(); outType = "rds"; update = TRUE; verbose = FALSE
 
   # set internal paths
   intPaths <- getOption(x = "adb_path")
