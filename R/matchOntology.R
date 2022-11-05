@@ -132,7 +132,7 @@ matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
     # mapped
     if(any(is.na(harmonisedConc$id))){
 
-      new_mapping(new = harmonisedConc$label,
+      new_mapping(new = harmonisedConc$external,
                   target = harmonisedConc %>% select(class, has_broader),
                   source = dataseries,
                   certainty = 3,
@@ -152,15 +152,15 @@ matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
         mutate(class = theColumn)
 
       newConcepts <- get_concept(table = new, ontology = gazPath) %>%
-        select(-has_broader_match, -has_close_match, -has_exact_match, -has_narrower_match) %>%
-        rename(target := label) %>%
+        # select(-has_broader_match, -has_close_match, -has_exact_match, -has_narrower_match) %>%
+        rename(target := external) %>%
         select(-class, -description) %>%
         bind_cols(new %>% select(!!theColumn := label))
 
       toOut <- table %>%
         left_join(newConcepts, by = theColumn) %>%
-        select(-all_of(theColumn)) %>%
-        rename(!!theColumn := target)
+        select(-all_of(theColumn), -match, -target) %>%
+        rename(!!theColumn := label)
 
     } else {
 
@@ -171,27 +171,27 @@ matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
         arrange(label)
 
       newConcepts <- get_concept(table = new, ontology = gazPath) %>% #redo gazetteer, make all matches and check in detail whether get_concept gets a clear list that corresponds to 'new'
-        separate_rows(has_broader_match, has_close_match, has_exact_match, has_narrower_match, sep = " \\| ") %>%
-        rename(target := label) %>%
+        # separate_rows(has_broader_match, has_close_match, has_exact_match, has_narrower_match, sep = " \\| ") %>%
+        rename(target := external) %>%
         bind_cols(new %>% select(!!theColumn := label)) %>%
         mutate(target = if_else(!class %in% theColumn, !!sym(theColumn), target),
                has_broader = if_else(!class %in% theColumn, id, has_broader),
                id = if_else(!class %in% theColumn, paste0(id, get_class(ontology = gazPath)$id[1]), id)) %>%
-        select(!!theColumn, target, id, has_broader)
+        select(!!theColumn, label, id, has_broader)
 
       toOut <- toOut %>%
         mutate(has_broader = id) %>%
         select(-id) %>%
         left_join(newConcepts, by = c(theColumn, "has_broader")) %>%
         select(-all_of(theColumn)) %>%
-        rename(!!theColumn := target)
+        rename(!!theColumn := label)
     }
 
   }
 
   out <- toOut %>%
     select(all_of(columns), id, everything()) %>%
-    select(-has_broader)
+    select(-has_broader, -has_source)
 
   return(out)
 
