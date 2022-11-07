@@ -194,8 +194,14 @@ matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
       }
 
     } else {
-      toOut <- table %>%
-        left_join(harmonisedConc %>% select(!!theColumn := label, id), theColumn)
+      if(i == 1){
+        toOut <- table %>%
+          left_join(harmonisedConc %>% select(!!theColumn := label, id), theColumn)
+      } else {
+        toOut <- toOut %>%
+          select(-id) %>%
+          left_join(harmonisedConc %>% select(!!theColumn := label, id), theColumn)
+      }
     }
 
 
