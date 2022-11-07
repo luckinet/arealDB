@@ -5,7 +5,7 @@
 \alias{setPath}
 \title{Set the root path}
 \usage{
-start_arealDB(root = NULL, gazetteer = NULL)
+start_arealDB(root = NULL, gazetteer = NULL, ontology = NULL)
 
 setPath(root = NULL)
 }
@@ -15,6 +15,10 @@ or shall contain an areal database.}
 
 \item{gazetteer}{[\code{character(1)}]\cr path to the gazetteer that holds
 the (hierarchical) information of territorial units used in this database.}
+
+\item{ontology}{[\code{list(.)}]\cr named list with the path(s) of
+ontologies, where the list name identifies the variable that shall be
+matched with the ontology at the path.}
 }
 \value{
 No return value, called for the side effect of creating the
@@ -39,7 +43,8 @@ This is the first function that is run in a project, as it initiates
 \examples{
 start_arealDB(root = paste0(tempdir(), "/newDB"),
               gazetteer = system.file("test_datasets/territories.rds",
-                                      package = "arealDB"))
+                                      package = "arealDB"),
+              ontology = list(var = paste0(tempdir(), "/ontology.rds")))
 
 getOption("adb_path"); getOption("gazetteer_path")
 }
