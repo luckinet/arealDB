@@ -27,7 +27,9 @@ matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
 
   # set internal paths
   intPaths <- paste0(getOption(x = "adb_path"))
-  gazPath <- paste0(getOption(x = "gazetteer_path"))
+  ontoPath <- ontology
+
+  type <- str_split(tail(str_split(string = ontoPath, pattern = "/")[[1]], 1), "[.]")[[1]][1]
 
   # # set internal objects
   # intPaths <- paste0(getOption(x = "adb_path"))
@@ -88,12 +90,16 @@ matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
   # }
 
   # make a new dataseries, in case it doesn't exist yet
-  if(!dataseries %in% get_source(ontology = gazPath)$label){
+  if(!dataseries %in% get_source(ontology = ontoPath)$label){
     new_source(name = dataseries, date = Sys.Date(),
-               ontology = gazPath)
+               ontology = ontoPath)
   }
 
-  # prepare object to write into
+  # get the current source
+  srcID <- get_source(label = dataseries, ontology = ontoPath) %>%
+    pull(id)
+
+  # # prepare object to write into
   if(inherits(x = table, what = "sf")){
     tab <- table %>%
       st_drop_geometry()
@@ -107,13 +113,13 @@ matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
     theColumn <- columns[i]
     theColumns <- c(theColumns, theColumn)
 
-    temp <- table %>%
+    temp <- tab %>%
       distinct(across(all_of(theColumns))) %>%
       mutate(class = theColumn) %>%
       select(label = all_of(theColumn), class, has_broader = theColumns[i-1])
 
     if(i != 1){
-      broaderConc <- get_concept(table = temp %>% select(label = has_broader) %>% distinct(), ontology = gazPath) %>%
+      broaderConc <- get_concept(table = temp %>% select(label = has_broader) %>% distinct(), ontology = ontoPath) %>%
         select(id) %>%
         bind_cols(temp %>% distinct(has_broader))
 
@@ -125,73 +131,78 @@ matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
 
     # extract all harmonised concepts, including those that may be not available
     # (na) ...
-    harmonisedConc <- temp %>%
-      get_concept(ontology = gazPath)
+    harmonisedConc <- get_concept(table = temp, ontology = ontoPath, mappings = TRUE) %>%
+      distinct(label, class, id, has_broader)
+
+    if(dim(harmonisedConc)[1] != dim(temp)[1]){
+      stop("improve matching here")
+    }
 
     # ... for if new concepts are still missing from the ontology, they need to be
     # mapped
     if(any(is.na(harmonisedConc$id))){
 
-      new_mapping(new = harmonisedConc$external,
+      new_mapping(new = harmonisedConc$label,
                   target = harmonisedConc %>% select(class, has_broader),
                   source = dataseries,
                   certainty = 3,
-                  ontology = gazPath,
-                  matchDir = paste0(intPaths, "/meta/concepts/"),
+                  ontology = ontoPath,
+                  matchDir = paste0(intPaths, "/meta/", type, "/"),
                   verbose = verbose)
 
-    }
+      # write the new concepts into 'table'
+      if(i == 1){
 
-    # write the new concepts into 'table'
-    if(i == 1){
+        new <- tab %>%
+          select(label = all_of(theColumn)) %>%
+          distinct() %>%
+          arrange(label)
 
-      new <- tab %>%
-        select(label = all_of(theColumn)) %>%
-        distinct() %>%
-        arrange(label) %>%
-        mutate(class = theColumn)
+        newConcepts <- get_concept(table = new, ontology = ontoPath) %>%
+          filter(has_source == srcID) %>%
+          rename(target := external) %>%
+          select(-class, -description, !!theColumn := target)
 
-      newConcepts <- get_concept(table = new, ontology = gazPath) %>%
-        # select(-has_broader_match, -has_close_match, -has_exact_match, -has_narrower_match) %>%
-        rename(target := external) %>%
-        select(-class, -description) %>%
-        bind_cols(new %>% select(!!theColumn := label))
+        toOut <- table %>%
+          left_join(newConcepts, by = "al1") %>%
+          filter(!is.na(id)) %>%
+          select(-all_of(theColumn), -match, -has_source, -has_broader) %>%
+          rename(!!theColumn := label)
 
-      toOut <- table %>%
-        left_join(newConcepts, by = theColumn) %>%
-        select(-all_of(theColumn), -match, -target) %>%
-        rename(!!theColumn := label)
+      } else {
+
+        new <- toOut %>%
+          st_drop_geometry() %>%
+          select(label = all_of(theColumn), has_broader = id) %>%
+          distinct() %>%
+          arrange(label)
+
+        newConcepts <- get_concept(table = new, ontology = ontoPath) %>%
+          rename(target := external) %>%
+          bind_cols(new %>% select(!!theColumn := label)) %>%
+          mutate(target = if_else(!class %in% theColumn, !!sym(theColumn), target),
+                 has_broader = if_else(!class %in% theColumn, id, has_broader),
+                 id = if_else(!class %in% theColumn, paste0(id, get_class(ontology = ontoPath)$id[1]), id)) %>%
+          select(!!theColumn, label, id, has_broader)
+
+        toOut <- toOut %>%
+          mutate(has_broader = id) %>%
+          select(-id) %>%
+          left_join(newConcepts, by = c(theColumn, "has_broader")) %>%
+          select(-all_of(theColumn), -has_broader) %>%
+          rename(!!theColumn := label)
+      }
 
     } else {
-
-      new <- toOut %>%
-        st_drop_geometry() %>%
-        select(label = all_of(theColumn), has_broader = id) %>%
-        distinct() %>%
-        arrange(label)
-
-      newConcepts <- get_concept(table = new, ontology = gazPath) %>% #redo gazetteer, make all matches and check in detail whether get_concept gets a clear list that corresponds to 'new'
-        # separate_rows(has_broader_match, has_close_match, has_exact_match, has_narrower_match, sep = " \\| ") %>%
-        rename(target := external) %>%
-        bind_cols(new %>% select(!!theColumn := label)) %>%
-        mutate(target = if_else(!class %in% theColumn, !!sym(theColumn), target),
-               has_broader = if_else(!class %in% theColumn, id, has_broader),
-               id = if_else(!class %in% theColumn, paste0(id, get_class(ontology = gazPath)$id[1]), id)) %>%
-        select(!!theColumn, label, id, has_broader)
-
-      toOut <- toOut %>%
-        mutate(has_broader = id) %>%
-        select(-id) %>%
-        left_join(newConcepts, by = c(theColumn, "has_broader")) %>%
-        select(-all_of(theColumn)) %>%
-        rename(!!theColumn := label)
+      toOut <- table %>%
+        left_join(harmonisedConc %>% select(!!theColumn := label, id), theColumn)
     }
+
 
   }
 
   out <- toOut %>%
-    select(all_of(columns), id, everything()) %>%
-    select(-has_broader, -has_source)
+    select(all_of(columns), id, everything())
 
   return(out)
 
