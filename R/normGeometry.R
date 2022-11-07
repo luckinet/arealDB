@@ -192,7 +192,7 @@ normGeometry <- function(input = NULL, pattern = NULL, ..., thresh = 10,
 
     message("    harmonizing nation names ...")
     inGeom <- matchOntology(table = inGeom,
-                            columns = topCol,
+                            columns = unitCols,
                             dataseries = dSeries,
                             ontology = gazPath,
                             verbose = verbose)
@@ -213,14 +213,8 @@ normGeometry <- function(input = NULL, pattern = NULL, ..., thresh = 10,
     }
 
     # determine top-most value
-    if(fields[1] == ""){
-      severalTop <- TRUE
-      topUnits <- unique(eval(expr = parse(text = topCol), envir = inGeom)) %>%
-        as.character()
-     } else{
-      severalTop <- FALSE
-      topUnits <- fields[1]
-    }
+    topUnits <- unique(eval(expr = parse(text = topCol), envir = inGeom)) %>%
+      as.character()
 
     if(length(topUnits) == 0){
       moveFile <- FALSE
@@ -235,17 +229,11 @@ normGeometry <- function(input = NULL, pattern = NULL, ..., thresh = 10,
         message(paste0(" -> processing '", tempUnit, "' ..."))
 
         # create a geom specifically for the recent top territory
-        if(severalTop){
-          sourceGeom <- inGeom %>%
-            filter_at(vars(all_of(topCol)), all_vars(. %in% tempUnit)) %>%
-            # select(all_of(unitCols), id)
-            select(all_of(unitCols))
-          assertChoice(x = topCol, choices = names(sourceGeom), .var.name = "names(nation_column)")
-        } else{
-          sourceGeom <- inGeom %>%
-            # select(all_of(unitCols), id)
-            select(all_of(unitCols))
-        }
+        sourceGeom <- inGeom %>%
+          filter_at(vars(all_of(topCol)), all_vars(. %in% tempUnit)) %>%
+          select(all_of(unitCols), id)
+        assertChoice(x = topCol, choices = names(sourceGeom), .var.name = "names(nation_column)")
+
 
         # dissolve ----
         # in case the object consists of several POLYGONs per unique name, dissolve
@@ -317,7 +305,6 @@ normGeometry <- function(input = NULL, pattern = NULL, ..., thresh = 10,
           }
 
           # reproject new geom ----
-          # start_time <- Sys.time()
           if(st_crs(sourceGeom) != st_crs(targetGeom)){
             message("    Reprojecting new geometries")
             sourceGeom <- st_transform(x = sourceGeom, crs = st_crs(targetGeom))
@@ -325,7 +312,6 @@ normGeometry <- function(input = NULL, pattern = NULL, ..., thresh = 10,
           # test whether/which of the new features are already (spatially) in the target
           # geom and stop if all of them are there already.
           message("    Checking for exact spatial matches")
-          # start_time <- Sys.time()
           equals <- unlist(st_equals(sourceGeom, targetGeom))
           if(length(equals) == dim(sourceGeom)[1]){
             message("  ! --> all features of the new geometry are already part of the target geometry !")
@@ -379,7 +365,6 @@ normGeometry <- function(input = NULL, pattern = NULL, ..., thresh = 10,
                 filter(!isNA)
             }
           }
-          # beep(6)
 
           # then get the overlap with the targetGeom
           overlap_with_target <- suppressMessages(suppressWarnings(
@@ -422,15 +407,7 @@ normGeometry <- function(input = NULL, pattern = NULL, ..., thresh = 10,
           # get valid geoms that have an overlap larger than the threshold
           sourceOverlap <- sourceGeom %>%
             as_tibble() %>%
-            left_join(overlap_with_target, by = "sourceFID")
-
-          # harmonize labels ----
-          message("    harmonizing territory names ...")
-          sourceOverlap <- matchOntology(table = sourceOverlap,
-                                         columns = unitCols,
-                                         dataseries = dSeries,
-                                         ontology = gazPath,
-                                         verbose = verbose)
+            left_join(overlap_with_target %>% select(-id), by = "sourceFID")
 
           # get all the valid geoms
           validUnits <- sourceOverlap %>%
@@ -480,7 +457,7 @@ normGeometry <- function(input = NULL, pattern = NULL, ..., thresh = 10,
           newUnits <- invalidUnits %>%
             select(-ahName, -ahID) %>%
             mutate(geoID = newGID) %>%
-            unite(col = "ahName", unitCols, sep = ".") %>%
+            unite(col = "ahName", all_of(unitCols), sep = ".") %>%
             st_sf() %>%
             select(ahName, ahID = id, geoID)
 
@@ -500,14 +477,6 @@ normGeometry <- function(input = NULL, pattern = NULL, ..., thresh = 10,
         } else {
 
           message("    Creating new basis dataset for class ", theLabel, ".")
-
-          # harmonize labels ----
-          message("    harmonizing territory names ...")
-          sourceGeom <- matchOntology(table = sourceGeom,
-                                      columns = unitCols,
-                                      dataseries = dSeries,
-                                      ontology = gazPath,
-                                      verbose = verbose)
 
           outGeom <- suppressMessages(
             sourceGeom %>%
@@ -531,9 +500,7 @@ normGeometry <- function(input = NULL, pattern = NULL, ..., thresh = 10,
           } else {
             saveRDS(object = outGeom, file = paste0(intPaths, "/adb_geometries/stage3/", tempUnit, ".rds"))
           }
-
         }
-
       }
     }
 

@@ -1,6 +1,7 @@
 library(sf)
 library(testthat)
 library(checkmate)
+library(arealDB)
 context("normGeometry")
 
 test_that("geometries can be normalised", {
