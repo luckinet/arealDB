@@ -1,3 +1,7 @@
+# arealDB 0.4.4
+
+* fix internals to make the code run faster.
+
 # arealDB 0.4.3
 
 * rename `match_ontology()` to `matchOntology()` and revise it so that it can handle several columns sequentially
