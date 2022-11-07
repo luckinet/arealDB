@@ -35,7 +35,7 @@
 
 makeExampleDB <- function(path = NULL, until = NULL, verbose = FALSE){
 
-  # library(arealDB); library(ontologics); library(tidyverse); library(checkmate); library(tabshiftr); library(sf); until = "normGeometry"; verbose = FALSE; path = paste0(tempdir(), "/newDB")
+  # library(arealDB); library(ontologics); library(tidyverse); library(checkmate); library(tabshiftr); library(sf); until = "normTable"; verbose = FALSE; path = paste0(tempdir(), "/newDB")
 
   inPath <- system.file("test_datasets", package = "arealDB", mustWork = TRUE)
   steps <- c("start_arealDB", "regDataseries", "regGeometry", "regTable", "normGeometry", "normTable")
@@ -48,7 +48,8 @@ makeExampleDB <- function(path = NULL, until = NULL, verbose = FALSE){
     unlink(path, recursive = TRUE)
   }
 
-  terrOnto <- paste0(path, "/territories.rds")
+  gazPath <- paste0(path, "/territories.rds")
+  ontoPath <- list(commodity = paste0(path, "/ontology.rds"))
   theSteps <- steps[1:which(steps %in% until)]
 
   # enable testing, this inserts values to readLine() calls that would otherwise
@@ -58,7 +59,7 @@ makeExampleDB <- function(path = NULL, until = NULL, verbose = FALSE){
   options(adb_testing = TRUE)
 
   if (any(theSteps %in% "start_arealDB")) {
-    start_arealDB(root = path, gazetteer = terrOnto)
+    start_arealDB(root = path, gazetteer = gazPath, ontology = ontoPath)
   }
 
   # load input data
@@ -87,11 +88,11 @@ makeExampleDB <- function(path = NULL, until = NULL, verbose = FALSE){
 
   # load gazetteer
   file.copy(from = paste0(inPath, "/territories.rds"),
-            to = terrOnto)
+            to = gazPath)
   file.copy(from = paste0(inPath, "/match_madeUp.csv"),
-            to = paste0(path, "/meta/concepts/match_madeUp.csv"))
+            to = paste0(path, "/meta/territories/match_madeUp.csv"))
   file.copy(from = paste0(inPath, "/match_gadm.csv"),
-            to = paste0(path, "/meta/concepts/match_gadm.csv"))
+            to = paste0(path, "/meta/territories/match_gadm.csv"))
 
 
   if (any(theSteps %in% "regDataseries")) {
@@ -157,7 +158,7 @@ makeExampleDB <- function(path = NULL, until = NULL, verbose = FALSE){
     meta_madeUp_1 <- tabshiftr::schema_default %>%
       setIDVar(name = "al1", columns = 1) %>%
       setIDVar(name = "year", columns = 2) %>%
-      setIDVar(name = "commodities", columns = 3) %>%
+      setIDVar(name = "commodity", columns = 3) %>%
       setObsVar(name = "harvested", unit = "ha", columns = 4) %>%
       setObsVar(name = "production", unit = "t", columns = 5)
 
@@ -166,7 +167,7 @@ makeExampleDB <- function(path = NULL, until = NULL, verbose = FALSE){
       setIDVar(name = "al1", columns = 1) %>%
       setIDVar(name = "al2", columns = 2) %>%
       setIDVar(name = "year", columns = 3) %>%
-      setIDVar(name = "commodities", columns = 4) %>%
+      setIDVar(name = "commodity", columns = 4) %>%
       setObsVar(name = "harvested", unit = "ha", columns = 5) %>%
       setObsVar(name = "production", unit = "t", columns = 6)
 
