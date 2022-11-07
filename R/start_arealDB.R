@@ -6,6 +6,9 @@
 #'   or shall contain an areal database.
 #' @param gazetteer [\code{character(1)}]\cr path to the gazetteer that holds
 #'   the (hierarchical) information of territorial units used in this database.
+#' @param ontology [\code{list(.)}]\cr named list with the path(s) of
+#'   ontologies, where the list name identifies the variable that shall be
+#'   matched with the ontology at the path.
 #' @details This is the first function that is run in a project, as it initiates
 #'   the areal database by creating the default sub-directories and initial
 #'   inventory tables. When a database has already been set up, this function is
@@ -16,19 +19,23 @@
 #' @examples
 #' start_arealDB(root = paste0(tempdir(), "/newDB"),
 #'               gazetteer = system.file("test_datasets/territories.rds",
-#'                                       package = "arealDB"))
+#'                                       package = "arealDB"),
+#'               ontology = list(var = paste0(tempdir(), "/ontology.rds")))
 #'
 #' getOption("adb_path"); getOption("gazetteer_path")
-#' @importFrom checkmate testDirectory testFileExists
+#' @importFrom checkmate testDirectory testFileExists assertFileExists
+#'   assertList
 #' @importFrom readr write_csv
 #' @export
 
-start_arealDB <- function(root = NULL, gazetteer = NULL){
+start_arealDB <- function(root = NULL, gazetteer = NULL, ontology = NULL){
 
   assertCharacter(x = root, len = 1)
   if(!getOption("adb_testing")){
     assertFileExists(x = gazetteer, access = "rw", extension = "rds")
+    assertList(x = ontology, min.len = 1, any.missing = FALSE, names = "named")
   }
+
 
   # shitty windows workaround, because a directory may not have a trailing slash
   # for the function "file.exists()" used in assertDirectory()
@@ -61,10 +68,16 @@ start_arealDB <- function(root = NULL, gazetteer = NULL){
   if(!testDirectory(x = file.path(root, "meta", "schemas"), access = "rw")){
     dir.create(file.path(root, "meta", "schemas"))
   }
-  if(!testDirectory(x = file.path(root, "meta", "concepts"), access = "rw")){
-    dir.create(file.path(root, "meta", "concepts"))
+  gazName <- str_split(tail(str_split(string = gazetteer, pattern = "/")[[1]], 1), "[.]")[[1]][1]
+  if(!testDirectory(x = file.path(root, "meta", gazName), access = "rw")){
+    dir.create(file.path(root, "meta", gazName))
   }
-
+  for(i in seq_along(ontology)){
+    temp <- str_split(tail(str_split(string = ontology[i], pattern = "/")[[1]], 1), "[.]")[[1]][1]
+    if(!testDirectory(x = file.path(root, "meta", temp), access = "rw")){
+      dir.create(file.path(root, "meta", temp))
+    }
+  }
   if(!testDirectory(x = file.path(root, "adb_tables", "stage1"), access = "rw")){
     dir.create(file.path(root, "adb_tables", "stage1"))
   }
@@ -147,6 +160,7 @@ start_arealDB <- function(root = NULL, gazetteer = NULL){
 
   options(adb_path = root)
   options(gazetteer_path = gazetteer)
+  options(ontology_path = ontology)
 }
 
 

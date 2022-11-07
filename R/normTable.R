@@ -17,6 +17,9 @@
 #'   implemented options are either \emph{*.csv} (more exchangeable for a
 #'   workflow based on several programs) or \emph{*.rds} (smaller and less
 #'   error-prone data-format but can only be read by R efficiently).
+#' @param ontoMatch [\code{character(.)}]\cr name of those column(s) that should
+#'   be matched with an ontology (which has been defined in
+#'   \code{\link{start_arealDB}}).
 #' @param verbose [\code{logical(1)}]\cr be verbose about translating terms
 #'   (default \code{FALSE}). Furthermore, you can use
 #'   \code{\link{suppressMessages}} to make this function completely silent.
@@ -58,14 +61,14 @@
 #' @importFrom utils read.csv
 #' @export
 
-normTable <- function(input = NULL, pattern = NULL, ..., outType = "rds",
-                      update = FALSE, verbose = FALSE){
+normTable <- function(input = NULL, pattern = NULL, ..., ontoMatch = NULL,
+                      outType = "rds", update = FALSE, verbose = FALSE){
 
-  # input = NULL; pattern = ds[1]; sbst <- list(); outType = "rds"; update = TRUE; verbose = FALSE
+  # input = NULL; pattern = ds[1]; sbst <- list(); ontoMatch = "commodities"; outType = "rds"; update = TRUE; verbose = FALSE; i = 1
 
   # set internal paths
   intPaths <- getOption(x = "adb_path")
-  gazPath <- paste0(getOption(x = "gazetteer_path"))
+  gazPath <- getOption(x = "gazetteer_path")
 
   if(is.null(input)){
     input <- list.files(path = paste0(intPaths, "/adb_tables/stage2"), full.names = TRUE, pattern = pattern)
@@ -95,6 +98,7 @@ normTable <- function(input = NULL, pattern = NULL, ..., outType = "rds",
                                  "hierarchy", "orig_file", "orig_link", "download_date",
                                  "next_update", "update_frequency", "notes"))
   assertLogical(x = update, len = 1)
+  assertCharacter(x = ontoMatch, min.len = 1, any.missing = FALSE, null.ok = TRUE)
   assertNames(x = outType, subset.of = c("csv", "rds"))
 
   ret <- NULL
@@ -154,17 +158,27 @@ normTable <- function(input = NULL, pattern = NULL, ..., outType = "rds",
       as_tibble()
 
     message("    reorganising table with '", thisSchema, "' ...")
-    temp <- thisTable %>%
+    thisTable <- thisTable %>%
       reorganise(schema = algorithm)
 
     message("    harmonizing territory names ...")
     targetCols <- get_class(ontology = gazPath) %>%
       pull(label)
-    targetCols <- targetCols[targetCols %in% colnames(temp)]
-    temp <- matchOntology(table = temp,
-                          columns = targetCols,
-                          dataseries = dSeries,
-                          ontology = gazPath)
+    targetCols <- targetCols[targetCols %in% colnames(thisTable)]
+    thisTable <- matchOntology(table = thisTable,
+                               columns = targetCols,
+                               dataseries = dSeries,
+                               ontology = gazPath)
+
+    if(!is.null(ontoMatch)){
+      assertNames(x = ontoMatch, subset.of = names(thisTable))
+      ontoPath <- getOption(x = "ontology_path")[[ontoMatch]]
+
+      thisTable <- matchOntology(table = thisTable,
+                                 columns = ontoMatch,
+                                 dataseries = dSeries,
+                                 ontology = ontoPath)
+    }
 
     # potentially filter
     if(length(sbst) != 0){
@@ -172,34 +186,34 @@ normTable <- function(input = NULL, pattern = NULL, ..., outType = "rds",
       moveFile <- FALSE
 
       for(k in seq_along(sbst)){
-        if(!names(sbst)[k] %in% names(temp)){
+        if(!names(sbst)[k] %in% names(thisTable)){
           warning(paste0("'", names(sbst)[k], "' is not a column in the new table -> ignoring the filter."))
           next
         }
 
-        temp <- temp %>%
+        thisTable <- thisTable %>%
           filter(.data[[names(sbst)[k]]] %in% as.character(sbst[[k]]))
       }
     }
 
-    if("broader" %in% colnames(temp)){
-      temp <- temp %>%
+    if("broader" %in% colnames(thisTable)){
+      thisTable <- thisTable %>%
         select(-broader)
     }
-    temp <- temp %>%
+    thisTable <- thisTable %>%
       mutate(tabID = tabID,
              geoID = geoID)
 
     # produce output
     if(update){
 
-      topUnits <- temp %>%
+      topUnits <- thisTable %>%
         pull(unitCols[1]) %>%
         unique()
 
       for(j in seq_along(topUnits)){
 
-        tempOut <- temp %>%
+        tempOut <- thisTable %>%
           filter(.data[[unitCols[1]]] == topUnits[j]) %>%
           unite(col = "ahName", all_of(unitCols), sep = ".") %>%
           mutate(fid = seq_along(ahName)) %>%
