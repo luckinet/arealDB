@@ -138,8 +138,10 @@ matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
 
     # extract all harmonised concepts, including those that may be not available
     # (na) ...
-    harmonisedConc <- get_concept(table = temp, ontology = ontoPath, mappings = TRUE) %>%
-      distinct(label, class, id, has_broader)
+    harmonisedConc <- get_concept(table = temp, ontology = ontoPath) %>%
+      filter(has_source == srcID) %>%
+      left_join(temp, ., by = colnames(temp))
+
 
     if(dim(harmonisedConc)[1] != dim(temp)[1]){
       stop("improve matching here")
@@ -170,9 +172,12 @@ matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
           rename(target := external) %>%
           select(-class, -description, !!theColumn := target)
 
+        # a little check that the join will be successful
+        assertNames(x = newConcepts %>% pull(!!theColumn) %>% unique(),
+                    subset.of = table %>% pull(!!theColumn) %>% unique())
+
         toOut <- table %>%
           left_join(newConcepts, by = "al1") %>%
-          filter(!is.na(id)) %>%
           select(-all_of(theColumn), -match, -has_source, -has_broader) %>%
           rename(!!theColumn := label)
 
@@ -210,8 +215,6 @@ matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
           left_join(harmonisedConc %>% select(!!theColumn := label, id), theColumn)
       }
     }
-
-
   }
 
   out <- toOut %>%
