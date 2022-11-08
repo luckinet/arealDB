@@ -119,7 +119,14 @@ matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
       select(label = all_of(theColumn), class, has_broader = theColumns[i-1])
 
     if(i != 1){
-      broaderConc <- get_concept(table = temp %>% select(label = has_broader) %>% distinct(), ontology = ontoPath) %>%
+
+      findBroader <- temp %>%
+        select(label = has_broader) %>%
+        distinct()
+
+      broaderConc <- get_concept(table = findBroader, ontology = ontoPath) %>%
+        filter(has_source == srcID & class == theColumns[i-1]) %>%
+        left_join(findBroader, ., by = "label") %>%
         select(id) %>%
         bind_cols(temp %>% distinct(has_broader))
 
