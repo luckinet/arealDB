@@ -95,7 +95,7 @@
 normGeometry <- function(input = NULL, pattern = NULL, ..., thresh = 10,
                          outType = "gpkg", update = FALSE, verbose = FALSE){
 
-  # input = NULL; pattern = NULL; sbst <- list(); thresh = 10; outType = "gpkg"; update = TRUE; verbose = FALSE
+  # input = NULL; pattern = "gadm"; sbst <- list(); thresh = 10; outType = "gpkg"; update = TRUE; verbose = FALSE; i = 1
 
   # set internal paths
   intPaths <- paste0(getOption(x = "adb_path"))
@@ -196,6 +196,7 @@ normGeometry <- function(input = NULL, pattern = NULL, ..., thresh = 10,
                             dataseries = dSeries,
                             ontology = gazPath,
                             verbose = verbose)
+    # table = inGeom; columns = unitCols; dataseries = dSeries; ontology = gazPath
 
     # potentially filter
     if(length(sbst) != 0){
@@ -226,6 +227,7 @@ normGeometry <- function(input = NULL, pattern = NULL, ..., thresh = 10,
 
         tempUnit <- topUnits[j]
 
+        if(is.na(tempUnit)) next
         message(paste0(" -> processing '", tempUnit, "' ..."))
 
         # create a geom specifically for the recent top territory
