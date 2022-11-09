@@ -61,22 +61,29 @@ matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
              across(all_of(theColumn), trimws)) %>%
       select(label = all_of(theColumn), class, has_broader = theColumns[i-1])
 
-    # get the id for broader concepts
+    # get the id for broader concepts (from previous match)
     if(i != 1){
 
-      findBroader <- temp %>%
-        select(label = has_broader) %>%
-        distinct()
-
-      broaderConc <- get_concept(table = findBroader, ontology = ontoPath) %>%
-        filter(has_source == srcID & class == theColumns[i-1]) %>%
-        left_join(findBroader, ., by = "label") %>%
-        select(id) %>%
-        bind_cols(temp %>% distinct(has_broader))
-
-      temp <- temp %>%
-        left_join(broaderConc, by = "has_broader") %>%
+      temp <- toOut %>%
+        st_drop_geometry() %>%
+        select(has_broader = theColumns[i-1], id) %>%
+        distinct() %>%
+        left_join(temp, ., by = "has_broader") %>%
         select(label, class, has_broader = id)
+
+      # findBroader <- temp %>%
+      #   select(label = has_broader) %>%
+      #   distinct()
+      #
+      # broaderConc <- get_concept(table = findBroader, ontology = ontoPath) %>%
+      #   filter(has_source == srcID & class == theColumns[i-1]) %>%
+      #   left_join(findBroader, ., by = "label") %>%
+      #   select(id) %>%
+      #   bind_cols(temp %>% distinct(has_broader))
+      #
+      # temp <- temp %>%
+      #   left_join(broaderConc, by = "has_broader") %>%
+      #   select(label, class, has_broader = id)
 
     }
 
@@ -136,7 +143,6 @@ matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
         newConcepts <- get_concept(table = new, ontology = ontoPath) %>%
           filter(has_source == srcID) %>%
           rename(target := external) %>%
-          # bind_cols(new %>% select(!!theColumn := label)) %>%
           mutate(!!theColumn:= label,
                  target = if_else(!class %in% theColumn, !!sym(theColumn), target),
                  has_broader = if_else(!class %in% theColumn, id, has_broader),
