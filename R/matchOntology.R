@@ -31,64 +31,6 @@ matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
 
   type <- str_split(tail(str_split(string = ontoPath, pattern = "/")[[1]], 1), "[.]")[[1]][1]
 
-  # # set internal objects
-  # intPaths <- paste0(getOption(x = "adb_path"))
-  #
-  # # get objects
-  # inv_tables <- read_csv(paste0(intPaths, "/inv_tables.csv"), col_types = "iiiccccDccccc")
-  # inv_dataseries <- read_csv(paste0(intPaths, "/inv_dataseries.csv"), col_types = "icccccc")
-  #
-  # # check validity of arguments
-  # assertChoice(x = dataseries, choices = inv_dataseries$name)
-  #
-  # datID <- ifelse(length(inv_tables$datID) == 0, 1,
-  #                 inv_dataseries$datID[grep(pattern = dataseries, x = inv_dataseries$name)])
-  # sources <- inv_tables$source_file[inv_tables$datID %in% datID]
-  # schemas <- inv_tables$schema[inv_tables$datID %in% datID]
-  #
-  # message("--> extracting concepts of variable '", variable,"'...")
-  #
-  # if(length(sources) == 0){
-  #   stop("no tables have been defined for this dataseries.")
-  # }
-  #
-  # out <- NULL
-  # for(i in seq_along(sources)){
-  #
-  #   message("    from table '", sources[i], "' ...")
-  #
-  #   algorithm <- readRDS(file = paste0(intPaths, "/meta/schemas/", schemas[i], ".rds"))
-  #   thisTable <- read.csv(file = paste0(intPaths, "/adb_tables/stage2/", sources[i]),
-  #                         header = FALSE,
-  #                         strip.white = TRUE,
-  #                         as.is = TRUE,
-  #                         na.strings = algorithm@format$na,
-  #                         encoding = "UTF-8") %>%
-  #     as_tibble()
-  #
-  #   temp <- thisTable %>%
-  #     reorganise(schema = algorithm)
-  #
-  #   assertChoice(x = variable, choices = names(temp))
-  #
-  #   concepts <- pull(temp, variable)
-  #   out <- c(out, concepts)
-  #
-  # }
-  #
-  # out <- unique(out)
-
-
-
-
-  # # load the ontology
-  # if(inherits(x = ontology, what = "onto")){
-  #   gaz <- ontology
-  # } else {
-  #   assertFileExists(x = ontology, access = "rw", extension = "rds")
-  #   gaz <- load_ontology(path = ontology)
-  # }
-
   # make a new dataseries, in case it doesn't exist yet
   if(!dataseries %in% get_source(ontology = ontoPath)$label){
     new_source(name = dataseries, date = Sys.Date(),
@@ -115,9 +57,11 @@ matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
 
     temp <- tab %>%
       distinct(across(all_of(theColumns))) %>%
-      mutate(class = theColumn) %>%
+      mutate(class = theColumn,
+             across(all_of(theColumn), trimws)) %>%
       select(label = all_of(theColumn), class, has_broader = theColumns[i-1])
 
+    # get the id for broader concepts
     if(i != 1){
 
       findBroader <- temp %>%
@@ -151,7 +95,7 @@ matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
     # mapped
     if(any(is.na(harmonisedConc$id))){
 
-      new_mapping(new = harmonisedConc$label,
+      new_mapping(new = trimws(harmonisedConc$label),
                   target = harmonisedConc %>% select(class, has_broader),
                   source = dataseries,
                   certainty = 3,
@@ -190,6 +134,7 @@ matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
           arrange(label)
 
         newConcepts <- get_concept(table = new, ontology = ontoPath) %>%
+          filter(has_source == srcID) %>%
           rename(target := external) %>%
           bind_cols(new %>% select(!!theColumn := label)) %>%
           mutate(target = if_else(!class %in% theColumn, !!sym(theColumn), target),
