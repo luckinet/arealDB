@@ -136,8 +136,9 @@ matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
         newConcepts <- get_concept(table = new, ontology = ontoPath) %>%
           filter(has_source == srcID) %>%
           rename(target := external) %>%
-          bind_cols(new %>% select(!!theColumn := label)) %>%
-          mutate(target = if_else(!class %in% theColumn, !!sym(theColumn), target),
+          # bind_cols(new %>% select(!!theColumn := label)) %>%
+          mutate(!!theColumn:= label,
+                 target = if_else(!class %in% theColumn, !!sym(theColumn), target),
                  has_broader = if_else(!class %in% theColumn, id, has_broader),
                  id = if_else(!class %in% theColumn, paste0(id, get_class(ontology = ontoPath)$id[1]), id)) %>%
           select(!!theColumn, label, id, has_broader)
