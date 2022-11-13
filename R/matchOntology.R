@@ -56,43 +56,11 @@ matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
     theColumns <- c(theColumns, theColumn)
 
     temp <- tab %>%
-      distinct(across(all_of(theColumns))) %>%
-      mutate(class = theColumn,
-             across(all_of(theColumn), trimws)) %>%
-      select(label = all_of(theColumn), class, has_broader = theColumns[i-1])
-
-    # get the id for broader concepts (from previous match)
-    if(i != 1){
-
-      temp <- toOut %>%
-        st_drop_geometry() %>%
-        select(has_broader = theColumns[i-1], id) %>%
-        distinct() %>%
-        left_join(temp, ., by = "has_broader") %>%
-        select(label, class, has_broader = id)
-
-      # findBroader <- temp %>%
-      #   select(label = has_broader) %>%
-      #   distinct()
-      #
-      # broaderConc <- get_concept(table = findBroader, ontology = ontoPath) %>%
-      #   filter(has_source == srcID & class == theColumns[i-1]) %>%
-      #   left_join(findBroader, ., by = "label") %>%
-      #   select(id) %>%
-      #   bind_cols(temp %>% distinct(has_broader))
-      #
-      # temp <- temp %>%
-      #   left_join(broaderConc, by = "has_broader") %>%
-      #   select(label, class, has_broader = id)
-
-    }
+      distinct(across(all_of(theColumns)))
 
     # extract all harmonised concepts, including those that may be not available
     # (na) ...
-    harmonisedConc <- get_concept(table = temp, ontology = ontoPath) %>%
-      filter(has_source == srcID) %>%
-      left_join(temp, ., by = colnames(temp))
-
+    harmonisedConc <- get_concept(table = temp, per_class = TRUE, ontology = ontoPath)
 
     if(dim(harmonisedConc)[1] != dim(temp)[1]){
       stop("improve matching here")
