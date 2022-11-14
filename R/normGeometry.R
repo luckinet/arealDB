@@ -196,7 +196,8 @@ normGeometry <- function(input = NULL, pattern = NULL, ..., thresh = 10,
                             columns = unitCols,
                             dataseries = dSeries,
                             ontology = gazPath,
-                            verbose = verbose)
+                            verbose = verbose) #%>%
+      # rename(id = territories_id)
     # table = inGeom; columns = unitCols; dataseries = dSeries; ontology = gazPath
 
     # potentially filter
