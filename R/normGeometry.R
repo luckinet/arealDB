@@ -183,6 +183,7 @@ normGeometry <- function(input = NULL, pattern = NULL, ..., thresh = 10,
     # read the object
     message("\n--> reading new geometries from '", file_name, "' ...")
     newLayers <- st_layers(dsn = thisInput)
+    # inGeom <- read_rds(file = paste0(getwd(), "/testing.rds"))
     inGeom <- read_sf(dsn = thisInput,
                        layer = theLayer,
                        stringsAsFactors = FALSE)
@@ -331,42 +332,42 @@ normGeometry <- function(input = NULL, pattern = NULL, ..., thresh = 10,
 
           message("    Joining target and source geometries")
 
-          # spatial join with the parent geom (smallest geoID), to determine
-          # whether all are within a parent
-          if(theLabel != topLayer){
-            minGeoID <- min(parentGeom$geoID)
-            basisParent <- parentGeom[parentGeom$geoID %in% minGeoID,]
-            in_parent <- suppressMessages(suppressWarnings(
-              sourceGeom %>%
-                st_join(basisParent, largest = TRUE)
-            ))
-
-            if(dim(sourceGeom)[1] != dim(in_parent)[1]){
-              stop("spatial join between 'sourceGeom' and 'parentGeom' has an error.")
-            }
-
-            # if there were units in sourceGeom that can't be joined with the
-            # basis, they are accidentally part and need to be treated as an
-            # extra object.
-            if(any(is.na(in_parent$ahID))){
-              newName <- str_split(file_name, "[.]")[[1]]
-              newName <- paste0(newName[1], "_not-", tempUnit, ".", newName[2])
-              isNA <- is.na(in_parent$ahID)
-
-              message(paste0("  ! not all new units contain a valid ahID after joining with 'parentGeom', please see 'stage2/", newName, "' !"))
-              in_parent %>%
-                filter(isNA) %>%
-                select(unitCols) %>%
-                st_write(dsn = paste0(intPaths, "/adb_geometries/stage2/", newName),
-                         layer = theLabel,
-                         append = FALSE,
-                         quiet = TRUE)
-              in_parent <- in_parent %>%
-                filter(!isNA)
-              sourceGeom <- sourceGeom %>%
-                filter(!isNA)
-            }
-          }
+          # # spatial join with the parent geom (smallest geoID), to determine
+          # # whether all are within a parent
+          # if(theLabel != topLayer){
+          #   minGeoID <- min(parentGeom$geoID)
+          #   basisParent <- parentGeom[parentGeom$geoID %in% minGeoID,]
+          #   in_parent <- suppressMessages(suppressWarnings(
+          #     sourceGeom %>%
+          #       st_join(basisParent, largest = TRUE)
+          #   ))
+          #
+          #   if(dim(sourceGeom)[1] != dim(in_parent)[1]){
+          #     stop("spatial join between 'sourceGeom' and 'parentGeom' has an error.")
+          #   }
+          #
+          #   # if there were units in sourceGeom that can't be joined with the
+          #   # basis, they are accidentally part and need to be treated as an
+          #   # extra object.
+          #   if(any(is.na(in_parent$ahID))){
+          #     newName <- str_split(file_name, "[.]")[[1]]
+          #     newName <- paste0(newName[1], "_not-", tempUnit, ".", newName[2])
+          #     isNA <- is.na(in_parent$ahID)
+          #
+          #     message(paste0("  ! not all new units contain a valid ahID after joining with 'parentGeom', please see 'stage2/", newName, "' !"))
+          #     in_parent %>%
+          #       filter(isNA) %>%
+          #       select(unitCols) %>%
+          #       st_write(dsn = paste0(intPaths, "/adb_geometries/stage2/", newName),
+          #                layer = theLabel,
+          #                append = FALSE,
+          #                quiet = TRUE)
+          #     in_parent <- in_parent %>%
+          #       filter(!isNA)
+          #     sourceGeom <- sourceGeom %>%
+          #       filter(!isNA)
+          #   }
+          # }
 
           # then get the overlap with the targetGeom
           overlap_with_target <- suppressMessages(suppressWarnings(
