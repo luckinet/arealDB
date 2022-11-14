@@ -109,7 +109,7 @@ matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
                     subset.of = table %>% pull(!!theColumn) %>% unique())
 
         toOut <- table %>%
-          left_join(newConcepts, by = "al1") %>%
+          left_join(newConcepts, by = theColumn) %>%
           select(-all_of(theColumn), -match, -has_source, -has_broader) %>%
           rename(!!theColumn := label)
 
