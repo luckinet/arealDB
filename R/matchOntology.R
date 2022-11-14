@@ -49,6 +49,19 @@ matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
     tab <- table
   }
 
+  # replace values with an empty name with a placeholder
+  for(i in seq_along(columns)){
+
+    theColumn <- columns[i]
+    tab <- tab %>%
+      mutate(unnamed = if_else(!!sym(theColumn) %in% c("", " "), TRUE, FALSE),
+             iter = cumsum(unnamed),
+             iter = if_else(unnamed, iter, 0L),
+             !!theColumn := if_else(!!sym(theColumn) %in% c("", " "), paste0("unnamed_", iter), !!sym(theColumn))) %>%
+      select(-unnamed, -iter)
+
+  }
+
   theColumns <- NULL
   for(i in seq_along(columns)){
 
@@ -62,9 +75,9 @@ matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
     # (na) ...
     harmonisedConc <- get_concept(table = temp, per_class = TRUE, ontology = ontoPath)
 
-    if(dim(harmonisedConc)[1] != dim(temp)[1]){
-      stop("improve matching here")
-    }
+    # if(dim(harmonisedConc)[1] != dim(temp)[1]){
+    #   stop("improve matching here")
+    # }
 
     # ... for if new concepts are still missing from the ontology, they need to be
     # mapped
