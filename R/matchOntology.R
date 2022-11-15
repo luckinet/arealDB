@@ -54,7 +54,8 @@ matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
 
     theColumn <- columns[i]
     tab <- tab %>%
-      mutate(unnamed = if_else(!!sym(theColumn) %in% c("", " "), TRUE, FALSE),
+      mutate(across(all_of(theColumn), trimws),
+             unnamed = if_else(!!sym(theColumn) %in% c("", " "), TRUE, FALSE),
              iter = cumsum(unnamed),
              iter = if_else(unnamed, iter, 0L),
              !!theColumn := if_else(!!sym(theColumn) %in% c("", " "), paste0("unnamed_", iter), !!sym(theColumn))) %>%
@@ -75,10 +76,6 @@ matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
     # (na) ...
     harmonisedConc <- get_concept(table = temp, per_class = TRUE, ontology = ontoPath)
 
-    # if(dim(harmonisedConc)[1] != dim(temp)[1]){
-    #   stop("improve matching here")
-    # }
-
     # ... for if new concepts are still missing from the ontology, they need to be
     # mapped
     if(any(is.na(harmonisedConc$id))){
@@ -90,6 +87,8 @@ matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
                   ontology = ontoPath,
                   matchDir = paste0(intPaths, "/meta/", type, "/"),
                   verbose = verbose)
+
+      # new = trimws(harmonisedConc$label); target = harmonisedConc %>% select(class, has_broader); source = dataseries; certainty = 3; ontology = ontoPath;  matchDir = paste0(intPaths, "/meta/", type, "/")
 
       # write the new concepts into 'table'
       if(i == 1){
