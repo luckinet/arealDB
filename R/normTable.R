@@ -178,9 +178,7 @@ normTable <- function(input = NULL, pattern = NULL, ..., ontoMatch = NULL,
                                  columns = ontoMatch,
                                  dataseries = dSeries,
                                  ontology = ontoPath)
-
-      # check out why faostat isn't properly matched here...
-  }
+    }
 
     # potentially filter
     if(length(sbst) != 0){
