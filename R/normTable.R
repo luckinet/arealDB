@@ -170,6 +170,8 @@ normTable <- function(input = NULL, pattern = NULL, ..., ontoMatch = NULL,
                                dataseries = dSeries,
                                ontology = gazPath)
 
+    # check out why faostat isn't properly matched here...
+
     if(!is.null(ontoMatch)){
       assertNames(x = ontoMatch, subset.of = names(thisTable))
       ontoPath <- getOption(x = "ontology_path")[[ontoMatch]]
@@ -178,7 +180,9 @@ normTable <- function(input = NULL, pattern = NULL, ..., ontoMatch = NULL,
                                  columns = ontoMatch,
                                  dataseries = dSeries,
                                  ontology = ontoPath)
-    }
+
+      # check out why faostat isn't properly matched here...
+  }
 
     # potentially filter
     if(length(sbst) != 0){
