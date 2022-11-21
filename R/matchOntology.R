@@ -70,7 +70,8 @@ matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
     theColumns <- c(theColumns, theColumn)
 
     temp <- tab %>%
-      distinct(across(all_of(theColumns)))
+      distinct(across(all_of(theColumns))) %>%
+      filter(!is.na(!!sym(theColumn)))
 
     # extract all harmonised concepts, including those that may be not available
     # (na) ...
