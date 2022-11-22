@@ -13,8 +13,10 @@
 #'   option.
 #' @param pattern [\code{character(1)}]\cr an optional regular expression. Only
 #'   dataset names which match the regular expression will be processed.
-#' @param ... [\code{character(1)}]\cr argument-value combination to filter the
-#'   new geometries by.
+#' @param query [\code{character(1)}]\cr part of the SQL query (starting from
+#'   WHERE) used to subset the input geometries, for example \code{where NAME_0
+#'   = 'France'}. The first part of the query (where the layer is defined) is
+#'   derived from the meta-data of the currently handled geometry.
 #' @param update [\code{logical(1)}]\cr whether or not the physical files should
 #'   be updated (\code{TRUE}) or the function should merely return the geometry
 #'   inventory of the handled files (\code{FALSE}, default). This is helpful to
@@ -92,10 +94,10 @@
 #' @importFrom utils tail
 #' @export
 
-normGeometry <- function(input = NULL, pattern = NULL, ..., thresh = 10,
+normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10,
                          outType = "gpkg", update = FALSE, verbose = FALSE){
 
-  # input = NULL; pattern = "gadm"; sbst <- list(); thresh = 10; outType = "gpkg"; update = TRUE; verbose = FALSE; i = 1
+  # input = NULL; pattern = "gadm"; query <- "where NAME_0 = 'France'"; thresh = 10; outType = "gpkg"; update = TRUE; verbose = FALSE; i = 1
 
   # set internal paths
   intPaths <- paste0(getOption(x = "adb_path"))
@@ -109,8 +111,6 @@ normGeometry <- function(input = NULL, pattern = NULL, ..., thresh = 10,
 
   # set internal objects
   moveFile <- TRUE
-  sbst <- exprs(..., .named = TRUE)
-  # return(sbst)
 
   # get tables
   inv_geometries <- read_csv(paste0(intPaths, "/inv_geometries.csv"), col_types = "iiccccccDDcc")
@@ -182,11 +182,17 @@ normGeometry <- function(input = NULL, pattern = NULL, ..., thresh = 10,
 
     # read the object
     message("\n--> reading new geometries from '", file_name, "' ...")
-    newLayers <- st_layers(dsn = thisInput)
-    # inGeom <- read_rds(file = paste0(getwd(), "/testing.rds"))
-    inGeom <- read_sf(dsn = thisInput,
-                       layer = theLayer,
-                       stringsAsFactors = FALSE)
+    if(!is.null(query)){
+      moveFile <- FALSE
+      inGeom <- read_sf(dsn = thisInput,
+                        query = paste0("select * from ", theLayer, " ", query),
+                        stringsAsFactors = FALSE)
+    } else {
+      inGeom <- read_sf(dsn = thisInput,
+                        layer = theLayer,
+                        stringsAsFactors = FALSE)
+    }
+
     for(k in seq_along(unitCols)){
       names(inGeom)[[which(names(inGeom) == oldNames[k])]] <- unitCols[k]
     }
@@ -198,21 +204,6 @@ normGeometry <- function(input = NULL, pattern = NULL, ..., thresh = 10,
                             ontology = gazPath,
                             verbose = verbose)
     # table = inGeom; columns = unitCols; dataseries = dSeries; ontology = gazPath
-
-    # potentially filter
-    if(length(sbst) != 0){
-      moveFile <- FALSE
-
-      for(k in seq_along(sbst)){
-        if(!names(sbst)[k] %in% names(inGeom)){
-          warning(paste0("'", names(sbst)[k], "' is not a column in the new geometry -> ignoring the filter."))
-          next
-        }
-
-        inGeom <- inGeom %>%
-          filter(.data[[names(sbst)[k]]] %in% as.character(sbst[[k]]))
-      }
-    }
 
     # determine top-most value
     topUnits <- unique(eval(expr = parse(text = topCol), envir = inGeom)) %>%
