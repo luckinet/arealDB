@@ -6,6 +6,9 @@
 #'   or shall contain an areal database.
 #' @param gazetteer [\code{character(1)}]\cr path to the gazetteer that holds
 #'   the (hierarchical) information of territorial units used in this database.
+#' @param top [\code{character(1)}]\cr the label of the class in the
+#'   gazetteer that represents the top-most unit (e.g. country) of the areal
+#'   database that shall be started.
 #' @param ontology [\code{list(.)}]\cr named list with the path(s) of
 #'   ontologies, where the list name identifies the variable that shall be
 #'   matched with the ontology at the path.
@@ -20,6 +23,7 @@
 #' start_arealDB(root = paste0(tempdir(), "/newDB"),
 #'               gazetteer = system.file("test_datasets/territories.rds",
 #'                                       package = "arealDB"),
+#'               top = "al1",
 #'               ontology = list(var = paste0(tempdir(), "/ontology.rds")))
 #'
 #' getOption("adb_path"); getOption("gazetteer_path")
@@ -28,7 +32,8 @@
 #' @importFrom readr write_csv
 #' @export
 
-start_arealDB <- function(root = NULL, gazetteer = NULL, ontology = NULL){
+start_arealDB <- function(root = NULL, gazetteer = NULL, top = NULL,
+                          ontology = NULL){
 
   assertCharacter(x = root, len = 1)
   if(!getOption("adb_testing")){
@@ -160,6 +165,7 @@ start_arealDB <- function(root = NULL, gazetteer = NULL, ontology = NULL){
 
   options(adb_path = root)
   options(gazetteer_path = gazetteer)
+  options(gazetteer_top = top)
   options(ontology_path = ontology)
 }
 

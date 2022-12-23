@@ -59,7 +59,7 @@ makeExampleDB <- function(path = NULL, until = NULL, verbose = FALSE){
   options(adb_testing = TRUE)
 
   if (any(theSteps %in% "start_arealDB")) {
-    start_arealDB(root = path, gazetteer = gazPath, ontology = ontoPath)
+    start_arealDB(root = path, gazetteer = gazPath, top = "al1", ontology = ontoPath)
   }
 
   # load input data

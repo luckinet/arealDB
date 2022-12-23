@@ -69,6 +69,7 @@ normTable <- function(input = NULL, pattern = NULL, ..., ontoMatch = NULL,
   # set internal paths
   intPaths <- getOption(x = "adb_path")
   gazPath <- getOption(x = "gazetteer_path")
+  topClass <- paste0(getOption(x = "gazetteer_top"))
 
   if(is.null(input)){
     input <- list.files(path = paste0(intPaths, "/adb_tables/stage2"), full.names = TRUE, pattern = pattern)
@@ -141,8 +142,6 @@ normTable <- function(input = NULL, pattern = NULL, ..., ontoMatch = NULL,
         separate(col = has_exact_match, into = c("match", "certainty"), sep = "[.]") %>%
         filter(match %in% classID$id) %>%
         pull(label)
-
-      topCol <- unitCols[1]
     } else{
       stop(paste0("  ! the file '", file_name, "' has not been registered yet."))
     }
