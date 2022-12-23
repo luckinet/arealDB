@@ -1,3 +1,7 @@
+# arealDB 0.4.5
+
+* fix how to derive the top-most class.
+
 # arealDB 0.4.4
 
 * fix internals to make the code run faster.
