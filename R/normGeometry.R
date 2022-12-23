@@ -97,11 +97,16 @@
 normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10,
                          outType = "gpkg", update = FALSE, verbose = FALSE){
 
-  # input = NULL; pattern = "gadm"; query <- "where NAME_0 = 'France'"; thresh = 10; outType = "gpkg"; update = TRUE; verbose = FALSE; i = 1
+  # input = NULL; pattern = NULL; query <- NULL; thresh = 10; outType = "gpkg"; update = TRUE; verbose = FALSE; i = 1
 
   # set internal paths
   intPaths <- paste0(getOption(x = "adb_path"))
   gazPath <- paste0(getOption(x = "gazetteer_path"))
+
+  # get territorial context
+  topClass <- paste0(getOption(x = "gazetteer_top"))
+  topUnits <- get_concept(table = tibble(class = topClass), ontology = gazPath) %>%
+    arrange(label)
 
   if(is.null(input)){
     input <- list.files(path = paste0(intPaths, "/adb_geometries/stage2"), full.names = TRUE, pattern = pattern)
@@ -175,7 +180,13 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
         distinct(label) %>%
         pull(label)
 
-      topCol <- unitCols[1]
+      if(unitCols[1] != topClass){
+        theUnits <- str_split(string = lut$source_file, pattern = "_")[[1]][1]
+        assertSubset(x = theUnits, choices = topUnits$label)
+      } else {
+        theUnits <- NULL
+      }
+
     } else{
       stop(paste0("  ! the file '", file_name, "' has not been registered yet."))
     }
@@ -205,29 +216,34 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
                             verbose = verbose)
     # table = inGeom; columns = unitCols; dataseries = dSeries; ontology = gazPath
 
-    # determine top-most value
-    topUnits <- unique(eval(expr = parse(text = topCol), envir = inGeom)) %>%
-      as.character()
+    if(is.null(theUnits)){
+      theUnits <- unique(eval(expr = parse(text = unitCols[1]), envir = inGeom)) %>%
+        as.character()
+    }
 
-    if(length(topUnits) == 0){
+    if(length(theUnits) == 0){
       moveFile <- FALSE
       message("    ! New geometries not part of subset !")
     } else {
 
       # then we loop through all nations
-      for(j in seq_along(topUnits)){
+      for(j in seq_along(theUnits)){
 
-        tempUnit <- topUnits[j]
+        tempUnit <- theUnits[j]
 
         if(is.na(tempUnit)) next
         message(paste0(" -> processing '", tempUnit, "' ..."))
 
-        # create a geom specifically for the recent top territory
-        sourceGeom <- inGeom %>%
-          filter_at(vars(all_of(topCol)), all_vars(. %in% tempUnit)) %>%
-          select(all_of(unitCols), id)
-        assertChoice(x = topCol, choices = names(sourceGeom), .var.name = "names(nation_column)")
-
+        if(length(theUnits) != 1){
+          # create a geom specifically for the recent top territory
+          sourceGeom <- inGeom %>%
+            filter_at(vars(all_of(unitCols[1])), all_vars(. %in% tempUnit)) %>%
+            select(all_of(unitCols), id)
+          assertChoice(x = unitCols[1], choices = names(sourceGeom), .var.name = "names(nation_column)")
+        } else {
+          sourceGeom <- inGeom %>%
+            select(all_of(unitCols), id)
+        }
 
         # dissolve ----
         # in case the object consists of several POLYGONs per unique name, dissolve

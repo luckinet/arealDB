@@ -89,7 +89,7 @@ matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
                   matchDir = paste0(intPaths, "/meta/", type, "/"),
                   verbose = verbose)
 
-      # new = trimws(harmonisedConc$label); target = harmonisedConc %>% select(class, has_broader); source = dataseries; certainty = 3; ontology = ontoPath;  matchDir = paste0(intPaths, "/meta/", type, "/")
+      # new = trimws(harmonisedConc$label); target = harmonisedConc %>% select(class, has_broader); source = dataseries; certainty = 3; ontology = ontoPath;  matchDir = paste0(intPaths, "/meta/", type, "/"); match = NULL; type = "concept"; lut = NULL; verbose = FALSE
 
       # write the new concepts into 'table'
       if(i == 1){
