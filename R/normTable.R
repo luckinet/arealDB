@@ -64,8 +64,6 @@
 normTable <- function(input = NULL, pattern = NULL, ..., ontoMatch = NULL,
                       outType = "rds", update = FALSE, verbose = FALSE){
 
-  # input = NULL; pattern = ds[1]; sbst <- list(); ontoMatch = "commodity"; outType = "rds"; update = TRUE; verbose = FALSE; i = 1
-
   # set internal paths
   intPaths <- getOption(x = "adb_path")
   gazPath <- getOption(x = "gazetteer_path")
@@ -167,16 +165,18 @@ normTable <- function(input = NULL, pattern = NULL, ..., ontoMatch = NULL,
     thisTable <- matchOntology(table = thisTable,
                                columns = targetCols,
                                dataseries = dSeries,
-                               ontology = gazPath)
+                               ontology = gazPath) %>%
+      rename(ahID = id)
 
     if(!is.null(ontoMatch)){
       assertNames(x = ontoMatch, subset.of = names(thisTable))
       ontoPath <- getOption(x = "ontology_path")[[ontoMatch]]
-
+      # thisTable_orig <- thisTable
       thisTable <- matchOntology(table = thisTable,
                                  columns = ontoMatch,
                                  dataseries = dSeries,
-                                 ontology = ontoPath)
+                                 ontology = ontoPath) %>%
+        rename(ontoID = id)
     }
 
     # potentially filter
@@ -216,7 +216,7 @@ normTable <- function(input = NULL, pattern = NULL, ..., ontoMatch = NULL,
           filter(.data[[unitCols[1]]] == topUnits[j]) %>%
           unite(col = "ahName", all_of(unitCols), sep = ".") %>%
           mutate(fid = seq_along(ahName)) %>%
-          select(id = fid, ahName, ahID = id, tabID, geoID, everything()) %>%
+          select(id = fid, ahName, ahID, tabID, geoID, everything()) %>%
           distinct()
 
         # append output to previous file
