@@ -7,7 +7,6 @@
 normTable(
   input = NULL,
   pattern = NULL,
-  ...,
   ontoMatch = NULL,
   outType = "rds",
   update = FALSE,
@@ -22,12 +21,8 @@ chosen.}
 \item{pattern}{[\code{character(1)}]\cr an optional regular expression. Only
 dataset names which match the regular expression will be processed.}
 
-\item{...}{[\code{character(1)}]\cr argument-value combination to filter the
-new tables by.}
-
-\item{ontoMatch}{[\code{character(.)}]\cr name of those column(s) that should
-be matched with an ontology (which has been defined in
-\code{\link{start_arealDB}}).}
+\item{ontoMatch}{[\code{character(.)}]\cr name of the column(s) that shall be
+matched with an ontology (defined in \code{\link{start_arealDB}}).}
 
 \item{outType}{[\code{logical(1)}]\cr the output file-type, currently
 implemented options are either \emph{*.csv} (more exchangeable for a

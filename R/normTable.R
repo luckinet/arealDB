@@ -6,8 +6,6 @@
 #'   chosen.
 #' @param pattern [\code{character(1)}]\cr an optional regular expression. Only
 #'   dataset names which match the regular expression will be processed.
-#' @param ... [\code{character(1)}]\cr argument-value combination to filter the
-#'   new tables by.
 #' @param update [\code{logical(1)}]\cr whether or not the physical files should
 #'   be updated (\code{TRUE}) or the function should merely return the new
 #'   object (\code{FALSE}, default). This is helpful to check whether the
@@ -17,9 +15,8 @@
 #'   implemented options are either \emph{*.csv} (more exchangeable for a
 #'   workflow based on several programs) or \emph{*.rds} (smaller and less
 #'   error-prone data-format but can only be read by R efficiently).
-#' @param ontoMatch [\code{character(.)}]\cr name of those column(s) that should
-#'   be matched with an ontology (which has been defined in
-#'   \code{\link{start_arealDB}}).
+#' @param ontoMatch [\code{character(.)}]\cr name of the column(s) that shall be
+#'   matched with an ontology (defined in \code{\link{start_arealDB}}).
 #' @param verbose [\code{logical(1)}]\cr be verbose about translating terms
 #'   (default \code{FALSE}). Furthermore, you can use
 #'   \code{\link{suppressMessages}} to make this function completely silent.
@@ -61,7 +58,7 @@
 #' @importFrom utils read.csv
 #' @export
 
-normTable <- function(input = NULL, pattern = NULL, ..., ontoMatch = NULL,
+normTable <- function(input = NULL, pattern = NULL, ontoMatch = NULL,
                       outType = "rds", update = FALSE, verbose = FALSE){
 
   # set internal paths
@@ -77,7 +74,7 @@ normTable <- function(input = NULL, pattern = NULL, ..., ontoMatch = NULL,
 
   # set internal objects
   moveFile <- TRUE
-  sbst <- exprs(..., .named = TRUE)
+  # sbst <- exprs(..., .named = TRUE)
 
   # get tables
   inv_tables <- read_csv(paste0(intPaths, "/inv_tables.csv"), col_types = "iiiccccDccccc")
@@ -169,6 +166,7 @@ normTable <- function(input = NULL, pattern = NULL, ..., ontoMatch = NULL,
       rename(ahID = id)
 
     if(!is.null(ontoMatch)){
+      message("    harmonizing thematic concepts ...")
       assertNames(x = ontoMatch, subset.of = names(thisTable))
       ontoPath <- getOption(x = "ontology_path")[[ontoMatch]]
       # thisTable_orig <- thisTable
@@ -180,20 +178,20 @@ normTable <- function(input = NULL, pattern = NULL, ..., ontoMatch = NULL,
     }
 
     # potentially filter
-    if(length(sbst) != 0){
-      message("    filtering table ...")
-      moveFile <- FALSE
-
-      for(k in seq_along(sbst)){
-        if(!names(sbst)[k] %in% names(thisTable)){
-          warning(paste0("'", names(sbst)[k], "' is not a column in the new table -> ignoring the filter."))
-          next
-        }
-
-        thisTable <- thisTable %>%
-          filter(.data[[names(sbst)[k]]] %in% as.character(sbst[[k]]))
-      }
-    }
+    # if(length(sbst) != 0){
+    #   message("    filtering table ...")
+    #   moveFile <- FALSE
+    #
+    #   for(k in seq_along(sbst)){
+    #     if(!names(sbst)[k] %in% names(thisTable)){
+    #       warning(paste0("'", names(sbst)[k], "' is not a column in the new table -> ignoring the filter."))
+    #       next
+    #     }
+    #
+    #     thisTable <- thisTable %>%
+    #       filter(.data[[names(sbst)[k]]] %in% as.character(sbst[[k]]))
+    #   }
+    # }
 
     if("broader" %in% colnames(thisTable)){
       thisTable <- thisTable %>%
