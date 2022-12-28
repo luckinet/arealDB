@@ -169,7 +169,6 @@ normTable <- function(input = NULL, pattern = NULL, ontoMatch = NULL,
       message("    harmonizing thematic concepts ...")
       assertNames(x = ontoMatch, subset.of = names(thisTable))
       ontoPath <- getOption(x = "ontology_path")[[ontoMatch]]
-      # thisTable_orig <- thisTable
       thisTable <- matchOntology(table = thisTable,
                                  columns = ontoMatch,
                                  dataseries = dSeries,
