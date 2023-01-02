@@ -74,7 +74,6 @@ normTable <- function(input = NULL, pattern = NULL, ontoMatch = NULL,
 
   # set internal objects
   moveFile <- TRUE
-  # sbst <- exprs(..., .named = TRUE)
 
   # get tables
   inv_tables <- read_csv(paste0(intPaths, "/inv_tables.csv"), col_types = "iiiccccDccccc")
