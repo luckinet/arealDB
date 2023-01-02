@@ -106,7 +106,7 @@ matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
 
         # a little check that the join will be successful
         assertNames(x = newConcepts %>% pull(!!theColumn) %>% unique(),
-                    subset.of = table %>% pull(!!theColumn) %>% unique())
+                    subset.of = table %>% pull(!!theColumn) %>% unique() %>% trimws())
 
         toOut <- table %>%
           left_join(newConcepts, by = theColumn) %>%
