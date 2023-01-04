@@ -16,7 +16,7 @@ test_that("tables can be normalised (without matched variables)", {
 
   # test whether the resulting file is "correct" ----
   expect_file_exists(x = paste0(getOption("adb_path"), "/adb_tables/stage2/processed/_al1_barleyMaize_1990_2017_madeUp.csv"))
-  final <- readRDS(file = paste0(getOption("adb_path"), "/adb_tables/stage3/aNation.rds"))
+  final <- readRDS(file = paste0(getOption("adb_path"), "/adb_tables/stage3/a_nation.rds"))
   expect_tibble(x = final, types = c("integer", "integer", "integer", "character", "integer", "character", "double", "double"))
   expect_data_frame(x = final, nrows = 56, ncols = 9)
   expect_names(x = names(final), identical.to = c("id", "tabID", "geoID", "gazID", "gazName", "year", "commodity", "harvested", "production"))
@@ -33,7 +33,7 @@ test_that("tables can be normalised (with matched variables)", {
   # test whether the resulting file is "correct" ----
   expect_file_exists(x = paste0(getOption("adb_path"), "/adb_tables/stage2/processed/_al1_barleyMaize_1990_2017_madeUp.csv"))
   expect_file_exists(x = paste0(getOption("adb_path"), "/adb_tables/stage2/processed/aNation_al2_barleyMaize_1990_2017_madeUp.csv"))
-  final <- readRDS(file = paste0(getOption("adb_path"), "/adb_tables/stage3/aNation.rds"))
+  final <- readRDS(file = paste0(getOption("adb_path"), "/adb_tables/stage3/a_nation.rds"))
   expect_data_frame(x = final, nrows = 280, ncols = 9)
   expect_names(x = names(final), identical.to = c("id", "tabID", "geoID", "gazID", "gazName", "year", "commodity", "harvested", "production"))
 
