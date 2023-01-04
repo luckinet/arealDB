@@ -87,7 +87,7 @@
 #'   st_transform st_crs st_crs<- st_geometry_type st_area st_intersection
 #'   st_drivers NA_crs_ st_is_valid st_make_valid
 #' @importFrom stringr str_split
-#' @importFrom tibble as_tibble
+#' @importFrom tibble as_tibble add_column
 #' @importFrom dplyr bind_rows slice
 #' @importFrom tidyr unite
 #' @importFrom tidyselect starts_with all_of
@@ -97,7 +97,7 @@
 normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10,
                          outType = "gpkg", update = FALSE, verbose = FALSE){
 
-  # input = NULL; pattern = gs[1]; query <- NULL; thresh = 10; outType = "gpkg"; update = TRUE; verbose = FALSE; i = 1
+  # input = NULL; pattern = NULL; query <- NULL; thresh = 10; outType = "gpkg"; update = TRUE; verbose = FALSE; i = 1
 
   # set internal paths
   intPaths <- paste0(getOption(x = "adb_path"))
@@ -208,11 +208,6 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
       names(inGeom)[[which(names(inGeom) == oldNames[k])]] <- unitCols[k]
     }
 
-    if(is.null(theUnits)){
-      theUnits <- unique(eval(expr = parse(text = unitCols[1]), envir = inGeom)) %>%
-        as.character()
-    }
-
     if(!topClass %in% names(inGeom)){
       inGeom <- inGeom %>%
         add_column(tibble(!!topClass := theUnits), .before = unitCols[1])
@@ -226,6 +221,11 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
                             ontology = gazPath,
                             verbose = verbose)
     # table = inGeom; columns = unitCols; dataseries = dSeries; ontology = gazPath
+
+    if(is.null(theUnits)){
+      theUnits <- unique(eval(expr = parse(text = unitCols[1]), envir = inGeom)) %>%
+        as.character()
+    }
 
     if(length(theUnits) == 0){
       moveFile <- FALSE
