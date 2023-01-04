@@ -9,7 +9,8 @@ matchOntology(
   columns = NULL,
   dataseries = NULL,
   ontology = NULL,
-  verbose = FALSE
+  verbose = FALSE,
+  all_cols = FALSE
 )
 }
 \arguments{
@@ -26,6 +27,9 @@ is stored, or an already loaded ontology.}
 
 \item{verbose}{[`logical(1)`][logical]\cr whether or not to give detailed
 information on the process of this function.}
+
+\item{all_cols}{[`logical(1)`][logical]\cr whether or not to output all
+tentative columns (for debugging), or only the essential columns.}
 }
 \description{
 This function takes a table to replace the values of various columns with

@@ -7,6 +7,8 @@
 #' @param columns [\code{character(1)}]\cr the columns containing the concepts
 #' @param dataseries [\code{character(1)}]\cr the source dataseries from which
 #'   territories are sourced.
+#' @param all_cols [`logical(1)`][logical]\cr whether or not to output all
+#'   tentative columns (for debugging), or only the essential columns.
 #' @param ontology [\code{onto}]\cr either a path where the ontology/gazetteer
 #'   is stored, or an already loaded ontology.
 #' @param verbose [`logical(1)`][logical]\cr whether or not to give detailed
@@ -23,7 +25,7 @@
 #' @export
 
 matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
-                          ontology = NULL, verbose = FALSE){
+                          ontology = NULL, verbose = FALSE, all_cols = FALSE){
 
   # set internal paths
   intPaths <- paste0(getOption(x = "adb_path"))
@@ -110,8 +112,12 @@ matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
 
         toOut <- table %>%
           left_join(newConcepts, by = theColumn) %>%
-          select(-all_of(theColumn), -match, -has_source, -has_broader) %>%
-          rename(!!theColumn := label)
+          rename(external = all_of(theColumn), !!theColumn := label)
+
+        if(!all_cols){
+          toOut <- toOut %>%
+            select(-external, -match, -has_source, -has_broader)
+        }
 
       } else {
 
@@ -136,6 +142,11 @@ matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
           left_join(newConcepts, by = c(theColumn, "has_broader")) %>%
           select(-all_of(theColumn), -has_broader) %>%
           rename(!!theColumn := label)
+
+        # if(!all_cols){
+        #   toOut <- toOut %>%
+        #     select(-external, -match, -has_source, -has_broader)
+        # }
       }
 
     } else {
