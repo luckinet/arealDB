@@ -102,7 +102,7 @@ matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
           arrange(label)
 
         newConcepts <- get_concept(table = new, ontology = ontoPath) %>%
-          filter(has_source == srcID) %>%
+          filter(has_source == srcID & class %in% theColumn) %>%
           rename(target := external) %>%
           select(-class, -description, !!theColumn := target)
 
@@ -130,7 +130,7 @@ matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
         newConcepts <- get_concept(table = new, ontology = ontoPath) %>%
           filter(has_source == srcID) %>%
           rename(target := external) %>%
-          mutate(!!theColumn:= label,
+          mutate(!!theColumn:= target,
                  target = if_else(!class %in% theColumn, !!sym(theColumn), target),
                  has_broader = if_else(!class %in% theColumn, id, has_broader),
                  id = if_else(!class %in% theColumn, paste0(id, get_class(ontology = ontoPath)$id[1]), id)) %>%
@@ -155,8 +155,9 @@ matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
           left_join(harmonisedConc %>% select(!!theColumn := label, id), theColumn)
       } else {
         toOut <- toOut %>%
-          select(-id) %>%
-          left_join(harmonisedConc %>% select(!!theColumn := label, id), theColumn)
+          rename(has_broader = id) %>%
+          left_join(harmonisedConc %>% select(!!theColumn := label, has_broader, id), c(theColumn, "has_broader")) %>%
+          select(-has_broader)
       }
     }
   }
