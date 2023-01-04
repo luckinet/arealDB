@@ -97,7 +97,7 @@
 normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10,
                          outType = "gpkg", update = FALSE, verbose = FALSE){
 
-  # input = NULL; pattern = NULL; query <- NULL; thresh = 10; outType = "gpkg"; update = TRUE; verbose = FALSE; i = 1
+  # input = NULL; pattern = gs[1]; query <- NULL; thresh = 10; outType = "gpkg"; update = TRUE; verbose = FALSE; i = 1
 
   # set internal paths
   intPaths <- paste0(getOption(x = "adb_path"))
@@ -208,6 +208,17 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
       names(inGeom)[[which(names(inGeom) == oldNames[k])]] <- unitCols[k]
     }
 
+    if(is.null(theUnits)){
+      theUnits <- unique(eval(expr = parse(text = unitCols[1]), envir = inGeom)) %>%
+        as.character()
+    }
+
+    if(!topClass %in% names(inGeom)){
+      inGeom <- inGeom %>%
+        add_column(tibble(!!topClass := theUnits), .before = unitCols[1])
+      unitCols <- c(topClass, unitCols)
+    }
+
     message("    harmonizing nation names ...")
     inGeom <- matchOntology(table = inGeom,
                             columns = unitCols,
@@ -215,11 +226,6 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
                             ontology = gazPath,
                             verbose = verbose)
     # table = inGeom; columns = unitCols; dataseries = dSeries; ontology = gazPath
-
-    if(is.null(theUnits)){
-      theUnits <- unique(eval(expr = parse(text = unitCols[1]), envir = inGeom)) %>%
-        as.character()
-    }
 
     if(length(theUnits) == 0){
       moveFile <- FALSE
