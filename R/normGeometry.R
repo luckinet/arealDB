@@ -50,8 +50,8 @@
 #'   parents, and save those that are not as a new geometry. \item Calculate
 #'   spatial overlap and distinguish the geometries into those that overlap with
 #'   more and those with less than \code{thresh}. \item For all units that did
-#'   match, copy ahID from the geometries they overlap. \item For all units that
-#'   did not match, rebuild metadata and a new ahID. } \item If update = TRUE,
+#'   match, copy gazID from the geometries they overlap. \item For all units that
+#'   did not match, rebuild metadata and a new gazID. } \item If update = TRUE,
 #'   store the processed geometry at stage three.} \item Move the geometry to
 #'   the folder '/processed', if it is fully processed.}
 #' @family normalise functions
@@ -259,7 +259,7 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
               message("    Dissolving multiple polygons into a single multipolygon")
 
               sourceGeom <- sourceGeom %>%
-                group_by(across(all_of(unitCols))) %>%
+                group_by(across(c(all_of(unitCols), "id"))) %>%
                 summarise() %>%
                 ungroup()
             }
@@ -356,12 +356,12 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
           #   # if there were units in sourceGeom that can't be joined with the
           #   # basis, they are accidentally part and need to be treated as an
           #   # extra object.
-          #   if(any(is.na(in_parent$ahID))){
+          #   if(any(is.na(in_parent$gazID))){
           #     newName <- str_split(file_name, "[.]")[[1]]
           #     newName <- paste0(newName[1], "_not-", tempUnit, ".", newName[2])
-          #     isNA <- is.na(in_parent$ahID)
+          #     isNA <- is.na(in_parent$gazID)
           #
-          #     message(paste0("  ! not all new units contain a valid ahID after joining with 'parentGeom', please see 'stage2/", newName, "' !"))
+          #     message(paste0("  ! not all new units contain a valid gazID after joining with 'parentGeom', please see 'stage2/", newName, "' !"))
           #     in_parent %>%
           #       filter(isNA) %>%
           #       select(unitCols) %>%
@@ -378,6 +378,9 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
 
           # then get the overlap with the targetGeom
           overlap_with_target <- suppressMessages(suppressWarnings(
+            # t1 <- Sys.time()
+            # t2 <- Sys.time()
+            # dur <- t2 - t1
             sourceGeom %>%
               st_buffer(dist = 0) %>% # is needed sometimes to clarify "self-intersection" problems: https://gis.stackexchange.com/questions/163445/getting-topologyexception-input-geom-1-is-invalid-which-is-due-to-self-intersec
               st_intersection(y = targetGeom) %>%
@@ -465,15 +468,15 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
 
           # finalise invalid geometries for row-binding them with the valid units
           newUnits <- invalidUnits %>%
-            select(-ahName, -ahID) %>%
+            select(-gazName, -gazID) %>%
             mutate(geoID = newGID) %>%
-            unite(col = "ahName", all_of(unitCols), sep = ".") %>%
+            unite(col = "gazName", all_of(unitCols), sep = ".") %>%
             st_sf() %>%
-            select(ahName, ahID = id, geoID)
+            select(gazName, gazID = id, geoID)
 
           # combine old and new units
           outGeom <- validUnits %>%
-            select(ahName, ahID, geoID, everything())
+            select(gazName, gazID, geoID, everything())
 
           if(!dim(outGeom)[1] == 0 | !dim(newUnits)[1] == 0){
             outGeom <- outGeom %>%
@@ -482,7 +485,7 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
 
           outGeom <- targetGeom %>%
             bind_rows(outGeom) %>%
-            arrange(ahID)
+            arrange(gazID)
 
         } else {
 
@@ -490,11 +493,11 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
 
           outGeom <- suppressMessages(
             sourceGeom %>%
-              unite(col = "ahName", all_of(unitCols), sep = ".") %>%
+              unite(col = "gazName", all_of(unitCols), sep = ".") %>%
               mutate(onto_class = theLabel,
                      geoID = newGID) %>%
               ungroup() %>%
-              select(ahName, ahID = id, onto_class, geoID)
+              select(geoID, gazID = id, gazName, onto_class)
             )
 
         }
