@@ -52,18 +52,18 @@ matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
   }
 
   # replace values with an empty name with a placeholder
-  for(i in seq_along(columns)){
-
-    theColumn <- columns[i]
-    tab <- tab %>%
-      mutate(across(all_of(theColumn), trimws),
-             unnamed = if_else(!!sym(theColumn) %in% c("", " "), TRUE, FALSE),
-             iter = cumsum(unnamed),
-             iter = if_else(unnamed, iter, 0L),
-             !!theColumn := if_else(!!sym(theColumn) %in% c("", " "), paste0("unnamed_", iter), !!sym(theColumn))) %>%
-      select(-unnamed, -iter)
-
-  }
+  # for(i in seq_along(columns)){
+  #
+  #   theColumn <- columns[i]
+  #   tab <- tab %>%
+  #     mutate(across(all_of(theColumn), trimws),
+  #            unnamed = if_else(!!sym(theColumn) %in% c("", " "), TRUE, FALSE),
+  #            iter = cumsum(unnamed),
+  #            iter = if_else(unnamed, iter, 0L),
+  #            !!theColumn := if_else(!!sym(theColumn) %in% c("", " "), paste0("unnamed_", iter), !!sym(theColumn))) %>%
+  #     select(-unnamed, -iter)
+  #
+  # }
 
   theColumns <- NULL
   for(i in seq_along(columns)){

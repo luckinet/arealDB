@@ -12,7 +12,8 @@ globalVariables(c(
   ".data", "nested", "external", "sort_in", "harmonised", "sourceName", "label",
   "description", "narrower", "has_broader", "fid", "has_broader_match",
   "has_close_match", "has_exact_match", "has_narrower_match", "has_exact_match",
-  "unitCols", "onto_class", "has_source", "unnamed", "iter", "topCol", "gazID"
+  "unitCols", "onto_class", "has_source", "unnamed", "iter", "topCol", "gazID",
+  "gazName"
 ))
 
 .onAttach <- function(libname, pkgname){
