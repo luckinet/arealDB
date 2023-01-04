@@ -64,7 +64,11 @@ normTable <- function(input = NULL, pattern = NULL, ontoMatch = NULL,
   # set internal paths
   intPaths <- getOption(x = "adb_path")
   gazPath <- getOption(x = "gazetteer_path")
+
+  # get territorial context
   topClass <- paste0(getOption(x = "gazetteer_top"))
+  topUnits <- get_concept(table = tibble(class = topClass), ontology = gazPath) %>%
+    arrange(label)
 
   if(is.null(input)){
     input <- list.files(path = paste0(intPaths, "/adb_tables/stage2"), full.names = TRUE, pattern = pattern)
@@ -135,7 +139,15 @@ normTable <- function(input = NULL, pattern = NULL, ontoMatch = NULL,
         separate_rows(has_exact_match, sep = " \\| ") %>%
         separate(col = has_exact_match, into = c("match", "certainty"), sep = "[.]") %>%
         filter(match %in% classID$id) %>%
+        distinct(label) %>%
         pull(label)
+
+      if(unitCols[1] != topClass){
+        theUnits <- str_split(string = lut$source_file, pattern = "_")[[1]][1]
+        assertSubset(x = theUnits, choices = topUnits$label)
+      } else {
+        theUnits <- NULL
+      }
     } else{
       stop(paste0("  ! the file '", file_name, "' has not been registered yet."))
     }
@@ -161,8 +173,9 @@ normTable <- function(input = NULL, pattern = NULL, ontoMatch = NULL,
     thisTable <- matchOntology(table = thisTable,
                                columns = targetCols,
                                dataseries = dSeries,
-                               ontology = gazPath) %>%
-      rename(ahID = id)
+                               ontology = gazPath,
+                               all_cols = FALSE) %>%
+      rename(gazID = id)
 
     if(!is.null(ontoMatch)){
       message("    harmonizing thematic concepts ...")
@@ -171,25 +184,11 @@ normTable <- function(input = NULL, pattern = NULL, ontoMatch = NULL,
       thisTable <- matchOntology(table = thisTable,
                                  columns = ontoMatch,
                                  dataseries = dSeries,
-                                 ontology = ontoPath) %>%
-        rename(ontoID = id)
+                                 ontology = ontoPath,
+                                 all_cols = FALSE) %>%
+        rename(ontoID = id) %>%
+        rename(ontoInput = all_of(ontoMatch))
     }
-
-    # potentially filter
-    # if(length(sbst) != 0){
-    #   message("    filtering table ...")
-    #   moveFile <- FALSE
-    #
-    #   for(k in seq_along(sbst)){
-    #     if(!names(sbst)[k] %in% names(thisTable)){
-    #       warning(paste0("'", names(sbst)[k], "' is not a column in the new table -> ignoring the filter."))
-    #       next
-    #     }
-    #
-    #     thisTable <- thisTable %>%
-    #       filter(.data[[names(sbst)[k]]] %in% as.character(sbst[[k]]))
-    #   }
-    # }
 
     if("broader" %in% colnames(thisTable)){
       thisTable <- thisTable %>%
@@ -202,35 +201,40 @@ normTable <- function(input = NULL, pattern = NULL, ontoMatch = NULL,
     # produce output
     if(update){
 
-      topUnits <- thisTable %>%
-        pull(unitCols[1]) %>%
-        unique()
+      if(is.null(theUnits)){
+        theUnits <- unique(eval(expr = parse(text = unitCols[1]), envir = thisTable)) %>%
+          as.character()
+      }
 
-      for(j in seq_along(topUnits)){
+      for(j in seq_along(theUnits)){
 
-        tempOut <- thisTable %>%
-          filter(.data[[unitCols[1]]] == topUnits[j]) %>%
-          unite(col = "ahName", all_of(unitCols), sep = ".") %>%
-          mutate(fid = seq_along(ahName)) %>%
-          select(id = fid, ahName, ahID, tabID, geoID, everything()) %>%
+        if(length(theUnits) != 1){
+          tempOut <- thisTable %>%
+            filter(.data[[unitCols[1]]] == theUnits[j])
+        } else {
+          tempOut <- thisTable
+        }
+        tempOut <- tempOut %>%
+          unite(col = "gazName", all_of(targetCols), sep = ".") %>%
+          mutate(fid = seq_along(gazName)) %>%
+          select(id = fid, tabID, geoID, gazID, gazName, everything()) %>%
           distinct()
 
         # append output to previous file
-        avail <- list.files(path = paste0(intPaths, "/adb_tables/stage3/"), pattern = paste0("^", topUnits[j], "."))
+        avail <- list.files(path = paste0(intPaths, "/adb_tables/stage3/"), pattern = paste0("^", theUnits[j], "."))
 
         if(length(avail) == 1){
 
           if(outType == "csv"){
-            prevData <- read_csv(file = paste0(intPaths, "/adb_tables/stage3/", topUnits[j], ".csv"),
-                                 col_types = cols(id = "i", tabID = "i", geoID = "i", ahID = "c", year = "c", .default = "d"))
+            prevData <- read_csv(file = paste0(intPaths, "/adb_tables/stage3/", theUnits[j], ".csv"),
+                                 col_types = cols(id = "i", tabID = "i", geoID = "i", gazID = "c", year = "c", .default = "d"))
           } else {
-            prevData <- readRDS(file = paste0(intPaths, "/adb_tables/stage3/", topUnits[j], ".rds"))
+            prevData <- readRDS(file = paste0(intPaths, "/adb_tables/stage3/", theUnits[j], ".rds"))
           }
-
 
           out <- tempOut %>%
             bind_rows(prevData, .) %>%
-            mutate(id = seq_along(ahName))
+            mutate(id = seq_along(gazName))
 
           # here distinct rows only?
 
@@ -243,10 +247,10 @@ normTable <- function(input = NULL, pattern = NULL, ontoMatch = NULL,
         # write file to 'stage3' and move to folder 'processed'
         if(outType == "csv"){
           write_csv(x = out,
-                    file = paste0(intPaths, "/adb_tables/stage3/", topUnits[j], ".csv"),
+                    file = paste0(intPaths, "/adb_tables/stage3/", theUnits[j], ".csv"),
                     na = "")
         } else if(outType == "rds"){
-          saveRDS(object = out, file = paste0(intPaths, "/adb_tables/stage3/", topUnits[j], ".rds"))
+          saveRDS(object = out, file = paste0(intPaths, "/adb_tables/stage3/", theUnits[j], ".rds"))
         }
       }
 
@@ -254,7 +258,6 @@ normTable <- function(input = NULL, pattern = NULL, ontoMatch = NULL,
         file.copy(from = thisInput, to = paste0(intPaths, "/adb_tables/stage2/processed"))
         file.remove(thisInput)
       }
-
 
     }
 
