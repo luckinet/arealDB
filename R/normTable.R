@@ -135,6 +135,11 @@ normTable <- function(input = NULL, pattern = NULL, ontoMatch = NULL,
                            label = !!oldNames,
                            ontology = gazPath)
 
+      if(dim(classID)[1] == 0){
+        toNorm <- inv_geometries$source_file[which(inv_geometries$hierarchy %in% oldNames)]
+        stop("please first normalise the geometry '", toNorm, "'")
+      }
+
       unitCols <- get_class(ontology = gazPath) %>%
         separate_rows(has_exact_match, sep = " \\| ") %>%
         separate(col = has_exact_match, into = c("match", "certainty"), sep = "[.]") %>%
