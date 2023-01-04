@@ -88,7 +88,7 @@ test_that("make example DB until normGeometry", {
 
   makeExampleDB(until = "normGeometry", path = dbpath)
 
-  expect_file_exists(x = paste0(dbpath, "/adb_geometries/stage3/a_nation.gpkg"))
+  expect_file_exists(x = paste0(dbpath, "/adb_geometries/stage3/aNation.gpkg"))
 
 })
 
@@ -98,7 +98,7 @@ test_that("make example DB until normTable", {
 
   makeExampleDB(until = "normTable", path = dbpath)
 
-  expect_file_exists(x = paste0(dbpath, "/adb_tables/stage3/a_nation.rds"))
+  expect_file_exists(x = paste0(dbpath, "/adb_tables/stage3/aNation.rds"))
 
 })
 

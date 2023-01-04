@@ -47,19 +47,19 @@ test_that("geometries can be normalised", {
                         "download_date", "next_update", "update_frequency", "notes"))
 
   # test whether the resulting file is "correct" ----
-  final <- st_read(dsn = paste0(getOption("adb_path"), "/adb_geometries/stage3/a_nation.gpkg"), layer = "al1", quiet = TRUE)
+  final <- st_read(dsn = paste0(getOption("adb_path"), "/adb_geometries/stage3/aNation.gpkg"), layer = "al1", quiet = TRUE)
   expect_class(x = final, classes = c("sf"))
   expect_data_frame(x = final, nrows = 1, ncols = 5)
-  expect_names(x = names(final), identical.to = c("ahName", "ahID", "onto_class", "geoID", "geom"))
+  expect_names(x = names(final), identical.to = c("geoID", "gazID", "gazName", "onto_class", "geom"))
 
-  final <- st_read(dsn = paste0(getOption("adb_path"), "/adb_geometries/stage3/a_nation.gpkg"), layer = "al2", quiet = TRUE)
+  final <- st_read(dsn = paste0(getOption("adb_path"), "/adb_geometries/stage3/aNation.gpkg"), layer = "al2", quiet = TRUE)
   expect_class(x = final, classes = c("sf"))
   expect_data_frame(x = final, nrows = 4, ncols = 5)
-  expect_names(x = names(final), identical.to = c("ahName", "ahID", "onto_class", "geoID", "geom"))
+  expect_names(x = names(final), identical.to = c("geoID", "gazID", "gazName", "onto_class", "geom"))
 
-  final <- st_read(dsn = paste0(getOption("adb_path"), "/adb_geometries/stage3/a_nation.gpkg"), layer = "al3", quiet = TRUE)
+  final <- st_read(dsn = paste0(getOption("adb_path"), "/adb_geometries/stage3/aNation.gpkg"), layer = "al3", quiet = TRUE)
   expect_class(x = final, classes = c("sf"))
   expect_data_frame(x = final, nrows = 12, ncols = 5)
-  expect_names(x = names(final), identical.to = c("ahName", "ahID", "onto_class", "geoID", "geom"))
+  expect_names(x = names(final), identical.to = c("geoID", "gazID", "gazName", "onto_class", "geom"))
 
 })
