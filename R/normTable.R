@@ -185,9 +185,10 @@ normTable <- function(input = NULL, pattern = NULL, ontoMatch = NULL,
                                  columns = ontoMatch,
                                  dataseries = dSeries,
                                  ontology = ontoPath,
-                                 all_cols = FALSE) %>%
-        rename(ontoID = id) %>%
-        rename(ontoInput = all_of(ontoMatch))
+                                 all_cols = TRUE) %>%
+        rename(ontoID = id, ontoName = all_of(ontoMatch)) %>%
+        select(external, ontoMatch = match, ontoID, ontoName, everything()) %>%
+        select(-has_broader, -has_source)
     }
 
     if("broader" %in% colnames(thisTable)){
