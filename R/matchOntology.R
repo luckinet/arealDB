@@ -71,9 +71,16 @@ matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
     theColumn <- columns[i]
     theColumns <- c(theColumns, theColumn)
 
-    temp <- tab %>%
-      distinct(across(all_of(theColumns))) %>%
-      filter(!is.na(!!sym(theColumn)))
+    if(i == 1){
+      temp <- tab %>%
+        distinct(across(all_of(theColumns))) %>%
+        filter(!is.na(!!sym(theColumn)))
+    } else {
+      temp <- toOut %>%
+        st_drop_geometry() %>%
+        distinct(across(all_of(theColumns))) %>%
+        select(all_of(theColumns))
+    }
 
     # extract all harmonised concepts, including those that may be not available
     # (na) ...
@@ -114,11 +121,6 @@ matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
           left_join(newConcepts, by = theColumn) %>%
           rename(external = all_of(theColumn), !!theColumn := label)
 
-        if(!all_cols){
-          toOut <- toOut %>%
-            select(-external, -match, -has_source, -has_broader)
-        }
-
       } else {
 
         new <- toOut %>%
@@ -129,24 +131,17 @@ matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
 
         newConcepts <- get_concept(table = new, ontology = ontoPath) %>%
           filter(has_source == srcID) %>%
-          rename(target := external) %>%
-          mutate(!!theColumn:= target,
-                 target = if_else(!class %in% theColumn, !!sym(theColumn), target),
-                 has_broader = if_else(!class %in% theColumn, id, has_broader),
+          rename(!!theColumn := external) %>%
+          mutate(has_broader = if_else(!class %in% theColumn, id, has_broader),
                  id = if_else(!class %in% theColumn, paste0(id, get_class(ontology = ontoPath)$id[1]), id)) %>%
-          select(!!theColumn, label, id, has_broader)
+          select(-class, -description)
 
         toOut <- toOut %>%
-          mutate(has_broader = id) %>%
-          select(-id) %>%
+          select(-any_of(c("external", "has_broader", "match", "has_source"))) %>%
+          rename(has_broader = id) %>%
           left_join(newConcepts, by = c(theColumn, "has_broader")) %>%
-          select(-all_of(theColumn), -has_broader) %>%
-          rename(!!theColumn := label)
+          rename(external = all_of(theColumn), !!theColumn := label)
 
-        # if(!all_cols){
-        #   toOut <- toOut %>%
-        #     select(-external, -match, -has_source, -has_broader)
-        # }
       }
 
     } else {
@@ -155,15 +150,28 @@ matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
           left_join(harmonisedConc %>% select(!!theColumn := label, id), theColumn)
       } else {
         toOut <- toOut %>%
+          select(-any_of(c("external", "has_broader", "match", "has_source"))) %>%
           rename(has_broader = id) %>%
-          left_join(harmonisedConc %>% select(!!theColumn := label, has_broader, id), c(theColumn, "has_broader")) %>%
-          select(-has_broader)
+          left_join(harmonisedConc %>% select(!!theColumn := label, has_broader, id), c(theColumn, "has_broader"))
       }
+      toOut <- toOut %>%
+        mutate(match = "exact",
+               has_source = "1",
+               external = !!sym(theColumn))
     }
   }
 
-  out <- toOut %>%
-    select(all_of(columns), id, everything())
+
+  if(!all_cols){
+    out <- toOut %>%
+      select(-external, -has_broader, -match, -has_source) %>%
+      # select(-any_of(c("external", "has_broader", "match", "has_source"))) %>%
+      select(all_of(columns), id, everything())
+  } else {
+    out <- toOut %>%
+      select(-any_of(c("has_broader"))) %>%
+      select(all_of(columns), id, match, external, has_source, everything())
+  }
 
   return(out)
 
