@@ -35,7 +35,7 @@
 
 makeExampleDB <- function(path = NULL, until = NULL, verbose = FALSE){
 
-  # library(arealDB); library(ontologics); library(tidyverse); library(checkmate); library(tabshiftr); library(sf); until = "normGeometry"; verbose = FALSE; path = paste0(tempdir(), "/newDB")
+  # library(arealDB); library(ontologics); library(tidyverse); library(checkmate); library(tabshiftr); library(sf); until = "normTable"; verbose = FALSE; path = paste0(tempdir(), "/newDB")
 
   inPath <- system.file("test_datasets", package = "arealDB", mustWork = TRUE)
   steps <- c("start_arealDB", "regDataseries", "regGeometry", "regTable", "normGeometry", "normTable")

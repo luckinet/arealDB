@@ -97,7 +97,7 @@
 normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10,
                          outType = "gpkg", update = FALSE, verbose = FALSE){
 
-  # input = NULL; pattern = NULL; query <- NULL; thresh = 10; outType = "gpkg"; update = TRUE; verbose = FALSE; i = 1
+  # input = NULL; pattern = "gadm"; query <- NULL; thresh = 10; outType = "gpkg"; update = TRUE; verbose = FALSE; i = 1
 
   # set internal paths
   intPaths <- paste0(getOption(x = "adb_path"))
@@ -148,13 +148,13 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
     }
 
     # get some variables
-    lut <- inv_geometries[grep(pattern = paste0("^", file_name, "$"), x = inv_geometries$source_file),]
-    if(file_name %in% lut$source_file){
-      newGID <- lut$geoID
-      theLayer <- lut$layer
-      theLabel <- lut$label
+    geom_meta <- inv_geometries[grep(pattern = paste0("^", file_name, "$"), x = inv_geometries$source_file),]
+    if(file_name %in% geom_meta$source_file){
+      newGID <- geom_meta$geoID
+      layerName <- geom_meta$layer
+      classLabel <- geom_meta$label
 
-      dSeries <- inv_dataseries$name[inv_dataseries$datID == lut$datID]
+      dSeries <- inv_dataseries$name[inv_dataseries$datID == geom_meta$datID]
 
       # make a new dataseries, in case it doesn't exist yet
       if(!dSeries %in% get_source(ontology = gazPath)$label){
@@ -162,26 +162,24 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
       }
 
       # if there are several columns that contain units, split them and make
-      oldNames <- str_split(string = lut$hierarchy, pattern = "\\|")[[1]]
+      oldClass <- str_split(string = geom_meta$hierarchy, pattern = "\\|")[[1]]
+      targetClass <- get_class(label = classLabel, ontology = gazPath)
 
-      theTarget <- get_class(label = theLabel, ontology = gazPath)
+      new_mapping(new = tail(oldClass, 1), target = targetClass, source = dSeries,
+                  match = "exact", certainty = 3, type = "class",
+                  ontology = gazPath)
 
-      new_mapping(new = tail(oldNames, 1), target = theTarget,
-                  source = dSeries, match = "exact", certainty = 3, type = "class", ontology = gazPath)
-
-      classID <- get_class(external = TRUE, regex = TRUE,
-                           label = !!oldNames,
-                           ontology = gazPath)
+      externalClass <- get_class(external = TRUE, regex = TRUE, label = !!oldClass, ontology = gazPath)
 
       unitCols <- get_class(ontology = gazPath) %>%
         separate_rows(has_exact_match, sep = " \\| ") %>%
         separate(col = has_exact_match, into = c("match", "certainty"), sep = "[.]") %>%
-        filter(match %in% classID$id) %>%
+        filter(match %in% externalClass$id) %>%
         distinct(label) %>%
         pull(label)
 
       if(unitCols[1] != topClass){
-        theUnits <- str_split(string = lut$source_file, pattern = "_")[[1]][1]
+        theUnits <- str_split(string = geom_meta$source_file, pattern = "_")[[1]][1]
         assertSubset(x = theUnits, choices = topUnits$label)
       } else {
         theUnits <- NULL
@@ -196,16 +194,16 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
     if(!is.null(query)){
       moveFile <- FALSE
       inGeom <- read_sf(dsn = thisInput,
-                        query = paste0("select * from ", theLayer, " ", query),
+                        query = paste0("select * from ", layerName, " ", query),
                         stringsAsFactors = FALSE)
     } else {
       inGeom <- read_sf(dsn = thisInput,
-                        layer = theLayer,
+                        layer = layerName,
                         stringsAsFactors = FALSE)
     }
 
     for(k in seq_along(unitCols)){
-      names(inGeom)[[which(names(inGeom) == oldNames[k])]] <- unitCols[k]
+      names(inGeom)[[which(names(inGeom) == oldClass[k])]] <- unitCols[k]
     }
 
     if(!topClass %in% names(inGeom)){
@@ -215,15 +213,16 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
     }
 
     message("    harmonizing nation names ...")
-    inGeom <- matchOntology(table = inGeom,
-                            columns = unitCols,
-                            dataseries = dSeries,
-                            ontology = gazPath,
-                            verbose = verbose)
-    # table = inGeom; columns = unitCols; dataseries = dSeries; ontology = gazPath
+    harmGeom <- matchOntology(table = inGeom,
+                              columns = unitCols,
+                              dataseries = dSeries,
+                              ontology = gazPath,
+                              verbose = verbose, all_cols = TRUE)
+    # table = inGeom; columns = unitCols; dataseries = dSeries; ontology = gazPath; all_cols = TRUE
+    # View(st_drop_geometry(harmGeom))
 
     if(is.null(theUnits)){
-      theUnits <- unique(eval(expr = parse(text = unitCols[1]), envir = inGeom)) %>%
+      theUnits <- unique(eval(expr = parse(text = unitCols[1]), envir = harmGeom)) %>%
         as.character()
     }
 
@@ -242,12 +241,12 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
 
         if(length(theUnits) != 1){
           # create a geom specifically for the recent top territory
-          sourceGeom <- inGeom %>%
+          sourceGeom <- harmGeom %>%
             filter_at(vars(all_of(unitCols[1])), all_vars(. %in% tempUnit)) %>%
             select(all_of(unitCols), id)
           assertChoice(x = unitCols[1], choices = names(sourceGeom), .var.name = "names(nation_column)")
         } else {
-          sourceGeom <- inGeom %>%
+          sourceGeom <- harmGeom %>%
             select(all_of(unitCols), id)
         }
 
@@ -286,7 +285,7 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
         fileExists <- testFileExists(x = paste0(intPaths, "/adb_geometries/stage3/", tempUnit, ".gpkg"))
         if(fileExists){
           targetLayers <- st_layers(dsn = paste0(intPaths, "/adb_geometries/stage3/", tempUnit, ".gpkg"))
-          if(!grepl(pattern = theLabel, x = paste0(targetLayers$name, collapse = "|"))){
+          if(!grepl(pattern = classLabel, x = paste0(targetLayers$name, collapse = "|"))){
             fileExists <- FALSE
           }
         }
@@ -299,15 +298,15 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
           # read target geoms ----
           message("    Reading target geometries")
           targetGeom <- read_sf(dsn = paste0(intPaths, "/adb_geometries/stage3/", tempUnit, ".gpkg"),
-                                layer = theLabel,
+                                layer = classLabel,
                                 stringsAsFactors = FALSE)
 
           if(st_crs(targetGeom)$input == "Undefined Cartesian SRS"){
             st_crs(targetGeom) <- NA_crs_
           }
 
-          if(theLabel != topLayer){
-            parentLabel <- theTarget$has_broader
+          if(classLabel != topLayer){
+            parentLabel <- targetClass$has_broader
             parentGeom <- read_sf(dsn = paste0(intPaths, "/adb_geometries/stage3/", tempUnit, ".gpkg"),
                                   layer = parentLabel,
                                   stringsAsFactors = FALSE)
@@ -347,7 +346,7 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
 
           # # spatial join with the parent geom (smallest geoID), to determine
           # # whether all are within a parent
-          # if(theLabel != topLayer){
+          # if(classLabel != topLayer){
           #   minGeoID <- min(parentGeom$geoID)
           #   basisParent <- parentGeom[parentGeom$geoID %in% minGeoID,]
           #   in_parent <- suppressMessages(suppressWarnings(
@@ -372,7 +371,7 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
           #       filter(isNA) %>%
           #       select(unitCols) %>%
           #       st_write(dsn = paste0(intPaths, "/adb_geometries/stage2/", newName),
-          #                layer = theLabel,
+          #                layer = classLabel,
           #                append = FALSE,
           #                quiet = TRUE)
           #     in_parent <- in_parent %>%
@@ -409,7 +408,7 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
           if(dim(sourceGeom)[1] != dim(overlap_with_target)[1]){
             # if we are at level 1, the nation may not overlap, but would still
             # be that nation. So we assume that it is valid nevertheless.
-            if(theLabel == targetLayers$name[1]){
+            if(classLabel == targetLayers$name[1]){
               overlap_with_target <- targetGeom %>%
                 as_tibble() %>%
                 select(-target_area, -targetFID, -geom) %>%
@@ -495,12 +494,12 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
 
         } else {
 
-          message("    Creating new basis dataset for class ", theLabel, ".")
+          message("    Creating new basis dataset for class ", classLabel, ".")
 
           outGeom <- suppressMessages(
             sourceGeom %>%
               unite(col = "gazName", all_of(unitCols), sep = ".") %>%
-              mutate(onto_class = theLabel,
+              mutate(onto_class = classLabel,
                      geoID = newGID) %>%
               ungroup() %>%
               select(geoID, gazID = id, gazName, onto_class)
@@ -513,7 +512,7 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
           if(outType != "rds"){
             st_write(obj = outGeom,
                      dsn = paste0(intPaths, "/adb_geometries/stage3/", tempUnit, ".", outType),
-                     layer = theLabel,
+                     layer = classLabel,
                      append = FALSE,
                      quiet = TRUE)
           } else {
@@ -530,7 +529,7 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
       file.remove(paste0(firstStage, "/", file_name))
     }
 
-    outLut <- bind_rows(outLut, lut)
+    outLut <- bind_rows(outLut, geom_meta)
 
   }
 
