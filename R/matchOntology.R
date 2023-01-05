@@ -19,7 +19,7 @@
 #' @importFrom dplyr pull filter select mutate distinct bind_cols rename
 #'   everything left_join
 #' @importFrom tibble tibble
-#' @importFrom tidyselect all_of
+#' @importFrom tidyselect all_of any_of
 #' @importFrom tidyr separate_rows separate pivot_wider
 #' @importFrom sf st_drop_geometry
 #' @export
@@ -165,7 +165,6 @@ matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
   if(!all_cols){
     out <- toOut %>%
       select(-external, -has_broader, -match, -has_source) %>%
-      # select(-any_of(c("external", "has_broader", "match", "has_source"))) %>%
       select(all_of(columns), id, everything())
   } else {
     out <- toOut %>%
