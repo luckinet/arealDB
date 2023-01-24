@@ -1,3 +1,7 @@
+# arealDB 0.4.6
+
+* revise the whole geometry normalisation process to incorporate the new ontology system.
+
 # arealDB 0.4.5
 
 * fix how to derive the top-most class.
