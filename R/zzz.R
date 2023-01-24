@@ -13,7 +13,9 @@ globalVariables(c(
   "description", "narrower", "has_broader", "fid", "has_broader_match",
   "has_close_match", "has_exact_match", "has_narrower_match", "has_exact_match",
   "unitCols", "onto_class", "has_source", "unnamed", "iter", "topCol", "gazID",
-  "gazName", "ontoID", "ontoName"
+  "gazName", "ontoID", "ontoName", "lvl", "gazClass", "intersect_area",
+  "target_prop", "source_prop", "target_prop_sum", "source_prop_sum", "nr",
+  "stage2_geom", "source_cumsum", ""
 ))
 
 .onAttach <- function(libname, pkgname){

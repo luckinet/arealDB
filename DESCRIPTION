@@ -56,7 +56,8 @@ Imports:
     tidyselect,
     tabshiftr,
     ontologics,
-    purrr
+    purrr,
+    rmapshaper
 Suggests: 
     testthat,
     knitr,
