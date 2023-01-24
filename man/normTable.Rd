@@ -9,6 +9,7 @@ normTable(
   pattern = NULL,
   ontoMatch = NULL,
   outType = "rds",
+  beep = NULL,
   update = FALSE,
   verbose = FALSE
 )
@@ -28,6 +29,10 @@ matched with an ontology (defined in \code{\link{start_arealDB}}).}
 implemented options are either \emph{*.csv} (more exchangeable for a
 workflow based on several programs) or \emph{*.rds} (smaller and less
 error-prone data-format but can only be read by R efficiently).}
+
+\item{beep}{[\code{integerish(1)}]\cr Number specifying what sound to be
+played to signal the user that a point of interaction is reached by the
+program, see \code{\link[beepr]{beep}}.}
 
 \item{update}{[\code{logical(1)}]\cr whether or not the physical files should
 be updated (\code{TRUE}) or the function should merely return the new

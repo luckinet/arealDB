@@ -10,6 +10,8 @@ normGeometry(
   query = NULL,
   thresh = 10,
   outType = "gpkg",
+  priority = "ontology",
+  beep = NULL,
   update = FALSE,
   verbose = FALSE
 )
@@ -27,14 +29,27 @@ WHERE) used to subset the input geometries, for example \code{where NAME_0
 = 'France'}. The first part of the query (where the layer is defined) is
 derived from the meta-data of the currently handled geometry.}
 
-\item{thresh}{[\code{integerish(1)}]\cr the deviation of percentage of
-overlap above which to consider two territorial units "different".}
+\item{thresh}{[\code{integerish(1)}]\cr}
 
 \item{outType}{[\code{character(1)}]\cr the output file-type, see
 \code{\link{st_drivers}} for a list. If a file-type supports layers, they
 are stored in the same file, otherwise the different layers are provided
 separately. For an R-based workflow, \code{"rds"} could be an efficient
 option.}
+
+\item{priority}{[\code{character(1)}]\cr how to match the new geometries with
+  the already harmonised database. This can either be
+
+  \itemize{
+    \item \code{"spatial"}: where all territories are intersected spatially or
+    \item \code{"ontology"}: where territories are matched by comparing their name with the ontology
+    and those that do not match are intersected spatially,
+    \item \code{"both"}: where territories are matched with the ontology and spatially, and conflicts are indicated
+  }}
+
+\item{beep}{[\code{integerish(1)}]\cr Number specifying what sound to be
+played to signal the user that a point of interaction is reached by the
+program, see \code{\link[beepr]{beep}}.}
 
 \item{update}{[\code{logical(1)}]\cr whether or not the physical files should
 be updated (\code{TRUE}) or the function should merely return the geometry
@@ -53,7 +68,7 @@ This function harmonises and integrates so far unprocessed geometries
   of the specified file-type.
 }
 \description{
-Harmonise and integrate geometries in a standardised format
+Harmonise and integrate geometries into a standardised format
 }
 \details{
 To normalise geometries, this function proceeds as follows:

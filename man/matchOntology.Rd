@@ -10,7 +10,9 @@ matchOntology(
   dataseries = NULL,
   ontology = NULL,
   verbose = FALSE,
-  all_cols = FALSE
+  all_cols = FALSE,
+  beep = NULL,
+  exact_class = TRUE
 )
 }
 \arguments{
@@ -30,6 +32,13 @@ information on the process of this function.}
 
 \item{all_cols}{[`logical(1)`][logical]\cr whether or not to output all
 tentative columns (for debugging), or only the essential columns.}
+
+\item{beep}{[\code{integerish(1)}]\cr Number specifying what sound to be
+played to signal the user that a point of interaction is reached by the
+program, see \code{\link[beepr]{beep}}.}
+
+\item{exact_class}{[`logical(1)`][logical]\cr whether or not to extract only
+the classes in \code{table}, or also all parent classes.}
 }
 \description{
 This function takes a table to replace the values of various columns with
