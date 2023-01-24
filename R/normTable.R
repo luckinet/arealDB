@@ -11,6 +11,9 @@
 #'   object (\code{FALSE}, default). This is helpful to check whether the
 #'   metadata specification and the provided file(s) (translation and ID tables)
 #'   are properly specified.
+#' @param beep [\code{integerish(1)}]\cr Number specifying what sound to be
+#'   played to signal the user that a point of interaction is reached by the
+#'   program, see \code{\link[beepr]{beep}}.
 #' @param outType [\code{logical(1)}]\cr the output file-type, currently
 #'   implemented options are either \emph{*.csv} (more exchangeable for a
 #'   workflow based on several programs) or \emph{*.rds} (smaller and less
@@ -59,9 +62,12 @@
 #' @export
 
 normTable <- function(input = NULL, pattern = NULL, ontoMatch = NULL,
-                      outType = "rds", update = FALSE, verbose = FALSE){
+                      outType = "rds", beep = NULL, update = FALSE,
+                      verbose = FALSE){
 
-  # set internal paths
+  # input = NULL; pattern = "agriwanet"; outType = "rds"; ontoMatch = "commodity"; beep = 10; update = TRUE; verbose = FALSE; i = 1
+
+    # set internal paths
   intPaths <- getOption(x = "adb_path")
   gazPath <- getOption(x = "gazetteer_path")
 
@@ -127,33 +133,7 @@ normTable <- function(input = NULL, pattern = NULL, ontoMatch = NULL,
 
       gSeries <- inv_dataseries$name[inv_dataseries$datID == geoID]
       dSeries <- inv_dataseries$name[inv_dataseries$datID == datID]
-
-      oldNames <- str_split(string = inv_geometries$hierarchy[inv_geometries$geoID == geoID],
-                            pattern = "\\|")[[1]]
-
-      classID <- get_class(external = TRUE, regex = TRUE,
-                           label = !!oldNames,
-                           ontology = gazPath)
-
-      if(dim(classID)[1] == 0){
-        toNorm <- inv_geometries$source_file[which(inv_geometries$hierarchy %in% oldNames)]
-        stop("please first normalise the geometry '", toNorm, "'")
-      }
-
-      unitCols <- get_class(ontology = gazPath) %>%
-        separate_rows(has_exact_match, sep = " \\| ") %>%
-        separate(col = has_exact_match, into = c("match", "certainty"), sep = "[.]") %>%
-        filter(match %in% classID$id) %>%
-        distinct(label) %>%
-        pull(label)
-
-      if(unitCols[1] != topClass){
-        theUnits <- str_split(string = lut$source_file, pattern = "_")[[1]][1]
-        assertSubset(x = theUnits, choices = topUnits$label)
-      } else {
-        theUnits <- NULL
-      }
-    } else{
+    } else {
       stop(paste0("  ! the file '", file_name, "' has not been registered yet."))
     }
 
@@ -175,12 +155,29 @@ normTable <- function(input = NULL, pattern = NULL, ontoMatch = NULL,
     targetCols <- get_class(ontology = gazPath) %>%
       pull(label)
     targetCols <- targetCols[targetCols %in% colnames(thisTable)]
+
+    if(targetCols[1] != topClass){
+      theUnits <- str_split(string = lut$source_file, pattern = "_")[[1]][1]
+      assertSubset(x = theUnits, choices = topUnits$label)
+    } else {
+      theUnits <- NULL
+    }
+
+    if(!topClass %in% targetCols){
+      thisTable <- thisTable %>%
+        add_column(tibble(!!topClass := theUnits), .before = targetCols[1])
+      targetCols <- c(topClass, targetCols)
+    }
+
     thisTable <- matchOntology(table = thisTable,
                                columns = targetCols,
                                dataseries = dSeries,
                                ontology = gazPath,
-                               all_cols = FALSE) %>%
-      rename(gazID = id)
+                               beep = beep,
+                               all_cols = TRUE) %>%
+      unite(col = "gazMatch", match, external, sep = "--", na.rm = TRUE) %>%
+      rename(gazID = id) %>%
+      select(-has_source)
 
     if(!is.null(ontoMatch)){
       message("    harmonizing thematic concepts ...")
@@ -188,12 +185,15 @@ normTable <- function(input = NULL, pattern = NULL, ontoMatch = NULL,
       ontoPath <- getOption(x = "ontology_path")[[ontoMatch]]
       thisTable <- matchOntology(table = thisTable,
                                  columns = ontoMatch,
+                                 exact_class = FALSE,
                                  dataseries = dSeries,
                                  ontology = ontoPath,
+                                 beep = beep,
                                  all_cols = TRUE) %>%
         rename(ontoID = id, ontoName = all_of(ontoMatch)) %>%
-        select(external, ontoMatch = match, ontoID, ontoName, everything()) %>%
-        select(-has_broader, -has_source)
+        unite(col = "ontoMatch", match, external, sep = "--", na.rm = TRUE) %>%
+        select(ontoID, ontoName, ontoMatch, everything()) %>%
+        select(-has_source)
     }
 
     if("broader" %in% colnames(thisTable)){
@@ -208,7 +208,7 @@ normTable <- function(input = NULL, pattern = NULL, ontoMatch = NULL,
     if(update){
 
       if(is.null(theUnits)){
-        theUnits <- unique(eval(expr = parse(text = unitCols[1]), envir = thisTable)) %>%
+        theUnits <- unique(eval(expr = parse(text = targetCols[1]), envir = thisTable)) %>%
           as.character()
       }
 
@@ -216,18 +216,17 @@ normTable <- function(input = NULL, pattern = NULL, ontoMatch = NULL,
 
         if(length(theUnits) != 1){
           tempOut <- thisTable %>%
-            filter(.data[[unitCols[1]]] == theUnits[j])
+            filter(.data[[targetCols[1]]] == theUnits[j])
         } else {
           tempOut <- thisTable
         }
         tempOut <- tempOut %>%
           unite(col = "gazName", all_of(targetCols), sep = ".") %>%
-          mutate(fid = seq_along(gazName)) %>%
-          select(id = fid, tabID, geoID, gazID, gazName, everything()) %>%
+          select(tabID, geoID, gazID, gazName, gazMatch, everything()) %>%
           distinct()
 
         # append output to previous file
-        avail <- list.files(path = paste0(intPaths, "/adb_tables/stage3/"), pattern = paste0("^", theUnits[j], "."))
+        avail <- list.files(path = paste0(intPaths, "/adb_tables/stage3/"), pattern = paste0("^", theUnits[j], ".rds"))
 
         if(length(avail) == 1){
 
@@ -240,12 +239,12 @@ normTable <- function(input = NULL, pattern = NULL, ontoMatch = NULL,
 
           out <- tempOut %>%
             bind_rows(prevData, .) %>%
-            mutate(id = seq_along(gazName))
+            distinct()
 
           # here distinct rows only?
 
         } else if(length(avail) > 1){
-          # stop("the nation '", topUnits[j], "' exists several times in the output folder '/adb_tablse/stage3/'.")
+          stop("the nation '", theUnits[j], "' exists several times in the output folder '/adb_tablse/stage3/'.")
         } else {
           out <- tempOut
         }
