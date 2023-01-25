@@ -65,7 +65,7 @@ normTable <- function(input = NULL, pattern = NULL, ontoMatch = NULL,
                       outType = "rds", beep = NULL, update = FALSE,
                       verbose = FALSE){
 
-  # input = NULL; pattern = "agriwanet"; outType = "rds"; ontoMatch = "commodity"; beep = 10; update = TRUE; verbose = FALSE; i = 1
+  # input = NULL; pattern = "senasa"; outType = "rds"; ontoMatch = "commodity"; beep = 10; update = TRUE; verbose = FALSE; i = 1
 
     # set internal paths
   intPaths <- getOption(x = "adb_path")

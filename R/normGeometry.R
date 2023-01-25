@@ -187,8 +187,15 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
 
       unitCols <- get_class(ontology = gazPath) %>%
         separate_rows(has_exact_match, sep = " \\| ") %>%
-        separate(col = has_exact_match, into = c("match", "certainty"), sep = "[.]") %>%
-        filter(match %in% externalClass$id) %>%
+        separate(col = has_exact_match, into = c("match", "certainty"), sep = "[.]")
+      if(length(oldClass) == length(classLabel)){
+        unitCols <- unitCols %>%
+          filter(label == classLabel & match %in% externalClass$id)
+      } else {
+        unitCols <- unitCols %>%
+          filter(match %in% externalClass$id)
+      }
+      unitCols <- unitCols %>%
         distinct(label) %>%
         pull(label)
 
