@@ -25,7 +25,7 @@
 #' @importFrom dplyr pull filter select mutate distinct bind_cols rename
 #'   everything left_join
 #' @importFrom tibble tibble
-#' @importFrom tidyselect all_of any_of
+#' @importFrom tidyselect all_of any_of where
 #' @importFrom tidyr separate_rows separate pivot_wider
 #' @importFrom sf st_drop_geometry
 #' @export
@@ -43,6 +43,18 @@ matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
   allCols <- get_class(ontology = ontoPath) %>%
     pull(label)
   allCols <- allCols[which(allCols %in% head(columns, 1)) : which(allCols %in% tail(columns, 1))]
+
+  table <- table %>%
+    mutate(across(where(is.character),
+                  function(x){
+                    temp <- trimws(x)
+                    str_replace_all(string = temp, pattern = "[.]", replacement = "")
+                  }))
+  for(i in seq_along(allCols)){
+    if(i == 1) next
+    table <- table %>%
+      mutate(!!allCols[i] := if_else(is.na(!!sym(allCols[i])), !!sym(allCols[i-1]), !!sym(allCols[i])))
+  }
 
   type <- str_split(tail(str_split(string = ontoPath, pattern = "/")[[1]], 1), "[.]")[[1]][1]
 
