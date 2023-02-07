@@ -1,3 +1,11 @@
+# arealDB 0.5.0 - automatching update
+
+* spatial matches are now found automatically and inserted into the ontology.
+* matching can be sped up by simplifying geometries.
+* spatial hierarchy information of the different administrative levels are now streamlined and provided differently/more explicitly.
+* various bug-fixes to handling terms (they are now more explicitly cleaned from white-space and dots in names are removed, e.g. 'St. Gallen' turns to 'St Gallen', which is important for the output column 'gazName', where the administrative levels are concatenated via a '.').
+* updates on tests, to be more explicit about the explicit outcome of geometries and the ontology. 
+
 # arealDB 0.4.6
 
 * revise the whole geometry normalisation process to incorporate the new ontology system.
