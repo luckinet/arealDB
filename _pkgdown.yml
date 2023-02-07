@@ -17,7 +17,7 @@ reference:
     desc: functions to start a database (stage one)
     contents:
       - start_arealDB
-      - match_ontology
+      - matchOntology
       - makeExampleDB
   - title: register data
     desc: functions that register data and metadata (stage two)
