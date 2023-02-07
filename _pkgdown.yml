@@ -16,9 +16,8 @@ reference:
   - title: start database
     desc: functions to start a database (stage one)
     contents:
-      - start_arealDB
-      - matchOntology
       - makeExampleDB
+      - start_arealDB
   - title: register data
     desc: functions that register data and metadata (stage two)
     contents:
@@ -32,8 +31,7 @@ reference:
       - normTable
   - title: helpers
     contents:
-      - get_variable
-      - select_path
+      - matchOntology
       - getColTypes
       - testCompressed
       - updateTable
