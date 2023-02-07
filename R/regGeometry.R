@@ -11,13 +11,12 @@
 #'   only one municipality) or of a target variable.
 #' @param gSeries [\code{character(1)}]\cr the name of the geometry dataseries
 #'   (see \code{\link{regDataseries}}).
-#' @param label [\code{integerish(1)}]\cr the label in the onology this geometry
-#'   should correspond to.
+#' @param label [\code{list(.)}]\cr list of as many columns as there are in
+#'   common in the ontology and this geometry. Must be of the form
+#'   \code{list(class = columnName)}, with 'class' as the class of the ontology
+#'   corresponding to the respective column name in the geometry.
 #' @param layer [\code{character}]\cr the name of the file's layer from which
 #'   the geometry should be created (if applicable).
-#' @param nameCol [\code{character(.)}]\cr the columns in which the names of
-#'   administrative units are to be found, delimited by \code{"|"}; see
-#'   Examples.
 #' @param archive [\code{character(1)}]\cr the original file (perhaps a *.zip)
 #'   from which the geometry emerges.
 #' @param archiveLink [\code{character(1)}]\cr download-link of the archive.
@@ -54,9 +53,8 @@
 #'
 #'   # The GADM dataset comes as *.7z archive
 #'   regGeometry(gSeries = "gadm",
-#'               label = "al1",
+#'               label = list(al1 = "NAME_0"),
 #'               layer = "example_geom1",
-#'               nameCol = "NAME_0",
 #'               archive = "example_geom.7z|example_geom1.gpkg",
 #'               archiveLink = "https://gadm.org/",
 #'               nextUpdate = "2019-10-01",
@@ -66,9 +64,8 @@
 #'   # The second administrative level in GADM contains names in the columns
 #'   # NAME_0 and NAME_1
 #'   regGeometry(gSeries = "gadm",
-#'               label = "al2",
+#'               label = list(al1 = "NAME_0", al2 = "NAME_1"),
 #'               layer = "example_geom2",
-#'               nameCol = "NAME_0|NAME_1",
 #'               archive = "example_geom.7z|example_geom2.gpkg",
 #'               archiveLink = "https://gadm.org/",
 #'               nextUpdate = "2019-10-01",
@@ -86,7 +83,7 @@
 #' @export
 
 regGeometry <- function(..., subset = NULL, gSeries = NULL, label = NULL,
-                        layer = NULL, nameCol = NULL, archive = NULL, archiveLink = NULL,
+                        layer = NULL, archive = NULL, archiveLink = NULL,
                         nextUpdate = NULL, updateFrequency = NULL, notes = NULL,
                         update = FALSE, overwrite = FALSE){
 
@@ -97,7 +94,7 @@ regGeometry <- function(..., subset = NULL, gSeries = NULL, label = NULL,
 
   # get tables
   inv_dataseries <- read_csv(paste0(intPaths, "/inv_dataseries.csv"), col_types = "icccccc")
-  inv_geometries <- read_csv(paste0(intPaths, "/inv_geometries.csv"), col_types = "iicccccccDccc")
+  inv_geometries <- read_csv(paste0(intPaths, "/inv_geometries.csv"), col_types = "iicccccDDcc")
 
   if(dim(inv_dataseries)[1] == 0){
     stop("'inv_dataseries.csv' does not contain any entries!")
@@ -107,7 +104,7 @@ regGeometry <- function(..., subset = NULL, gSeries = NULL, label = NULL,
   testing <- getOption(x = "adb_testing")
 
   # check validity of arguments
-  assertCharacter(x = label, any.missing = FALSE, len = 1, null.ok = TRUE)
+  assertList(x = label, any.missing = FALSE)
   assertCharacter(x = subset, any.missing = FALSE, null.ok = TRUE)
   assertCharacter(x = gSeries, ignore.case = TRUE, any.missing = FALSE, len = 1, null.ok = TRUE)
   assertCharacter(x = layer, any.missing = FALSE, null.ok = TRUE)
@@ -122,8 +119,8 @@ regGeometry <- function(..., subset = NULL, gSeries = NULL, label = NULL,
               permutation.of = c("datID", "name", "description", "homepage",
                                  "licence_link", "licence_path", "notes"))
   assertNames(x = colnames(inv_geometries),
-              permutation.of = c("geoID", "datID", "label", "source_file", "layer",
-                                 "hierarchy", "orig_file", "orig_link", "download_date",
+              permutation.of = c("geoID", "datID", "source_file", "layer",
+                                 "label", "orig_file", "orig_link", "download_date",
                                  "next_update", "update_frequency", "notes"))
 
   broadest <- exprs(..., .named = TRUE)
@@ -134,6 +131,7 @@ regGeometry <- function(..., subset = NULL, gSeries = NULL, label = NULL,
   }
 
   gaz <- load_ontology(gazPath)
+  gazClasses <- get_class(ontology = gazPath)
   # include here a test that checks whether broaders is actually part of the gazetteer
   # if(!testSubset(x = names(broadest), choices = unique(gaz$attributes$class))){
   #   stop("please specify a main category that is part of the classes in the gazetteer (",
@@ -145,16 +143,6 @@ regGeometry <- function(..., subset = NULL, gSeries = NULL, label = NULL,
       stop("please give a subset that does not contain any '_' characters.")
     }
   }
-
-  if(is.null(nameCol)){
-    message("please type in the name of the column that contains unit names: ")
-    if(!testing){
-      nameCol <- readline()
-    } else {
-      nameCol <- "units"
-    }
-  }
-
 
   if(is.null(gSeries)){
     message("please type in to which series the geometry belongs: ")
@@ -182,17 +170,21 @@ regGeometry <- function(..., subset = NULL, gSeries = NULL, label = NULL,
     }
   }
 
-  if(is.null(label)){
-    message("please type in the ontology label of the units: ")
-    if(!testing){
-      label <- readline()
-    } else {
-      label <- "al1"
-    }
-    if(is.na(label)){
-      label = NA_character_
-    }
-  }
+  # if(is.null(label)){
+  #   message("please type in the ontology label and the column name of the units (e.g. al1=NAME_0: ")
+  #   if(!testing){
+  #     theLabel <- readline()
+  #   } else {
+  #     theLabel <- "al1"
+  #   }
+  #   if(is.na(theLabel)){
+  #     theLabel = NA_character_
+  #   }
+  # } else {
+    assertSubset(x = names(label), choices = gazClasses$label)
+    theLabel <- tail(names(label), 1)
+    labelString <- paste0(paste0(names(label), "=", label), collapse = "|")
+  # }
 
   if(is.null(archive)){
     message("please type in the archives' file name: ")
@@ -207,7 +199,7 @@ regGeometry <- function(..., subset = NULL, gSeries = NULL, label = NULL,
   }
 
   # put together file name and get confirmation that file should exist now
-  fileName <- paste0(mainPoly, "_", label, "_", subset, "_", gSeries, ".gpkg")
+  fileName <- paste0(mainPoly, "_", theLabel, "_", subset, "_", gSeries, ".gpkg")
   filePath <- paste0(intPaths, "/adb_geometries/stage2/", fileName)
   filesTrace <- str_split(archive, "\\|")[[1]]
 
@@ -308,14 +300,10 @@ regGeometry <- function(..., subset = NULL, gSeries = NULL, label = NULL,
     # to check that what has been given in 'nation' and 'nameCol' is in fact a
     # column in the geometry, load it
     if(is.null(mainPoly)){
-      theGeometry <- read_sf(dsn = filePath,
-                             stringsAsFactors = FALSE)
+      theGeometry <- read_sf(dsn = filePath, stringsAsFactors = FALSE)
     }
 
-    nameCols <- str_split(string = nameCol, pattern = "\\|")[[1]]
-    # if(length(nameCols) != label){
-    #   warning("'nameCol' contains less entries (", length(nameCols), ") than implied by the level (", level, ")")
-    # }
+    nameCols <- unlist(label, use.names = FALSE)
 
     # determine which layers exist and ask the user which to chose, if none is
     # given
@@ -337,10 +325,9 @@ regGeometry <- function(..., subset = NULL, gSeries = NULL, label = NULL,
     # construct new documentation
     doc <- tibble(geoID = newGID,
                   datID = dataSeries,
-                  label = label,
                   source_file = fileName,
                   layer = layer,
-                  hierarchy = nameCol,
+                  label = labelString,
                   orig_file = archive,
                   orig_link = archiveLink,
                   download_date = Sys.Date(),

@@ -65,7 +65,7 @@ normTable <- function(input = NULL, pattern = NULL, ontoMatch = NULL,
                       outType = "rds", beep = NULL, update = FALSE,
                       verbose = FALSE){
 
-  # input = NULL; pattern = "senasa"; outType = "rds"; ontoMatch = "commodity"; beep = 10; update = TRUE; verbose = FALSE; i = 1
+  # input = NULL; pattern = NULL; outType = "rds"; ontoMatch = NULL; beep = 10; update = TRUE; verbose = FALSE; i = 1
 
     # set internal paths
   intPaths <- getOption(x = "adb_path")
@@ -88,7 +88,7 @@ normTable <- function(input = NULL, pattern = NULL, ontoMatch = NULL,
   # get tables
   inv_tables <- read_csv(paste0(intPaths, "/inv_tables.csv"), col_types = "iiiccccDccccc")
   inv_dataseries <- read_csv(paste0(intPaths, "/inv_dataseries.csv"), col_types = "icccccc")
-  inv_geometries <- read_csv(paste0(intPaths, "/inv_geometries.csv"), col_types = "iiccccccDDcc")
+  inv_geometries <- read_csv(paste0(intPaths, "/inv_geometries.csv"), col_types = "iicccccDDcc")
 
   # check validity of arguments
   assertNames(x = colnames(inv_tables),
@@ -99,8 +99,8 @@ normTable <- function(input = NULL, pattern = NULL, ontoMatch = NULL,
               permutation.of = c("datID", "name", "description", "homepage",
                                  "licence_link", "licence_path", "notes"))
   assertNames(x = colnames(inv_geometries),
-              permutation.of = c("geoID", "datID", "label", "source_file", "layer",
-                                 "hierarchy", "orig_file", "orig_link", "download_date",
+              permutation.of = c("geoID", "datID", "source_file", "layer",
+                                 "label", "orig_file", "orig_link", "download_date",
                                  "next_update", "update_frequency", "notes"))
   assertLogical(x = update, len = 1)
   assertCharacter(x = ontoMatch, min.len = 1, any.missing = FALSE, null.ok = TRUE)
