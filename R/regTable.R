@@ -98,6 +98,7 @@
 #' }
 #' @importFrom readr read_csv write_rds guess_encoding
 #' @importFrom rlang ensym exprs eval_tidy
+#' @importFrom purrr map_chr
 #' @importFrom checkmate assertDataFrame assertNames assertCharacter
 #'   assertIntegerish assertSubset assertLogical testChoice assertChoice
 #'   assertFileExists assertClass assertTRUE testDataFrame testNames
@@ -118,7 +119,7 @@ regTable <- function(..., subset = NULL, dSeries = NULL, gSeries = NULL,
   # get tables
   inv_tables <- read_csv(paste0(intPaths, "/inv_tables.csv"), col_types = "iiiccccDccccc")
   inv_dataseries <- read_csv(paste0(intPaths, "/inv_dataseries.csv"), col_types = "icccccc")
-  inv_geometries <- read_csv(paste0(intPaths, "/inv_geometries.csv"), col_types = "iiccccccDDcc")
+  inv_geometries <- read_csv(paste0(intPaths, "/inv_geometries.csv"), col_types = "iicccccDDcc")
 
   if(dim(inv_dataseries)[1] == 0){
     stop("'inv_dataseries.csv' does not contain any entries!")
@@ -141,8 +142,8 @@ regTable <- function(..., subset = NULL, dSeries = NULL, gSeries = NULL,
               permutation.of = c("datID", "name", "description", "homepage",
                                  "licence_link", "licence_path", "notes"))
   assertNames(x = colnames(inv_geometries),
-              permutation.of = c("geoID", "datID", "label", "source_file", "layer",
-                                 "hierarchy", "orig_file", "orig_link", "download_date",
+              permutation.of = c("geoID", "datID", "source_file", "layer",
+                                 "label", "orig_file", "orig_link", "download_date",
                                  "next_update", "update_frequency", "notes"))
   assertCharacter(x = subset, any.missing = FALSE, null.ok = TRUE)
   assertCharacter(x = dSeries, ignore.case = TRUE, any.missing = FALSE, len = 1, null.ok = TRUE)
@@ -229,7 +230,11 @@ regTable <- function(..., subset = NULL, dSeries = NULL, gSeries = NULL,
 
   } else{
     tempDatID <- inv_dataseries$datID[inv_dataseries$name %in% gSeries]
-    geomSeries <- inv_geometries$geoID[inv_geometries$datID %in% tempDatID & inv_geometries$label == label]
+    tempLabels <- map_chr(.x = inv_geometries$label,
+                      .f = function(x){
+                        str_split(tail(str_split(x, "\\|")[[1]], 1), "=")[[1]][1]
+                      })
+    geomSeries <- inv_geometries$geoID[inv_geometries$datID %in% tempDatID & tempLabels == label]
     if(length(geomSeries) < 1){
       stop(paste0("! please first register geometries of the series '", gSeries,"' via 'regGeometries()' !"))
     }
