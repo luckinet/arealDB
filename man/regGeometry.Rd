@@ -10,7 +10,6 @@ regGeometry(
   gSeries = NULL,
   label = NULL,
   layer = NULL,
-  nameCol = NULL,
   archive = NULL,
   archiveLink = NULL,
   nextUpdate = NULL,
@@ -33,15 +32,13 @@ only one municipality) or of a target variable.}
 \item{gSeries}{[\code{character(1)}]\cr the name of the geometry dataseries
 (see \code{\link{regDataseries}}).}
 
-\item{label}{[\code{integerish(1)}]\cr the label in the onology this geometry
-should correspond to.}
+\item{label}{[\code{list(.)}]\cr list of as many columns as there are in
+common in the ontology and this geometry. Must be of the form
+\code{list(class = columnName)}, with 'class' as the class of the ontology
+corresponding to the respective column name in the geometry.}
 
 \item{layer}{[\code{character}]\cr the name of the file's layer from which
 the geometry should be created (if applicable).}
-
-\item{nameCol}{[\code{character(.)}]\cr the columns in which the names of
-administrative units are to be found, delimited by \code{"|"}; see
-Examples.}
 
 \item{archive}{[\code{character(1)}]\cr the original file (perhaps a *.zip)
 from which the geometry emerges.}
@@ -93,9 +90,8 @@ if(dev.interactive()){
 
   # The GADM dataset comes as *.7z archive
   regGeometry(gSeries = "gadm",
-              label = "al1",
+              label = list(al1 = "NAME_0"),
               layer = "example_geom1",
-              nameCol = "NAME_0",
               archive = "example_geom.7z|example_geom1.gpkg",
               archiveLink = "https://gadm.org/",
               nextUpdate = "2019-10-01",
@@ -105,9 +101,8 @@ if(dev.interactive()){
   # The second administrative level in GADM contains names in the columns
   # NAME_0 and NAME_1
   regGeometry(gSeries = "gadm",
-              label = "al2",
+              label = list(al1 = "NAME_0", al2 = "NAME_1"),
               layer = "example_geom2",
-              nameCol = "NAME_0|NAME_1",
               archive = "example_geom.7z|example_geom2.gpkg",
               archiveLink = "https://gadm.org/",
               nextUpdate = "2019-10-01",

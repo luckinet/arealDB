@@ -12,6 +12,7 @@ normGeometry(
   outType = "gpkg",
   priority = "ontology",
   beep = NULL,
+  simplify = FALSE,
   update = FALSE,
   verbose = FALSE
 )
@@ -50,6 +51,8 @@ option.}
 \item{beep}{[\code{integerish(1)}]\cr Number specifying what sound to be
 played to signal the user that a point of interaction is reached by the
 program, see \code{\link[beepr]{beep}}.}
+
+\item{simplify}{[\code{logical(1)}]\cr whether or not to simplify geometries.}
 
 \item{update}{[\code{logical(1)}]\cr whether or not the physical files should
 be updated (\code{TRUE}) or the function should merely return the geometry
