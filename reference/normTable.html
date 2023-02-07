@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">arealDB</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.4.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.0</span>
       </span>
     </div>
 
@@ -62,8 +62,9 @@
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">normTable</span><span class="op">(</span></span>
 <span>  input <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  pattern <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  <span class="va">...</span>,</span>
+<span>  ontoMatch <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  outType <span class="op">=</span> <span class="st">"rds"</span>,</span>
+<span>  beep <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  update <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -82,9 +83,9 @@ chosen.</p></dd>
 dataset names which match the regular expression will be processed.</p></dd>
 
 
-<dt>...</dt>
-<dd><p>[<code>character(1)</code>]<br> argument-value combination to filter the
-new tables by.</p></dd>
+<dt>ontoMatch</dt>
+<dd><p>[<code>character(.)</code>]<br> name of the column(s) that shall be
+matched with an ontology (defined in <code><a href="start_arealDB.html">start_arealDB</a></code>).</p></dd>
 
 
 <dt>outType</dt>
@@ -92,6 +93,12 @@ new tables by.</p></dd>
 implemented options are either <em>*.csv</em> (more exchangeable for a
 workflow based on several programs) or <em>*.rds</em> (smaller and less
 error-prone data-format but can only be read by R efficiently).</p></dd>
+
+
+<dt>beep</dt>
+<dd><p>[<code>integerish(1)</code>]<br> Number specifying what sound to be
+played to signal the user that a point of interaction is reached by the
+program, see <code><a href="https://rdrr.io/pkg/beepr/man/beep.html" class="external-link">beep</a></code>.</p></dd>
 
 
 <dt>update</dt>
@@ -165,7 +172,7 @@ are properly specified.</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

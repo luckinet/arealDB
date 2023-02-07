@@ -18,7 +18,7 @@ path."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathj
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">arealDB</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.4.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.0</span>
       </span>
     </div>
 
@@ -61,7 +61,7 @@ path.</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">start_arealDB</span><span class="op">(</span>root <span class="op">=</span> <span class="cn">NULL</span>, gazetteer <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">start_arealDB</span><span class="op">(</span>root <span class="op">=</span> <span class="cn">NULL</span>, gazetteer <span class="op">=</span> <span class="cn">NULL</span>, top <span class="op">=</span> <span class="cn">NULL</span>, ontology <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">setPath</span><span class="op">(</span>root <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -76,6 +76,18 @@ or shall contain an areal database.</p></dd>
 <dt>gazetteer</dt>
 <dd><p>[<code>character(1)</code>]<br> path to the gazetteer that holds
 the (hierarchical) information of territorial units used in this database.</p></dd>
+
+
+<dt>top</dt>
+<dd><p>[<code>character(1)</code>]<br> the label of the class in the
+gazetteer that represents the top-most unit (e.g. country) of the areal
+database that shall be started.</p></dd>
+
+
+<dt>ontology</dt>
+<dd><p>[<code>list(.)</code>]<br> named list with the path(s) of
+ontologies, where the list name identifies the variable that shall be
+matched with the ontology at the path.</p></dd>
 
 </dl></div>
     <div id="value">
@@ -103,11 +115,13 @@ the (hierarchical) information of territorial units used in this database.</p></
     <h2>Examples</h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">start_arealDB</span><span class="op">(</span>root <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"/newDB"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>              gazetteer <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"test_datasets/territories.rds"</span>,</span></span>
-<span class="r-in"><span>                                      package <span class="op">=</span> <span class="st">"arealDB"</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>                                      package <span class="op">=</span> <span class="st">"arealDB"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>              top <span class="op">=</span> <span class="st">"al1"</span>,</span></span>
+<span class="r-in"><span>              ontology <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>var <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"/ontology.rds"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> I have created a new project directory.</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"adb_path"</span><span class="op">)</span>; <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"gazetteer_path"</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/tmp/RtmpeWB2sA/newDB"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/tmp/RtmpucPbaU/newDB"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/home/runner/work/_temp/Library/arealDB/test_datasets/territories.rds"</span>
 </code></pre></div>
     </div>
@@ -123,7 +137,7 @@ the (hierarchical) information of territorial units used in this database.</p></
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">arealDB</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.4.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.0</span>
       </span>
     </div>
 
@@ -54,6 +54,36 @@
     </div>
 
     <div class="section level2">
+<h2 class="page-header" data-toc-text="0.5.0" id="arealdb-050---automatching-update">arealDB 0.5.0 - automatching update<a class="anchor" aria-label="anchor" href="#arealdb-050---automatching-update"></a></h2>
+<ul><li>spatial matches are now found automatically and inserted into the ontology.</li>
+<li>matching can be sped up by simplifying geometries.</li>
+<li>spatial hierarchy information of the different administrative levels are now streamlined and provided differently/more explicitly.</li>
+<li>various bug-fixes to handling terms (they are now more explicitly cleaned from white-space and dots in names are removed, e.g. ‘St. Gallen’ turns to ‘St Gallen’, which is important for the output column ‘gazName’, where the administrative levels are concatenated via a ‘.’).</li>
+<li>updates on tests, to be more explicit about the explicit outcome of geometries and the ontology.</li>
+</ul></div>
+    <div class="section level2">
+<h2 class="page-header" data-toc-text="0.4.6" id="arealdb-046">arealDB 0.4.6<a class="anchor" aria-label="anchor" href="#arealdb-046"></a></h2>
+<ul><li>revise the whole geometry normalisation process to incorporate the new ontology system.</li>
+</ul></div>
+    <div class="section level2">
+<h2 class="page-header" data-toc-text="0.4.5" id="arealdb-045">arealDB 0.4.5<a class="anchor" aria-label="anchor" href="#arealdb-045"></a></h2>
+<ul><li>fix how to derive the top-most class.</li>
+</ul></div>
+    <div class="section level2">
+<h2 class="page-header" data-toc-text="0.4.4" id="arealdb-044">arealDB 0.4.4<a class="anchor" aria-label="anchor" href="#arealdb-044"></a></h2>
+<ul><li>fix internals to make the code run faster.</li>
+</ul></div>
+    <div class="section level2">
+<h2 class="page-header" data-toc-text="0.4.3" id="arealdb-043">arealDB 0.4.3<a class="anchor" aria-label="anchor" href="#arealdb-043"></a></h2>
+<ul><li>rename <code>match_ontology()</code> to <code><a href="../reference/matchOntology.html">matchOntology()</a></code> and revise it so that it can handle several columns sequentially</li>
+<li>make use of getters of the ontologics package so that (large) gazetteers are not loaded but only the requried info are pulled from them</li>
+<li>remove functions <code>get_variable()</code> and <code>select_path()</code>, the former is integrated into <code><a href="../reference/matchOntology.html">matchOntology()</a></code> and the latter is not relevant anymore.</li>
+</ul></div>
+    <div class="section level2">
+<h2 class="page-header" data-toc-text="0.4.2" id="arealdb-042">arealDB 0.4.2<a class="anchor" aria-label="anchor" href="#arealdb-042"></a></h2>
+<ul><li>when using <code>regTable</code> with <code>update = FALSE</code>, the schema now has a more explicit diagnostic message.</li>
+</ul></div>
+    <div class="section level2">
 <h2 class="page-header" data-toc-text="0.4.1" id="arealdb-041">arealDB 0.4.1<a class="anchor" aria-label="anchor" href="#arealdb-041"></a></h2>
 <ul><li>rename <code>match_gazetteer</code> to <code>match_ontology</code> because it can also handle ontologies of other variables</li>
 <li>various fixes to make matching as convenient as possible.</li>
@@ -89,7 +119,8 @@
 </ul></div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.3.5" id="arealdb-035">arealDB 0.3.5<a class="anchor" aria-label="anchor" href="#arealdb-035"></a></h2>
-<ul><li>streamline overwriting of already registered items in the inventory tables.</li></ul></div>
+<ul><li>streamline overwriting of already registered items in the inventory tables.</li>
+</ul></div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.3.4" id="arealdb-034">arealDB 0.3.4<small>2020-07-01</small><a class="anchor" aria-label="anchor" href="#arealdb-034"></a></h2>
 <ul><li>include ‘makeExampleDB’, which allows to build an example database at any stage. This is useful for testing, debugging and examplifying an areal database.</li>
@@ -119,7 +150,7 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>

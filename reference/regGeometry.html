@@ -18,7 +18,7 @@ geospatial database."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">arealDB</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.4.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.0</span>
       </span>
     </div>
 
@@ -65,9 +65,8 @@ geospatial database.</p>
 <span>  <span class="va">...</span>,</span>
 <span>  subset <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  gSeries <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  level <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  label <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  layer <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  nameCol <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  archive <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  archiveLink <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  nextUpdate <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -98,20 +97,16 @@ only one municipality) or of a target variable.</p></dd>
 (see <code><a href="regDataseries.html">regDataseries</a></code>).</p></dd>
 
 
-<dt>level</dt>
-<dd><p>[<code>integerish(1)</code>]<br> the administrative level at which the
-geometry is recorded.</p></dd>
+<dt>label</dt>
+<dd><p>[<code>list(.)</code>]<br> list of as many columns as there are in
+common in the ontology and this geometry. Must be of the form
+<code>list(class = columnName)</code>, with 'class' as the class of the ontology
+corresponding to the respective column name in the geometry.</p></dd>
 
 
 <dt>layer</dt>
 <dd><p>[<code>character</code>]<br> the name of the file's layer from which
 the geometry should be created (if applicable).</p></dd>
-
-
-<dt>nameCol</dt>
-<dd><p>[<code>character(.)</code>]<br> the columns in which the names of
-administrative units are to be found, delimited by <code>"|"</code>; see
-Examples.</p></dd>
 
 
 <dt>archive</dt>
@@ -164,16 +159,15 @@ register shall overwrite a potentially already existing older version.</p></dd>
     <p>When processing geometries to which areal data shall be linked,
   carry out the following steps:</p><ol><li><p>Determine the main
   territory (such as a nation, or any other polygon), a <code>subset</code> (if
-  applicable), the dataseries of the geometry and the administrative
-  <code>level</code>, and provide them as arguments to this function.</p></li>
-<li><p>Run the
-  function.</p></li>
+  applicable), the dataseries of the geometry and the ontology <code>label</code>,
+  and provide them as arguments to this function.</p></li>
+<li><p>Run the function.</p></li>
 <li><p>Export the shapefile with the following properties:</p><ul><li><p>Format: GeoPackage</p></li>
-<li><p>File name: What is provided as
-  message by this function</p></li>
+<li><p>File name: What is provided as message by this
+  function</p></li>
 <li><p>CRS: EPSG:4326 - WGS 84</p></li>
-<li><p>make sure that
-  'all fields are exported'</p></li>
+<li><p>make sure that 'all fields are
+  exported'</p></li>
 </ul></li>
 <li><p>Confirm that you have saved the file.</p></li>
 </ol></div>
@@ -192,9 +186,8 @@ register shall overwrite a potentially already existing older version.</p></dd>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span>  <span class="co"># The GADM dataset comes as *.7z archive</span></span></span>
 <span class="r-in"><span>  <span class="fu">regGeometry</span><span class="op">(</span>gSeries <span class="op">=</span> <span class="st">"gadm"</span>,</span></span>
-<span class="r-in"><span>              level <span class="op">=</span> <span class="fl">1</span>,</span></span>
+<span class="r-in"><span>              label <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>al1 <span class="op">=</span> <span class="st">"NAME_0"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>              layer <span class="op">=</span> <span class="st">"example_geom1"</span>,</span></span>
-<span class="r-in"><span>              nameCol <span class="op">=</span> <span class="st">"NAME_0"</span>,</span></span>
 <span class="r-in"><span>              archive <span class="op">=</span> <span class="st">"example_geom.7z|example_geom1.gpkg"</span>,</span></span>
 <span class="r-in"><span>              archiveLink <span class="op">=</span> <span class="st">"https://gadm.org/"</span>,</span></span>
 <span class="r-in"><span>              nextUpdate <span class="op">=</span> <span class="st">"2019-10-01"</span>,</span></span>
@@ -204,9 +197,8 @@ register shall overwrite a potentially already existing older version.</p></dd>
 <span class="r-in"><span>  <span class="co"># The second administrative level in GADM contains names in the columns</span></span></span>
 <span class="r-in"><span>  <span class="co"># NAME_0 and NAME_1</span></span></span>
 <span class="r-in"><span>  <span class="fu">regGeometry</span><span class="op">(</span>gSeries <span class="op">=</span> <span class="st">"gadm"</span>,</span></span>
-<span class="r-in"><span>              level <span class="op">=</span> <span class="fl">2</span>,</span></span>
+<span class="r-in"><span>              label <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>al1 <span class="op">=</span> <span class="st">"NAME_0"</span>, al2 <span class="op">=</span> <span class="st">"NAME_1"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>              layer <span class="op">=</span> <span class="st">"example_geom2"</span>,</span></span>
-<span class="r-in"><span>              nameCol <span class="op">=</span> <span class="st">"NAME_0|NAME_1"</span>,</span></span>
 <span class="r-in"><span>              archive <span class="op">=</span> <span class="st">"example_geom.7z|example_geom2.gpkg"</span>,</span></span>
 <span class="r-in"><span>              archiveLink <span class="op">=</span> <span class="st">"https://gadm.org/"</span>,</span></span>
 <span class="r-in"><span>              nextUpdate <span class="op">=</span> <span class="st">"2019-10-01"</span>,</span></span>
@@ -227,7 +219,7 @@ register shall overwrite a potentially already existing older version.</p></dd>
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.6.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.7.</p>
 </div>
 
       </footer></div>
