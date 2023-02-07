@@ -35,7 +35,8 @@
 
 makeExampleDB <- function(path = NULL, until = NULL, verbose = FALSE){
 
-  # library(arealDB); library(ontologics); library(tidyverse); library(checkmate); library(tabshiftr); library(sf); until = "normTable"; verbose = FALSE; path = paste0(tempdir(), "/newDB")
+  # library(arealDB); library(ontologics); library(tidyverse); library(checkmate); library(tabshiftr); library(sf); library(rmapshaper)
+  # until = "normGeometry"; verbose = FALSE; path = paste0(tempdir(), "/newDB")
 
   inPath <- system.file("test_datasets", package = "arealDB", mustWork = TRUE)
   steps <- c("start_arealDB", "regDataseries", "regGeometry", "regTable", "normGeometry", "normTable")
@@ -112,9 +113,8 @@ makeExampleDB <- function(path = NULL, until = NULL, verbose = FALSE){
   if(any(theSteps %in% "regGeometry")){
 
     regGeometry(gSeries = "gadm",
-                label = "al1",
+                label = list(al1 = "NAME_0"),
                 layer = "example_geom1",
-                nameCol = "NAME_0",
                 archive = "example_geom.7z|example_geom1.gpkg",
                 archiveLink = "https://gadm.org/",
                 nextUpdate = "2019-10-01",
@@ -122,9 +122,8 @@ makeExampleDB <- function(path = NULL, until = NULL, verbose = FALSE){
                 update = TRUE)
 
     regGeometry(gSeries = "gadm",
-                label = "al2",
+                label = list(al1 = "NAME_0", al2 = "NAME_1"),
                 layer = "example_geom2",
-                nameCol = "NAME_0|NAME_1",
                 archive = "example_geom.7z|example_geom2.gpkg",
                 archiveLink = "https://gadm.org/",
                 nextUpdate = "2019-10-01",
@@ -132,9 +131,8 @@ makeExampleDB <- function(path = NULL, until = NULL, verbose = FALSE){
                 update = TRUE)
 
     regGeometry(gSeries = "gadm",
-                label = "al3",
+                label = list(al1 = "NAME_0", al2 = "NAME_1", al3 = "NAME_2"),
                 layer = "example_geom3",
-                nameCol = "NAME_0|NAME_1|NAME_2",
                 archive = "example_geom.7z|example_geom3.gpkg",
                 archiveLink = "https://gadm.org/",
                 nextUpdate = "2019-10-01",
@@ -142,9 +140,8 @@ makeExampleDB <- function(path = NULL, until = NULL, verbose = FALSE){
                 update = TRUE)
 
     regGeometry(gSeries = "madeUp",
-                label = "al3",
+                label = list(al1 = "NAME_0", al2 = "NAME_1", al3 = "NAME_2"),
                 layer = "example_geom4",
-                nameCol = "NAME_0|NAME_1|NAME_2",
                 archive = "example_geom.7z|example_geom4.gpkg",
                 archiveLink = "https://gadm.org/",
                 nextUpdate = "2019-10-01",
