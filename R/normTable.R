@@ -257,16 +257,16 @@ normTable <- function(input = NULL, pattern = NULL, ontoMatch = NULL,
         } else if(outType == "rds"){
           saveRDS(object = out, file = paste0(intPaths, "/adb_tables/stage3/", theUnits[j], ".rds"))
         }
+        ret <- bind_rows(ret, out)
       }
 
       if(moveFile){
         file.copy(from = thisInput, to = paste0(intPaths, "/adb_tables/stage2/processed"))
         file.remove(thisInput)
       }
-
+    } else {
+      ret <- thisTable
     }
-
-    ret <- bind_rows(ret, out)
 
     gc()
 
