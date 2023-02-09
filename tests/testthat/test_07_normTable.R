@@ -10,7 +10,7 @@ context("normTable")
 test_that("tables can be normalised (without matched variables)", {
 
   dbpath <- paste0(tempdir(), "/newDB")
-  makeExampleDB(until = "normGeometry", path = dbpath) #here it is sorting in Gemeinde 1.3 and 1.4 wrong (with has_broader .001)
+  makeExampleDB(until = "normGeometry", path = dbpath)
 
   output <- normTable(input = paste0(getOption("adb_path"), "/adb_tables/stage2/_al1_barleyMaize_1990_2017_madeUp.csv"),
                       update = TRUE)
@@ -19,12 +19,13 @@ test_that("tables can be normalised (without matched variables)", {
                    y = c("a_nation", "county_1", "municipality1_1", "municipality1_2", "county_2", "municipality2_1",
                          "county_3", "municipality3", "county_4", "municipality4_1", "municipality4_2"))
   expect_set_equal(x = onto@concepts$harmonised$has_close_match,
-                   y = c("gadm_1.3 | madeUp_1.3", "gadm_2.3 | madeUp_2.3", NA, NA, "gadm_3.3 | madeUp_3.3", "madeUp_6.3",
-                         "gadm_4.3 | madeUp_4.3", "madeUp_7.3", "gadm_5.3 | madeUp_5.3", "madeUp_8.3", "madeUp_9.3"))
+                   y = c("gadm_1.3 | madeUp_1.3", "gadm_2.3 | madeUp_2.3", "gadm_6.3", "gadm_7.3", "gadm_3.3 | madeUp_3.3",
+                         "gadm_8.3 | madeUp_4.3", "gadm_4.3 | madeUp_5.3", "gadm_9.3 | madeUp_6.3", "gadm_5.3 | madeUp_7.3",
+                         "gadm_10.3 | madeUp_8.3", "gadm_11.3 | madeUp_9.3"))
   expect_set_equal(x = onto@concepts$harmonised$has_broader_match,
-                   y = c(NA, NA, NA, NA, "madeUp_11.3", "madeUp_11.3", NA, NA, NA, NA, NA))
+                   y = c(NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA))
   expect_set_equal(x = onto@concepts$harmonised$has_narrower_match,
-                   y = c(NA, NA, NA, "madeUp_10.3", NA, NA, NA, NA, NA, NA, NA))
+                   y = c(NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA))
 
   # test whether the resulting file is "correct" ----
   expect_file_exists(x = paste0(getOption("adb_path"), "/adb_tables/stage2/processed/_al1_barleyMaize_1990_2017_madeUp.csv"))
@@ -46,7 +47,7 @@ test_that("tables can be normalised (with matched variables)", {
   expect_file_exists(x = paste0(getOption("adb_path"), "/adb_tables/stage2/processed/_al1_barleyMaize_1990_2017_madeUp.csv"))
   expect_file_exists(x = paste0(getOption("adb_path"), "/adb_tables/stage2/processed/aNation_al2_barleyMaize_1990_2017_madeUp.csv"))
   final <- readRDS(file = paste0(getOption("adb_path"), "/adb_tables/stage3/a_nation.rds"))
-  expect_data_frame(x = final, nrows = 280, ncols = 9)
+  expect_data_frame(x = final, nrows = 224, ncols = 9)
   expect_names(x = names(final), identical.to = c("tabID", "geoID", "gazID", "gazName", "gazMatch", "year", "commodity", "harvested", "production"))
 
 })
