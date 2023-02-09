@@ -42,7 +42,13 @@ globalVariables(c(
   "target",
   "tempID",
   "thisName",
-  "siblings"
+  "siblings",
+  "has_close_match",
+  "has_broader_match",
+  "has_narrower_match",
+  "toExport",
+  "externalID",
+  "theColumn"
 ))
 
 .onAttach <- function(libname, pkgname){
