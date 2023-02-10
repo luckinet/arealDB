@@ -112,6 +112,8 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
                          outType = "gpkg", priority = "ontology", beep = NULL,
                          simplify = FALSE, update = FALSE, verbose = FALSE){
 
+  # input = NULL; pattern = "eurostat"; query <- NULL; thresh = 10; outType = "gpkg"; priority = "spatial"; beep = 10; simplify = FALSE; update = TRUE; verbose = FALSE; i = j = 1
+
   # set internal paths
   intPaths <- paste0(getOption(x = "adb_path"))
   gazPath <- paste0(getOption(x = "gazetteer_path"))
@@ -470,6 +472,8 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
                          s3_prop = round(intersect_area/s3_area*100, 5),
                          s2_prop = round(intersect_area/s2_area*100, 5)) %>%
                   arrange(gazID))
+              # plot(stage2Geom["external"], key.pos = 1, key.width = lcm(1.3), key.length = 1.0)
+              # plot(stage3Geom["external"], key.pos = 1, key.width = lcm(1.3), key.length = 1.0)
 
               message("    -> Determining matches")
               tempGeom <- overlapGeom %>%
@@ -545,6 +549,7 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
                 ungroup() %>%
                 group_by(external, s2_geom, new_name, siblings, gazID, gazName) %>%
                 summarise(match = paste0(match, collapse = " | "))
+
             }
 
             tempGeom <- tempGeom %>%
@@ -559,15 +564,20 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
                      gazClass = tail(allCols, 1)) %>%
               select(gazID, gazName, gazClass, match, external, geoID, geom = s2_geom)
 
+            if(!fileExists){
+              tempGeom <- tempGeom %>%
+                mutate(match = paste0("close [xx<>xx_", gazID, "]"))
+            }
+
             outGeom <- outGeom %>%
               bind_rows(tempGeom)
 
             # add the new concepts to the gazetteer
             toOnto <- outGeom %>%
               rowwise() %>%
-              mutate(id = paste0(head(str_split_1(gazID, "[.]"), -1), collapse = "."))
+              mutate(parentID = paste0(head(str_split_1(gazID, "[.]"), -1), collapse = "."))
             new_concept(new = toOnto$external,
-                        broader = get_concept(table = tibble(id = toOnto$id), ontology = gazPath),
+                        broader = get_concept(table = tibble(id = toOnto$parentID), ontology = gazPath),
                         class = toOnto$gazClass,
                         ontology =  gazPath)
 
