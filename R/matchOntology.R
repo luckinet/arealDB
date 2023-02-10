@@ -147,17 +147,17 @@ matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
   } else {
     if(i == 1){
       toOut <- table %>%
-        left_join(harmonisedConc %>% select(!!theColumn := label, id), theColumn)
+        left_join(harmonisedConc %>% select(!!tail(allCols, 1) := label, id), tail(allCols, 1))
     } else {
       toOut <- toOut %>%
         select(-any_of(c("external", "has_broader", "match", "has_source"))) %>%
         rename(has_broader = id) %>%
-        left_join(harmonisedConc %>% select(!!theColumn := label, has_broader, id), c(theColumn, "has_broader"))
+        left_join(harmonisedConc %>% select(!!tail(allCols, 1) := label, has_broader, id), c(tail(allCols, 1), "has_broader"))
     }
     toOut <- toOut %>%
       mutate(match = "exact",
              has_source = "1",
-             external = !!sym(theColumn))
+             external = !!sym(tail(allCols, 1)))
   }
 
   if(!all_cols){
