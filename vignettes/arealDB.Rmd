@@ -1,0 +1,56 @@
+---
+title: "arealDB - Harmonise and integrate heterogeneous areal data"
+output: 
+  bookdown::html_document2:
+    fig_caption: yes
+    number_sections: yes
+    theme: spacelab
+    highlight: pygments
+    toc: yes
+    toc_float: yes
+urlcolor: blue
+fontsize: 12pt
+linestretch: 1.15
+link-citations: yes
+vignette: >
+  %\VignetteIndexEntry{reorganising messy data}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(arealDB)
+```
+
+
+# Rationale
+
+Areal data are any data that summarise a certain aspect related to a particular area. Those data are relevant in many applications in the environmental and socioeconomic sciences, such as biodiversity checklists, agricultural statistics, or socioeconomic surveys. For applications that surpass the spatial, temporal or thematic scope of any single data source, data must be integrated from several heterogeneous sources. Inconsistent concepts, definitions, or messy data tables make this a tedious and error-prone process.
+
+`arealDB` has been developed for the purpose of providing an easy-to-use way to integrate areal data together with associated geometries into a standardised database. In the current, revised version, it makes use of the `ontologics` R-package to harmonise the names of territories (the geometries) and the target variables (the tables).
+
+
+This is an updated version of the replication script [appendix/source](https://arxiv.org/format/1909.06610) of the pre-print, to exemplify not only the use, but also the differences between the initially released version and this revised version.
+
+
+# The basics
+
+## Gazetteer
+
+## Ontology
+
+# Register your data
+
+
+# Normalise ...
+
+## ... geometries
+
+## ... tables

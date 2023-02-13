@@ -26,6 +26,8 @@ geometries) and the target variables (from tables). Moreover, it uses
 the `tabshiftr` R-package to reshape disorganised tabular data into a
 common format.
 
+![Schematic overview of the result](./vignettes/schematic_overview.png)
+
 ## Installation
 
 1)  Install the official version from CRAN:

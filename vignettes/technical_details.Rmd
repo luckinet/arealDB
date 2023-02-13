@@ -1,0 +1,30 @@
+---
+title: "technical_details"
+output: 
+  bookdown::html_document2:
+    fig_caption: yes
+    number_sections: yes
+    theme: spacelab
+    highlight: pygments
+    toc: yes
+    toc_float: yes
+urlcolor: blue
+fontsize: 12pt
+linestretch: 1.15
+link-citations: yes
+vignette: >
+  %\VignetteIndexEntry{reorganising messy data}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(arealDB)
+```
