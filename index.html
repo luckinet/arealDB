@@ -81,10 +81,11 @@
 <div class="section level1">
 <div class="page-header"><h1 id="arealdb">arealDB<a class="anchor" aria-label="anchor" href="#arealdb"></a>
 </h1></div>
-<p><a href="https://cran.r-project.org/package=arealDB" class="external-link"><img src="http://www.r-pkg.org/badges/version/arealDB" alt="CRAN_Status_Badge"></a> <a href="https://github.com/luckinet/arealDB/actions" class="external-link"><img src="https://github.com/luckinet/arealDB/workflows/R-CMD-check/badge.svg" alt="R-CMD-check"></a> <a href="https://codecov.io/github/EhrmannS/arealDB?branch=master" class="external-link"><img src="https://img.shields.io/codecov/c/github/luckinet/arealDB/master.svg" alt="Coverage Status"></a> <a href="https://cran.r-project.org/package=arealDB" class="external-link"><img src="http://cranlogs.r-pkg.org/badges/grand-total/arealDB"></a> <a href="https://lifecycle.r-lib.org/articles/stages.html#maturing" class="external-link"><img src="https://img.shields.io/badge/lifecycle-maturing-blue.svg" alt="Lifecycle:maturing"></a></p>
+<p><a href="https://cran.r-project.org/package=arealDB" class="external-link"><img src="http://www.r-pkg.org/badges/version/arealDB" alt="CRAN_Status_Badge"></a> <a href="https://github.com/luckinet/arealDB/actions" class="external-link"><img src="https://github.com/luckinet/arealDB/workflows/R-CMD-check/badge.svg" alt="R-CMD-check"></a> <a href="https://codecov.io/github/EhrmannS/arealDB?branch=master" class="external-link"><img src="https://img.shields.io/codecov/c/github/luckinet/arealDB/master.svg" alt="Coverage Status"></a> <a href="https://cran.r-project.org/package=arealDB" class="external-link"><img src="http://cranlogs.r-pkg.org/badges/grand-total/arealDB"></a> <a href="https://lifecycle.r-lib.org/articles/stages.html#stable" class="external-link"><img src="https://img.shields.io/badge/lifecycle-stable-brightgreen.svg" alt="Lifecycle: stable"></a></p>
 <div class="section level2">
 <h2 id="overview">Overview<a class="anchor" aria-label="anchor" href="#overview"></a>
 </h2>
+<p>Areal data are a rather frequent type of data in many applications of the environmental and socioeconomic sciences, where various aspects are summarized for particular areas such as administrative territories. Many of those applications surpass the spatial, temporal or thematic scope of any single data source, so that data must be harmonised and normalised across many distinct standards. <code>arealDB</code> has been developed for the purpose of building a standardised database encompassing all issues that come with this. In the current, revised version, it makes use of the <code>ontologics</code> R-package to harmonise the names of territories (from geometries) and the target variables (from tables). Moreover, it uses the <code>tabshiftr</code> R-package to reshape disorganised tabular data into a common format.</p>
 </div>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
@@ -96,20 +97,30 @@
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"arealDB"</span><span class="op">)</span></span></code></pre></div>
 <p>or the latest development version from github:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"EhrmannS/arealDB"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"luckinet/arealDB"</span><span class="op">)</span></span></code></pre></div>
 <ol start="2" style="list-style-type: decimal">
-<li>Read the <a href="https://www.sciencedirect.com/science/article/abs/pii/S1364815220307751" class="external-link">paper</a> for an in-depth description of the procedure.</li>
+<li>Read the <a href="https://www.sciencedirect.com/science/article/abs/pii/S1364815220307751" class="external-link">paper</a> for a more scientific background, or study the vignettes on <a href="https://luckinet.github.io/arealDB/articles/arealDB.html" class="external-link">the arealDB pipeline</a> and <a href="https://luckinet.github.io/arealDB/articles/technical_details.html" class="external-link">an in depth</a> explanation of the underlying procedures.</li>
 </ol>
 </div>
 <div class="section level2">
 <h2 id="getting-started">Getting started<a class="anchor" aria-label="anchor" href="#getting-started"></a>
 </h2>
-<p><em>work in process</em></p>
+<p>To study how <code>arealDB</code> works, one can make use of the function <code><a href="reference/makeExampleDB.html">makeExampleDB()</a></code>, where the full process of building an areal database can be “simulated” with dummy data. This can be used to train yourself on a particular step based on a fully valid database up until a certain stage of the process. For instance, to set up database that has merely just been started, but doesn’t contain any thematic data yet, one would use <code>makeExampleDB(path = paste0(tempdir(), "/newDB"), until = "start_arealDB")</code>.</p>
+<p>In principle, <code>arealDB</code> follows a simple process involving three stages:</p>
+<ol style="list-style-type: decimal">
+<li>
+<strong>Setup the database (<em>stage1</em>):</strong> To start a new areal database, one needs to specify a gazetteer that contains the valid names of territories and optionally an ontology that contains the terms that valid for the target variable(s).</li>
+<li>
+<strong>Register dataseries, geometries and tables (<em>stage2</em>):</strong> Data are typically part of some series of data, a collection of tables that are formatted by the same entity and typically in the same or very similar way across all tables. A data item that shall be inserted into a database is registered by calling the registration function. This function registers the configuration of the file and/or records meta-data. For areal data there is typically a spatial reference to which the data shall be associated. These geometries would be registered before the tables containing the data.</li>
+<li>
+<strong>Normalize geometries and tables (<em>stage3</em>):</strong> After registering all relevant data, they are reshaped into a standardized database format. In this process terms of territories and target variables are “translated” according to gazetteer and ontology, spatial data are standardized and validated, thematic data are standardized and matched to spatial data, and the spatial data are matched with the optionally already existing spatial database, for instance if that has been built off the GADM or GAUL standardized datasets.</li>
+</ol>
+<p>For an in-depth example-run of the pipeline, consult <a href="https://luckinet.github.io/arealDB/articles/arealDB.html" class="external-link">this vignette</a> and for details on the procedures running in the background, consult <a href="https://luckinet.github.io/arealDB/articles/technical_details.html" class="external-link">this vignette</a>.</p>
 </div>
 <div class="section level2">
-<h2 id="examples">Examples<a class="anchor" aria-label="anchor" href="#examples"></a>
+<h2 id="acknowledgement">Acknowledgement<a class="anchor" aria-label="anchor" href="#acknowledgement"></a>
 </h2>
-<p>For a detailed example, please refer to the replication script <a href="https://arxiv.org/format/1909.06610" class="external-link">appendix/source</a> of the pre-print.</p>
+<p>This work was supported by funding to Carsten Meyer through the Flexpool mechanism of the German Centre for Integrative Biodiversity Research (iDiv) (FZT-118, DFG).</p>
 </div>
 </div>
   </div>
