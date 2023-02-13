@@ -1,5 +1,5 @@
 ---
-title: "technical_details"
+title: "In-Depth description of procedures"
 output: 
   bookdown::html_document2:
     fig_caption: yes
@@ -13,7 +13,7 @@ fontsize: 12pt
 linestretch: 1.15
 link-citations: yes
 vignette: >
-  %\VignetteIndexEntry{reorganising messy data}
+  %\VignetteIndexEntry{in-depth description}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

@@ -13,7 +13,7 @@ fontsize: 12pt
 linestretch: 1.15
 link-citations: yes
 vignette: >
-  %\VignetteIndexEntry{reorganising messy data}
+  %\VignetteIndexEntry{arealDB - Harmonise and integrate heterogeneous areal data}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
