@@ -1,4 +1,4 @@
-#' Match territories in a table with an ontology/gazetteer
+#' Match target terms with an ontology
 #'
 #' This function takes a table to replace the values of various columns with
 #' harmonised values listed in the project specific gazetteer.
