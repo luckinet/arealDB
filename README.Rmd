@@ -26,7 +26,7 @@ knitr::opts_chunk$set(
 Areal data are a rather frequent type of data in many applications of the environmental and socioeconomic sciences, where various aspects are summarized for particular areas such as administrative territories. Many of those applications surpass the spatial, temporal or thematic scope of any single data source, so that data must be harmonised and normalised across many distinct standards.
 `arealDB` has been developed for the purpose of building a standardised database encompassing all issues that come with this. In the current, revised version, it makes use of the `ontologics` R-package to harmonise the names of territories (from geometries) and the target variables (from tables). Moreover, it uses the `tabshiftr` R-package to reshape disorganised tabular data into a common format.
 
-![Schematic overview of the result](./vignettes/schematic_overview.png)
+![Schematic overview of the result](https://github.com/luckinet/arealDB/blob/master/vignettes/schematic_overview.png)
 
 
 ## Installation

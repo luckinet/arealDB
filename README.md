@@ -26,7 +26,8 @@ geometries) and the target variables (from tables). Moreover, it uses
 the `tabshiftr` R-package to reshape disorganised tabular data into a
 common format.
 
-![Schematic overview of the result](./vignettes/schematic_overview.png)
+![Schematic overview of the
+result](https://github.com/luckinet/arealDB/blob/master/vignettes/schematic_overview.png)
 
 ## Installation
 
