@@ -45,12 +45,9 @@ devtools::install_github("luckinet/arealDB")
 
 2)  Read the
     [paper](https://www.sciencedirect.com/science/article/abs/pii/S1364815220307751)
-    for a more scientific background, or study the vignettes on [the
+    for a more scientific background, or study the vignette on [the
     arealDB
-    pipeline](https://luckinet.github.io/arealDB/articles/arealDB.html)
-    and [an in
-    depth](https://luckinet.github.io/arealDB/articles/technical_details.html)
-    explanation of the underlying procedures.
+    pipeline](https://luckinet.github.io/arealDB/articles/arealDB.html).
 
 ## Getting started
 
@@ -86,11 +83,6 @@ In principle, `arealDB` follows a simple process involving three stages:
     matched to spatial data, and the spatial data are matched with the
     optionally already existing spatial database, for instance if that
     has been built off the GADM or GAUL standardized datasets.
-
-For an in-depth example-run of the pipeline, consult [this
-vignette](https://luckinet.github.io/arealDB/articles/arealDB.html) and
-for details on the procedures running in the background, consult [this
-vignette](https://luckinet.github.io/arealDB/articles/technical_details.html).
 
 ## Acknowledgement
 
