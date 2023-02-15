@@ -43,7 +43,7 @@ or the latest development version from github:
 devtools::install_github("luckinet/arealDB")
 ```
 
-2) Read the [paper](https://www.sciencedirect.com/science/article/abs/pii/S1364815220307751) for a more scientific background, or study the vignettes on [the arealDB pipeline](https://luckinet.github.io/arealDB/articles/arealDB.html) and [an in depth](https://luckinet.github.io/arealDB/articles/technical_details.html) explanation of the underlying procedures.
+2) Read the [paper](https://www.sciencedirect.com/science/article/abs/pii/S1364815220307751) for a more scientific background, or study the vignettes on [the arealDB pipeline](https://luckinet.github.io/arealDB/articles/arealDB.html).
 
 
 ## Getting started
@@ -54,9 +54,7 @@ In principle, `arealDB` follows a simple process involving three stages:
 
 1. **Setup the database (*stage1*):** To start a new areal database, one needs to specify a gazetteer that contains the valid names of territories and optionally an ontology that contains the terms that valid for the target variable(s).
 2. **Register dataseries, geometries and tables (*stage2*):** Data are typically part of some series of data, a collection of tables that are formatted by the same entity and typically in the same or very similar way across all tables. A data item that shall be inserted into a database is registered by calling the registration function. This function registers the configuration of the file and/or records meta-data. For areal data there is typically a spatial reference to which the data shall be associated. These geometries would be registered before the tables containing the data.
-3. **Normalize geometries and tables (*stage3*):** After registering all relevant data, they are reshaped into a standardized database format. In this process terms of territories and target variables are "translated" according to gazetteer and ontology, spatial data are standardized and validated, thematic data are standardized and matched to spatial data, and the spatial data are matched with the optionally already existing spatial database, for instance if that has been built off the GADM or GAUL standardized datasets. 
-
-For an in-depth example-run of the pipeline, consult [this vignette](https://luckinet.github.io/arealDB/articles/arealDB.html) and for details on the procedures running in the background, consult [this vignette](https://luckinet.github.io/arealDB/articles/technical_details.html).
+3. **Normalize geometries and tables (*stage3*):** After registering all relevant data, they are reshaped into a standardized database format. In this process terms of territories and target variables are "translated" according to gazetteer and ontology, spatial data are standardized and validated, thematic data are standardized and matched to spatial data, and the spatial data are matched with the optionally already existing spatial database, for instance if that has been built off the GADM or GAUL standardized datasets.
 
 
 ## Acknowledgement
