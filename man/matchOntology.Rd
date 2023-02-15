@@ -2,7 +2,7 @@
 % Please edit documentation in R/matchOntology.R
 \name{matchOntology}
 \alias{matchOntology}
-\title{Match territories in a table with an ontology/gazetteer}
+\title{Match target terms with an ontology}
 \usage{
 matchOntology(
   table = NULL,
