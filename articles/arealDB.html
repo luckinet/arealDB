@@ -40,6 +40,9 @@
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
 <li>
+  <a href="../articles/arealDB.html">Getting Started</a>
+</li>
+<li>
   <a href="../reference/index.html">Reference</a>
 </li>
 <li>
@@ -84,12 +87,17 @@ areal data</h1>
     
     
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/luckinet/arealDB" class="external-link">arealDB</a></span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/luckinet/arealDB" class="external-link">arealDB</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyverse.tidyverse.org" class="external-link">tidyverse</a></span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">DBDir</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="va">gazDir</span> <span class="op">&lt;-</span> <span class="st">"directory/to/gazetteer.rds"</span></span>
+<span><span class="va">ontoDir</span> <span class="op">&lt;-</span> <span class="st">"directory/to/ontology.rds"</span></span></code></pre></div>
 <div class="section level2">
 <h2 id="rationale">Rationale<a class="anchor" aria-label="anchor" href="#rationale"></a>
 </h2>
 <p>Areal data are any data that summarise a certain aspect related to a
-particular area. Those data are relevant in many applications in the
+particular region. Those data are relevant in many applications in the
 environmental and socioeconomic sciences, such as biodiversity
 checklists, agricultural statistics, or socioeconomic surveys. For
 applications that surpass the spatial, temporal or thematic scope of any
@@ -102,36 +110,415 @@ geometries into a standardised database. In the current, revised
 version, it makes use of the <code>ontologics</code> R-package to
 harmonise the names of territories (the geometries) and the target
 variables (the tables).</p>
-<p>This is an updated version of the replication script <a href="https://arxiv.org/format/1909.06610" class="external-link">appendix/source</a> of the
-pre-print, to exemplify not only the use, but also the differences
-between the initially released version and this revised version.</p>
+<p>A previous version of this tutorial can be found in the replication
+script <a href="https://arxiv.org/format/1909.06610" class="external-link">appendix/source</a>
+of the pre-print. This version is not an exact replication script, as it
+is built mostly with dummy-code where paths on the harddisc would be
+needed. However, it should still serve to exemplify how to use
+<code>arealDB</code> in the current version.</p>
 </div>
 <div class="section level2">
 <h2 id="the-basics">The basics<a class="anchor" aria-label="anchor" href="#the-basics"></a>
 </h2>
-<div class="section level3">
-<h3 id="gazetteer">Gazetteer<a class="anchor" aria-label="anchor" href="#gazetteer"></a>
-</h3>
-</div>
+<p>To ensure that databases that are built with <code>arealDB</code> are
+properly standardized, the R-package makes use of a particular
+data-structure in which concepts and and their hierarchical
+relationships are recorded. The idea for this structure is based on a
+broader effort that shall make the internet more interoperable and
+machine-readable, the <a href="https://en.wikipedia.org/wiki/Semantic_Web" class="external-link">"Semantic Web"</a>.
+This can be useful for both, the names of territories (which are
+typically different across languages and across statistical agencies)
+and also the values of the variables that shall be recorded. For both
+registers, <code>arealDB</code> makes use of the R-package <a href="https://github.com/luckinet/ontologics" class="external-link"><code>ontologics</code></a>,
+that allows recording of various concepts in such a data-structure.</p>
 <div class="section level3">
 <h3 id="ontology">Ontology<a class="anchor" aria-label="anchor" href="#ontology"></a>
 </h3>
+<blockquote>
+<p>[…] More simply, an ontology is a way of showing the properties of a
+subject area and how they are related, by defining a set of concepts and
+categories that represent the subject. <a href="https://en.wikipedia.org/wiki/Ontology_(computer_science)" class="external-link">[wikipedia]</a></p>
+</blockquote>
+<p>Any target variable can (and should be) recorded in a standardized
+fashion. It may be extremely tricky to identify a domain-specific
+standard because this usually involves social processes (people need to
+agree upon it), however this is not part of this tutorial. For example,
+concepts such as biological species are part of a complex taxonomy of
+terms that identify <em>kingdoms</em>, <em>families</em>,
+<em>species</em>, <em>varieties</em> and many more. Species are nested
+within families and other hierarchical and synonymous relationships
+exist in such taxonomies. All these issues are addressed in an
+ontology.</p>
+</div>
+<div class="section level3">
+<h3 id="gazetteer">Gazetteer<a class="anchor" aria-label="anchor" href="#gazetteer"></a>
+</h3>
+<blockquote>
+<p>A gazetteer is a geographical index or directory used in conjunction
+with a map or atlas… <a href="https://en.wikipedia.org/wiki/Gazetteer" class="external-link">[wikipedia]</a></p>
+</blockquote>
+<p>Territory names are recorded in a gazetteer, which can be regarded as
+an ontology of territorial names. Territorial names are typically nested
+within regions at several levels, such as counties that are nested in a
+nation. To showcase how a gazetteer (and also an ontology by extension)
+should be configured, we are building one for the United Nations
+geoscheme here.</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># The regions and subregions we want to include into the gazetteer</span></span>
+<span><span class="va">un_region</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"AFRICA"</span>, <span class="st">"AMERICAS"</span>, <span class="st">"ANTARCTICA"</span>, <span class="st">"ASIA"</span>, <span class="st">"EUROPE"</span>, <span class="st">"OCEANIA"</span><span class="op">)</span></span>
+<span>                         </span>
+<span><span class="va">un_subregion</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="op">(</span>concept <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>  <span class="st">"Eastern Africa"</span>, <span class="st">"Middle Africa"</span>, <span class="st">"Northern Africa"</span>, <span class="st">"Southern Africa"</span>, <span class="st">"Western Africa"</span>,</span>
+<span>  <span class="st">"Caribbean"</span>, <span class="st">"Central America"</span>, <span class="st">"Northern America"</span>, <span class="st">"Southern America"</span>,</span>
+<span>  <span class="st">"Antarctica"</span>,</span>
+<span>  <span class="st">"Central Asia"</span>, <span class="st">"Eastern Asia"</span>, <span class="st">"Southeastern Asia"</span>, <span class="st">"Southern Asia"</span>, <span class="st">"Western Asia"</span>,</span>
+<span>  <span class="st">"Eastern Europe"</span>, <span class="st">"Northern Europe"</span>, <span class="st">"Southern Europe"</span>, <span class="st">"Western Europe"</span>,</span>
+<span>  <span class="st">"Australia and New Zealand"</span>, <span class="st">"Melanesia"</span>, <span class="st">"Micronesia"</span>, <span class="st">"Polynesia"</span><span class="op">)</span>,</span>
+<span>  broader <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="va">un_region</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, <span class="fl">5</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="va">un_region</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span>, <span class="fl">4</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="va">un_region</span><span class="op">[</span><span class="fl">3</span><span class="op">]</span>, <span class="fl">1</span><span class="op">)</span>,</span>
+<span>             <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="va">un_region</span><span class="op">[</span><span class="fl">4</span><span class="op">]</span>, <span class="fl">5</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="va">un_region</span><span class="op">[</span><span class="fl">5</span><span class="op">]</span>, <span class="fl">4</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="va">un_region</span><span class="op">[</span><span class="fl">6</span><span class="op">]</span>, <span class="fl">4</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># To start building the gazetteer, we first need to record some meta-data ...</span></span>
+<span><span class="va">gazetteer</span> <span class="op">&lt;-</span> </span>
+<span>  <span class="fu">start_ontology</span><span class="op">(</span>name <span class="op">=</span> <span class="st">"gazetteer"</span>, </span>
+<span>                 path <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">DBDir</span>, <span class="st">"/tables/"</span><span class="op">)</span>,</span>
+<span>                 version <span class="op">=</span> <span class="st">"1.0.0"</span>,</span>
+<span>                 code <span class="op">=</span> <span class="st">".xxx"</span>,</span>
+<span>                 description <span class="op">=</span> <span class="st">"a UN geomscheme gazetteer"</span>,</span>
+<span>                 homepage <span class="op">=</span> <span class="st">"https://en.wikipedia.org/wiki/United_Nations_geoscheme"</span>,</span>
+<span>                 license <span class="op">=</span> <span class="st">"CC-BY-4.0"</span>,</span>
+<span>                 notes <span class="op">=</span> <span class="st">"This gazetteer nests each nation into the United Nations geoscheme."</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># ... then we can define some new source of information from which external concepts would be taken.</span></span>
+<span><span class="va">gazetteer</span> <span class="op">&lt;-</span> </span>
+<span>  <span class="fu">new_source</span><span class="op">(</span>name <span class="op">=</span> <span class="st">"gadm"</span>,</span>
+<span>             date <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.Date</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>             description <span class="op">=</span> <span class="st">"GADM wants to map the administrative areas of all countries, at all levels </span></span>
+<span><span class="st">                            of sub-division. We provide data at high spatial resolutions that includes </span></span>
+<span><span class="st">                            an extensive set of attributes."</span>,</span>
+<span>             homepage <span class="op">=</span> <span class="st">"https://gadm.org/index.html"</span>,</span>
+<span>             license <span class="op">=</span> <span class="st">"CC-BY"</span>,</span>
+<span>             ontology <span class="op">=</span> <span class="va">gazetteer</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># All items stored in an ontology must have some class that is ontology-specific and thus needs to be</span></span>
+<span><span class="co"># defined manually. Here we define the three classes 'un_region', 'un_subregion' and 'nation'.</span></span>
+<span><span class="va">gazetteer</span> <span class="op">&lt;-</span> </span>
+<span>  <span class="fu">new_class</span><span class="op">(</span>new <span class="op">=</span> <span class="st">"un_region"</span>, </span>
+<span>            target <span class="op">=</span> <span class="cn">NA</span>,</span>
+<span>            description <span class="op">=</span> <span class="st">"region according to the UN geoscheme"</span>, </span>
+<span>            ontology <span class="op">=</span> <span class="va">gazetteer</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu">new_class</span><span class="op">(</span>new <span class="op">=</span> <span class="st">"un_subregion"</span>, </span>
+<span>            target <span class="op">=</span> <span class="st">"un_region"</span>,                               <span class="co"># un_subregion is nested into un_region</span></span>
+<span>            description <span class="op">=</span> <span class="st">"sub-region according to the UN geoscheme"</span>, </span>
+<span>            ontology <span class="op">=</span> <span class="va">.</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu">new_class</span><span class="op">(</span>new <span class="op">=</span> <span class="st">"al1"</span>, </span>
+<span>            target <span class="op">=</span> <span class="st">"un_subregion"</span>,</span>
+<span>            description <span class="op">=</span> <span class="st">"the first administrative level of the GADM gazetteer"</span>, </span>
+<span>            ontology <span class="op">=</span> <span class="va">.</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu">new_class</span><span class="op">(</span>new <span class="op">=</span> <span class="st">"al2"</span>, </span>
+<span>            target <span class="op">=</span> <span class="st">"al1"</span>,</span>
+<span>            description <span class="op">=</span> <span class="st">"the second administrative level of the GADM gazetteer"</span>, </span>
+<span>            ontology <span class="op">=</span> <span class="va">.</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu">new_class</span><span class="op">(</span>new <span class="op">=</span> <span class="st">"al3"</span>, </span>
+<span>            target <span class="op">=</span> <span class="st">"al2"</span>,</span>
+<span>            description <span class="op">=</span> <span class="st">"the third administrative level of the GADM gazetteer"</span>, </span>
+<span>            ontology <span class="op">=</span> <span class="va">.</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu">new_class</span><span class="op">(</span>new <span class="op">=</span> <span class="st">"nation"</span>, </span>
+<span>            target <span class="op">=</span> <span class="st">"un_region"</span>,</span>
+<span>            description <span class="op">=</span> <span class="st">"groups of geometries that together form a nation (for example 'France', </span></span>
+<span><span class="st">                           which is a combination of many territorial concepts across the whole </span></span>
+<span><span class="st">                           globe), but which is different than 'al1' of GADM"</span>, </span>
+<span>            ontology <span class="op">=</span> <span class="va">.</span><span class="op">)</span>                                       <span class="co"># for convenience, one can pipe the </span></span>
+<span>                                                                <span class="co"># output of a previous function into </span></span>
+<span>                                                                <span class="co"># the next. </span></span>
+<span></span>
+<span><span class="co"># Finally, the new concepts can be added, they need to associated to one of the classes in the ontology</span></span>
+<span><span class="va">gazetteer</span> <span class="op">&lt;-</span> </span>
+<span>  <span class="fu">new_concept</span><span class="op">(</span>new <span class="op">=</span> <span class="va">un_region</span>,</span>
+<span>              class <span class="op">=</span> <span class="st">"un_region"</span>,</span>
+<span>              ontology <span class="op">=</span>  <span class="va">gazetteer</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># when adding concepts that are nested in other concepts, we need to provide the full concept in </span></span>
+<span><span class="co"># 'broader = '. We can get this with the 'get_concept()' function.</span></span>
+<span><span class="va">gazetteer</span> <span class="op">&lt;-</span> </span>
+<span>  <span class="fu">new_concept</span><span class="op">(</span>new <span class="op">=</span> <span class="va">un_subregion</span><span class="op">$</span><span class="va">concept</span>,</span>
+<span>              broader <span class="op">=</span> <span class="fu">get_concept</span><span class="op">(</span>table <span class="op">=</span> <span class="va">un_subregion</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span> <span class="fu">select</span><span class="op">(</span>label <span class="op">=</span> <span class="va">broader</span><span class="op">)</span>, </span>
+<span>                                    ontology <span class="op">=</span> <span class="va">gazetteer</span><span class="op">)</span>,</span>
+<span>              class <span class="op">=</span> <span class="st">"un_subregion"</span>,</span>
+<span>              ontology <span class="op">=</span>  <span class="va">gazetteer</span><span class="op">)</span></span>
+<span>              </span>
+<span><span class="fu">write_rds</span><span class="op">(</span>x <span class="op">=</span> <span class="va">gazetteer</span>, file <span class="op">=</span> <span class="va">gazDir</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="thematic-data">Thematic data<a class="anchor" aria-label="anchor" href="#thematic-data"></a>
+</h3>
+<p>Essentially all data can be the thematic data of a database. For an
+areal database these are, however, typically data that are some
+attribute of the region or territory they are associated to or metrics
+that describe a population, inventory or other set of entities within an
+area. Thematic data come in all forms and shapes and standardization is
+often rather poor. This is largely due to the fact that there are no
+clear rules on how to set up tables, and most tools that are typically
+used for recording and storing data provide them in vastly different
+data-structures. To reshape data into a common format,
+<code>arealDB</code> makes use of schema-descriptions as they are built
+with the <code>tabshiftr</code> R-package (more on this below).</p>
+</div>
+<div class="section level3">
+<h3 id="spatial-data">Spatial data<a class="anchor" aria-label="anchor" href="#spatial-data"></a>
+</h3>
+<p>Any areal database connects the thematic data to some set of spatial
+data (they are called <em>geometries</em> here). Spatial data are
+typically already quite well standardized so that we only need to record
+how exactly the data are structured. Spatial data are primarily the
+geometries themselves, but most of the time they also come with an ID
+that identifies each geometry and a set of attributes associated to each
+geometry. For spatial data that are supposed to be useful for more than
+being visualized there should be a name of the territorial units or
+meta-data that allow identification of those names.</p>
 </div>
 </div>
 <div class="section level2">
-<h2 id="register-your-data">Register your data<a class="anchor" aria-label="anchor" href="#register-your-data"></a>
-</h2>
-</div>
-<div class="section level2">
-<h2 id="normalise">Normalise …<a class="anchor" aria-label="anchor" href="#normalise"></a>
+<h2 id="working-with-arealdb">Working with <code>arealDB</code><a class="anchor" aria-label="anchor" href="#working-with-arealdb"></a>
 </h2>
 <div class="section level3">
-<h3 id="geometries">… geometries<a class="anchor" aria-label="anchor" href="#geometries"></a>
+<h3 id="start-the-database">Start the database<a class="anchor" aria-label="anchor" href="#start-the-database"></a>
 </h3>
+<p>To build a new database with <code>arealDB</code>, one has to start
+with the <code><a href="../reference/start_arealDB.html">start_arealDB()</a></code> function. Also when resuming to
+work with that database, it is required to run this function again, as
+it pastes the current root directory into the options of R, based on
+which paths for files are derived. The argument <code>gazetteer =</code>
+is mandatory because without the information recorded in a gazetteer it
+would not be possible to determine the spatial/topological relation
+between geometries. The argument <code>top =</code> takes that class in
+the ontology that shall be regarded as the top-most class at which
+territorial units are distinguished (this might be different to the
+top-most level in the ontology). It is, however, optional to provide an
+ontology. In case the thematic data do already contain well harmonized
+value terms, this can be omitted.</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/start_arealDB.html">start_arealDB</a></span><span class="op">(</span>root <span class="op">=</span> <span class="va">DBDir</span>,</span>
+<span>              gazetteer <span class="op">=</span> <span class="va">gazDir</span>, top <span class="op">=</span> <span class="st">"al1"</span>,</span>
+<span>              ontology <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"targetVar"</span> <span class="op">=</span> <span class="va">ontoDir</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p>As there is sometimes more than one target variable recorded in an
+areal database, it is possible to provide more than one ontology. When
+providing the link between target variable and an ontology, it is
+important that the name of the target variable is a column in the
+(harmonized) thematic data. In the above example, <code>targetVar</code>
+would have to be the column in any of the thematic data tables that are
+stored in the database.</p>
 </div>
 <div class="section level3">
-<h3 id="tables">… tables<a class="anchor" aria-label="anchor" href="#tables"></a>
+<h3 id="register-the-data">Register the data<a class="anchor" aria-label="anchor" href="#register-the-data"></a>
 </h3>
+<p>In this example we are working with three dataseries, GADM (the
+Database of global administrative areas), IBGE (the Brazilian
+Statistical and Geographic agency) and USDA (the United States
+Department of Agriculture). The first step in any areal database is in
+registering the dataseries that are relevant. Thematic and spatial data
+are primarily described by the meta-data that are represented by the
+dataseries. It shall be noted here that any function in
+<code>arealDB</code> that would modify the database contains the
+argument <code>update =</code>, to indicate that the modifications that
+would follow from calling this function are intended to be stored in the
+database. If this is left at <code>FALSE</code> (the default), the
+function would merely return the entries that would be stored in the
+database, which can be used for debugging purposes</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/regDataseries.html">regDataseries</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"gadm"</span>,</span>
+<span>              description <span class="op">=</span> <span class="st">"Database of Global Administrative Areas"</span>,</span>
+<span>              homepage <span class="op">=</span> <span class="st">"https://gadm.org/index.html"</span>,</span>
+<span>              licence_link <span class="op">=</span> <span class="st">"https://gadm.org/license.html"</span>,</span>
+<span>              update <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="../reference/regDataseries.html">regDataseries</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"ibge"</span>,</span>
+<span>              description <span class="op">=</span> <span class="st">"Instituto Brasileiro de Geografia e Estatistica"</span>,</span>
+<span>              homepage <span class="op">=</span> <span class="st">"https://sidra.ibge.gov.br"</span>,</span>
+<span>              update <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="../reference/regDataseries.html">regDataseries</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"usda"</span>,</span>
+<span>              description <span class="op">=</span> <span class="st">"US Dept. of Agriculture"</span>,</span>
+<span>              homepage <span class="op">=</span> <span class="st">"https://www.nass.usda.gov/Quick_Stats/Lite"</span>,</span>
+<span>              update <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># to debug whether all meta-data have been provided properly and/or the function works as expected</span></span>
+<span><span class="va">debug</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/regDataseries.html">regDataseries</a></span><span class="op">(</span><span class="va">...</span>, update <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/View.html" class="external-link">View</a></span><span class="op">(</span><span class="va">debug</span><span class="op">)</span></span></code></pre></div>
+<p>Next, the geometries are registered. Here, we need to provide the
+dataseries for geometries in <code>gSeries =</code> and various other
+meta-data. If the geometries are valid for only a particular territorial
+unit, this can be specified with a dynamic <code>name = value</code>
+combination. <code>name</code> must, in this case, be a class in the
+gazetteer (such as <em>nation</em> in our gazetteer). In case the
+geometries contain several territorial units that shall be handled
+separately, the territory names are taken from what has been defined as
+<code>top =</code> in <code><a href="../reference/start_arealDB.html">start_arealDB()</a></code>. Relations between
+the columns/attributes in the geometry and the gezatteer are defined in
+the argument <code>label =</code>, where a list that links them is
+provided.</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Often it makes sense to start with a global set of geometries, especially if databases encompas</span></span>
+<span><span class="co"># several nations</span></span>
+<span><span class="fu"><a href="../reference/regGeometry.html">regGeometry</a></span><span class="op">(</span>gSeries <span class="op">=</span> <span class="st">"gadm"</span>,</span>
+<span>            label <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>al1 <span class="op">=</span> <span class="st">"NAME_0"</span><span class="op">)</span>,</span>
+<span>            archive <span class="op">=</span> <span class="st">"gadm36_levels_gpkg.zip|gadm36_levels.gpkg"</span>,</span>
+<span>            archiveLink <span class="op">=</span> <span class="st">"https://biogeo.ucdavis.edu/data/gadm3.6/gadm36_levels_gpkg.zip"</span>,</span>
+<span>            updateFrequency <span class="op">=</span> <span class="st">"unknown"</span>,</span>
+<span>            update <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="../reference/regGeometry.html">regGeometry</a></span><span class="op">(</span>gSeries <span class="op">=</span> <span class="st">"gadm"</span>,</span>
+<span>            label <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>al1 <span class="op">=</span> <span class="st">"NAME_0"</span>, al2 <span class="op">=</span> <span class="st">"NAME_1"</span><span class="op">)</span>,</span>
+<span>            archive <span class="op">=</span> <span class="st">"gadm36_levels_gpkg.zip|gadm36_levels.gpkg"</span>,</span>
+<span>            archiveLink <span class="op">=</span> <span class="st">"https://biogeo.ucdavis.edu/data/gadm3.6/gadm36_levels_gpkg.zip"</span>,</span>
+<span>            updateFrequency <span class="op">=</span> <span class="st">"unknown"</span>,</span>
+<span>            update <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="../reference/regGeometry.html">regGeometry</a></span><span class="op">(</span>gSeries <span class="op">=</span> <span class="st">"gadm"</span>,</span>
+<span>            label <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>al1 <span class="op">=</span> <span class="st">"NAME_0"</span>, al2 <span class="op">=</span> <span class="st">"NAME_1"</span>, al3 <span class="op">=</span> <span class="st">"NAME_2"</span><span class="op">)</span>,</span>
+<span>            archive <span class="op">=</span> <span class="st">"gadm36_levels_gpkg.zip|gadm36_levels.gpkg"</span>,</span>
+<span>            archiveLink <span class="op">=</span> <span class="st">"https://biogeo.ucdavis.edu/data/gadm3.6/gadm36_levels_gpkg.zip"</span>,</span>
+<span>            updateFrequency <span class="op">=</span> <span class="st">"unknown"</span>,</span>
+<span>            update <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># For Brazil, there are dedicated geometries available, not so for the US</span></span>
+<span><span class="fu"><a href="../reference/regGeometry.html">regGeometry</a></span><span class="op">(</span>nation <span class="op">=</span> <span class="st">"Brazil"</span>,</span>
+<span>            gSeries <span class="op">=</span> <span class="st">"ibge"</span>,</span>
+<span>            label <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>al2 <span class="op">=</span> <span class="st">"NM_ESTADO"</span><span class="op">)</span>,</span>
+<span>            archive <span class="op">=</span> <span class="st">"BR.zip|BRUFE250GC_SIR.shp"</span>,</span>
+<span>            archiveLink <span class="op">=</span> <span class="st">"https://mapas.ibge.gov.br/bases-e-referenciais/bases-cartograficas/malhas-digitais"</span>,</span>
+<span>            updateFrequency <span class="op">=</span> <span class="st">"notPlanned"</span>,</span>
+<span>            update <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="../reference/regGeometry.html">regGeometry</a></span><span class="op">(</span>nation <span class="op">=</span> <span class="st">"Brazil"</span>,</span>
+<span>            gSeries <span class="op">=</span> <span class="st">"ibge"</span>,</span>
+<span>            label <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>al3 <span class="op">=</span> <span class="st">"NM_MUNICIP"</span><span class="op">)</span>,</span>
+<span>            archive <span class="op">=</span> <span class="st">"BR.zip|BRMUE250GC_SIR.shp"</span>,</span>
+<span>            archiveLink <span class="op">=</span> <span class="st">"https://mapas.ibge.gov.br/bases-e-referenciais/bases-cartograficas/malhas-digitais"</span>,</span>
+<span>            updateFrequency <span class="op">=</span> <span class="st">"notPlanned"</span>,</span>
+<span>            update <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<p>Finally, the thematic data are registered. Here, we first need to
+define the schema description. To learn more about this, consult the
+documentation of the <a href="https://github.com/luckinet/tabshiftr" class="external-link"><code>tabshiftr</code></a>
+R-package. In addition to the <code>gSeries =</code>, thematic data also
+have a <code>dSeries =</code>, which documents the thematic dataseries
+that can deviate from the geometry dataseries. In case several tables
+are available for one dataseries, the argument <code>subset =</code> can
+be used to specify dynamically what is reported in the respective table.
+As no two tables can have the same name at stage2 (the result of
+registering the data), this argument also serves the purpose to give the
+tables different names.</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">schema_ibge</span> <span class="op">&lt;-</span> </span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/tabshiftr/man/setCluster.html" class="external-link">setCluster</a></span><span class="op">(</span>id <span class="op">=</span> <span class="st">"year"</span>, left <span class="op">=</span> <span class="fl">1</span>, top <span class="op">=</span> <span class="fl">3</span>, height <span class="op">=</span> <span class="fl">400536</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/tabshiftr/man/setIDVar.html" class="external-link">setIDVar</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"al2"</span>, columns <span class="op">=</span> <span class="fl">1</span>, split <span class="op">=</span> <span class="st">"(?&lt;=\\().*(?=\\))"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/tabshiftr/man/setIDVar.html" class="external-link">setIDVar</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"al3"</span>, columns <span class="op">=</span> <span class="fl">1</span>, split <span class="op">=</span> <span class="st">"^.*?(?=\\s\\()"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/tabshiftr/man/setIDVar.html" class="external-link">setIDVar</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"year"</span>, columns <span class="op">=</span> <span class="fl">3</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/tabshiftr/man/setIDVar.html" class="external-link">setIDVar</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"commodity"</span>, columns <span class="op">=</span> <span class="fl">2</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/tabshiftr/man/setObsVar.html" class="external-link">setObsVar</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"planted"</span>, unit <span class="op">=</span> <span class="st">"ha"</span>, columns <span class="op">=</span> <span class="fl">4</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/tabshiftr/man/setObsVar.html" class="external-link">setObsVar</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"harvested"</span>, unit <span class="op">=</span> <span class="st">"ha"</span>, columns <span class="op">=</span> <span class="fl">5</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/tabshiftr/man/setObsVar.html" class="external-link">setObsVar</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"production"</span>, unit <span class="op">=</span> <span class="st">"t"</span>, columns <span class="op">=</span> <span class="fl">6</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/tabshiftr/man/setObsVar.html" class="external-link">setObsVar</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"yield"</span>, unit <span class="op">=</span> <span class="st">"t/ha"</span>, factor <span class="op">=</span> <span class="fl">0.001</span>, columns <span class="op">=</span> <span class="fl">7</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="../reference/regTable.html">regTable</a></span><span class="op">(</span>nation <span class="op">=</span> <span class="st">"Brazil"</span>,</span>
+<span>         subset <span class="op">=</span> <span class="st">"crops"</span>,</span>
+<span>         label <span class="op">=</span> <span class="st">"al3"</span>,</span>
+<span>         dSeries <span class="op">=</span> <span class="st">"ibge"</span>,</span>
+<span>         gSeries <span class="op">=</span> <span class="st">"ibge"</span>,</span>
+<span>         schema <span class="op">=</span> <span class="va">schema_ibge</span>,</span>
+<span>         begin <span class="op">=</span> <span class="fl">2000</span>,</span>
+<span>         end <span class="op">=</span> <span class="fl">2018</span>,</span>
+<span>         archive <span class="op">=</span> <span class="st">"ibge.7z|tabela5457_1990.csv"</span>,</span>
+<span>         archiveLink <span class="op">=</span> <span class="st">"https://sidra.ibge.gov.br/tabela/5457"</span>,</span>
+<span>         nextUpdate <span class="op">=</span> <span class="st">"unknown"</span>,</span>
+<span>         updateFrequency <span class="op">=</span> <span class="st">"annually"</span>,</span>
+<span>         metadataLink <span class="op">=</span> <span class="st">"https://metadados.ibge.gov.br/consulta/estatisticos/operacoes-estatisticas/PA"</span>,</span>
+<span>         metadataPath <span class="op">=</span> <span class="st">"unavailable"</span>,</span>
+<span>         update <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span>         </span>
+<span><span class="va">schema_usda</span> <span class="op">&lt;-</span> </span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/tabshiftr/man/setFormat.html" class="external-link">setFormat</a></span><span class="op">(</span>na_values <span class="op">=</span> <span class="st">"(D)"</span>, thousand <span class="op">=</span> <span class="st">","</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/tabshiftr/man/setIDVar.html" class="external-link">setIDVar</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"al2"</span>, columns <span class="op">=</span> <span class="fl">18</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/tabshiftr/man/setIDVar.html" class="external-link">setIDVar</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"al3"</span>, columns <span class="op">=</span> <span class="fl">23</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/tabshiftr/man/setIDVar.html" class="external-link">setIDVar</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"year"</span>, columns <span class="op">=</span> <span class="fl">32</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/tabshiftr/man/setIDVar.html" class="external-link">setIDVar</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"commodities"</span>, columns <span class="op">=</span> <span class="fl">5</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/tabshiftr/man/setObsVar.html" class="external-link">setObsVar</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"planted"</span>, unit <span class="op">=</span> <span class="st">"ha"</span>, factor <span class="op">=</span> <span class="fl">0.4046856422</span>, columns <span class="op">=</span> <span class="fl">39</span>,</span>
+<span>            key <span class="op">=</span> <span class="fl">9</span>, value <span class="op">=</span> <span class="st">"AREA PLANTED"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/tabshiftr/man/setObsVar.html" class="external-link">setObsVar</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"harvested"</span>, unit <span class="op">=</span> <span class="st">"ha"</span>, factor <span class="op">=</span> <span class="fl">0.4046856422</span>, columns <span class="op">=</span> <span class="fl">39</span>,</span>
+<span>            key <span class="op">=</span> <span class="fl">9</span>, value <span class="op">=</span> <span class="st">"AREA HARVESTED"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/tabshiftr/man/setObsVar.html" class="external-link">setObsVar</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"production"</span>, unit <span class="op">=</span> <span class="st">"t"</span>, factor <span class="op">=</span> <span class="fl">0.907185</span>, columns <span class="op">=</span> <span class="fl">39</span>,</span>
+<span>            key <span class="op">=</span> <span class="fl">9</span>, value <span class="op">=</span> <span class="st">"PRODUCTION"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/tabshiftr/man/setObsVar.html" class="external-link">setObsVar</a></span><span class="op">(</span>name <span class="op">=</span> <span class="st">"yield"</span>, unit <span class="op">=</span> <span class="st">"kg/ha"</span>, factor <span class="op">=</span> <span class="fl">2241.7</span>, columns <span class="op">=</span> <span class="fl">39</span>,</span>
+<span>            key <span class="op">=</span> <span class="fl">9</span>, value <span class="op">=</span> <span class="st">"YIELD"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="../reference/regTable.html">regTable</a></span><span class="op">(</span>nation <span class="op">=</span> <span class="st">"UnitedStatesOfAmerica"</span>,</span>
+<span>         level <span class="op">=</span> <span class="fl">3</span>,</span>
+<span>         subset <span class="op">=</span> <span class="st">"surveyFieldCrops"</span>,</span>
+<span>         dSeries <span class="op">=</span> <span class="st">"usda"</span>,</span>
+<span>         gSeries <span class="op">=</span> <span class="st">"gadm"</span>,                                   <span class="co"># here, dSeries and gSeries deviate</span></span>
+<span>         schema <span class="op">=</span> <span class="va">schema_usda</span>,</span>
+<span>         begin <span class="op">=</span> <span class="fl">1918</span>,</span>
+<span>         end <span class="op">=</span> <span class="fl">2018</span>,</span>
+<span>         archive <span class="op">=</span> <span class="st">"qs.crops_20220129.txt.gz|usda_tons_crops_l3.csv"</span>,</span>
+<span>         archiveLink <span class="op">=</span> <span class="st">"https://quickstats.nass.usda.gov/"</span>,</span>
+<span>         updateFrequency <span class="op">=</span> <span class="st">"annually"</span>,</span>
+<span>         nextUpdate <span class="op">=</span> <span class="st">"unknown"</span>,</span>
+<span>         metadataLink <span class="op">=</span> <span class="st">"https://www.nass.usda.gov/Quick_Stats/index.php"</span>,</span>
+<span>         metadataPath <span class="op">=</span> <span class="st">"unknown"</span>,</span>
+<span>         update <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="normalise-the-input">Normalise the input<a class="anchor" aria-label="anchor" href="#normalise-the-input"></a>
+</h3>
+<p>Finally, we need to align all data so that they follow the same
+structure. This is called “normalization”, in <code>arealDB</code>, we
+normalize the registered data. This happens when calling the functions
+<code>nromGeometry()</code> and <code><a href="../reference/normTable.html">normTable()</a></code>, for the
+respective input data. Geometries are normalized first, because the
+thematic data are associated to the standardized versions of them.</p>
+<p>This process of normalization has been designed so that a user has to
+interact with the function as little as possible, but some interactions
+are still required. Especially when working with the names of
+territories, it is not always completely clear how one standard
+translates into another. The gazetteer is the place where this is
+documented, but it can only infer the information only to a certain
+degree. Essentially, when needs to be known for a consistent gazetteer
+is which concept translates into which other concept. However, with the
+occasional changes of administrative units, sometimes concepts change to
+a degree that they can’t simply be translated into one-another. This is
+the case for example when on previous administrative unit is split up
+into several new units. None of the new units are identical to the
+previous units, but some of them may still have the same name. In this
+sense, <em>“translation”</em> isn’t equivalent to the literal meaning
+most people know, but must be more understood as “what maps how to what
+else”. When normalizing geometries with the argument
+<code>priority = "ontology"</code>, the function will take names as
+literal interpretations, match those that are “the same” and ask the
+user to translate the ones that don’t match manually. With
+<code>priority = "spatial"</code>, the function instead determine
+spatial overlap to determine which concepts are nested into which other
+concepts to update the ontology accordingly. This requires less human
+interaction, but more computation time.</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/normGeometry.html">normGeometry</a></span><span class="op">(</span>pattern <span class="op">=</span> <span class="st">"brazil"</span>,</span>
+<span>             outType <span class="op">=</span> <span class="st">"gpkg"</span>, </span>
+<span>             update <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span>             </span>
+<span><span class="fu"><a href="../reference/normGeometry.html">normGeometry</a></span><span class="op">(</span>pattern <span class="op">=</span> <span class="st">"UnitedStatesOfAmerica"</span>,</span>
+<span>             outType <span class="op">=</span> <span class="st">"gpkg"</span>, </span>
+<span>             priority <span class="op">=</span> <span class="st">"spatial"</span>,</span>
+<span>             update <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<p>When finally normalizing the thematic tables, interaction is required
+when the <code>ontoMatch =</code> argument has been provided, otherwise
+no matching of terms of the target variables with the ontology is
+carried out. Also here, hierarchical relationships can be included by
+providing the target variable terms in the respective columns in the
+translation table (that opens automatically when required), or simple
+1:1 translations or terms from other taxonomies or languages can be
+specified.</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/normTable.html">normTable</a></span><span class="op">(</span>ontoMatch <span class="op">=</span> <span class="st">"targetVar"</span>,</span>
+<span>          outType <span class="op">=</span> <span class="st">"rds"</span>,</span>
+<span>          update <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>
   </div>
