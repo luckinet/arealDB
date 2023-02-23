@@ -111,8 +111,9 @@ matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
       select(id, external = label, has_source)
 
     newConcepts <- get_concept(table = tab %>% select(label = tail(allCols, 1)), ontology = ontoPath) %>%
-      filter(has_source == srcID & class %in% tail(allCols, 1) & match == "close") %>%
-      make_tree(reverse = TRUE, ontology = ontoPath) %>%
+      filter(has_source == srcID & class %in% tail(allCols, 1) & match != "exact") %>%
+      pull(id) %>%
+      make_tree(id = ., reverse = TRUE, ontology = ontoPath) %>%
       filter(class %in% allCols) %>%
       pivot_longer(cols = c(has_close_match, has_broader_match, has_narrower_match, has_exact_match),
                    names_to = "match", values_to = "external") %>%
