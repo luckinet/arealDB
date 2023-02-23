@@ -38,6 +38,8 @@ reference:
 
 navbar:
   left:
+    - text: "Getting Started"
+      href: articles/arealDB.html
     - text: "Reference"
       href: reference/index.html
     - text: "Changelog"

@@ -62,5 +62,7 @@ Suggests:
     testthat,
     knitr,
     rmarkdown,
+    bookdown,
     covr
 RoxygenNote: 7.2.3
+VignetteBuilder: knitr
