@@ -111,27 +111,36 @@ matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
       select(id, external = label, has_source)
 
     newConcepts <- get_concept(table = tab %>% select(label = tail(allCols, 1)), ontology = ontoPath) %>%
-      filter(has_source == srcID & class %in% tail(allCols, 1) & match != "exact") %>%
-      pull(id) %>%
-      make_tree(id = ., reverse = TRUE, ontology = ontoPath) %>%
-      filter(class %in% allCols) %>%
-      pivot_longer(cols = c(has_close_match, has_broader_match, has_narrower_match, has_exact_match),
-                   names_to = "match", values_to = "external") %>%
-      filter(!is.na(external)) %>%
-      separate_rows(external, sep = " \\| ") %>%
-      filter(str_detect(external, dataseries)) %>%
-      rowwise() %>%
-      mutate(match = str_split_1(match, "_")[2],
-             externalID = str_split_1(external, "[.]")[[1]][1],
-             external = NULL) %>%
-      left_join(externalTerms, by = c("externalID" = "id")) %>%
-      mutate(toExport = external) %>%
-      pivot_wider(id_cols = c(id, has_broader, match, toExport, has_source, externalID), names_from = "class", values_from = c("label", "external")) %>%
-      select(-externalID) %>%
-      fill(contains(head(allCols, -1)), .direction = "down") %>%
-      filter(!is.na(!!sym(paste0("external_", tail(allCols, 1))))) %>%
-      unite(col = "label", paste0("label_", allCols), sep = "][") %>%
-      rename_with(.cols = starts_with("external_"), .fn = ~ str_split_i(string = .x, pattern = "_", i = 2))
+      filter(has_source == srcID & class %in% tail(allCols, 1) & match != "exact")
+
+    if(dim(newConcepts)[1] != 0){
+      newConcepts <- newConcepts %>%
+        pull(id) %>%
+        make_tree(id = ., reverse = TRUE, ontology = ontoPath) %>%
+        filter(class %in% allCols) %>%
+        pivot_longer(cols = c(has_close_match, has_broader_match, has_narrower_match, has_exact_match),
+                     names_to = "match", values_to = "external") %>%
+        filter(!is.na(external)) %>%
+        separate_rows(external, sep = " \\| ") %>%
+        filter(str_detect(external, dataseries)) %>%
+        rowwise() %>%
+        mutate(match = str_split_1(match, "_")[2],
+               externalID = str_split_1(external, "[.]")[[1]][1],
+               external = NULL) %>%
+        left_join(externalTerms, by = c("externalID" = "id")) %>%
+        mutate(toExport = external) %>%
+        pivot_wider(id_cols = c(id, has_broader, match, toExport, has_source, externalID), names_from = "class", values_from = c("label", "external")) %>%
+        select(-externalID) %>%
+        fill(contains(head(allCols, -1)), .direction = "down") %>%
+        filter(!is.na(!!sym(paste0("external_", tail(allCols, 1))))) %>%
+        unite(col = "label", paste0("label_", allCols), sep = "][") %>%
+        rename_with(.cols = starts_with("external_"), .fn = ~ str_split_i(string = .x, pattern = "_", i = 2))
+    } else {
+      newConcepts <- newConcepts %>%
+        mutate(!!allCols := NA_character_,
+               toExport = NA_character_) %>%
+        select(id, has_broader, match, toExport, has_source, label, all_of(allCols))
+    }
 
     # ... to join them to the input table
     toOut <- table %>%
