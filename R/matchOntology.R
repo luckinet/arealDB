@@ -136,9 +136,8 @@ matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
         unite(col = "label", paste0("label_", allCols), sep = "][") %>%
         rename_with(.cols = starts_with("external_"), .fn = ~ str_split_i(string = .x, pattern = "_", i = 2))
     } else {
+      newConcepts[c(allCols, "toExport")] <- NA_character_
       newConcepts <- newConcepts %>%
-        mutate(!!allCols := NA_character_,
-               toExport = NA_character_) %>%
         select(id, has_broader, match, toExport, has_source, label, all_of(allCols))
     }
 
