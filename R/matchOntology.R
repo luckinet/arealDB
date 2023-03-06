@@ -104,7 +104,7 @@ matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
                 matchDir = paste0(intPaths, "/meta/", type, "/"),
                 verbose = verbose,
                 beep = beep)
-    # new = trimws(harmonisedConc$label); target = harmonisedConc %>% select(class, has_broader); source = dataseries; certainty = 3; ontology = ontoPath;  matchDir = paste0(intPaths, "/meta/", type, "/"); match = NULL; type = "concept"; lut = NULL; verbose = FALSE
+    # new = trimws(harmonisedConc$label); target = harmonisedConc %>% select(class, has_broader); source = dataseries; certainty = 3; ontology = ontoPath; matchDir = paste0(intPaths, "/meta/", type, "/"); match = NULL; type = "concept"; lut = NULL; verbose = FALSE
 
     # then construct a datastructure that contains all (new) concepts ...
     externalTerms <- get_concept(external = TRUE, ontology = ontoPath) %>%
@@ -118,6 +118,7 @@ matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
         pull(id) %>%
         make_tree(id = ., reverse = TRUE, ontology = ontoPath) %>%
         filter(class %in% allCols) %>%
+        # somehow need to handle here that not 'Kazakhstan' is used as parent, but 'Kazahkstan (1)'
         pivot_longer(cols = c(has_close_match, has_broader_match, has_narrower_match, has_exact_match),
                      names_to = "match", values_to = "external") %>%
         filter(!is.na(external)) %>%
@@ -130,7 +131,7 @@ matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
         left_join(externalTerms, by = c("externalID" = "id")) %>%
         mutate(toExport = external) %>%
         pivot_wider(id_cols = c(id, has_broader, match, toExport, has_source, externalID), names_from = "class", values_from = c("label", "external")) %>%
-        select(-externalID) %>%
+        select(-externalID, -toExport) %>%
         fill(contains(head(allCols, -1)), .direction = "down") %>%
         filter(!is.na(!!sym(paste0("external_", tail(allCols, 1))))) %>%
         unite(col = "label", paste0("label_", allCols), sep = "][") %>%
@@ -143,10 +144,12 @@ matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
 
     # ... to join them to the input table
     toOut <- table %>%
-      left_join(newConcepts, by = allCols, multiple = "all") %>%
+      unite(col = "external", allCols, sep = "][", remove = FALSE) %>%
+      select(-head(allCols, -1)) %>%
+      left_join(newConcepts, by = tail(allCols, 1), multiple = "all") %>% # when revising problems for argentina/brazil... this and the previous line were changed
+      # left_join(newConcepts, by = allCols, multiple = "all") %>%
       select(-all_of(allCols)) %>%
-      separate_wider_delim(cols = label, delim = "][", names = allCols) %>%
-      rename(external = toExport)
+      separate_wider_delim(cols = label, delim = "][", names = allCols)
 
     if(remakeSF){
       toOut <- toOut %>%

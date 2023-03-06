@@ -65,9 +65,9 @@ normTable <- function(input = NULL, pattern = NULL, ontoMatch = NULL,
                       outType = "rds", beep = NULL, update = FALSE,
                       verbose = FALSE){
 
-  # input = NULL; pattern = NULL; outType = "rds"; ontoMatch = NULL; beep = 10; update = TRUE; verbose = FALSE; i = 1
+  # input = NULL; pattern = ds[1]; outType = "rds"; ontoMatch = "commodity"; beep = 10; update = TRUE; verbose = FALSE; i = 1
 
-    # set internal paths
+  # set internal paths
   intPaths <- getOption(x = "adb_path")
   gazPath <- getOption(x = "gazetteer_path")
 
