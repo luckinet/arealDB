@@ -1,5 +1,5 @@
 ---
-title: "arealDB - Harmonise and integrate heterogeneous areal data"
+title: "arealDB - Harmonize and integrate heterogeneous areal data"
 output: 
   bookdown::html_document2:
     fig_caption: yes
