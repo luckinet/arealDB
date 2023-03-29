@@ -7,15 +7,11 @@
 #' @param columns [\code{character(1)}]\cr the columns containing the concepts
 #' @param dataseries [\code{character(1)}]\cr the source dataseries from which
 #'   territories are sourced.
-#' @param all_cols [`logical(1)`][logical]\cr whether or not to output all
-#'   tentative columns (for debugging), or only the essential columns.
 #' @param ontology [\code{onto}]\cr either a path where the ontology/gazetteer
 #'   is stored, or an already loaded ontology.
 #' @param beep [\code{integerish(1)}]\cr Number specifying what sound to be
 #'   played to signal the user that a point of interaction is reached by the
 #'   program, see \code{\link[beepr]{beep}}.
-#' @param exact_class [`logical(1)`][logical]\cr whether or not to extract only
-#'   the classes in \code{table}, or also all parent classes.
 #' @param verbose [`logical(1)`][logical]\cr whether or not to give detailed
 #'   information on the process of this function.
 #' @importFrom checkmate assertFileExists
@@ -34,8 +30,7 @@
 #' @export
 
 matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
-                          ontology = NULL, verbose = FALSE, all_cols = FALSE,
-                          beep = NULL, exact_class = TRUE){
+                          ontology = NULL, verbose = FALSE, beep = NULL){
 
   assertIntegerish(x = beep, len = 1, lower = 1, upper = 11, null.ok = TRUE)
 
@@ -107,10 +102,10 @@ matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
     # new = trimws(harmonisedConc$label); target = harmonisedConc %>% select(class, has_broader); source = dataseries; certainty = 3; ontology = ontoPath; matchDir = paste0(intPaths, "/meta/", type, "/"); match = NULL; type = "concept"; lut = NULL; verbose = FALSE
 
     # then construct a datastructure that contains all (new) concepts ...
-    externalTerms <- get_concept(external = TRUE, ontology = ontoPath) %>%
-      select(id, external = label, has_source)
+    # externalTerms <- get_concept(external = TRUE, ontology = ontoPath) %>%
+    #   select(id, external = label, has_source)
 
-    newConcepts <- get_concept(table = tab %>% select(label = tail(allCols, 1)), ontology = ontoPath) %>%
+    newConcepts <- get_concept(table = tab %>% select(allCols), ontology = ontoPath) %>%
       filter(has_source == srcID & class %in% tail(allCols, 1) & match != "exact")
 
     if(dim(newConcepts)[1] != 0){
@@ -145,9 +140,8 @@ matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
     # ... to join them to the input table
     toOut <- table %>%
       unite(col = "external", allCols, sep = "][", remove = FALSE) %>%
-      select(-head(allCols, -1)) %>%
-      left_join(newConcepts, by = tail(allCols, 1), multiple = "all") %>% # when revising problems for argentina/brazil... this and the previous line were changed
-      # left_join(newConcepts, by = allCols, multiple = "all") %>%
+      # select(-head(allCols, -1)) %>%
+      left_join(newConcepts, by = allCols, multiple = "all") %>%
       select(-all_of(allCols)) %>%
       separate_wider_delim(cols = label, delim = "][", names = allCols)
 
@@ -172,15 +166,9 @@ matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
              external = !!sym(tail(allCols, 1)))
   }
 
-  if(!all_cols){
-    out <- toOut %>%
-      select(-external, -has_broader, -match, -has_source) %>%
-      select(all_of(allCols), id, everything())
-  } else {
-    out <- toOut %>%
-      select(-any_of(c("has_broader"))) %>%
-      select(all_of(allCols), id, match, external, has_source, everything())
-  }
+  out <- toOut %>%
+    select(-any_of(c("has_broader"))) %>%
+    select(all_of(allCols), id, match, external, has_source, everything())
 
   return(out)
 
