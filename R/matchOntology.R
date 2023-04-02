@@ -56,6 +56,7 @@ matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
     table <- table %>%
       mutate(!!allCols[i] := if_else(is.na(!!sym(allCols[i])), !!sym(allCols[i-1]), !!sym(allCols[i])))
   }
+  toOut <- table
 
   type <- str_split(tail(str_split(string = ontoPath, pattern = "/")[[1]], 1), "[.]")[[1]][1]
 
@@ -79,44 +80,122 @@ matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
     remakeSF <- FALSE
   }
 
-  tab <- tab %>%
-    distinct(across(all_of(allCols))) %>%
-    filter(!is.na(!!sym(tail(allCols, 1))))
+  for(i in seq_along(allCols)){
+
+    # extract the target column and its parents
+    tempTab <- tab %>%
+      distinct(across(all_of(allCols[1:i]))) %>%
+      filter(!is.na(!!sym(tail(allCols[1:i], 1))))
+
+    # transform the parents into the column 'has_broader'
+
+
+    # identify whether concepts were already defined as external concepts...
+    externalConcepts <- get_concept(label = trimws(tempTab[[i]]), has_source = srcID, external = TRUE, ontology = ontoPath) %>%
+      mutate(class = allCols[i])
+
+    # ... if this is not the case, the only path forward is to first create mappings with the ontology
+    if(any(is.na(externalConcepts$id))){
+
+      relatedConcepts <- edit_matches(new = externalConcepts$label,
+                                      target = externalConcepts %>% select(has_broader, class),
+                                      source = dataseries,
+                                      ontology = ontology,
+                                      matchDir = paste0(intPaths, "/meta/", type, "/"),
+                                      verbose = verbose,
+                                      beep = beep)
+
+      seems to work up until here, for normTable, geometries level 1. still have to test levels 2-3 and commodities
+
+      new_mapping(new = relatedConcepts$external,
+                  target = relatedConcepts %>% select(id, label, class, has_broader),
+                  source = dataseries,
+                  certainty = 3,
+                  ontology = ontoPath,
+                  verbose = verbose,
+                  beep = beep)
+      # new = trimws(externalConcepts$label); target = externalConcepts %>% select(class, has_broader); source = dataseries; certainty = 3; ontology = ontoPath; matchDir = paste0(intPaths, "/meta/", type, "/"); match = NULL; type = "concept"; lut = NULL; verbose = FALSE
+    }
+
+    # ... if this is the case, we have to check whether they occur as a match to a harmonised concept
+
+
+
+    # identify already harmonised concepts
+    if(i == 1){
+      harmonisedConc <- get_concept(label = tempTab[[i]], class = names(tempTab)[i], ontology = ontoPath)
+    } else {
+
+
+      harmonisedConc <- get_concept(label = tempTab[[i]], has_broader = , class = names(tempTab)[i], ontology = ontoPath)
+    }
+
+    # identify concepts that occurr only in "has_close_match"
+
+
+
+
+    # then construct a datastructure that contains all (new) concepts ...
+    newConcepts <-
+
+    # ... to join them to the input table
+    toOut <- table %>%
+      unite(col = "external", all_of(allCols), sep = "][", remove = FALSE) %>%
+      select(-head(allCols, -1)) %>%
+      left_join(newConcepts, by = tail(allCols, 1), multiple = "all") %>% # when revising problems for argentina/brazil... this and the previous line were changed
+      # left_join(newConcepts, by = allCols, multiple = "all") %>%
+      select(-all_of(allCols)) %>%
+      separate_wider_delim(cols = label, delim = "][", names = allCols)
+
+    if(remakeSF){
+      toOut <- toOut %>%
+        st_sf()
+    }
+
+  }
+
+  out <- toOut %>%
+    # select(-any_of(c("has_broader"))) %>%
+    select(all_of(allCols), id, match, external, has_source, everything())
+
+  return(out)
+
+
 
   # extract all harmonised concepts, including those that may be not available
   # (na) ...
-  harmonisedConc <- get_concept(table = tab, per_class = TRUE, ontology = ontoPath)
+  # harmonisedConc <- get_concept(table = tab, per_class = TRUE, ontology = ontoPath)
 
   # ... for if new concepts are still missing from the ontology, they need to be
   # mapped
   if(any(is.na(harmonisedConc$id))){
 
-    new_mapping(new = trimws(harmonisedConc$label),
-                target = harmonisedConc %>% select(class, has_broader),
-                source = dataseries,
-                certainty = 3,
-                ontology = ontoPath,
-                matchDir = paste0(intPaths, "/meta/", type, "/"),
-                verbose = verbose,
-                beep = beep)
+    # new_mapping(new = trimws(harmonisedConc$label),
+    #             target = harmonisedConc %>% select(class, has_broader),
+    #             source = dataseries,
+    #             certainty = 3,
+    #             ontology = ontoPath,
+    #             matchDir = paste0(intPaths, "/meta/", type, "/"),
+    #             verbose = verbose,
+    #             beep = beep)
     # new = trimws(harmonisedConc$label); target = harmonisedConc %>% select(class, has_broader); source = dataseries; certainty = 3; ontology = ontoPath; matchDir = paste0(intPaths, "/meta/", type, "/"); match = NULL; type = "concept"; lut = NULL; verbose = FALSE
 
     # then construct a datastructure that contains all (new) concepts ...
-    # externalTerms <- get_concept(external = TRUE, ontology = ontoPath) %>%
-    #   select(id, external = label, has_source)
+    externalTerms <- get_concept(external = TRUE, ontology = ontoPath) %>%
+      select(id, external = label, has_source)
 
-    newConcepts <- get_concept(table = tab %>% select(allCols), ontology = ontoPath) %>%
-      filter(has_source == srcID & class %in% tail(allCols, 1) & match != "exact")
+    newConcepts <- get_concept(table = tab %>% select(label = tail(allCols, 1)), ontology = ontoPath) %>%
+      # filter(has_source == srcID & class %in% tail(allCols, 1) & match != "exact")
+      filter(has_source == srcID & match != "exact")
 
     if(dim(newConcepts)[1] != 0){
       newConcepts <- newConcepts %>%
         pull(id) %>%
         make_tree(id = ., reverse = TRUE, ontology = ontoPath) %>%
-        filter(class %in% allCols) %>%
-        # somehow need to handle here that not 'Kazakhstan' is used as parent, but 'Kazahkstan (1)'
+        # filter(class %in% allCols) %>%
         pivot_longer(cols = c(has_close_match, has_broader_match, has_narrower_match, has_exact_match),
                      names_to = "match", values_to = "external") %>%
-        filter(!is.na(external)) %>%
+        # filter(!is.na(external)) %>%
         separate_rows(external, sep = " \\| ") %>%
         filter(str_detect(external, dataseries)) %>%
         rowwise() %>%
@@ -124,9 +203,10 @@ matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
                externalID = str_split_1(external, "[.]")[[1]][1],
                external = NULL) %>%
         left_join(externalTerms, by = c("externalID" = "id")) %>%
-        mutate(toExport = external) %>%
-        pivot_wider(id_cols = c(id, has_broader, match, toExport, has_source, externalID), names_from = "class", values_from = c("label", "external")) %>%
-        select(-externalID, -toExport) %>%
+        # mutate(toExport = external) %>%
+        # pivot_wider(id_cols = c(id, has_broader, match, toExport, has_source, externalID), names_from = "class", values_from = c("label", "external")) %>%
+        pivot_wider(id_cols = c(id, has_broader, match, has_source, externalID), names_from = "class", values_from = c("label", "external")) %>%
+        select(-externalID) %>%
         fill(contains(head(allCols, -1)), .direction = "down") %>%
         filter(!is.na(!!sym(paste0("external_", tail(allCols, 1))))) %>%
         unite(col = "label", paste0("label_", allCols), sep = "][") %>%
@@ -137,18 +217,6 @@ matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
         select(id, has_broader, match, toExport, has_source, label, all_of(allCols))
     }
 
-    # ... to join them to the input table
-    toOut <- table %>%
-      unite(col = "external", allCols, sep = "][", remove = FALSE) %>%
-      # select(-head(allCols, -1)) %>%
-      left_join(newConcepts, by = allCols, multiple = "all") %>%
-      select(-all_of(allCols)) %>%
-      separate_wider_delim(cols = label, delim = "][", names = allCols)
-
-    if(remakeSF){
-      toOut <- toOut %>%
-        st_sf()
-    }
 
   } else {
     if(i == 1){
@@ -166,11 +234,6 @@ matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
              external = !!sym(tail(allCols, 1)))
   }
 
-  out <- toOut %>%
-    select(-any_of(c("has_broader"))) %>%
-    select(all_of(allCols), id, match, external, has_source, everything())
-
-  return(out)
 
 
 

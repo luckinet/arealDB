@@ -65,7 +65,7 @@ normTable <- function(input = NULL, pattern = NULL, ontoMatch = NULL,
                       outType = "rds", beep = NULL, update = FALSE,
                       verbose = FALSE){
 
-  # input = NULL; pattern = ds[1]; outType = "rds"; ontoMatch = "commodity"; beep = 10; update = TRUE; verbose = FALSE; i = 1
+  # input = NULL; pattern = paste0("LU.*", ds[1]); outType = "rds"; ontoMatch = "land use"; beep = 10; update = TRUE; verbose = FALSE; i = 1
 
   # set internal paths
   intPaths <- getOption(x = "adb_path")
@@ -73,7 +73,7 @@ normTable <- function(input = NULL, pattern = NULL, ontoMatch = NULL,
 
   # get territorial context
   topClass <- paste0(getOption(x = "gazetteer_top"))
-  topUnits <- get_concept(table = tibble(class = topClass), ontology = gazPath) %>%
+  topUnits <- get_concept(class = topClass, ontology = gazPath) %>%
     arrange(label)
 
   if(is.null(input)){
@@ -173,8 +173,7 @@ normTable <- function(input = NULL, pattern = NULL, ontoMatch = NULL,
                                columns = targetCols,
                                dataseries = dSeries,
                                ontology = gazPath,
-                               beep = beep,
-                               all_cols = TRUE) %>%
+                               beep = beep) %>%
       unite(col = "gazMatch", match, external, sep = "--", na.rm = TRUE) %>%
       rename(gazID = id) %>%
       select(-has_source)
