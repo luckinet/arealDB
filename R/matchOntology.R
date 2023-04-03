@@ -91,7 +91,7 @@ matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
 
 
     # identify whether concepts were already defined as external concepts...
-    externalConcepts <- get_concept(label = trimws(tempTab[[i]]), has_source = srcID, external = TRUE, ontology = ontoPath) %>%
+    externalConcepts <- get_concept(label = tempTab[[i]], has_source = srcID, external = TRUE, ontology = ontoPath) %>%
       mutate(class = allCols[i])
 
     # ... if this is not the case, the only path forward is to first create mappings with the ontology
@@ -105,45 +105,48 @@ matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
                                       verbose = verbose,
                                       beep = beep)
 
-      seems to work up until here, for normTable, geometries level 1. still have to test levels 2-3 and commodities
+      tempConcepts <- relatedConcepts %>%
+        pivot_longer(cols = c(has_broader_match, has_close_match, has_exact_match, has_narrower_match),
+                     names_to = "match", values_to = "external") %>%
+        separate_rows(external, sep = " \\| ") %>%
+        distinct() %>%
+        group_by(id, has_broader, label, class, description, match) %>%
+        summarise(external = paste0(na.omit(external), collapse = " | "), .groups = "keep") %>%
+        ungroup() %>%
+        mutate(external = na_if(x = external, y = ""),
+               match = str_replace(string = match, pattern = "has_", replacement = ""),
+               match = str_replace(string = match, pattern = "_match", replacement = "")) %>%
+        distinct() %>%
+        filter(!is.na(external)) %>%
+        filter(!is.na(id)) %>%
+        arrange(id) %>%
+        rename(!!allCols[i] := external)
 
-      new_mapping(new = relatedConcepts$external,
-                  target = relatedConcepts %>% select(id, label, class, has_broader),
+      new_mapping(new = tempConcepts$external,
+                  target = tempConcepts %>% select(id, label, class, has_broader),
                   source = dataseries,
+                  match = tempConcepts$match,
                   certainty = 3,
                   ontology = ontoPath,
                   verbose = verbose,
                   beep = beep)
-      # new = trimws(externalConcepts$label); target = externalConcepts %>% select(class, has_broader); source = dataseries; certainty = 3; ontology = ontoPath; matchDir = paste0(intPaths, "/meta/", type, "/"); match = NULL; type = "concept"; lut = NULL; verbose = FALSE
-    }
-
-    # ... if this is the case, we have to check whether they occur as a match to a harmonised concept
-
-
-
-    # identify already harmonised concepts
-    if(i == 1){
-      harmonisedConc <- get_concept(label = tempTab[[i]], class = names(tempTab)[i], ontology = ontoPath)
     } else {
-
-
-      harmonisedConc <- get_concept(label = tempTab[[i]], has_broader = , class = names(tempTab)[i], ontology = ontoPath)
+      tempConcepts <-  get_concept(str_detect(has_close_match, paste0(extConcepts$id, collapse = "|")) |
+                                    str_detect(has_broader_match, paste0(extConcepts$id, collapse = "|")) |
+                                    str_detect(has_narrower_match, paste0(extConcepts$id, collapse = "|")) |
+                                    str_detect(has_exact_match, paste0(extConcepts$id, collapse = "|")),
+                                  ontology = ontoPath)
     }
 
-    # identify concepts that occurr only in "has_close_match"
+    seems to work up until here, for normTable, geometries level 1. still have to test levels 2-3 and commodities
 
 
-
-
-    # then construct a datastructure that contains all (new) concepts ...
-    newConcepts <-
+    newConcepts <- join tempConcepts to the previous tempConcepts to create newConcepts, this must include a column 'label', where all harmonised concepts are included
 
     # ... to join them to the input table
     toOut <- table %>%
       unite(col = "external", all_of(allCols), sep = "][", remove = FALSE) %>%
-      select(-head(allCols, -1)) %>%
-      left_join(newConcepts, by = tail(allCols, 1), multiple = "all") %>% # when revising problems for argentina/brazil... this and the previous line were changed
-      # left_join(newConcepts, by = allCols, multiple = "all") %>%
+      left_join(newConcepts, by = allCols) %>%
       select(-all_of(allCols)) %>%
       separate_wider_delim(cols = label, delim = "][", names = allCols)
 

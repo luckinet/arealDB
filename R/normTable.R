@@ -65,7 +65,7 @@ normTable <- function(input = NULL, pattern = NULL, ontoMatch = NULL,
                       outType = "rds", beep = NULL, update = FALSE,
                       verbose = FALSE){
 
-  # input = NULL; pattern = paste0("LU.*", ds[1]); outType = "rds"; ontoMatch = "land use"; beep = 10; update = TRUE; verbose = FALSE; i = 1
+  # input = NULL; pattern = ds[1]; outType = "rds"; ontoMatch = "commodity"; beep = 10; update = TRUE; verbose = FALSE; i = 1
 
   # set internal paths
   intPaths <- getOption(x = "adb_path")
@@ -177,6 +177,7 @@ normTable <- function(input = NULL, pattern = NULL, ontoMatch = NULL,
       unite(col = "gazMatch", match, external, sep = "--", na.rm = TRUE) %>%
       rename(gazID = id) %>%
       select(-has_source)
+    # table = thisTable; columns = targetCols; dataseries = dSeries; ontology = gazPath
 
     if(!is.null(ontoMatch)){
       message("    harmonizing thematic concepts ...")
