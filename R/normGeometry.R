@@ -120,7 +120,7 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
 
   # get territorial context
   topClass <- paste0(getOption(x = "gazetteer_top"))
-  topUnits <- get_concept(table = tibble(class = topClass), ontology = gazPath) %>%
+  topUnits <- get_concept(class = topClass, ontology = gazPath) %>%
     arrange(label)
   allClasses <- get_class(ontology = gazPath) %>%
     pull(label)
@@ -250,8 +250,7 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
                                 dataseries = dSeries,
                                 ontology = gazPath,
                                 verbose = verbose,
-                                beep = beep,
-                                all_cols = TRUE)
+                                beep = beep)
 
     } else if(priority == "spatial"){
 
@@ -260,8 +259,7 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
                                 dataseries = dSeries,
                                 ontology = gazPath,
                                 verbose = verbose,
-                                beep = beep,
-                                all_cols = TRUE)
+                                beep = beep)
 
       harmGeom <- harmGeom %>%
         mutate(id = NA_character_,
