@@ -102,7 +102,7 @@ matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
 
       # first, transform the parents into the column 'has_broader'
       tempTab <- tempTab %>%
-        left_join(tempConcepts, by = allCols[1:(i-1)]) %>%
+        left_join(newConcepts, by = allCols[1:(i-1)]) %>%
         select(label = allCols[i], has_broader = id)
 
       externalConcepts <- get_concept(label = tempTab$label, has_source = srcID,
@@ -134,6 +134,7 @@ matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
         distinct() %>%
         filter(!is.na(external)) %>%
         filter(!is.na(id)) %>%
+        filter(class == allCols[i]) %>%
         arrange(id)
 
       new_mapping(new = tempConcepts$external,
@@ -145,23 +146,43 @@ matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
                   verbose = verbose,
                   beep = beep)
 
-      tempConcepts <- tempConcepts %>%
-        rename(!!allCols[i] := external)
     } else {
+
       tempConcepts <-  get_concept(str_detect(has_close_match, paste0(externalConcepts$id, collapse = "|")) |
                                     str_detect(has_broader_match, paste0(externalConcepts$id, collapse = "|")) |
                                     str_detect(has_narrower_match, paste0(externalConcepts$id, collapse = "|")) |
                                     str_detect(has_exact_match, paste0(externalConcepts$id, collapse = "|")),
-                                  ontology = ontoPath)
+                                  ontology = ontoPath) %>%
+        pivot_longer(cols = c(has_broader_match, has_close_match, has_exact_match, has_narrower_match),
+                     names_to = "match", values_to = "external") %>%
+        separate_rows(external, sep = " \\| ") %>%
+        filter(!is.na(external)) %>%
+        mutate(externalID = str_split_i(external, "[.]", 1),
+               match = str_replace(string = match, pattern = "has_", replacement = ""),
+               match = str_replace(string = match, pattern = "_match", replacement = "")) %>%
+        select(-external) %>%
+        distinct() %>%
+        left_join(externalConcepts %>% select(externalID = id, external = label), by = "externalID") %>%
+        filter(!is.na(external)) %>%
+        select(-externalID) %>%
+        filter(class == allCols[i])
+
     }
 
-    # seems to work up until here, for normTable, geometries level 1. still have to test levels 2-3 and commodities
+    if(i == 1){
+      newConcepts <- tempConcepts %>%
+        rename(!!allCols[i] := external)
+    } else {
+      newConcepts <- tempConcepts %>%
+        rename(!!allCols[i] := external) %>%
+        left_join(newConcepts %>% select(has_broader = id, any_of(allCols)), by = "has_broader")
+    }
 
-
-    newConcepts <- tempConcepts
-    # join tempConcepts to the previous tempConcepts to create newConcepts, this must include a column 'label', where all harmonised concepts are included
 
   }
+
+  newConcepts <- newConcepts %>%
+    unite(col = "label", all_of(allCols), sep = "][", remove = FALSE)
 
   # ... to join them to the input table
   toOut <- table %>%
@@ -176,7 +197,7 @@ matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
   }
 
   out <- toOut %>%
-    select(all_of(allCols), id, match, external, everything())
+    select(all_of(allCols), id, match, external, has_broader, class, description, everything())
 
   return(out)
 
