@@ -175,21 +175,19 @@ matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
     } else {
       newConcepts <- tempConcepts %>%
         rename(!!allCols[i] := external) %>%
-        left_join(newConcepts %>% select(has_broader = id, any_of(allCols)), by = "has_broader")
+        left_join(newConcepts %>% select(has_broader = id, any_of(allCols), new_label = label), by = "has_broader") %>%
+        unite(col = "new_label", new_label, label, sep = "][", remove = FALSE)
     }
 
 
   }
 
-  newConcepts <- newConcepts %>%
-    unite(col = "label", all_of(allCols), sep = "][", remove = FALSE)
-
   # ... to join them to the input table
   toOut <- table %>%
     unite(col = "external", all_of(allCols), sep = "][", remove = FALSE) %>%
-    left_join(newConcepts, by = allCols) %>%
+    left_join(newConcepts, by = allCols, relationship = "many-to-many") %>%
     select(-all_of(allCols)) %>%
-    separate_wider_delim(cols = label, delim = "][", names = allCols)
+    separate_wider_delim(cols = new_label, delim = "][", names = allCols)
 
   if(remakeSF){
     toOut <- toOut %>%
