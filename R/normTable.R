@@ -175,9 +175,7 @@ normTable <- function(input = NULL, pattern = NULL, ontoMatch = NULL,
                                ontology = gazPath,
                                beep = beep) %>%
       unite(col = "gazMatch", match, external, sep = "--", na.rm = TRUE) %>%
-      rename(gazID = id) %>%
-      select(-has_source)
-    # table = thisTable; columns = targetCols; dataseries = dSeries; ontology = gazPath
+      rename(gazID = id)
 
     if(!is.null(ontoMatch)){
       message("    harmonizing thematic concepts ...")
@@ -185,11 +183,10 @@ normTable <- function(input = NULL, pattern = NULL, ontoMatch = NULL,
       ontoPath <- getOption(x = "ontology_path")[[ontoMatch]]
       thisTable <- matchOntology(table = thisTable,
                                  columns = ontoMatch,
-                                 exact_class = FALSE,
                                  dataseries = dSeries,
                                  ontology = ontoPath,
-                                 beep = beep,
-                                 all_cols = TRUE) %>%
+                                 beep = beep) %>%
+        # table = thisTable; columns = ontoMatch; dataseries = dSeries; ontology = ontoPath
         rename(ontoID = id, ontoName = all_of(ontoMatch)) %>%
         unite(col = "ontoMatch", match, external, sep = "--", na.rm = TRUE) %>%
         select(ontoID, ontoName, ontoMatch, everything()) %>%

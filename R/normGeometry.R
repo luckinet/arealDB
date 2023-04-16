@@ -262,10 +262,7 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
                                 beep = beep)
 
       harmGeom <- harmGeom %>%
-        mutate(id = NA_character_,
-               match = NA_character_,
-               external = !!sym(tail(unitCols, 1)),
-               has_source = NA_character_)
+        mutate(id = NA_character_)
 
       for(k in seq_along(unitCols)){
         if(k == 1) next
@@ -273,7 +270,7 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
           mutate(!!unitCols[k] := NA_character_)
       }
       harmGeom <- harmGeom %>%
-        select(all_of(unitCols), id, match, external, has_source, everything())
+        select(all_of(unitCols), id, match, external, everything())
 
     }
 
@@ -569,13 +566,14 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
               bind_rows(tempGeom)
 
             # add the new concepts to the gazetteer
-            toOnto <- outGeom %>%
-              rowwise() %>%
-              mutate(parentID = paste0(head(str_split_1(gazID, "[.]"), -1), collapse = "."))
-            new_concept(new = toOnto$external,
-                        broader = get_concept(table = tibble(id = toOnto$parentID), ontology = gazPath),
-                        class = toOnto$gazClass,
-                        ontology =  gazPath)
+            # toOnto <- outGeom %>%
+            #   rowwise() %>%
+            #   mutate(parentID = paste0(head(str_split_1(gazID, "[.]"), -1), collapse = "."))
+            # new_concept(new = toOnto$external,
+            #             # broader = get_concept(table = tibble(id = toOnto$parentID), ontology = gazPath),
+            #             broader = get_concept(id = toOnto$parentID, ontology = gazPath),
+            #             class = toOnto$gazClass,
+            #             ontology =  gazPath)
 
           } else {
             message("    -> All ontology matches are valid")
@@ -588,26 +586,24 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
             mutate(match = str_replace_all(match, "\\[|\\]", "")) %>%
             separate(col = match, into = c("match", "amount"), sep = " ", fill = "right") %>%
             separate(col = amount, into = c("amount", "target"), sep = "_", fill = "right")
-          oldOnto <- get_concept(table = newOnto %>% select(id = target), ontology = gazPath)
+          # oldOnto <- get_concept(table = newOnto %>% select(id = target), ontology = gazPath)
+          oldOnto <- get_concept(id = newOnto$target, ontology = gazPath)
           assertCharacter(x = oldOnto$id, any.missing = FALSE, len = dim(newOnto)[1]) # check that the automatically derived target concepts are fully present
 
           if(any(newOnto$match == "close")){
             new_mapping(new = newOnto %>% filter(match == "close") %>% pull(external),
                         target = oldOnto %>% filter(newOnto$match == "close") %>% select(id, label, class, has_broader),
-                        source = dSeries, match = "close", certainty = 3, type = "concept",
-                        matchDir = paste0(intPaths, "/meta/", type, "/"), ontology = gazPath)
+                        source = dSeries, match = "close", certainty = 3, type = "concept", ontology = gazPath)
           }
           if(any(newOnto$match == "narrower")){
             new_mapping(new = newOnto %>% filter(match == "narrower") %>% pull(external),
                         target = oldOnto %>% filter(newOnto$match == "narrower") %>% select(id, label, class, has_broader),
-                        source = dSeries, match = "narrower", certainty = 3, type = "concept",
-                        matchDir = paste0(intPaths, "/meta/", type, "/"), ontology = gazPath)
+                        source = dSeries, match = "narrower", certainty = 3, type = "concept", ontology = gazPath)
           }
           if(any(newOnto$match == "broader")){
             new_mapping(new = newOnto %>% filter(match == "broader") %>% pull(external),
                         target = oldOnto %>% filter(newOnto$match == "broader") %>% select(id, label, class, has_broader),
-                        source = dSeries, match = "broader", certainty = 3, type = "concept",
-                        matchDir = paste0(intPaths, "/meta/", type, "/"), ontology = gazPath)
+                        source = dSeries, match = "broader", certainty = 3, type = "concept", ontology = gazPath)
           }
 
           if(fileExists){
