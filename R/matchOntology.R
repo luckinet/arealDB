@@ -171,14 +171,13 @@ matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
 
     if(i == 1){
       newConcepts <- tempConcepts %>%
-        rename(!!allCols[i] := external)
+        rename(!!allCols[i] := external, new_label = label)
     } else {
       newConcepts <- tempConcepts %>%
         rename(!!allCols[i] := external) %>%
-        left_join(newConcepts %>% select(has_broader = id, any_of(allCols), new_label = label), by = "has_broader") %>%
+        left_join(newConcepts %>% select(has_broader = id, any_of(allCols), new_label), by = "has_broader") %>%
         unite(col = "new_label", new_label, label, sep = "][", remove = FALSE)
     }
-
 
   }
 

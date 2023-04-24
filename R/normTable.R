@@ -175,7 +175,9 @@ normTable <- function(input = NULL, pattern = NULL, ontoMatch = NULL,
                                ontology = gazPath,
                                beep = beep) %>%
       unite(col = "gazMatch", match, external, sep = "--", na.rm = TRUE) %>%
-      rename(gazID = id)
+      rename(gazID = id) %>%
+      select(-has_broader, -class, -description) %>%
+      mutate(gazID = str_replace_all(string = gazID, pattern = "[.]", replacement = "-"))
 
     if(!is.null(ontoMatch)){
       message("    harmonizing thematic concepts ...")
@@ -189,17 +191,15 @@ normTable <- function(input = NULL, pattern = NULL, ontoMatch = NULL,
         # table = thisTable; columns = ontoMatch; dataseries = dSeries; ontology = ontoPath
         rename(ontoID = id, ontoName = all_of(ontoMatch)) %>%
         unite(col = "ontoMatch", match, external, sep = "--", na.rm = TRUE) %>%
-        select(ontoID, ontoName, ontoMatch, everything()) %>%
-        select(-has_source)
+        select(ontoName, ontoID, ontoMatch, everything()) %>%
+        select(-has_broader, -class, -description)
     }
 
-    if("broader" %in% colnames(thisTable)){
-      thisTable <- thisTable %>%
-        select(-broader)
-    }
     thisTable <- thisTable %>%
-      mutate(tabID = tabID,
-             geoID = geoID)
+      mutate(gazID = str_replace_all(string = gazID, pattern = "-", replacement = "."),
+             tabID = tabID,
+             geoID = geoID) %>%
+      filter(!is.na(ontoName))
 
     # produce output
     if(update){
