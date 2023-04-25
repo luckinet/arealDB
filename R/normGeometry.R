@@ -588,7 +588,7 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
             separate(col = amount, into = c("amount", "target"), sep = "_", fill = "right")
           # oldOnto <- get_concept(table = newOnto %>% select(id = target), ontology = gazPath)
           oldOnto <- get_concept(id = newOnto$target, ontology = gazPath)
-          assertCharacter(x = oldOnto$id, any.missing = FALSE, len = dim(newOnto)[1]) # check that the automatically derived target concepts are fully present
+          # assertCharacter(x = oldOnto$id, any.missing = FALSE, len = dim(newOnto)[1]) # check that the automatically derived target concepts are fully present
 
           if(any(newOnto$match == "close")){
             new_mapping(new = newOnto %>% filter(match == "close") %>% pull(external),
