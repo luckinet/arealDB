@@ -17,13 +17,13 @@
 #' @importFrom checkmate assertFileExists
 #' @importFrom utils head
 #' @importFrom ontologics load_ontology new_source get_concept new_mapping
-#'   make_tree
+#'   make_tree edit_matches
 #' @importFrom purrr map_dfr
 #' @importFrom dplyr pull filter select mutate distinct bind_cols rename
-#'   everything left_join rename_with
+#'   everything left_join rename_with na_if
 #' @importFrom tibble tibble
 #' @importFrom tidyselect all_of any_of where
-#' @importFrom stringr str_split_i
+#' @importFrom stringr str_split_i str_replace str_replace_all
 #' @importFrom tidyr separate_rows separate pivot_wider fill pivot_longer
 #'   separate_wider_delim contains
 #' @importFrom sf st_drop_geometry
@@ -176,7 +176,7 @@ matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
       newConcepts <- tempConcepts %>%
         rename(!!allCols[i] := external) %>%
         left_join(newConcepts %>% select(has_broader = id, any_of(allCols), new_label), by = "has_broader") %>%
-        unite(col = "new_label", new_label, label, sep = "][", remove = FALSE)
+        unite(col = "new_label", new_label, label, sep = "][", remove = TRUE)
     }
 
   }
