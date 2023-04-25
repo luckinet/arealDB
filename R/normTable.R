@@ -192,14 +192,14 @@ normTable <- function(input = NULL, pattern = NULL, ontoMatch = NULL,
         rename(ontoID = id, ontoName = all_of(ontoMatch)) %>%
         unite(col = "ontoMatch", match, external, sep = "--", na.rm = TRUE) %>%
         select(ontoName, ontoID, ontoMatch, everything()) %>%
-        select(-has_broader, -class, -description)
+        select(-has_broader, -class, -description) %>%
+        filter(!is.na(ontoName))
     }
 
     thisTable <- thisTable %>%
       mutate(gazID = str_replace_all(string = gazID, pattern = "-", replacement = "."),
              tabID = tabID,
-             geoID = geoID) %>%
-      filter(!is.na(ontoName))
+             geoID = geoID)
 
     # produce output
     if(update){
