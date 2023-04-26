@@ -251,6 +251,7 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
                                 ontology = gazPath,
                                 verbose = verbose,
                                 beep = beep)
+      # include a warning here in case matches other than 'close' have been used, which would lead to problems matching them in the ontology, or, alternatively implement a system that would derive the correct IDs automatically, just like below for when a spatial match is chosen
 
     } else if(priority == "spatial"){
 
@@ -565,7 +566,7 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
             outGeom <- outGeom %>%
               bind_rows(tempGeom)
 
-            # add the new concepts to the gazetteer
+            # add the new concepts to the gazetteer (this could be reimplemented as an option later-on)
             # toOnto <- outGeom %>%
             #   rowwise() %>%
             #   mutate(parentID = paste0(head(str_split_1(gazID, "[.]"), -1), collapse = "."))
@@ -591,18 +592,24 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
           # assertCharacter(x = oldOnto$id, any.missing = FALSE, len = dim(newOnto)[1]) # check that the automatically derived target concepts are fully present
 
           if(any(newOnto$match == "close")){
-            new_mapping(new = newOnto %>% filter(match == "close") %>% pull(external),
-                        target = oldOnto %>% filter(newOnto$match == "close") %>% select(id, label, class, has_broader),
+            newClose <- newOnto %>%
+              filter(match == "close")
+            new_mapping(new =  newClose$external,
+                        target = oldOnto %>% filter(id %in% newClose$target) %>% select(id, label, class, has_broader),
                         source = dSeries, match = "close", certainty = 3, type = "concept", ontology = gazPath)
           }
           if(any(newOnto$match == "narrower")){
-            new_mapping(new = newOnto %>% filter(match == "narrower") %>% pull(external),
-                        target = oldOnto %>% filter(newOnto$match == "narrower") %>% select(id, label, class, has_broader),
+            newNarrower <- newOnto %>%
+              filter(match == "narrower")
+            new_mapping(new = newNarrower$external,
+                        target = oldOnto %>% filter(id %in% newNarrower$target) %>% select(id, label, class, has_broader),
                         source = dSeries, match = "narrower", certainty = 3, type = "concept", ontology = gazPath)
           }
           if(any(newOnto$match == "broader")){
-            new_mapping(new = newOnto %>% filter(match == "broader") %>% pull(external),
-                        target = oldOnto %>% filter(newOnto$match == "broader") %>% select(id, label, class, has_broader),
+            newBroader <- newOnto %>%
+              filter(match == "broader")
+            new_mapping(new = newBroader$external,
+                        target = oldOnto %>% filter(id %in% newBroader$target) %>% select(id, label, class, has_broader),
                         source = dSeries, match = "broader", certainty = 3, type = "concept", ontology = gazPath)
           }
 
