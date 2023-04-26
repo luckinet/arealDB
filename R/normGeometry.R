@@ -21,14 +21,19 @@
 #'
 #'   \itemize{
 #'     \item \code{"spatial"}: where all territories are intersected spatially or
-#'     \item \code{"ontology"}: where territories are matched by comparing their name with the ontology
+#'     \item \code{"ontology"}: where territories are matched by comparing their
+#'     name with the ontology
 #'     and those that do not match are intersected spatially,
-#'     \item \code{"both"}: where territories are matched with the ontology and spatially, and conflicts are indicated
+#'     \item \code{"both"}: where territories are matched with the ontology and
+#'     spatially, and conflicts are indicated
 #'   }
 #' @param beep [\code{integerish(1)}]\cr Number specifying what sound to be
 #'   played to signal the user that a point of interaction is reached by the
 #'   program, see \code{\link[beepr]{beep}}.
 #' @param simplify [\code{logical(1)}]\cr whether or not to simplify geometries.
+#' @param upgrade.harmonised [\code{logical(1)}] whether or not to upgrade
+#'   harmonized concepts in case a new geometry has features that do not yet
+#'   exist in the ontology.
 #' @param update [\code{logical(1)}]\cr whether or not the physical files should
 #'   be updated (\code{TRUE}) or the function should merely return the geometry
 #'   inventory of the handled files (\code{FALSE}, default). This is helpful to
@@ -110,7 +115,8 @@
 
 normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10,
                          outType = "gpkg", priority = "ontology", beep = NULL,
-                         simplify = FALSE, update = FALSE, verbose = FALSE){
+                         simplify = FALSE, upgrade.harmonised = TRUE,
+                         update = FALSE, verbose = FALSE){
 
   # set internal paths
   intPaths <- paste0(getOption(x = "adb_path"))
@@ -263,13 +269,9 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
                                 beep = beep)
 
       harmGeom <- harmGeom %>%
-        mutate(id = NA_character_)
+        mutate(id = NA_character_,
+               external = !!sym(tail(unitCols, 1)))
 
-      for(k in seq_along(unitCols)){
-        if(k == 1) next
-        harmGeom <- harmGeom %>%
-          mutate(!!unitCols[k] := NA_character_)
-      }
       harmGeom <- harmGeom %>%
         select(all_of(unitCols), id, match, external, everything())
 
@@ -566,15 +568,18 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
             outGeom <- outGeom %>%
               bind_rows(tempGeom)
 
-            # add the new concepts to the gazetteer (this could be reimplemented as an option later-on)
-            # toOnto <- outGeom %>%
-            #   rowwise() %>%
-            #   mutate(parentID = paste0(head(str_split_1(gazID, "[.]"), -1), collapse = "."))
-            # new_concept(new = toOnto$external,
-            #             # broader = get_concept(table = tibble(id = toOnto$parentID), ontology = gazPath),
-            #             broader = get_concept(id = toOnto$parentID, ontology = gazPath),
-            #             class = toOnto$gazClass,
-            #             ontology =  gazPath)
+            # add the new concepts to the gazetteer
+            if(upgrade.harmonised){
+              toOnto <- outGeom %>%
+                st_drop_geometry() %>%
+                rowwise() %>%
+                mutate(parentID = paste0(head(str_split_1(gazID, "[.]"), -1), collapse = "."))
+              new_concept(new = toOnto$external,
+                          broader = left_join(toOnto %>% select(id = parentID, external), get_concept(id = toOnto$parentID, ontology = gazPath), by = "id") %>% select(id, label, class),
+                          class = toOnto$gazClass,
+                          ontology =  gazPath)
+            }
+
 
           } else {
             message("    -> All ontology matches are valid")

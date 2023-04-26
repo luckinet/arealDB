@@ -13,6 +13,7 @@ normGeometry(
   priority = "ontology",
   beep = NULL,
   simplify = FALSE,
+  upgrade.harmonised = TRUE,
   update = FALSE,
   verbose = FALSE
 )
@@ -43,9 +44,11 @@ option.}
 
   \itemize{
     \item \code{"spatial"}: where all territories are intersected spatially or
-    \item \code{"ontology"}: where territories are matched by comparing their name with the ontology
+    \item \code{"ontology"}: where territories are matched by comparing their
+    name with the ontology
     and those that do not match are intersected spatially,
-    \item \code{"both"}: where territories are matched with the ontology and spatially, and conflicts are indicated
+    \item \code{"both"}: where territories are matched with the ontology and
+    spatially, and conflicts are indicated
   }}
 
 \item{beep}{[\code{integerish(1)}]\cr Number specifying what sound to be
@@ -53,6 +56,10 @@ played to signal the user that a point of interaction is reached by the
 program, see \code{\link[beepr]{beep}}.}
 
 \item{simplify}{[\code{logical(1)}]\cr whether or not to simplify geometries.}
+
+\item{upgrade.harmonised}{[\code{logical(1)}] whether or not to upgrade
+harmonized concepts in case a new geometry has features that do not yet
+exist in the ontology.}
 
 \item{update}{[\code{logical(1)}]\cr whether or not the physical files should
 be updated (\code{TRUE}) or the function should merely return the geometry
