@@ -48,7 +48,9 @@ globalVariables(c(
   "has_narrower_match",
   "toExport",
   "externalID",
-  "theColumn"
+  "theColumn",
+  "new_label",
+  "parentID"
 ))
 
 .onAttach <- function(libname, pkgname){
