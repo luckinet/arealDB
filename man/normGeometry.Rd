@@ -13,7 +13,7 @@ normGeometry(
   priority = "ontology",
   beep = NULL,
   simplify = FALSE,
-  upgrade.harmonised = TRUE,
+  upgrade.harmonised = FALSE,
   update = FALSE,
   verbose = FALSE
 )
