@@ -1,3 +1,9 @@
+# arealDB 0.6.0 - revise harmonisation with gazeteer/ontology
+
+* various fixes to enable full support for automatically matching territories with a gazetteer and concepts with an ontology
+* complete overhaul of `matchOntology()` making it vastly more efficient and easier to use/debug
+* adapt `normGeometry()` and `normTable()` to the changes in `matchOntology()`
+
 # arealDB 0.5.0 - automatching update
 
 * spatial matches are now found automatically and inserted into the ontology.
