@@ -115,7 +115,7 @@
 
 normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10,
                          outType = "gpkg", priority = "ontology", beep = NULL,
-                         simplify = FALSE, upgrade.harmonised = TRUE,
+                         simplify = FALSE, upgrade.harmonised = FALSE,
                          update = FALSE, verbose = FALSE){
 
   # set internal paths
@@ -606,8 +606,13 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
           if(any(newOnto$match == "narrower")){
             newNarrower <- newOnto %>%
               filter(match == "narrower")
+            oldNarrower <- oldOnto %>%
+              filter(id %in% newNarrower$target) %>%
+              select(id, label, class, has_broader) %>%
+              left_join(., newNarrower, by = c("id" = "target")) %>%
+              select(id, label, class, has_broader)
             new_mapping(new = newNarrower$external,
-                        target = oldOnto %>% filter(id %in% newNarrower$target) %>% select(id, label, class, has_broader),
+                        target = oldNarrower,
                         source = dSeries, match = "narrower", certainty = 3, type = "concept", ontology = gazPath)
           }
           if(any(newOnto$match == "broader")){
