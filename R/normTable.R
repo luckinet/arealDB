@@ -65,7 +65,7 @@ normTable <- function(input = NULL, pattern = NULL, ontoMatch = NULL,
                       outType = "rds", beep = NULL, update = FALSE,
                       verbose = FALSE){
 
-  # input = NULL; pattern = ds[1]; outType = "rds"; ontoMatch = "commodity"; beep = 10; update = TRUE; verbose = FALSE; i = 1
+  # input = NULL; pattern = paste0("LU.*", ds[1]); outType = "rds"; ontoMatch = NULL; beep = 10; update = TRUE; verbose = FALSE; i = 1
 
   # set internal paths
   intPaths <- getOption(x = "adb_path")
@@ -117,7 +117,7 @@ normTable <- function(input = NULL, pattern = NULL, ontoMatch = NULL,
     fields <- str_split(file_name, "_")[[1]]
 
     if(!file_name %in% inv_tables$source_file){
-      message("\n--- ", i, " / ", length(input), " skipping ", rep("-", times = getOption("width")-(nchar(i)+nchar(length(input))+4+nchar(file_name))), " ", file_name, " ---")
+      message("\n--- ", i, " / ", length(input), " skipping ", rep("-", times = getOption("width")-(nchar(i)+nchar(length(input))+21+nchar(file_name))), " ", file_name, " ---")
       next
     } else {
       message("\n--- ", i, " / ", length(input), " ", rep("-", times = getOption("width")-(nchar(i)+nchar(length(input))+13+nchar(file_name))), " ", file_name, " ---")
