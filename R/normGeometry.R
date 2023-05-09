@@ -31,9 +31,6 @@
 #'   played to signal the user that a point of interaction is reached by the
 #'   program, see \code{\link[beepr]{beep}}.
 #' @param simplify [\code{logical(1)}]\cr whether or not to simplify geometries.
-#' @param upgrade.harmonised [\code{logical(1)}] whether or not to upgrade
-#'   harmonized concepts in case a new geometry has features that do not yet
-#'   exist in the ontology.
 #' @param update [\code{logical(1)}]\cr whether or not the physical files should
 #'   be updated (\code{TRUE}) or the function should merely return the geometry
 #'   inventory of the handled files (\code{FALSE}, default). This is helpful to
@@ -107,7 +104,7 @@
 #' @importFrom rmapshaper ms_simplify
 #' @importFrom stringr str_split_1 str_to_title str_pad str_replace_all
 #' @importFrom tibble as_tibble add_column
-#' @importFrom dplyr bind_rows slice lag desc n_distinct
+#' @importFrom dplyr bind_rows slice lag desc n_distinct left_join right_join
 #' @importFrom tidyr unite
 #' @importFrom tidyselect starts_with all_of
 #' @importFrom utils tail head
@@ -115,8 +112,9 @@
 
 normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10,
                          outType = "gpkg", priority = "ontology", beep = NULL,
-                         simplify = FALSE, upgrade.harmonised = FALSE,
-                         update = FALSE, verbose = FALSE){
+                         simplify = FALSE, update = FALSE, verbose = FALSE){
+
+  # input = NULL; pattern = gs[2]; query = NULL; thresh = 10; outType = "gpkg"; priority = "spatial"; beep = NULL; simplify = FALSE; update = TRUE; verbose = FALSE; i = 1; j = 1
 
   # set internal paths
   intPaths <- paste0(getOption(x = "adb_path"))
@@ -234,6 +232,11 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
                         stringsAsFactors = FALSE)
     }
 
+    # stop this iteration when 'inGeom' has zero rows
+    if(dim(inGeom)[1] == 0){
+      next
+    }
+
     for(k in seq_along(unitCols)){
       names(inGeom)[[which(names(inGeom) == targetLabel[k])]] <- unitCols[k]
     }
@@ -349,11 +352,12 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
         # ... if yes, read it in, otherwise create it
         if(fileExists | priority == "spatial"){
 
-          topLayer <- targetLayers$name[which.min(targetLayers$features)]
-
           # read target geoms ----
           message("    Reading target geometries")
           if(fileExists){
+
+            topLayer <- targetLayers$name[which.min(targetLayers$features)]
+
             stage3Geom <- read_sf(dsn = paste0(intPaths, "/adb_geometries/stage3/", tempUnit, ".gpkg"),
                                   layer = tail(targetClass$label, 1),
                                   stringsAsFactors = FALSE)
@@ -384,6 +388,9 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
               message("  ! --> all features of the new geometry are already part of the target geometry !")
               next
             }
+          } else {
+            message("  ! --> no previously defined geometry exists at stage 3 !")
+            next
           }
 
           if(!topClass %in% tail(targetClass$label, 1)){
@@ -532,7 +539,7 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
                   filter(row_number() == 1) %>%
                   select(gazID, gazName, external, siblings) %>%
                   st_drop_geometry()
-                )
+              )
 
               if(fileExists){
                 tempGeom <- tempGeom %>%
@@ -568,59 +575,75 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
             outGeom <- outGeom %>%
               bind_rows(tempGeom)
 
-            # add the new concepts to the gazetteer
-            if(upgrade.harmonised){
-              toOnto <- outGeom %>%
-                st_drop_geometry() %>%
-                rowwise() %>%
-                mutate(parentID = paste0(head(str_split_1(gazID, "[.]"), -1), collapse = "."))
-              new_concept(new = toOnto$external,
-                          broader = left_join(toOnto %>% select(id = parentID, external), get_concept(id = toOnto$parentID, ontology = gazPath), by = "id") %>% select(id, label, class),
-                          class = toOnto$gazClass,
-                          ontology =  gazPath)
-            }
-
-
           } else {
             message("    -> All ontology matches are valid")
           }
 
-          message("    -> Updating ontology")
-          newOnto <- outGeom %>%
-            st_drop_geometry() %>%
-            separate_rows("match", sep = " \\| ") %>%
-            mutate(match = str_replace_all(match, "\\[|\\]", "")) %>%
-            separate(col = match, into = c("match", "amount"), sep = " ", fill = "right") %>%
-            separate(col = amount, into = c("amount", "target"), sep = "_", fill = "right")
-          # oldOnto <- get_concept(table = newOnto %>% select(id = target), ontology = gazPath)
-          oldOnto <- get_concept(id = newOnto$target, ontology = gazPath)
-          # assertCharacter(x = oldOnto$id, any.missing = FALSE, len = dim(newOnto)[1]) # check that the automatically derived target concepts are fully present
+          # update ontology, but only if we are not handling the topmost class, because in that case it has been harmonised with the gazetteer already
+          if(unitCols[1] == topClass){
 
-          if(any(newOnto$match == "close")){
-            newClose <- newOnto %>%
-              filter(match == "close")
-            new_mapping(new =  newClose$external,
-                        target = oldOnto %>% filter(id %in% newClose$target) %>% select(id, label, class, has_broader),
-                        source = dSeries, match = "close", certainty = 3, type = "concept", ontology = gazPath)
-          }
-          if(any(newOnto$match == "narrower")){
-            newNarrower <- newOnto %>%
-              filter(match == "narrower")
-            oldNarrower <- oldOnto %>%
-              filter(id %in% newNarrower$target) %>%
-              select(id, label, class, has_broader) %>%
-              left_join(., newNarrower, by = c("id" = "target")) %>%
-              select(id, label, class, has_broader)
-            new_mapping(new = newNarrower$external,
-                        target = oldNarrower,
-                        source = dSeries, match = "narrower", certainty = 3, type = "concept", ontology = gazPath)
-          }
-          if(any(newOnto$match == "broader")){
-            newBroader <- newOnto %>%
-              filter(match == "broader")
-            new_mapping(new = newBroader$external,
-                        target = oldOnto %>% filter(id %in% newBroader$target) %>% select(id, label, class, has_broader),
-                        source = dSeries, match = "broader", certainty = 3, type = "concept", ontology = gazPath)
+            message("    -> Updating ontology")
+            newOnto <- outGeom %>%
+              st_drop_geometry() %>%
+              rowwise() %>%
+              mutate(parentID = paste0(head(str_split_1(gazID, "[.]"), -1), collapse = ".")) %>%
+              separate_rows("match", sep = " \\| ") %>%
+              mutate(match = str_replace_all(match, "\\[|\\]", "")) %>%
+              separate(col = match, into = c("match", "amount"), sep = " ", fill = "right") %>%
+              separate(col = amount, into = c("amount", "target"), sep = "_", fill = "right") %>%
+              separate(col = amount, into = c("target_overlap", "source_overlap"), sep = "<>", fill = "right") %>%
+              mutate(target_overlap = as.numeric(target_overlap),
+                     source_overlap = as.numeric(source_overlap))
+
+            # 1. include new hamonised concepts in the ontology, in case it deviates more than 'thresh'
+            newConcepts <- newOnto %>%
+              filter(target_overlap < (100-thresh) | source_overlap < (100-thresh))
+
+            if(dim(newConcepts)[1] != 0){
+
+              new_concept(new = newConcepts$external,
+                          broader = left_join(newConcepts %>% select(id = parentID, external), get_concept(id = newConcepts$parentID, ontology = gazPath), by = "id") %>% select(id, label, class),
+                          class = newConcepts$gazClass,
+                          ontology =  gazPath)
+
+            }
+
+            # 2. define mappings of the new concepts with harmonised concepts
+            harmOnto <- get_concept(id = newOnto$target, ontology = gazPath)
+
+            if(any(newOnto$match == "close")){
+              newClose <- newOnto %>%
+                filter(match == "close")
+              new_mapping(new =  newClose$external,
+                          target = harmOnto %>% filter(id %in% newClose$target) %>% select(id, label, class, has_broader),
+                          source = dSeries, match = "close", certainty = 3, type = "concept", ontology = gazPath)
+            }
+
+            if(any(newOnto$match == "narrower")){
+              newNarrower <- newOnto %>%
+                filter(match == "narrower")
+              oldNarrower <- harmOnto %>%
+                filter(id %in% newNarrower$target) %>%
+                select(id, label, class, has_broader) %>%
+                left_join(newNarrower, by = c("id" = "target")) %>%
+                select(id, label, class, has_broader)
+              new_mapping(new = newNarrower$external,
+                          target = oldNarrower,
+                          source = dSeries, match = "narrower", certainty = 3, type = "concept", ontology = gazPath)
+            }
+
+            if(any(newOnto$match == "broader")){
+              newBroader <- newOnto %>%
+                filter(match == "broader")
+              oldBroader <- harmOnto %>%
+                filter(id %in% newBroader$target) %>%
+                select(id, label, class, has_broader) %>%
+                right_join(newBroader, ., by = c("target" = "id")) %>%
+                select(id = target, label, class, has_broader)
+              new_mapping(new = newBroader$external,
+                          target = oldBroader,
+                          source = dSeries, match = "broader", certainty = 3, type = "concept", ontology = gazPath)
+            }
           }
 
           if(fileExists){

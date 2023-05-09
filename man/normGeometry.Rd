@@ -13,7 +13,6 @@ normGeometry(
   priority = "ontology",
   beep = NULL,
   simplify = FALSE,
-  upgrade.harmonised = FALSE,
   update = FALSE,
   verbose = FALSE
 )
@@ -56,10 +55,6 @@ played to signal the user that a point of interaction is reached by the
 program, see \code{\link[beepr]{beep}}.}
 
 \item{simplify}{[\code{logical(1)}]\cr whether or not to simplify geometries.}
-
-\item{upgrade.harmonised}{[\code{logical(1)}] whether or not to upgrade
-harmonized concepts in case a new geometry has features that do not yet
-exist in the ontology.}
 
 \item{update}{[\code{logical(1)}]\cr whether or not the physical files should
 be updated (\code{TRUE}) or the function should merely return the geometry
