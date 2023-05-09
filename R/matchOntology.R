@@ -137,14 +137,17 @@ matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
         filter(class == allCols[i]) %>%
         arrange(id)
 
-      new_mapping(new = tempConcepts$external,
-                  target = tempConcepts %>% select(id, label, class, has_broader),
-                  source = dataseries,
-                  match = tempConcepts$match,
-                  certainty = 3,
-                  ontology = ontoPath,
-                  verbose = verbose,
-                  beep = beep)
+      if(dim(tempConcepts)[1] != 0){
+        new_mapping(new = tempConcepts$external,
+                    target = tempConcepts %>% select(id, label, class, has_broader),
+                    source = dataseries,
+                    match = tempConcepts$match,
+                    certainty = 3,
+                    ontology = ontoPath,
+                    verbose = verbose,
+                    beep = beep)
+      }
+
 
     } else {
 
