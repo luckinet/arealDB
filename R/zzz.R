@@ -50,7 +50,9 @@ globalVariables(c(
   "externalID",
   "theColumn",
   "new_label",
-  "parentID"
+  "parentID",
+  "source_overlap",
+  "target_overlap"
 ))
 
 .onAttach <- function(libname, pkgname){
