@@ -29,7 +29,7 @@ jobs:
           use-public-rspm: true
 
       - name: Install spatial dependencies
-        run: sudo apt-get install libgdal-dev libproj-dev libgeos-dev libudunits2-dev netcdf-bin
+        run: brew install gdal proj
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
