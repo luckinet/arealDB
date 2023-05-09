@@ -580,7 +580,7 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
           }
 
           # update ontology, but only if we are not handling the topmost class, because in that case it has been harmonised with the gazetteer already
-          if(unitCols[1] == topClass){
+          if(unique(outGeom$gazClass) != topClass){
 
             message("    -> Updating ontology")
             newOnto <- outGeom %>%
@@ -598,11 +598,16 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
             # 1. include new hamonised concepts in the ontology, in case it deviates more than 'thresh'
             newConcepts <- newOnto %>%
               filter(target_overlap < (100-thresh) | source_overlap < (100-thresh))
+            newConcepts <- newConcepts %>%
+              select(id = parentID, gazClass, external) %>%
+              left_join(get_concept(id = newConcepts$parentID, ontology = gazPath), by = "id") %>%
+              select(external, gazClass, id, label, class) %>%
+              distinct()
 
             if(dim(newConcepts)[1] != 0){
 
               new_concept(new = newConcepts$external,
-                          broader = left_join(newConcepts %>% select(id = parentID, external), get_concept(id = newConcepts$parentID, ontology = gazPath), by = "id") %>% select(id, label, class),
+                          broader = newConcepts %>% select(id, label, class),
                           class = newConcepts$gazClass,
                           ontology =  gazPath)
 

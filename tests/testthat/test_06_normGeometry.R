@@ -84,8 +84,8 @@ test_that("geometries can be normalised", {
   onto <- load_ontology(path = paste0(dbpath, "/territories.rds"))
   expect_set_equal(x = onto@concepts$harmonised$label,
                    y = c("a_nation", "county_1", "municipality1_1", "municipality1_2", "Gemeinde 13", "Gemeinde 14", "county_2",
-                         "municipality2_1", "Gemeinde 21", "county_3", "municipality3", "Gemeinde 3", "county_4", "municipality4_1",
-                         "municipality4_2", "Gemeinde 41", "Gemeinde 42"))
+                         "municipality2_1", "county_3", "municipality3", "county_4", "municipality4_1",
+                         "municipality4_2"))
   expect_set_equal(x = onto@concepts$harmonised$has_close_match,
                    y = c("gadm_1.3 | madeUp_1.3", "gadm_2.3", "gadm_6.3", "gadm_7.3", NA, NA, "gadm_3.3", "gadm_8.3 | madeUp_2.3",
                          NA, "gadm_4.3", "gadm_9.3 | madeUp_3.3", NA, "gadm_5.3", "gadm_10.3 | madeUp_4.3", "gadm_11.3 | madeUp_5.3",
