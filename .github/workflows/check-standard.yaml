@@ -40,7 +40,7 @@ jobs:
           use-public-rspm: true
 
       - name: Install spatial dependencies
-        run: brew install gdal proj
+        run: sudo apt-get install libgdal-dev libproj-dev libgeos-dev
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
@@ -50,4 +50,3 @@ jobs:
       - uses: r-lib/actions/check-r-package@v2
         with:
           upload-snapshots: true
-
