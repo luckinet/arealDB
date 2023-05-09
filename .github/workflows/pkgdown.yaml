@@ -28,6 +28,9 @@ jobs:
         with:
           use-public-rspm: true
 
+      - name: Install spatial dependencies
+        run: brew install gdal proj
+
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
           extra-packages: any::pkgdown, local::.
