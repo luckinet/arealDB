@@ -1,8 +1,9 @@
-# arealDB 0.6.0 - revise harmonisation with gazeteer/ontology
+# arealDB 0.6.0 - revise harmonisation with gazetteer/ontology
 
 * various fixes to enable full support for automatically matching territories with a gazetteer and concepts with an ontology
 * complete overhaul of `matchOntology()` making it vastly more efficient and easier to use/debug
 * adapt `normGeometry()` and `normTable()` to the changes in `matchOntology()`
+* start making use of the spatial/topological information derived from normalizing new geometries (that were not part of the initial geometry data set) by updating the gazetteer accordingly. Only if a concept does not overlap with more than (100 - thresh), is it added as a new harmonized concept. In that case, the new geometry is one that is distinct from the harmonized geometry.
 
 # arealDB 0.5.0 - automatching update
 
@@ -14,7 +15,7 @@
 
 # arealDB 0.4.6
 
-* revise the whole geometry normalisation process to incorporate the new ontology system.
+* revise the whole geometry normalization process to incorporate the new ontology system.
 
 # arealDB 0.4.5
 
@@ -27,7 +28,7 @@
 # arealDB 0.4.3
 
 * rename `match_ontology()` to `matchOntology()` and revise it so that it can handle several columns sequentially
-* make use of getters of the ontologics package so that (large) gazetteers are not loaded but only the requried info are pulled from them
+* make use of getters of the ontologics package so that (large) gazetteers are not loaded but only the required info are pulled from them
 * remove functions `get_variable()` and `select_path()`, the former is integrated into `matchOntology()` and the latter is not relevant anymore.
 
 
