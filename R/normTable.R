@@ -65,7 +65,7 @@ normTable <- function(input = NULL, pattern = NULL, ontoMatch = NULL,
                       outType = "rds", beep = NULL, update = FALSE,
                       verbose = FALSE){
 
-  # input = NULL; pattern = ds[1]; outType = "rds"; ontoMatch = "commodity"; beep = 10; update = TRUE; verbose = FALSE; i = 1
+  # input = NULL; pattern = paste0("LU.*", ds[1]); outType = "rds"; ontoMatch = NULL; beep = 10; update = TRUE; verbose = FALSE; i = 1
 
   # set internal paths
   intPaths <- getOption(x = "adb_path")
@@ -73,7 +73,7 @@ normTable <- function(input = NULL, pattern = NULL, ontoMatch = NULL,
 
   # get territorial context
   topClass <- paste0(getOption(x = "gazetteer_top"))
-  topUnits <- get_concept(table = tibble(class = topClass), ontology = gazPath) %>%
+  topUnits <- get_concept(class = topClass, ontology = gazPath) %>%
     arrange(label)
 
   if(is.null(input)){
@@ -117,7 +117,7 @@ normTable <- function(input = NULL, pattern = NULL, ontoMatch = NULL,
     fields <- str_split(file_name, "_")[[1]]
 
     if(!file_name %in% inv_tables$source_file){
-      message("\n--- ", i, " / ", length(input), " skipping ", rep("-", times = getOption("width")-(nchar(i)+nchar(length(input))+4+nchar(file_name))), " ", file_name, " ---")
+      message("\n--- ", i, " / ", length(input), " skipping ", rep("-", times = getOption("width")-(nchar(i)+nchar(length(input))+21+nchar(file_name))), " ", file_name, " ---")
       next
     } else {
       message("\n--- ", i, " / ", length(input), " ", rep("-", times = getOption("width")-(nchar(i)+nchar(length(input))+13+nchar(file_name))), " ", file_name, " ---")
@@ -173,11 +173,11 @@ normTable <- function(input = NULL, pattern = NULL, ontoMatch = NULL,
                                columns = targetCols,
                                dataseries = dSeries,
                                ontology = gazPath,
-                               beep = beep,
-                               all_cols = TRUE) %>%
+                               beep = beep) %>%
       unite(col = "gazMatch", match, external, sep = "--", na.rm = TRUE) %>%
       rename(gazID = id) %>%
-      select(-has_source)
+      select(-has_broader, -class, -description) %>%
+      mutate(gazID = str_replace_all(string = gazID, pattern = "[.]", replacement = "-"))
 
     if(!is.null(ontoMatch)){
       message("    harmonizing thematic concepts ...")
@@ -185,23 +185,20 @@ normTable <- function(input = NULL, pattern = NULL, ontoMatch = NULL,
       ontoPath <- getOption(x = "ontology_path")[[ontoMatch]]
       thisTable <- matchOntology(table = thisTable,
                                  columns = ontoMatch,
-                                 exact_class = FALSE,
                                  dataseries = dSeries,
                                  ontology = ontoPath,
-                                 beep = beep,
-                                 all_cols = TRUE) %>%
+                                 beep = beep) %>%
+        # table = thisTable; columns = ontoMatch; dataseries = dSeries; ontology = ontoPath
         rename(ontoID = id, ontoName = all_of(ontoMatch)) %>%
         unite(col = "ontoMatch", match, external, sep = "--", na.rm = TRUE) %>%
-        select(ontoID, ontoName, ontoMatch, everything()) %>%
-        select(-has_source)
+        select(ontoName, ontoID, ontoMatch, everything()) %>%
+        select(-has_broader, -class, -description) %>%
+        filter(!is.na(ontoName))
     }
 
-    if("broader" %in% colnames(thisTable)){
-      thisTable <- thisTable %>%
-        select(-broader)
-    }
     thisTable <- thisTable %>%
-      mutate(tabID = tabID,
+      mutate(gazID = str_replace_all(string = gazID, pattern = "-", replacement = "."),
+             tabID = tabID,
              geoID = geoID)
 
     # produce output

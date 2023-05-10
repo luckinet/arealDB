@@ -43,9 +43,11 @@ option.}
 
   \itemize{
     \item \code{"spatial"}: where all territories are intersected spatially or
-    \item \code{"ontology"}: where territories are matched by comparing their name with the ontology
+    \item \code{"ontology"}: where territories are matched by comparing their
+    name with the ontology
     and those that do not match are intersected spatially,
-    \item \code{"both"}: where territories are matched with the ontology and spatially, and conflicts are indicated
+    \item \code{"both"}: where territories are matched with the ontology and
+    spatially, and conflicts are indicated
   }}
 
 \item{beep}{[\code{integerish(1)}]\cr Number specifying what sound to be
