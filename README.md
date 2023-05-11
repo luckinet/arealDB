@@ -4,12 +4,11 @@
 # arealDB
 
 [![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/arealDB)](https://cran.r-project.org/package=arealDB)
-[![R-CMD-check](https://github.com/luckinet/arealDB/workflows/R-CMD-check/badge.svg)](https://github.com/luckinet/arealDB/actions)
+[![R-CMD-check](https://github.com/EhrmannS/arealDB/workflows/R-CMD-check/badge.svg)](https://github.com/luckinet/arealDB/actions)
 [![Coverage
-Status](https://img.shields.io/codecov/c/github/luckinet/arealDB/master.svg)](https://codecov.io/github/EhrmannS/arealDB?branch=master)
+Status](https://img.shields.io/codecov/c/github/EhrmannS/arealDB/master.svg)](https://app.codecov.io/github/EhrmannS/arealDB?branch=master)
 [![](http://cranlogs.r-pkg.org/badges/grand-total/arealDB)](https://cran.r-project.org/package=arealDB)
-[![Lifecycle:
-stable](https://img.shields.io/badge/lifecycle-stable-brightgreen.svg)](https://lifecycle.r-lib.org/articles/stages.html#stable)
+[![Lifecycle:maturing](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://lifecycle.r-lib.org/articles/stages.html)
 
 ## Overview
 

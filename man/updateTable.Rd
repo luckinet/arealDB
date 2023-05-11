@@ -17,6 +17,10 @@ which to match.}
 \item{backup}{[logical(1)]\cr whether or not to store the old table in the
 \code{log} directory.}
 }
+\value{
+No return value, called for the side-effect of storing a table in a
+  specified location
+}
 \description{
 Update any inventory, index or translation table of an areal database
 (internal function not meant for user interaction).

@@ -8,6 +8,8 @@
 #'   which to match.
 #' @param backup [logical(1)]\cr whether or not to store the old table in the
 #'   \code{log} directory.
+#' @return No return value, called for the side-effect of storing a table in a
+#'   specified location
 #' @importFrom checkmate assertTibble assertCharacter
 #' @importFrom readr write_csv
 #' @importFrom dplyr union arrange row_number across
