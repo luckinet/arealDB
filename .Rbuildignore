@@ -16,3 +16,4 @@ replication_script
 ^CRAN-RELEASE$
 ^cran-comments\.md$
 ^\.github$
+^CRAN-SUBMISSION$
