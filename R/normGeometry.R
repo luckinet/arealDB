@@ -104,11 +104,12 @@
 #' @importFrom rmapshaper ms_simplify
 #' @importFrom stringr str_split_1 str_to_title str_pad str_replace_all
 #' @importFrom tibble as_tibble add_column
-#' @importFrom dplyr bind_rows slice lag desc n_distinct left_join right_join
+#' @importFrom dplyr bind_rows slice lag desc n_distinct left_join right_join first
 #' @importFrom tidyr unite
 #' @importFrom tidyselect starts_with all_of
 #' @importFrom progress progress_bar
 #' @importFrom utils tail head
+#' @importFrom stats na.omit
 #' @export
 
 normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10,
@@ -280,7 +281,7 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
 
       harmGeom <- harmGeom %>%
         mutate(id = NA_character_,
-               external = !!sym(tail(unitCols, 1)))
+               external = paste0(!!sym(tail(unitCols, 1)), "_-_-", row_number()))
 
       harmGeom <- harmGeom %>%
         select(all_of(unitCols), id, match, external, everything())
@@ -478,18 +479,12 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
               # ... and then carrying out an intersection
               message("    -> Calculating intersection")
               pb <- progress_bar$new(format = "[:bar] :current/:total (:percent)", total = dim(stage3GeomSimple)[1])
-
               geomIntersections <- st_intersects(x = stage3GeomSimple, y = stage2GeomSimple)
-
-              overlapGeom <-  suppressWarnings(
-                map(1:dim(stage3GeomSimple)[1], function(ix){
-
+              overlapGeom <- suppressWarnings(
+                map_dfr(1:dim(stage3GeomSimple)[1], function(ix){
                   pb$tick()
                   st_intersection(x = stage3GeomSimple[ix,], y = stage2GeomSimple[geomIntersections[[ix]],])
-
-                }) %>% bind_rows())
-
-              overlapGeom <- overlapGeom %>%
+                })) %>%
                   st_make_valid() %>%
                   mutate(intersect_area = as.numeric(st_area(.)),
                          s3_prop = round(intersect_area/s3_area*100, 5),
@@ -546,34 +541,52 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
 
             # in case new geometries overlap at the parent administrative level, get these information in there and assign the ID of that parent, where the largest overlap exists
             if(dim(tempGeom)[1] != length(unique(tempGeom$external)) | (priority == "spatial" & !fileExists)){
-              parentOverlap <- suppressWarnings(
-                stage3Parent %>%
-                  st_intersection(y = stage2GeomSimple) %>%
-                  mutate(intersect_area = as.numeric(st_area(.)),
-                         s3_prop = round(intersect_area/s3_area*100, 5),
-                         s2_prop = round(intersect_area/s2_area*100, 5)) %>%
-                  group_by(external) %>%
-                  arrange(s3_prop) %>%
-                  filter(row_number() == 1) %>%
-                  select(gazID, gazName, external, siblings) %>%
-                  st_drop_geometry()
-              )
+
+              pb <- progress_bar$new(format = "[:bar] :current/:total (:percent)", total = dim(stage3Parent)[1])
+              geomIntersections <- st_intersects(x = stage3Parent, y = stage2GeomSimple)
+              parentOverlap <-  suppressWarnings(
+                map_dfr(1:dim(stage3Parent)[1], function(ix){
+                  pb$tick()
+                  st_intersection(x = stage3Parent[ix,], y = stage2GeomSimple[geomIntersections[[ix]],])
+                })) %>%
+                mutate(intersect_area = as.numeric(st_area(.)),
+                       s3_prop = round(intersect_area/s3_area*100, 5),
+                       s2_prop = round(intersect_area/s2_area*100, 5)) %>%
+                group_by(external) %>%
+                arrange(s3_prop) %>%
+                filter(row_number() == 1) %>%
+                select(gazID, gazName, external) %>%
+                # select(gazID, gazName, external, siblings) %>%
+                st_drop_geometry()
+
+              tempGeom_clean <- tempGeom %>%
+                group_by(external) %>%
+                filter(n() == 1)
+
+              tempGeom_dups <- tempGeom %>%
+                group_by(external) %>%
+                filter(n() > 1)
 
               if(fileExists){
-                tempGeom <- tempGeom %>%
-                  select(-siblings, -gazID, -gazName)
+                tempGeom_dups <- tempGeom_dups %>%
+                  rename(gazID2 = gazID) %>%
+                  select(-gazName)
               }
-              tempGeom <- tempGeom %>%
+              tempGeom <- tempGeom_dups %>%
                 left_join(parentOverlap, by = "external") %>%
                 group_by(external) %>%
                 separate_rows(match, sep = " \\| ") %>%
+                mutate(siblings = if_else(gazID2 == gazID, siblings, NA_integer_),
+                       siblings = first(na.omit(siblings))) %>%
                 ungroup() %>%
-                group_by(external, s2_geom, new_name, siblings, gazID, gazName) %>%
-                summarise(match = paste0(match, collapse = " | "))
+                group_by(external, s2_geom, new_name, gazID, gazName, siblings) %>%
+                summarise(match = paste0(match, collapse = " | ")) %>%
+                bind_rows(tempGeom_clean)
 
             }
 
             tempGeom <- tempGeom %>%
+              separate_wider_delim(cols = external, delim = "_-_-", names = "external", too_many = "drop") %>%
               group_by(gazName) %>%
               mutate(rn = row_number()) %>%
               ungroup() %>%
