@@ -12,6 +12,7 @@ globalVariables(c(
   "external",
   "gazClass",
   "gazID",
+  "gazID2",
   "gazMatch",
   "gazName",
   "geoID",
