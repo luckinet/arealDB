@@ -204,6 +204,7 @@ normTable <- function(input = NULL, pattern = NULL, ontoMatch = NULL,
 
       if(is.null(theUnits)){
         theUnits <- unique(eval(expr = parse(text = targetCols[1]), envir = thisTable)) %>%
+          na.omit() %>%
           as.character()
       }
 
@@ -221,13 +222,13 @@ normTable <- function(input = NULL, pattern = NULL, ontoMatch = NULL,
           distinct()
 
         # append output to previous file
-        avail <- list.files(path = paste0(intPaths, "/adb_tables/stage3/"), pattern = paste0("^", theUnits[j], ".rds"))
+        avail <- list.files(path = paste0(intPaths, "/adb_tables/stage3/"), pattern = paste0("^", theUnits[j], ".", outType))
 
         if(length(avail) == 1){
 
           if(outType == "csv"){
             prevData <- read_csv(file = paste0(intPaths, "/adb_tables/stage3/", theUnits[j], ".csv"),
-                                 col_types = cols(id = "i", tabID = "i", geoID = "i", gazID = "c", year = "c", .default = "d"))
+                                 col_types = cols(tabID = "i", geoID = "i", gazID = "c", gazName = "c", gazMatch = "c", year = "c"))
           } else {
             prevData <- readRDS(file = paste0(intPaths, "/adb_tables/stage3/", theUnits[j], ".rds"))
           }

@@ -542,6 +542,7 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
             # in case new geometries overlap at the parent administrative level, get these information in there and assign the ID of that parent, where the largest overlap exists
             if(dim(tempGeom)[1] != length(unique(tempGeom$external)) | (priority == "spatial" & !fileExists)){
 
+              message("    -> Adapting IDs to parent level")
               pb <- progress_bar$new(format = "[:bar] :current/:total (:percent)", total = dim(stage3Parent)[1])
               geomIntersections <- st_intersects(x = stage3Parent, y = stage2GeomSimple)
               parentOverlap <-  suppressWarnings(
