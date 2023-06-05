@@ -1,3 +1,8 @@
+# arealDB 0.6.1
+
+- fix intersection sub-algorithm to make it way faster (depending on the amount of non-intersecting features). This was problematic because st_intersection is currently still very inefficient
+- fix a bug where all geometries are treated as if they overlap across the boundaries of several parents, even though only a small set does overlap. This lead to a false reconstruction of IDs.
+
 # arealDB 0.6.0 - revise harmonisation with gazetteer/ontology
 
 * various fixes to enable full support for automatically matching territories with a gazetteer and concepts with an ontology

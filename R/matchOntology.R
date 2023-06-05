@@ -42,6 +42,8 @@ matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
 
   allCols <- get_class(ontology = ontoPath) %>%
     pull(label)
+
+  assertSubset(x = head(columns, 1), choices = allCols)
   allCols <- allCols[which(allCols %in% head(columns, 1)) : which(allCols %in% tail(columns, 1))]
 
   # remove white-space and dots

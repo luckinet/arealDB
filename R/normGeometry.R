@@ -100,14 +100,16 @@
 #' @importFrom tools file_ext
 #' @importFrom sf st_layers read_sf st_write st_join st_buffer st_equals st_sf
 #'   st_transform st_crs st_crs<- st_geometry_type st_area st_intersection
-#'   st_drivers NA_crs_ st_is_valid st_make_valid st_as_sf st_geometry
+#'   st_drivers NA_crs_ st_is_valid st_make_valid st_as_sf st_geometry st_intersects
 #' @importFrom rmapshaper ms_simplify
 #' @importFrom stringr str_split_1 str_to_title str_pad str_replace_all
 #' @importFrom tibble as_tibble add_column
-#' @importFrom dplyr bind_rows slice lag desc n_distinct left_join right_join
+#' @importFrom dplyr bind_rows slice lag desc n_distinct left_join right_join first
 #' @importFrom tidyr unite
 #' @importFrom tidyselect starts_with all_of
+#' @importFrom progress progress_bar
 #' @importFrom utils tail head
+#' @importFrom stats na.omit
 #' @export
 
 normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10,
@@ -253,6 +255,12 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
     # construct the geom for further processing
     if(priority == "ontology"){
 
+      # current work-around to only translate geometries that have a full set of territorial columns available
+      checkClasses <- allClasses[which(allClasses %in% head(unitCols, 1)) : which(allClasses %in% tail(unitCols, 1))]
+      if(!testNames(x = unitCols, identical.to = checkClasses)){
+        stop("some of the territory layers in this geometry are missing, please use the argument 'priority = spatial'.")
+      }
+
       message("    harmonizing territory names ...")
       harmGeom <- matchOntology(table = inGeom,
                                 columns = unitCols,
@@ -273,7 +281,7 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
 
       harmGeom <- harmGeom %>%
         mutate(id = NA_character_,
-               external = !!sym(tail(unitCols, 1)))
+               external = paste0(!!sym(tail(unitCols, 1)), "_-_-", row_number()))
 
       harmGeom <- harmGeom %>%
         select(all_of(unitCols), id, match, external, everything())
@@ -306,7 +314,8 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
           assertChoice(x = allCols[1], choices = names(stage2Geom), .var.name = "names(nation_column)")
         } else {
           stage2Geom <- harmGeom %>%
-            select(all_of(allCols), id, match, external)
+            # select(all_of(allCols), id, match, external) %>%
+            select(any_of(allCols), id, match, external)
         }
 
         # dissolve ----
@@ -414,7 +423,8 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
           message("    Joining target and source geometries")
           outGeom <- stage2Geom %>%
             filter(!is.na(id)) %>%
-            unite(col = "gazName", all_of(allCols), sep = ".") %>%
+            # unite(col = "gazName", all_of(allCols), sep = ".") %>%
+            unite(col = "gazName", any_of(allCols), sep = ".") %>%
             mutate(geoID = newGID,
                    gazClass = tail(allCols, 1),
                    match = paste0(match, " [xx<>xx_", id, "]")) %>%
@@ -468,15 +478,18 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
             if(fileExists){
               # ... and then carrying out an intersection
               message("    -> Calculating intersection")
+              pb <- progress_bar$new(format = "[:bar] :current/:total (:percent)", total = dim(stage3GeomSimple)[1])
+              geomIntersections <- st_intersects(x = stage3GeomSimple, y = stage2GeomSimple)
               overlapGeom <- suppressWarnings(
-                stage3GeomSimple %>%
-                  st_intersection(y = stage2GeomSimple) %>%
+                map_dfr(1:dim(stage3GeomSimple)[1], function(ix){
+                  pb$tick()
+                  st_intersection(x = stage3GeomSimple[ix,], y = stage2GeomSimple[geomIntersections[[ix]],])
+                })) %>%
+                  st_make_valid() %>%
                   mutate(intersect_area = as.numeric(st_area(.)),
                          s3_prop = round(intersect_area/s3_area*100, 5),
                          s2_prop = round(intersect_area/s2_area*100, 5)) %>%
-                  arrange(gazID))
-              # plot(stage2Geom["external"], key.pos = 1, key.width = lcm(1.3), key.length = 1.0)
-              # plot(stage3Geom["external"], key.pos = 1, key.width = lcm(1.3), key.length = 1.0)
+                  arrange(gazID)
 
               message("    -> Determining matches")
               tempGeom <- overlapGeom %>%
@@ -528,34 +541,53 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
 
             # in case new geometries overlap at the parent administrative level, get these information in there and assign the ID of that parent, where the largest overlap exists
             if(dim(tempGeom)[1] != length(unique(tempGeom$external)) | (priority == "spatial" & !fileExists)){
-              parentOverlap <- suppressWarnings(
-                stage3Parent %>%
-                  st_intersection(y = stage2GeomSimple) %>%
-                  mutate(intersect_area = as.numeric(st_area(.)),
-                         s3_prop = round(intersect_area/s3_area*100, 5),
-                         s2_prop = round(intersect_area/s2_area*100, 5)) %>%
-                  group_by(external) %>%
-                  arrange(s3_prop) %>%
-                  filter(row_number() == 1) %>%
-                  select(gazID, gazName, external, siblings) %>%
-                  st_drop_geometry()
-              )
+
+              message("    -> Adapting IDs to parent level")
+              pb <- progress_bar$new(format = "[:bar] :current/:total (:percent)", total = dim(stage3Parent)[1])
+              geomIntersections <- st_intersects(x = stage3Parent, y = stage2GeomSimple)
+              parentOverlap <-  suppressWarnings(
+                map_dfr(1:dim(stage3Parent)[1], function(ix){
+                  pb$tick()
+                  st_intersection(x = stage3Parent[ix,], y = stage2GeomSimple[geomIntersections[[ix]],])
+                })) %>%
+                mutate(intersect_area = as.numeric(st_area(.)),
+                       s3_prop = round(intersect_area/s3_area*100, 5),
+                       s2_prop = round(intersect_area/s2_area*100, 5)) %>%
+                group_by(external) %>%
+                arrange(s3_prop) %>%
+                filter(row_number() == 1) %>%
+                select(gazID, gazName, external) %>%
+                # select(gazID, gazName, external, siblings) %>%
+                st_drop_geometry()
+
+              tempGeom_clean <- tempGeom %>%
+                group_by(external) %>%
+                filter(n() == 1)
+
+              tempGeom_dups <- tempGeom %>%
+                group_by(external) %>%
+                filter(n() > 1)
 
               if(fileExists){
-                tempGeom <- tempGeom %>%
-                  select(-siblings, -gazID, -gazName)
+                tempGeom_dups <- tempGeom_dups %>%
+                  rename(gazID2 = gazID) %>%
+                  select(-gazName)
               }
-              tempGeom <- tempGeom %>%
+              tempGeom <- tempGeom_dups %>%
                 left_join(parentOverlap, by = "external") %>%
                 group_by(external) %>%
                 separate_rows(match, sep = " \\| ") %>%
+                mutate(siblings = if_else(gazID2 == gazID, siblings, NA_integer_),
+                       siblings = first(na.omit(siblings))) %>%
                 ungroup() %>%
-                group_by(external, s2_geom, new_name, siblings, gazID, gazName) %>%
-                summarise(match = paste0(match, collapse = " | "))
+                group_by(external, s2_geom, new_name, gazID, gazName, siblings) %>%
+                summarise(match = paste0(match, collapse = " | ")) %>%
+                bind_rows(tempGeom_clean)
 
             }
 
             tempGeom <- tempGeom %>%
+              separate_wider_delim(cols = external, delim = "_-_-", names = "external", too_many = "drop") %>%
               group_by(gazName) %>%
               mutate(rn = row_number()) %>%
               ungroup() %>%
