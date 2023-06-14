@@ -167,7 +167,7 @@ normTable <- function(input = NULL, pattern = NULL, ontoMatch = NULL,
       targetCols <- c(topClass, targetCols)
     }
 
-    thisTable <- matchOntology(table = thisTable,
+    thatTable <- matchOntology(table = thisTable,
                                columns = targetCols,
                                dataseries = dSeries,
                                ontology = gazPath,
@@ -179,14 +179,14 @@ normTable <- function(input = NULL, pattern = NULL, ontoMatch = NULL,
 
     if(!is.null(ontoMatch)){
       message("    harmonizing thematic concepts ...")
-      assertNames(x = ontoMatch, subset.of = names(thisTable))
+      assertNames(x = ontoMatch, subset.of = names(thatTable))
       ontoPath <- getOption(x = "ontology_path")[[ontoMatch]]
-      thisTable <- matchOntology(table = thisTable,
+      thatTable <- matchOntology(table = thatTable,
                                  columns = ontoMatch,
                                  dataseries = dSeries,
                                  ontology = ontoPath,
                                  beep = beep) %>%
-        # table = thisTable; columns = ontoMatch; dataseries = dSeries; ontology = ontoPath
+        # table = thatTable; columns = ontoMatch; dataseries = dSeries; ontology = ontoPath
         rename(ontoID = id, ontoName = all_of(ontoMatch)) %>%
         unite(col = "ontoMatch", match, external, sep = "--", na.rm = TRUE) %>%
         select(ontoName, ontoID, ontoMatch, everything()) %>%
@@ -194,7 +194,7 @@ normTable <- function(input = NULL, pattern = NULL, ontoMatch = NULL,
         filter(!is.na(ontoName))
     }
 
-    thisTable <- thisTable %>%
+    thatTable <- thatTable %>%
       mutate(gazID = str_replace_all(string = gazID, pattern = "-", replacement = "."),
              tabID = tabID,
              geoID = geoID)
@@ -203,7 +203,7 @@ normTable <- function(input = NULL, pattern = NULL, ontoMatch = NULL,
     if(update){
 
       if(is.null(theUnits)){
-        theUnits <- unique(eval(expr = parse(text = targetCols[1]), envir = thisTable)) %>%
+        theUnits <- unique(eval(expr = parse(text = targetCols[1]), envir = thatTable)) %>%
           na.omit() %>%
           as.character()
       }
@@ -211,10 +211,10 @@ normTable <- function(input = NULL, pattern = NULL, ontoMatch = NULL,
       for(j in seq_along(theUnits)){
 
         if(length(theUnits) != 1){
-          tempOut <- thisTable %>%
+          tempOut <- thatTable %>%
             filter(.data[[targetCols[1]]] == theUnits[j])
         } else {
-          tempOut <- thisTable
+          tempOut <- thatTable
         }
         tempOut <- tempOut %>%
           unite(col = "gazName", all_of(targetCols), sep = ".") %>%
@@ -261,7 +261,7 @@ normTable <- function(input = NULL, pattern = NULL, ontoMatch = NULL,
         file.remove(thisInput)
       }
     } else {
-      ret <- thisTable
+      ret <- thatTable
     }
 
     gc()

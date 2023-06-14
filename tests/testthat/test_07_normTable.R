@@ -47,7 +47,7 @@ test_that("tables can be normalised (with matched variables)", {
   expect_file_exists(x = paste0(getOption("adb_path"), "/adb_tables/stage2/processed/_al1_barleyMaize_1990_2017_madeUp.csv"))
   expect_file_exists(x = paste0(getOption("adb_path"), "/adb_tables/stage2/processed/aNation_al2_barleyMaize_1990_2017_madeUp.csv"))
   final <- readRDS(file = paste0(getOption("adb_path"), "/adb_tables/stage3/a_nation.rds"))
-  expect_data_frame(x = final, nrows = 224, ncols = 9)
+  expect_data_frame(x = final, nrows = 280, ncols = 9)
   expect_names(x = names(final), identical.to = c("tabID", "geoID", "gazID", "gazName", "gazMatch", "year", "commodity", "harvested", "production"))
 
 })
