@@ -1,3 +1,5 @@
+# arealDB 0.6.2
+
 # arealDB 0.6.1
 
 - fix intersection sub-algorithm to make it way faster (depending on the amount of non-intersecting features). This was problematic because st_intersection is currently still very inefficient
