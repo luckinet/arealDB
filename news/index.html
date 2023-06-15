@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">arealDB</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.6.2</span>
       </span>
     </div>
 
@@ -57,6 +57,23 @@
     </div>
 
     <div class="section level2">
+<h2 class="page-header" data-toc-text="0.6.2" id="arealdb-062">arealDB 0.6.2<a class="anchor" aria-label="anchor" href="#arealdb-062"></a></h2>
+<ul><li>revise <code>nromTable()</code> so that also observation in the tables are kept, if they are not successfully matched with a territory.</li>
+</ul></div>
+    <div class="section level2">
+<h2 class="page-header" data-toc-text="0.6.1" id="arealdb-061">arealDB 0.6.1<a class="anchor" aria-label="anchor" href="#arealdb-061"></a></h2>
+<ul><li>fix intersection sub-algorithm to make it way faster (depending on the amount of non-intersecting features). This was problematic because st_intersection is currently still very inefficient</li>
+<li>fix a bug where all geometries are treated as if they overlap across the boundaries of several parents, even though only a small set does overlap. This lead to a false reconstruction of IDs.</li>
+</ul></div>
+    <div class="section level2">
+<h2 class="page-header" data-toc-text="0.6.0" id="arealdb-060---revise-harmonisation-with-gazetteerontology">arealDB 0.6.0 - revise harmonisation with gazetteer/ontology<a class="anchor" aria-label="anchor" href="#arealdb-060---revise-harmonisation-with-gazetteerontology"></a></h2>
+<ul><li>various fixes to enable full support for automatically matching territories with a gazetteer and concepts with an ontology</li>
+<li>complete overhaul of <code><a href="../reference/matchOntology.html">matchOntology()</a></code> making it vastly more efficient and easier to use/debug</li>
+<li>adapt <code><a href="../reference/normGeometry.html">normGeometry()</a></code> and <code><a href="../reference/normTable.html">normTable()</a></code> to the changes in <code><a href="../reference/matchOntology.html">matchOntology()</a></code>
+</li>
+<li>start making use of the spatial/topological information derived from normalizing new geometries (that were not part of the initial geometry data set) by updating the gazetteer accordingly. Only if a concept does not overlap with more than (100 - thresh), is it added as a new harmonized concept. In that case, the new geometry is one that is distinct from the harmonized geometry.</li>
+</ul></div>
+    <div class="section level2">
 <h2 class="page-header" data-toc-text="0.5.0" id="arealdb-050---automatching-update">arealDB 0.5.0 - automatching update<a class="anchor" aria-label="anchor" href="#arealdb-050---automatching-update"></a></h2>
 <ul><li>spatial matches are now found automatically and inserted into the ontology.</li>
 <li>matching can be sped up by simplifying geometries.</li>
@@ -66,7 +83,7 @@
 </ul></div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.4.6" id="arealdb-046">arealDB 0.4.6<a class="anchor" aria-label="anchor" href="#arealdb-046"></a></h2>
-<ul><li>revise the whole geometry normalisation process to incorporate the new ontology system.</li>
+<ul><li>revise the whole geometry normalization process to incorporate the new ontology system.</li>
 </ul></div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.4.5" id="arealdb-045">arealDB 0.4.5<a class="anchor" aria-label="anchor" href="#arealdb-045"></a></h2>
@@ -79,7 +96,7 @@
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.4.3" id="arealdb-043">arealDB 0.4.3<a class="anchor" aria-label="anchor" href="#arealdb-043"></a></h2>
 <ul><li>rename <code>match_ontology()</code> to <code><a href="../reference/matchOntology.html">matchOntology()</a></code> and revise it so that it can handle several columns sequentially</li>
-<li>make use of getters of the ontologics package so that (large) gazetteers are not loaded but only the requried info are pulled from them</li>
+<li>make use of getters of the ontologics package so that (large) gazetteers are not loaded but only the required info are pulled from them</li>
 <li>remove functions <code>get_variable()</code> and <code>select_path()</code>, the former is integrated into <code><a href="../reference/matchOntology.html">matchOntology()</a></code> and the latter is not relevant anymore.</li>
 </ul></div>
     <div class="section level2">

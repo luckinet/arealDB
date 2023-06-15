@@ -18,7 +18,7 @@ harmonised values listed in the project specific gazetteer."><!-- mathjax --><sc
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">arealDB</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.5.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.6.2</span>
       </span>
     </div>
 
@@ -70,9 +70,7 @@ harmonised values listed in the project specific gazetteer.</p>
 <span>  dataseries <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  ontology <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  all_cols <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  beep <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  exact_class <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>  beep <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -102,22 +100,19 @@ is stored, or an already loaded ontology.</p></dd>
 information on the process of this function.</p></dd>
 
 
-<dt>all_cols</dt>
-<dd><p>[`logical(1)`][logical]<br> whether or not to output all
-tentative columns (for debugging), or only the essential columns.</p></dd>
-
-
 <dt>beep</dt>
 <dd><p>[<code>integerish(1)</code>]<br> Number specifying what sound to be
 played to signal the user that a point of interaction is reached by the
 program, see <code><a href="https://rdrr.io/pkg/beepr/man/beep.html" class="external-link">beep</a></code>.</p></dd>
 
-
-<dt>exact_class</dt>
-<dd><p>[`logical(1)`][logical]<br> whether or not to extract only
-the classes in <code>table</code>, or also all parent classes.</p></dd>
-
 </dl></div>
+    <div id="value">
+    <h2>Value</h2>
+    
+
+<p>Returns a tibble that resembles the input table where the target
+  columns were translated according to the provided ontology.</p>
+    </div>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
