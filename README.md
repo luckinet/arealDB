@@ -4,10 +4,14 @@
 # arealDB
 
 [![CRAN_Status_Badge](http://www.r-pkg.org/badges/version/arealDB)](https://cran.r-project.org/package=arealDB)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.8046683.svg)](https://doi.org/10.5281/zenodo.8046683)
+
 [![R-CMD-check](https://github.com/EhrmannS/arealDB/workflows/R-CMD-check/badge.svg)](https://github.com/luckinet/arealDB/actions)
-[![Coverage Status](https://img.shields.io/codecov/c/github/luckinet/arealDB/master.svg)](https://app.codecov.io/github/EhrmannS/arealDB?branch=master)
-[![](http://cranlogs.r-pkg.org/badges/grand-total/arealDB)](https://cran.r-project.org/package=arealDB)
+[![Coverage
+Status](https://img.shields.io/codecov/c/github/EhrmannS/arealDB/master.svg)](https://app.codecov.io/github/EhrmannS/arealDB?branch=master)
 [![Lifecycle:maturing](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://lifecycle.r-lib.org/articles/stages.html)
+
+[![](http://cranlogs.r-pkg.org/badges/grand-total/arealDB)](https://cran.r-project.org/package=arealDB)
 
 ## Overview
 
@@ -24,8 +28,13 @@ geometries) and the target variables (from tables). Moreover, it uses
 the `tabshiftr` R-package to reshape disorganised tabular data into a
 common format.
 
-![Schematic overview of the
-result](https://github.com/luckinet/arealDB/blob/master/vignettes/schematic_overview.png)
+<figure>
+<img
+src="https://github.com/luckinet/arealDB/blob/master/vignettes/schematic_overview.png"
+alt="Schematic overview of the result" />
+<figcaption aria-hidden="true">Schematic overview of the
+result</figcaption>
+</figure>
 
 ## Installation
 

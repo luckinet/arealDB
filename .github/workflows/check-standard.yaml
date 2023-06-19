@@ -27,6 +27,7 @@ jobs:
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
       R_KEEP_PKG_SOURCE: yes
+      PKG_SYSREQS: false
 
     steps:
       - uses: actions/checkout@v3
@@ -39,9 +40,13 @@ jobs:
           http-user-agent: ${{ matrix.config.http-user-agent }}
           use-public-rspm: true
 
-      - name: "Install spatial libraries on linux"
+      - name: Install dependencies on Linux
         if: runner.os == 'Linux'
-        run: sudo apt-get install libgdal-dev libproj-dev libgeos-dev libudunits2-dev
+        run: sudo apt-get install -y make libicu-dev libxml2-dev libssl-dev pandoc librdf0-dev libnode-dev libcurl4-gnutls-dev
+
+      - name: Install spatial libraries on Linux
+        if: runner.os == 'Linux'
+        run: sudo apt-get install -y libgdal-dev libproj-dev libgeos-dev libudunits2-dev
 
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
