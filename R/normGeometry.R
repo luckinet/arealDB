@@ -116,8 +116,6 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
                          outType = "gpkg", priority = "ontology", beep = NULL,
                          simplify = FALSE, update = FALSE, verbose = FALSE){
 
-  # input = NULL; pattern = gs[2]; query = NULL; thresh = 10; outType = "gpkg"; priority = "spatial"; beep = NULL; simplify = FALSE; update = TRUE; verbose = FALSE; i = 1; j = 1
-
   # set internal paths
   intPaths <- paste0(getOption(x = "adb_path"))
   gazPath <- paste0(getOption(x = "gazetteer_path"))
