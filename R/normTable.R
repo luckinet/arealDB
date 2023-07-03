@@ -186,7 +186,6 @@ normTable <- function(input = NULL, pattern = NULL, ontoMatch = NULL,
                                  dataseries = dSeries,
                                  ontology = ontoPath,
                                  beep = beep) %>%
-        # table = thatTable; columns = ontoMatch; dataseries = dSeries; ontology = ontoPath
         rename(ontoID = id, ontoName = all_of(ontoMatch)) %>%
         unite(col = "ontoMatch", match, external, sep = "--", na.rm = TRUE) %>%
         select(ontoName, ontoID, ontoMatch, everything()) %>%
