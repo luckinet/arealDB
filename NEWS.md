@@ -1,3 +1,7 @@
+# arealDB 0.6.3
+
+- fixing an example in `start_arealBD()` so that a gazetteer is not saved in the home-directory of linux users.
+
 # arealDB 0.6.2
 
 - revise `nromTable()` so that also observation in the tables are kept, if they are not successfully matched with a territory.
