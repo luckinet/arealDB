@@ -1,3 +1,7 @@
+# arealDB 0.6.4
+
+- adapt storing of stage1 files so that they are now aggregated into folders with their dataseries as name.
+
 # arealDB 0.6.3
 
 - fixing an example in `start_arealBD()` so that a gazetteer is not saved in the home-directory of linux users.
