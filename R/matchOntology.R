@@ -14,7 +14,7 @@
 #'   program, see \code{\link[beepr]{beep}}.
 #' @param verbose [`logical(1)`][logical]\cr whether or not to give detailed
 #'   information on the process of this function.
-#' @return Returns a tibble that resembles the input table where the target
+#' @return Returns a table that resembles the input table where the target
 #'   columns were translated according to the provided ontology.
 #' @importFrom checkmate assertFileExists
 #' @importFrom utils head

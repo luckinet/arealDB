@@ -1,3 +1,7 @@
+03.07.2023
+
+- fixing linux-errors shown at https://cran.r-project.org/web/checks/check_results_arealDB.html
+
 11.05.2023
 
 - fix return value of matchOntology() and updateTable()

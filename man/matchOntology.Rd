@@ -33,7 +33,7 @@ played to signal the user that a point of interaction is reached by the
 program, see \code{\link[beepr]{beep}}.}
 }
 \value{
-Returns a tibble that resembles the input table where the target
+Returns a table that resembles the input table where the target
   columns were translated according to the provided ontology.
 }
 \description{

@@ -405,14 +405,17 @@ regTable <- function(..., subset = NULL, dSeries = NULL, gSeries = NULL,
   if(update){
 
     # test whether the archive file is available
-    if(!testFileExists(x = paste0(intPaths, "/adb_tables/stage1/", fileArchive[1]))){
-      message(paste0("... please store the archive '", fileArchive[[1]], "' in './adb_tables/stage1'"))
+    if(!testFileExists(x = paste0(intPaths, "/adb_tables/stage1/", dSeries, "/", fileArchive[1]))){
+      message(paste0("... please store the archive '", fileArchive[[1]], "' in './adb_tables/stage1/", dSeries, "/'"))
+      if(!testDirectoryExists(x = paste0(intPaths, "/adb_tables/stage1/", dSeries))){
+        dir.create(path = paste0(intPaths, "/adb_tables/stage1/", dSeries))
+      }
       if(!testing){
         done <- readline(" -> press any key when done: ")
       }
 
       # make sure that the file is really there
-      assertFileExists(x = paste0(intPaths, "/adb_tables/stage1/", fileArchive[1]))
+      assertFileExists(x = paste0(intPaths, "/adb_tables/stage1/", dSeries, "/", fileArchive[1]))
 
       # ... and if it is compressed, whether also the file therein is given that contains the data
       if(testCompressed(x = fileArchive[1]) & length(fileArchive) < 2){

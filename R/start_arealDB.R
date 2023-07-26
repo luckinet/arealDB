@@ -21,10 +21,9 @@
 #'   database metadata.
 #' @examples
 #' start_arealDB(root = paste0(tempdir(), "/newDB"),
-#'               gazetteer = system.file("test_datasets/territories.rds",
-#'                                       package = "arealDB"),
+#'               gazetteer = paste0(tempdir(), "/newDB/territories.rds"),
 #'               top = "al1",
-#'               ontology = list(var = paste0(tempdir(), "/ontology.rds")))
+#'               ontology = list(var = paste0(tempdir(), "/newDB/ontology.rds")))
 #'
 #' getOption("adb_path"); getOption("gazetteer_path")
 #' @importFrom checkmate testDirectory testFileExists assertFileExists
@@ -37,7 +36,9 @@ start_arealDB <- function(root = NULL, gazetteer = NULL, top = NULL,
 
   assertCharacter(x = root, len = 1)
   if(!getOption("adb_testing")){
-    assertFileExists(x = gazetteer, access = "rw", extension = "rds")
+    if(!testFileExists(x = gazetteer, access = "rw", extension = "rds")){
+      warning("no gazetteer was found in the provided path!")
+    }
     assertList(x = ontology, min.len = 1, any.missing = FALSE, names = "named")
   }
 

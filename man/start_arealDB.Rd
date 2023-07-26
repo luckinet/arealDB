@@ -46,10 +46,9 @@ This is the first function that is run in a project, as it initiates
 }}
 \examples{
 start_arealDB(root = paste0(tempdir(), "/newDB"),
-              gazetteer = system.file("test_datasets/territories.rds",
-                                      package = "arealDB"),
+              gazetteer = paste0(tempdir(), "/newDB/territories.rds"),
               top = "al1",
-              ontology = list(var = paste0(tempdir(), "/ontology.rds")))
+              ontology = list(var = paste0(tempdir(), "/newDB/ontology.rds")))
 
 getOption("adb_path"); getOption("gazetteer_path")
 }
