@@ -63,8 +63,9 @@ makeExampleDB <- function(path = NULL, until = NULL, verbose = FALSE){
   # load input data
   file.copy(from = paste0(inPath, "/example_geom.7z"),
             to = paste0(path, "/adb_geometries/stage1/example_geom.7z"))
+  dir.create(file.path(path, "/adb_tables/stage1/madeUp/"))
   file.copy(from = paste0(inPath, "/example_table.7z"),
-            to = paste0(path, "/adb_tables/stage1/example_table.7z"))
+            to = paste0(path, "/adb_tables/stage1/madeUp/example_table.7z"))
 
   # load geometries
   file.copy(from = paste0(inPath, "/example_geom1.gpkg"),
