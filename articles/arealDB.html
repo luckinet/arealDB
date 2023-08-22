@@ -183,24 +183,12 @@ geoscheme here.</p>
 <span>                 path <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="va">DBDir</span>, <span class="st">"/tables/"</span><span class="op">)</span>,</span>
 <span>                 version <span class="op">=</span> <span class="st">"1.0.0"</span>,</span>
 <span>                 code <span class="op">=</span> <span class="st">".xxx"</span>,</span>
-<span>                 description <span class="op">=</span> <span class="st">"a UN geomscheme gazetteer"</span>,</span>
+<span>                 description <span class="op">=</span> <span class="st">"UN geomscheme gazetteer"</span>,</span>
 <span>                 homepage <span class="op">=</span> <span class="st">"https://en.wikipedia.org/wiki/United_Nations_geoscheme"</span>,</span>
 <span>                 license <span class="op">=</span> <span class="st">"CC-BY-4.0"</span>,</span>
 <span>                 notes <span class="op">=</span> <span class="st">"This gazetteer nests each nation into the United Nations geoscheme."</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># ... then we can define some new source of information from which external concepts would be taken.</span></span>
-<span><span class="va">gazetteer</span> <span class="op">&lt;-</span> </span>
-<span>  <span class="fu">new_source</span><span class="op">(</span>name <span class="op">=</span> <span class="st">"gadm"</span>,</span>
-<span>             date <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.Date</a></span><span class="op">(</span><span class="op">)</span>,</span>
-<span>             description <span class="op">=</span> <span class="st">"GADM wants to map the administrative areas of all countries, at all levels </span></span>
-<span><span class="st">                            of sub-division. We provide data at high spatial resolutions that includes </span></span>
-<span><span class="st">                            an extensive set of attributes."</span>,</span>
-<span>             homepage <span class="op">=</span> <span class="st">"https://gadm.org/index.html"</span>,</span>
-<span>             license <span class="op">=</span> <span class="st">"CC-BY"</span>,</span>
-<span>             ontology <span class="op">=</span> <span class="va">gazetteer</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># All items stored in an ontology must have some class that is ontology-specific and thus needs to be</span></span>
-<span><span class="co"># defined manually. Here we define the three classes 'un_region', 'un_subregion' and 'nation'.</span></span>
+<span><span class="co"># ... then we define the ontology-specific classes used for recording items of the geoscheme. Here we define the three classes 'un_region', 'un_subregion' and 'nation'.</span></span>
 <span><span class="va">gazetteer</span> <span class="op">&lt;-</span> </span>
 <span>  <span class="fu">new_class</span><span class="op">(</span>new <span class="op">=</span> <span class="st">"un_region"</span>, </span>
 <span>            target <span class="op">=</span> <span class="cn">NA</span>,</span>
@@ -227,9 +215,7 @@ geoscheme here.</p>
 <span>            description <span class="op">=</span> <span class="st">"groups of geometries that together form a nation (for example 'France', </span></span>
 <span><span class="st">                           which is a combination of many territorial concepts across the whole </span></span>
 <span><span class="st">                           globe), but which is different than 'al1' of GADM"</span>, </span>
-<span>            ontology <span class="op">=</span> <span class="va">.</span><span class="op">)</span>                                       <span class="co"># for convenience, one can pipe the </span></span>
-<span>                                                                <span class="co"># output of a previous function into </span></span>
-<span>                                                                <span class="co"># the next. </span></span>
+<span>            ontology <span class="op">=</span> <span class="va">.</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Finally, the new concepts can be added, they need to associated to one of the classes in the ontology</span></span>
 <span><span class="va">gazetteer</span> <span class="op">&lt;-</span> </span>
@@ -304,9 +290,9 @@ value terms, this can be omitted.</p>
 areal database, it is possible to provide more than one ontology. When
 providing the link between target variable and an ontology, it is
 important that the name of the target variable is a column in the
-(harmonized) thematic data. In the above example, <code>targetVar</code>
-would have to be the column in any of the thematic data tables that are
-stored in the database.</p>
+(harmonized) thematic data. In the above example,
+<code>"targetVar"</code> would have to be the column in any of the
+thematic data tables that are stored in the database.</p>
 </div>
 <div class="section level3">
 <h3 id="register-the-data">Register the data<a class="anchor" aria-label="anchor" href="#register-the-data"></a>
@@ -470,36 +456,34 @@ tables different names.</p>
 <h3 id="normalise-the-input">Normalise the input<a class="anchor" aria-label="anchor" href="#normalise-the-input"></a>
 </h3>
 <p>Finally, we need to align all data so that they follow the same
-structure. This is called “normalization”, in <code>arealDB</code>, we
-normalize the registered data. This happens when calling the functions
-<code>nromGeometry()</code> and <code><a href="../reference/normTable.html">normTable()</a></code>, for the
-respective input data. Geometries are normalized first, because the
-thematic data are associated to the standardized versions of them.</p>
+structure. This is called “normalization”, in <code>arealDB</code> and
+is carried out with the functions <code><a href="../reference/normGeometry.html">normGeometry()</a></code> and
+<code><a href="../reference/normTable.html">normTable()</a></code>, for the respective input data. Geometries are
+normalized first, because the thematic data are associated to the
+standardized versions of them.</p>
 <p>This process of normalization has been designed so that a user has to
 interact with the function as little as possible, but some interactions
 are still required. Especially when working with the names of
 territories, it is not always completely clear how one standard
 translates into another. The gazetteer is the place where this is
-documented, but it can only infer the information only to a certain
-degree. Essentially, when needs to be known for a consistent gazetteer
-is which concept translates into which other concept. However, with the
-occasional changes of administrative units, sometimes concepts change to
-a degree that they can’t simply be translated into one-another. This is
-the case for example when on previous administrative unit is split up
-into several new units. None of the new units are identical to the
-previous units, but some of them may still have the same name. In this
-sense, <em>“translation”</em> isn’t equivalent to the literal meaning
-most people know, but must be more understood as “what maps how to what
-else”. When normalizing geometries with the argument
-<code>priority = "ontology"</code>, the function will take names as
-literal interpretations, match those that are “the same” and ask the
-user to translate the ones that don’t match manually. With
-<code>priority = "spatial"</code>, the function instead determine
-spatial overlap to determine which concepts are nested into which other
-concepts to update the ontology accordingly. This requires less human
-interaction, but more computation time.</p>
+documented, but it can infer the information only to a certain degree.
+With the occasional changes of administrative units, sometimes concepts
+change to a degree that they can’t simply be translated into
+one-another. This is the case for example when on previous
+administrative unit is split up into several new units. None of the new
+units are identical to the previous units, but some of them may still
+have the same name. In this sense, <em>“translation”</em> isn’t
+equivalent to the literal meaning most people know, but must be more
+understood as “what maps to what else”. When normalizing geometries with
+the argument <code>priority = "ontology"</code>, the function will take
+names as literal interpretations, match those that are “the same” (the
+same letters) and ask the user to translate the ones that don’t match
+manually. With <code>priority = "spatial"</code>, the function instead
+determines spatial overlap to determine which concepts are nested into
+which other concepts to update the ontology accordingly. This requires
+less human interaction, but more computation time.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/normGeometry.html">normGeometry</a></span><span class="op">(</span>pattern <span class="op">=</span> <span class="st">"brazil"</span>,</span>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/normGeometry.html">normGeometry</a></span><span class="op">(</span>pattern <span class="op">=</span> <span class="st">"Brazil"</span>,</span>
 <span>             outType <span class="op">=</span> <span class="st">"gpkg"</span>, </span>
 <span>             update <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span>             </span>
