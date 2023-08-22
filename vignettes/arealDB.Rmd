@@ -82,24 +82,12 @@ gazetteer <-
                  path = paste0(DBDir, "/tables/"),
                  version = "1.0.0",
                  code = ".xxx",
-                 description = "a UN geomscheme gazetteer",
+                 description = "UN geomscheme gazetteer",
                  homepage = "https://en.wikipedia.org/wiki/United_Nations_geoscheme",
                  license = "CC-BY-4.0",
                  notes = "This gazetteer nests each nation into the United Nations geoscheme.")
 
-# ... then we can define some new source of information from which external concepts would be taken.
-gazetteer <- 
-  new_source(name = "gadm",
-             date = Sys.Date(),
-             description = "GADM wants to map the administrative areas of all countries, at all levels 
-                            of sub-division. We provide data at high spatial resolutions that includes 
-                            an extensive set of attributes.",
-             homepage = "https://gadm.org/index.html",
-             license = "CC-BY",
-             ontology = gazetteer)
-
-# All items stored in an ontology must have some class that is ontology-specific and thus needs to be
-# defined manually. Here we define the three classes 'un_region', 'un_subregion' and 'nation'.
+# ... then we define the ontology-specific classes used for recording items of the geoscheme. Here we define the three classes 'un_region', 'un_subregion' and 'nation'.
 gazetteer <- 
   new_class(new = "un_region", 
             target = NA,
@@ -126,9 +114,7 @@ gazetteer <-
             description = "groups of geometries that together form a nation (for example 'France', 
                            which is a combination of many territorial concepts across the whole 
                            globe), but which is different than 'al1' of GADM", 
-            ontology = .)                                       # for convenience, one can pipe the 
-                                                                # output of a previous function into 
-                                                                # the next. 
+            ontology = .)
 
 # Finally, the new concepts can be added, they need to associated to one of the classes in the ontology
 gazetteer <- 
@@ -146,10 +132,7 @@ gazetteer <-
               ontology =  gazetteer)
               
 write_rds(x = gazetteer, file = gazDir)
-
 ```
-
-
 
 ## Thematic data
 
@@ -171,7 +154,7 @@ start_arealDB(root = DBDir,
               ontology = list("targetVar" = ontoDir))
 ``` 
 
-As there is sometimes more than one target variable recorded in an areal database, it is possible to provide more than one ontology. When providing the link between target variable and an ontology, it is important that the name of the target variable is a column in the (harmonized) thematic data. In the above example, `targetVar` would have to be the column in any of the thematic data tables that are stored in the database.
+As there is sometimes more than one target variable recorded in an areal database, it is possible to provide more than one ontology. When providing the link between target variable and an ontology, it is important that the name of the target variable is a column in the (harmonized) thematic data. In the above example, `"targetVar"` would have to be the column in any of the thematic data tables that are stored in the database.
 
 
 ## Register the data
@@ -309,12 +292,12 @@ regTable(nation = "UnitedStatesOfAmerica",
 
 ## Normalise the input
 
-Finally, we need to align all data so that they follow the same structure. This is called "normalization", in `arealDB`, we normalize the registered data. This happens when calling the functions `nromGeometry()` and `normTable()`, for the respective input data. Geometries are normalized first, because the thematic data are associated to the standardized versions of them.
+Finally, we need to align all data so that they follow the same structure. This is called "normalization", in `arealDB` and is carried out with the functions `normGeometry()` and `normTable()`, for the respective input data. Geometries are normalized first, because the thematic data are associated to the standardized versions of them.
 
-This process of normalization has been designed so that a user has to interact with the function as little as possible, but some interactions are still required. Especially when working with the names of territories, it is not always completely clear how one standard translates into another. The gazetteer is the place where this is documented, but it can only infer the information only to a certain degree. Essentially, when needs to be known for a consistent gazetteer is which concept translates into which other concept. However, with the occasional changes of administrative units, sometimes concepts change to a degree that they can't simply be translated into one-another. This is the case for example when on previous administrative unit is split up into several new units. None of the new units are identical to the previous units, but some of them may still have the same name. In this sense, *"translation"* isn't equivalent to the literal meaning most people know, but must be more understood as "what maps how to what else". When normalizing geometries with the argument `priority = "ontology"`, the function will take names as literal interpretations, match those that are "the same" and ask the user to translate the ones that don't match manually. With `priority = "spatial"`, the function instead determine spatial overlap to determine which concepts are nested into which other concepts to update the ontology accordingly. This requires less human interaction, but more computation time.
+This process of normalization has been designed so that a user has to interact with the function as little as possible, but some interactions are still required. Especially when working with the names of territories, it is not always completely clear how one standard translates into another. The gazetteer is the place where this is documented, but it can infer the information only to a certain degree. With the occasional changes of administrative units, sometimes concepts change to a degree that they can't simply be translated into one-another. This is the case for example when on previous administrative unit is split up into several new units. None of the new units are identical to the previous units, but some of them may still have the same name. In this sense, *"translation"* isn't equivalent to the literal meaning most people know, but must be more understood as "what maps to what else". When normalizing geometries with the argument `priority = "ontology"`, the function will take names as literal interpretations, match those that are "the same" (the same letters) and ask the user to translate the ones that don't match manually. With `priority = "spatial"`, the function instead determines spatial overlap to determine which concepts are nested into which other concepts to update the ontology accordingly. This requires less human interaction, but more computation time.
 
 ```r
-normGeometry(pattern = "brazil",
+normGeometry(pattern = "Brazil",
              outType = "gpkg", 
              update = TRUE)
              
