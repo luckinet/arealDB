@@ -135,7 +135,7 @@ normTable <- function(input = NULL, pattern = NULL, ontoMatch = NULL,
       stop(paste0("  ! the file '", file_name, "' has not been registered yet."))
     }
 
-    algorithm = readRDS(file = paste0(intPaths, "/meta/schemas/", thisSchema, ".rds"))
+    algorithm <- readRDS(file = paste0(intPaths, "/meta/schemas/", thisSchema, ".rds"))
     if(!exists(x = "algorithm")){
       stop(paste0("please create the schema desciption '", algorithm, "' for the file '", file_name, "'.\n  --> See '?meta_default' for details"))
     }
