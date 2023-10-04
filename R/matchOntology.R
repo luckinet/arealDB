@@ -91,6 +91,11 @@ matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
       distinct(across(all_of(allCols[1:i]))) %>%
       filter(!is.na(!!sym(tail(allCols[1:i], 1))))
 
+    parentLen <- get_class(ontology = ontoPath) %>%
+      filter(label == allCols[i]) %>%
+      pull(id)
+    parentLen <- length(str_split(parentLen, "[.]")[[1]])-1
+
     # identify whether concepts were already defined as external concepts...
     if(i == 1){
 
@@ -99,6 +104,9 @@ matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
 
       externalConcepts <- get_concept(label = tempTab$label, has_source = srcID,
                                       external = TRUE, ontology = ontoPath) %>%
+        mutate(len = lengths(str_split(has_broader, "[.]"))) %>%
+        filter(len == parentLen) %>%
+        select(-len) %>%
         left_join(tibble(label = tempTab$label), ., by = "label") %>%
         mutate(class = allCols[i])
 
@@ -112,7 +120,7 @@ matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
       externalConcepts <- get_concept(label = tempTab$label, has_source = srcID,
                                       has_broader = tempTab$has_broader,
                                       external = TRUE, ontology = ontoPath) %>%
-        left_join(tibble(label = tempTab$label, has_broader = tempTab$has_broader), ., by = c("label", "has_broader")) %>%
+        left_join(tempTab, ., by = c("label", "has_broader")) %>%
         mutate(class = allCols[i])
 
     }
