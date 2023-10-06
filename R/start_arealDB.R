@@ -65,14 +65,17 @@ start_arealDB <- function(root = NULL, gazetteer = NULL, top = NULL,
   if(!testDirectory(x = file.path(root, "log"), access = "rw")){
     dir.create(file.path(root, "log"))
   }
-  if(!testDirectory(x = file.path(root, "incoming"), access = "rw")){
-    dir.create(file.path(root, "incoming"))
-  }
+  # if(!testDirectory(x = file.path(root, "incoming"), access = "rw")){
+  #   dir.create(file.path(root, "incoming"))
+  # }
   if(!testDirectory(x = file.path(root, "meta"), access = "rw")){
     dir.create(file.path(root, "meta"))
   }
   if(!testDirectory(x = file.path(root, "meta", "schemas"), access = "rw")){
     dir.create(file.path(root, "meta", "schemas"))
+  }
+  if(!testDirectory(x = file.path(root, "meta", "documentation"), access = "rw")){
+    dir.create(file.path(root, "meta", "documentation"))
   }
   gazName <- str_split(tail(str_split(string = gazetteer, pattern = "/")[[1]], 1), "[.]")[[1]][1]
   if(!testDirectory(x = file.path(root, "meta", gazName), access = "rw")){
