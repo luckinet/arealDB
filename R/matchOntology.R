@@ -91,16 +91,16 @@ matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
       distinct(across(all_of(allCols[1:i]))) %>%
       filter(!is.na(!!sym(tail(allCols[1:i], 1))))
 
-    parentLen <- get_class(ontology = ontoPath) %>%
-      filter(label == allCols[i]) %>%
-      pull(id)
-    parentLen <- length(str_split(parentLen, "[.]")[[1]])-1
-
     # identify whether concepts were already defined as external concepts...
     if(i == 1){
 
       tempTab <- tempTab %>%
         select(label = allCols[i])
+
+      parentLen <- get_class(ontology = ontoPath) %>%
+        filter(label == allCols[i]) %>%
+        pull(id)
+      parentLen <- length(str_split(parentLen, "[.]")[[1]])-1
 
       externalConcepts <- get_concept(label = tempTab$label, has_source = srcID,
                                       external = TRUE, ontology = ontoPath) %>%
@@ -159,7 +159,6 @@ matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
                     verbose = verbose,
                     beep = beep)
       }
-
 
     } else {
 
