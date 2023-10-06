@@ -15,10 +15,10 @@ test_that("make example DB until start_arealDB", {
   expect_file_exists(x = paste0(dbpath, "/inv_tables.csv"))
   assert_directory_exists(x = paste0(dbpath, "/adb_geometries"))
   assert_directory_exists(x = paste0(dbpath, "/adb_tables"))
-  assert_directory_exists(x = paste0(dbpath, "/incoming"))
+  assert_directory_exists(x = paste0(dbpath, "/meta/documentation"))
 
   assert_file_exists(x = paste0(dbpath, "/adb_geometries/stage1/example_geom.7z"))
-  assert_file_exists(x = paste0(dbpath, "/adb_tables/stage1/example_table.7z"))
+  assert_file_exists(x = paste0(dbpath, "/adb_tables/stage1/madeUp/example_table.7z"))
   assert_file_exists(x = paste0(dbpath, "/meta/schemas/example_schema.rds"))
 
 })

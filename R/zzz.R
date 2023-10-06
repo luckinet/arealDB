@@ -53,7 +53,8 @@ globalVariables(c(
   "new_label",
   "parentID",
   "source_overlap",
-  "target_overlap"
+  "target_overlap",
+  "len"
 ))
 
 .onAttach <- function(libname, pkgname){

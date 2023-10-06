@@ -289,6 +289,13 @@ regGeometry <- function(..., subset = NULL, gSeries = NULL, label = NULL,
   # test whether the geometry file is available and proper
   if(update){
     if(!testFileExists(x = filePath, extension = "gpkg")){
+      processedPath <- paste0(intPaths, "/adb_geometries/stage2/processed/", fileName)
+      if(testFileExists(x = processedPath, extension = "gpkg")){
+        temp <- inv_geometries[which(inv_geometries$source_file %in% fileName), ]
+        message(paste0("! the geometry '", fileName, "' has already been normalised !"))
+        return(temp)
+      }
+
       message(paste0("... please store the geometry as '", fileName, "' in './adb_geometries/stage2'"))
       if(!testing){
         done <- readline(" -> press any key when done: ")
