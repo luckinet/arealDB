@@ -75,7 +75,6 @@ geospatial database.</p>
 <span>  nextUpdate <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  updateFrequency <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  notes <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  update <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  overwrite <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -140,11 +139,6 @@ Codelist, MD_MaintenanceFrequencyCode. Possible values are: 'continual',
 features of this geometry.</p></dd>
 
 
-<dt>update</dt>
-<dd><p>[<code>logical(1)</code>]<br> whether or not the file
-'inv_geometries.csv' should be updated.</p></dd>
-
-
 <dt>overwrite</dt>
 <dd><p>[<code>logical(1)</code>]<br> whether or not the geometry to
 register shall overwrite a potentially already existing older version.</p></dd>
@@ -155,7 +149,7 @@ register shall overwrite a potentially already existing older version.</p></dd>
     
 
 <p>Returns a tibble of the entry that is appended to
-  'inv_geometries.csv' in case <code>update = TRUE</code>.</p>
+  'inv_geometries.csv'.</p>
     </div>
     <div id="details">
     <h2>Details</h2>
@@ -194,8 +188,7 @@ register shall overwrite a potentially already existing older version.</p></dd>
 <span class="r-in"><span>              archive <span class="op">=</span> <span class="st">"example_geom.7z|example_geom1.gpkg"</span>,</span></span>
 <span class="r-in"><span>              archiveLink <span class="op">=</span> <span class="st">"https://gadm.org/"</span>,</span></span>
 <span class="r-in"><span>              nextUpdate <span class="op">=</span> <span class="st">"2019-10-01"</span>,</span></span>
-<span class="r-in"><span>              updateFrequency <span class="op">=</span> <span class="st">"quarterly"</span>,</span></span>
-<span class="r-in"><span>              update <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span>              updateFrequency <span class="op">=</span> <span class="st">"quarterly"</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span>  <span class="co"># The second administrative level in GADM contains names in the columns</span></span></span>
 <span class="r-in"><span>  <span class="co"># NAME_0 and NAME_1</span></span></span>
@@ -205,8 +198,7 @@ register shall overwrite a potentially already existing older version.</p></dd>
 <span class="r-in"><span>              archive <span class="op">=</span> <span class="st">"example_geom.7z|example_geom2.gpkg"</span>,</span></span>
 <span class="r-in"><span>              archiveLink <span class="op">=</span> <span class="st">"https://gadm.org/"</span>,</span></span>
 <span class="r-in"><span>              nextUpdate <span class="op">=</span> <span class="st">"2019-10-01"</span>,</span></span>
-<span class="r-in"><span>              updateFrequency <span class="op">=</span> <span class="st">"quarterly"</span>,</span></span>
-<span class="r-in"><span>              update <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span>              updateFrequency <span class="op">=</span> <span class="st">"quarterly"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
 </code></pre></div>
     </div>
