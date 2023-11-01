@@ -15,7 +15,6 @@ regGeometry(
   nextUpdate = NULL,
   updateFrequency = NULL,
   notes = NULL,
-  update = FALSE,
   overwrite = FALSE
 )
 }
@@ -58,15 +57,12 @@ Codelist, MD_MaintenanceFrequencyCode. Possible values are: 'continual',
 \item{notes}{[\code{character(1)}]\cr optional notes that are assigned to all
 features of this geometry.}
 
-\item{update}{[\code{logical(1)}]\cr whether or not the file
-'inv_geometries.csv' should be updated.}
-
 \item{overwrite}{[\code{logical(1)}]\cr whether or not the geometry to
 register shall overwrite a potentially already existing older version.}
 }
 \value{
 Returns a tibble of the entry that is appended to
-  'inv_geometries.csv' in case \code{update = TRUE}.
+  'inv_geometries.csv'.
 }
 \description{
 This function registers a new geometry of territorial units into the
@@ -95,8 +91,7 @@ if(dev.interactive()){
               archive = "example_geom.7z|example_geom1.gpkg",
               archiveLink = "https://gadm.org/",
               nextUpdate = "2019-10-01",
-              updateFrequency = "quarterly",
-              update = TRUE)
+              updateFrequency = "quarterly")
 
   # The second administrative level in GADM contains names in the columns
   # NAME_0 and NAME_1
@@ -106,8 +101,7 @@ if(dev.interactive()){
               archive = "example_geom.7z|example_geom2.gpkg",
               archiveLink = "https://gadm.org/",
               nextUpdate = "2019-10-01",
-              updateFrequency = "quarterly",
-              update = TRUE)
+              updateFrequency = "quarterly")
 }
 }
 \seealso{

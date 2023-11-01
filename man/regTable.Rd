@@ -20,7 +20,7 @@ regTable(
   metadataLink = NULL,
   metadataPath = NULL,
   notes = NULL,
-  update = FALSE,
+  diagnose = TRUE,
   overwrite = FALSE
 )
 }
@@ -76,8 +76,10 @@ downloaded along the data: the path where it is stored locally.}
 
 \item{notes}{[\code{character(1)}]\cr optional notes.}
 
-\item{update}{[\code{logical(1)}]\cr whether or not the file 'inv_tables.csv'
-should be updated.}
+\item{diagnose}{[\code{logical(1)}]\cr whether or not to try to reorganise
+the table with the provided schema. note: this does not save the
+reogranised table into the database yet, further steps of harmonisation are
+carried out by \code{\link{normTable}} before that.}
 
 \item{overwrite}{[\code{logical(1)}]\cr whether or not the geometry to
 register shall overwrite a potentially already existing older version.}
@@ -140,8 +142,7 @@ if(dev.interactive()){
            nextUpdate = "2019-10-01",
            updateFrequency = "quarterly",
            metadataLink = "...",
-           metadataPath = "my/local/path",
-           update = TRUE)
+           metadataPath = "my/local/path")
 }
 }
 \seealso{

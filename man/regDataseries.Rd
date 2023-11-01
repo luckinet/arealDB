@@ -11,7 +11,6 @@ regDataseries(
   licence_link = NULL,
   licence_path = NULL,
   notes = NULL,
-  update = FALSE,
   overwrite = FALSE
 )
 }
@@ -32,16 +31,12 @@ the licence text is stored.}
 
 \item{notes}{[\code{character(1)}]\cr optional notes.}
 
-\item{update}{[\code{logical(1)}]\cr whether or not the file
-'inv_dataseries.csv' should be updated (obligatory to continue registering
-geometries or tables associated to this dataseries).}
-
 \item{overwrite}{[\code{logical(1)}]\cr whether or not the dataseries to
 register shall overwrite a potentially already existing older version.}
 }
 \value{
 Returns a tibble of the new entry that is appended to
-  'inv_dataseries.csv' in case \code{update = TRUE}.
+  'inv_dataseries.csv'.
 }
 \description{
 This function registers a new dataseries of both, geometries or areal data
@@ -56,8 +51,7 @@ if(dev.interactive()){
   regDataseries(name = "gadm",
                 description = "Database of Global Administrative Areas",
                 homepage = "https://gadm.org/index.html",
-                licence_link = "https://gadm.org/license.html",
-                update = TRUE)
+                licence_link = "https://gadm.org/license.html")
 }
 }
 \seealso{
