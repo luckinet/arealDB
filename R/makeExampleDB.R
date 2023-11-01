@@ -98,14 +98,12 @@ makeExampleDB <- function(path = NULL, until = NULL, verbose = FALSE){
     regDataseries(name = "gadm",
                   description = "Database of Global Administrative Areas",
                   homepage = "https://gadm.org/index.html",
-                  licence_link = "https://gadm.org/license.html",
-                  update = TRUE)
+                  licence_link = "https://gadm.org/license.html")
 
     regDataseries(name = "madeUp",
                   description = "Made-Up Concepts",
                   homepage = "https://en.wikipedia.org/wiki/String_theory",
-                  licence_link = "https://creativecommons.org/share-your-work/public-domain/cc0/",
-                  update = TRUE)
+                  licence_link = "https://creativecommons.org/share-your-work/public-domain/cc0/")
   }
 
   if(any(theSteps %in% "regGeometry")){
@@ -116,8 +114,7 @@ makeExampleDB <- function(path = NULL, until = NULL, verbose = FALSE){
                 archive = "example_geom.7z|example_geom1.gpkg",
                 archiveLink = "https://gadm.org/",
                 nextUpdate = "2019-10-01",
-                updateFrequency = "quarterly",
-                update = TRUE)
+                updateFrequency = "quarterly")
 
     regGeometry(gSeries = "gadm",
                 label = list(al1 = "NAME_0", al2 = "NAME_1"),
@@ -125,8 +122,7 @@ makeExampleDB <- function(path = NULL, until = NULL, verbose = FALSE){
                 archive = "example_geom.7z|example_geom2.gpkg",
                 archiveLink = "https://gadm.org/",
                 nextUpdate = "2019-10-01",
-                updateFrequency = "quarterly",
-                update = TRUE)
+                updateFrequency = "quarterly")
 
     regGeometry(gSeries = "gadm",
                 label = list(al1 = "NAME_0", al2 = "NAME_1", al3 = "NAME_2"),
@@ -134,8 +130,7 @@ makeExampleDB <- function(path = NULL, until = NULL, verbose = FALSE){
                 archive = "example_geom.7z|example_geom3.gpkg",
                 archiveLink = "https://gadm.org/",
                 nextUpdate = "2019-10-01",
-                updateFrequency = "quarterly",
-                update = TRUE)
+                updateFrequency = "quarterly")
 
     regGeometry(gSeries = "madeUp",
                 label = list(al1 = "NAME_0", al2 = "NAME_1", al3 = "NAME_2"),
@@ -143,8 +138,7 @@ makeExampleDB <- function(path = NULL, until = NULL, verbose = FALSE){
                 archive = "example_geom.7z|example_geom4.gpkg",
                 archiveLink = "https://gadm.org/",
                 nextUpdate = "2019-10-01",
-                updateFrequency = "quarterly",
-                update = TRUE)
+                updateFrequency = "quarterly")
 
   }
 
@@ -178,8 +172,7 @@ makeExampleDB <- function(path = NULL, until = NULL, verbose = FALSE){
              nextUpdate = "2019-10-01",
              updateFrequency = "quarterly",
              metadataLink = "https://en.wikipedia.org/wiki/Metadata",
-             metadataPath = "my/local/path",
-             update = TRUE)
+             metadataPath = "my/local/path")
 
     regTable(nation = "aNation",
              subset = "barleyMaize",
@@ -194,8 +187,7 @@ makeExampleDB <- function(path = NULL, until = NULL, verbose = FALSE){
              nextUpdate = "2019-10-01",
              updateFrequency = "quarterly",
              metadataLink = "https://en.wikipedia.org/wiki/Metadata",
-             metadataPath = "my/local/path",
-             update = TRUE)
+             metadataPath = "my/local/path")
 
   }
 

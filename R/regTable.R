@@ -37,8 +37,10 @@
 #' @param metadataPath [\code{character(1)}]\cr if an existing meta dataset was
 #'   downloaded along the data: the path where it is stored locally.
 #' @param notes [\code{character(1)}]\cr optional notes.
-#' @param update [\code{logical(1)}]\cr whether or not the file 'inv_tables.csv'
-#'   should be updated.
+#' @param diagnose [\code{logical(1)}]\cr whether or not to try to reorganise
+#'   the table with the provided schema. note: this does not save the
+#'   reogranised table into the database yet, further steps of harmonisation are
+#'   carried out by \code{\link{normTable}} before that.
 #' @param overwrite [\code{logical(1)}]\cr whether or not the geometry to
 #'   register shall overwrite a potentially already existing older version.
 #' @details When processing areal data tables, carry out the following steps:
@@ -93,8 +95,7 @@
 #'            nextUpdate = "2019-10-01",
 #'            updateFrequency = "quarterly",
 #'            metadataLink = "...",
-#'            metadataPath = "my/local/path",
-#'            update = TRUE)
+#'            metadataPath = "my/local/path")
 #' }
 #' @importFrom readr read_csv write_rds guess_encoding
 #' @importFrom rlang ensym exprs eval_tidy
@@ -111,13 +112,13 @@ regTable <- function(..., subset = NULL, dSeries = NULL, gSeries = NULL,
                      label = NULL, begin = NULL, end = NULL, schema = NULL,
                      archive = NULL, archiveLink = NULL, nextUpdate = NULL,
                      updateFrequency = NULL, metadataLink = NULL, metadataPath = NULL,
-                     notes = NULL, update = FALSE, overwrite = FALSE){
+                     notes = NULL, diagnose = TRUE, overwrite = FALSE){
 
   # set internal paths
   intPaths <- paste0(getOption(x = "adb_path"))
 
   # get tables
-  inv_tables <- read_csv(paste0(intPaths, "/inv_tables.csv"), col_types = "iiiccccDccccc")
+  inv_tables <- read_csv(paste0(intPaths, "/inv_tables.csv"), col_types = "iiiccccccccDDcccc")
   inv_dataseries <- read_csv(paste0(intPaths, "/inv_dataseries.csv"), col_types = "icccccc")
   inv_geometries <- read_csv(paste0(intPaths, "/inv_geometries.csv"), col_types = "iicccccDDcc")
 
@@ -135,9 +136,11 @@ regTable <- function(..., subset = NULL, dSeries = NULL, gSeries = NULL,
 
   # check validity of arguments
   assertNames(x = colnames(inv_tables),
-              permutation.of = c("tabID", "datID", "geoID", "source_file", "schema",
-                                 "orig_file", "orig_link", "download_date", "next_update",
-                                 "update_frequency", "metadata_link", "metadata_path", "notes"))
+              permutation.of = c("tabID", "datID", "geoID", "geography", "level",
+                                 "start_period", "end_period", "stage2_name",
+                                 "schema", "stage1_name", "stage1_url",
+                                 "download_date", "next_update", "update_frequency",
+                                 "metadata_url", "metadata_path", "notes"))
   assertNames(x = colnames(inv_dataseries),
               permutation.of = c("datID", "name", "description", "homepage",
                                  "licence_link", "licence_path", "notes"))
@@ -159,7 +162,7 @@ regTable <- function(..., subset = NULL, dSeries = NULL, gSeries = NULL,
   assertCharacter(x = metadataLink, any.missing = FALSE, null.ok = TRUE)
   assertCharacter(x = metadataPath, any.missing = FALSE, null.ok = TRUE)
   assertCharacter(x = notes, ignore.case = TRUE, any.missing = FALSE, len = 1, null.ok = TRUE)
-  assertLogical(x = update, len = 1)
+  assertLogical(x = diagnose, len = 1)
   assertLogical(x = overwrite, len = 1)
 
   broadest <- exprs(..., .named = TRUE)
@@ -307,10 +310,10 @@ regTable <- function(..., subset = NULL, dSeries = NULL, gSeries = NULL,
   filePath <- paste0(intPaths, "/adb_tables/stage2/", fileName)
   fileArchive <- str_split(archive, "\\|")[[1]]
 
-  if(any(inv_tables$source_file %in% fileName)){
+  if(any(inv_tables$stage1_name %in% fileName)){
     if(overwrite){
-      theSchemaName <- inv_tables$schema[inv_tables$source_file == fileName]
-      newTID <- inv_tables$tabID[which(inv_tables$source_file %in% fileName)]
+      theSchemaName <- inv_tables$schema[inv_tables$stage1_name == fileName]
+      newTID <- inv_tables$tabID[which(inv_tables$stage1_name %in% fileName)]
     } else {
       return(paste0("'", fileName, "' has already been registered."))
     }
@@ -393,7 +396,7 @@ regTable <- function(..., subset = NULL, dSeries = NULL, gSeries = NULL,
     } else {
       metadataPath <- "C:/Users/arue/Projects/GeoKur/Luckinet/census/table1_meta.txt"
     }
-    if(is.na(metadataLink)){
+    if(is.na(metadataPath)){
       metadataPath = NA_character_
     }
   }
@@ -402,108 +405,118 @@ regTable <- function(..., subset = NULL, dSeries = NULL, gSeries = NULL,
     notes = NA_character_
   }
 
-  if(update){
+  # if(update){
 
-    # test whether the archive file is available
-    if(!testFileExists(x = paste0(intPaths, "/adb_tables/stage1/", dSeries, "/", fileArchive[1]))){
-      message(paste0("... please store the archive '", fileArchive[[1]], "' in './adb_tables/stage1/", dSeries, "/'"))
-      if(!testDirectoryExists(x = paste0(intPaths, "/adb_tables/stage1/", dSeries))){
-        dir.create(path = paste0(intPaths, "/adb_tables/stage1/", dSeries))
-      }
-      if(!testing){
-        done <- readline(" -> press any key when done: ")
-      }
-
-      # make sure that the file is really there
-      assertFileExists(x = paste0(intPaths, "/adb_tables/stage1/", dSeries, "/", fileArchive[1]))
-
-      # ... and if it is compressed, whether also the file therein is given that contains the data
-      if(testCompressed(x = fileArchive[1]) & length(fileArchive) < 2){
-        message(paste0("please give the name of the file in ", fileArchive[1]," that contains the table: "))
-        if(!testing){
-          theArchiveFile <- readline()
-        } else {
-          theArchiveFile <- "example_table.csv"
-        }
-        archive <- paste0(archive, "|", theArchiveFile)
-      }
+  # test whether the stage1 file is available
+  if(!testFileExists(x = paste0(intPaths, "/adb_tables/stage1/", dSeries, "/", fileArchive[1]))){
+    message(paste0("... please store the archive '", fileArchive[[1]], "' in './adb_tables/stage1/", dSeries, "/'"))
+    if(!testDirectoryExists(x = paste0(intPaths, "/adb_tables/stage1/", dSeries))){
+      dir.create(path = paste0(intPaths, "/adb_tables/stage1/", dSeries))
+    }
+    if(!testing){
+      done <- readline(" -> press any key when done: ")
     }
 
-    # test that the file is available
-    if(!testFileExists(x = filePath, extension = "csv")){
-      processedPath <- paste0(intPaths, "/adb_tables/stage2/processed/", fileName)
-      if(testFileExists(x = processedPath, extension = "csv")){
-        temp <- inv_tables[which(inv_tables$source_file %in% fileName), ]
-        message(paste0("! the table '", fileName, "' has already been normalised !"))
-        return(temp)
-      }
+    # make sure that the file is really there
+    assertFileExists(x = paste0(intPaths, "/adb_tables/stage1/", dSeries, "/", fileArchive[1]))
 
-      message(paste0("... please store the table as '", fileName, "' with utf-8 encoding in './adb_tables/stage2'"))
+    # ... and if it is compressed, whether also the file therein is given that contains the data
+    if(testCompressed(x = fileArchive[1]) & length(fileArchive) < 2){
+      message(paste0("please give the name of the file in ", fileArchive[1]," that contains the table: "))
       if(!testing){
-        done <- readline(" -> press any key when done: ")
+        theArchiveFile <- readline()
+      } else {
+        theArchiveFile <- "example_table.csv"
       }
+      archive <- paste0(archive, "|", theArchiveFile)
+    }
+  }
+
+  # test that the stage2 file is available
+  if(!testFileExists(x = filePath, extension = "csv")){
+    processedPath <- paste0(intPaths, "/adb_tables/stage2/processed/", fileName)
+    if(testFileExists(x = processedPath, extension = "csv")){
+      temp <- inv_tables[which(inv_tables$stage1_name %in% fileName), ]
+      message(paste0("! the table '", fileName, "' has already been normalised !"))
+      return(temp)
+    }
+
+    message(paste0("... please store the table as '", fileName, "' with utf-8 encoding in './adb_tables/stage2'"))
+    if(!testing){
+      done <- readline(" -> press any key when done: ")
+
       # make sure that the file is really there
       assertFileExists(x = filePath, extension = "csv")
     }
-
-    # put together new census database entry
-    doc <- tibble(tabID = newTID,
-                  geoID = geomSeries,
-                  datID = dataSeries,
-                  source_file = fileName,
-                  schema = theSchemaName,
-                  orig_file = archive,
-                  orig_link = archiveLink,
-                  download_date = Sys.Date(),
-                  next_update = nextUpdate,
-                  update_frequency = updateFrequency,
-                  metadata_link = metadataLink,
-                  metadata_path = metadataPath,
-                  notes = notes)
-
-    if(!any(inv_tables$source_file %in% fileName) | overwrite){
-      # in case the user wants to update, attach the new information to the table inv_sourceData.csv
-      updateTable(index = doc, name = "inv_tables", matchCols = c("source_file"))
-    }
-
-    return(doc)
-  } else {
-
-    stage1Exists <- testFileExists(x = paste0(intPaths, "/adb_tables/stage1/", fileArchive[1]), "r")
-    stage2Exists <- testFileExists(x = filePath, "r", extension = "csv")
-    if(stage2Exists){
-      # thisTable <- as_tibble(read.csv(file = filePath, header = FALSE, as.is = TRUE, na.strings = schema@format$na, encoding = "UTF-8"))
-      thisTable <- read_csv(file = filePath, col_names = FALSE, col_types = cols(.default = "c"))
-      temp <- tryCatch(expr = reorganise(input = thisTable, schema = schema),
-                       error = function(e){
-                         return("There was an error message")
-                       },
-                       warning = function(w){
-                         return("There was a warning message")
-                       })
-      isTable <- testDataFrame(x = temp)
-      correctNames <- testNames(x = names(temp), must.include = names(schema@variables))
-      if(isTable & correctNames){
-        schema_ok <- "schema ok"
-      } else {
-        schema_ok <- temp
-
-      }
-    } else {
-      schema_ok <- "not checked"
-    }
-
-    diag <- tibble(stage1_name = fileArchive[1],
-                   stage2_name = fileName,
-                   schema_name = schemaName,
-                   stage1_ok = stage1Exists,
-                   stage2_ok = stage2Exists,
-                   schema = schema_ok)
-
-    updateTable(index = diag, name = "diag_tables", matchCols = c("stage2_name"), backup = FALSE)
-
-    return(diag)
   }
+
+  if(diagnose){
+
+    # thisTable <- as_tibble(read.csv(file = filePath, header = FALSE, as.is = TRUE, na.strings = schema@format$na, encoding = "UTF-8"))
+    thisTable <- read_csv(file = filePath, col_names = FALSE, col_types = cols(.default = "c"))
+    temp <- tryCatch(expr = reorganise(input = thisTable, schema = schema),
+                     error = function(e){
+                       return("There was an error message")
+                     },
+                     warning = function(w){
+                       return("There was a warning message")
+                     })
+    isTable <- testDataFrame(x = temp)
+    correctNames <- testNames(x = names(temp), must.include = names(schema@variables))
+    if(isTable & correctNames){
+      schema_ok <- "schema ok"
+    } else {
+      stop(temp)
+    }
+
+  }
+
+  # put together new census database entry
+  doc <- tibble(tabID = newTID,
+                geoID = geomSeries,
+                datID = dataSeries,
+                geography = mainPoly,
+                level = label,
+                start_period = begin,
+                end_period = end,
+                stage2_name = fileName,
+                schema = theSchemaName,
+                stage1_name = archive,
+                stage1_url = archiveLink,
+                download_date = Sys.Date(),
+                next_update = nextUpdate,
+                update_frequency = updateFrequency,
+                metadata_url = metadataLink,
+                metadata_path = metadataPath,
+                notes = notes)
+
+  if(!any(inv_tables$stage1_name %in% fileName) | overwrite){
+    # in case the user wants to update, attach the new information to the table inv_sourceData.csv
+    updateTable(index = doc, name = "inv_tables", matchCols = c("stage1_name"))
+  }
+
+  return(doc)
+  # } else {
+
+    # stage1Exists <- testFileExists(x = paste0(intPaths, "/adb_tables/stage1/", fileArchive[1]), "r")
+    # stage2Exists <- testFileExists(x = filePath, "r", extension = "csv")
+    # if(stage2Exists){
+    #
+    # } else {
+    #   schema_ok <- "not checked"
+    # }
+
+    # diag <- tibble(stage1_name = fileArchive[1],
+    #                stage2_name = fileName,
+    #                schema_name = schemaName,
+    #                stage1_ok = stage1Exists,
+    #                stage2_ok = stage2Exists,
+    #                schema = schema_ok)
+
+  #   updateTable(index = diag, name = "diag_tables", matchCols = c("stage2_name"), backup = FALSE)
+  #
+  #   return(diag)
+  # }
 
 
 }

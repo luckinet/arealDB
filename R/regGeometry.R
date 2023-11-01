@@ -30,8 +30,6 @@
 #'   'semimonthly', 'biennially'.
 #' @param notes [\code{character(1)}]\cr optional notes that are assigned to all
 #'   features of this geometry.
-#' @param update [\code{logical(1)}]\cr whether or not the file
-#'   'inv_geometries.csv' should be updated.
 #' @param overwrite [\code{logical(1)}]\cr whether or not the geometry to
 #'   register shall overwrite a potentially already existing older version.
 #' @details When processing geometries to which areal data shall be linked,
@@ -44,7 +42,7 @@
 #'   function \item CRS: EPSG:4326 - WGS 84 \item make sure that 'all fields are
 #'   exported'} \item Confirm that you have saved the file.}
 #' @return Returns a tibble of the entry that is appended to
-#'   'inv_geometries.csv' in case \code{update = TRUE}.
+#'   'inv_geometries.csv'.
 #' @family register functions
 #' @examples
 #' if(dev.interactive()){
@@ -58,8 +56,7 @@
 #'               archive = "example_geom.7z|example_geom1.gpkg",
 #'               archiveLink = "https://gadm.org/",
 #'               nextUpdate = "2019-10-01",
-#'               updateFrequency = "quarterly",
-#'               update = TRUE)
+#'               updateFrequency = "quarterly")
 #'
 #'   # The second administrative level in GADM contains names in the columns
 #'   # NAME_0 and NAME_1
@@ -69,8 +66,7 @@
 #'               archive = "example_geom.7z|example_geom2.gpkg",
 #'               archiveLink = "https://gadm.org/",
 #'               nextUpdate = "2019-10-01",
-#'               updateFrequency = "quarterly",
-#'               update = TRUE)
+#'               updateFrequency = "quarterly")
 #' }
 #' @importFrom checkmate assertNames assertCharacter assertIntegerish
 #'   assertFileExists testChoice assertLogical testSubset
@@ -85,7 +81,7 @@
 regGeometry <- function(..., subset = NULL, gSeries = NULL, label = NULL,
                         layer = NULL, archive = NULL, archiveLink = NULL,
                         nextUpdate = NULL, updateFrequency = NULL, notes = NULL,
-                        update = FALSE, overwrite = FALSE){
+                        overwrite = FALSE){
 
   # set internal paths
   intPaths <- paste0(getOption(x = "adb_path"))
@@ -113,7 +109,6 @@ regGeometry <- function(..., subset = NULL, gSeries = NULL, label = NULL,
   assertCharacter(x = nextUpdate, any.missing = FALSE, null.ok = TRUE)
   assertCharacter(x = updateFrequency, any.missing = FALSE, null.ok = TRUE)
   assertCharacter(x = notes, ignore.case = TRUE, any.missing = FALSE, len = 1, null.ok = TRUE)
-  assertLogical(x = update, len = 1)
   assertLogical(x = overwrite, len = 1)
   assertNames(x = colnames(inv_dataseries),
               permutation.of = c("datID", "name", "description", "homepage",
@@ -286,68 +281,64 @@ regGeometry <- function(..., subset = NULL, gSeries = NULL, label = NULL,
     }
   }
 
-  # test whether the geometry file is available and proper
-  if(update){
-    if(!testFileExists(x = filePath, extension = "gpkg")){
-      processedPath <- paste0(intPaths, "/adb_geometries/stage2/processed/", fileName)
-      if(testFileExists(x = processedPath, extension = "gpkg")){
-        temp <- inv_geometries[which(inv_geometries$source_file %in% fileName), ]
-        message(paste0("! the geometry '", fileName, "' has already been normalised !"))
-        return(temp)
-      }
-
-      message(paste0("... please store the geometry as '", fileName, "' in './adb_geometries/stage2'"))
-      if(!testing){
-        done <- readline(" -> press any key when done: ")
-      }
-      # make sure that the file is really there
-      assertFileExists(x = filePath, extension = "gpkg")
+  if(!testFileExists(x = filePath, extension = "gpkg")){
+    processedPath <- paste0(intPaths, "/adb_geometries/stage2/processed/", fileName)
+    if(testFileExists(x = processedPath, extension = "gpkg")){
+      temp <- inv_geometries[which(inv_geometries$source_file %in% fileName), ]
+      message(paste0("! the geometry '", fileName, "' has already been normalised !"))
+      return(temp)
     }
 
-    # to check that what has been given in 'nation' and 'nameCol' is in fact a
-    # column in the geometry, load it
-    if(is.null(mainPoly)){
-      theGeometry <- read_sf(dsn = filePath, stringsAsFactors = FALSE)
+    message(paste0("... please store the geometry as '", fileName, "' in './adb_geometries/stage2'"))
+    if(!testing){
+      done <- readline(" -> press any key when done: ")
     }
-
-    nameCols <- unlist(label, use.names = FALSE)
-
-    # determine which layers exist and ask the user which to chose, if none is
-    # given
-    layers <- st_layers(dsn = filePath)
-    if(length(layers$name) != 1){
-      if(is.null(layer)){
-        message(paste0("... Please chose only one of the layers ", paste0(layers$name, collapse = ", "), ": "))
-        if(!testing){
-          layer <- readline()
-        } else {
-          layer <- "example_geom"
-        }
-      }
-      assertChoice(x = layer, choices = layers$name)
-    } else{
-      layer <- layers$name
-    }
-
-    # construct new documentation
-    doc <- tibble(geoID = newGID,
-                  datID = dataSeries,
-                  source_file = fileName,
-                  layer = layer,
-                  label = labelString,
-                  orig_file = archive,
-                  orig_link = archiveLink,
-                  download_date = Sys.Date(),
-                  next_update = nextUpdate,
-                  update_frequency = updateFrequency,
-                  notes = notes)
-    if(!any(inv_geometries$source_file %in% fileName) | overwrite){
-      # in case the user wants to update, attach the new information to the table
-      # inv_geometries.csv
-      updateTable(index = doc, name = "inv_geometries", matchCols = c("source_file", "label"))
-    }
-    return(doc)
-  } else {
-    message(paste0("... the filename is '", fileName, "'."))
+    # make sure that the file is really there
+    assertFileExists(x = filePath, extension = "gpkg")
   }
+
+  # to check that what has been given in 'nation' and 'nameCol' is in fact a
+  # column in the geometry, load it
+  if(is.null(mainPoly)){
+    theGeometry <- read_sf(dsn = filePath, stringsAsFactors = FALSE)
+  }
+
+  nameCols <- unlist(label, use.names = FALSE)
+
+  # determine which layers exist and ask the user which to chose, if none is
+  # given
+  layers <- st_layers(dsn = filePath)
+  if(length(layers$name) != 1){
+    if(is.null(layer)){
+      message(paste0("... Please chose only one of the layers ", paste0(layers$name, collapse = ", "), ": "))
+      if(!testing){
+        layer <- readline()
+      } else {
+        layer <- "example_geom"
+      }
+    }
+    assertChoice(x = layer, choices = layers$name)
+  } else{
+    layer <- layers$name
+  }
+
+  # construct new documentation
+  doc <- tibble(geoID = newGID,
+                datID = dataSeries,
+                source_file = fileName,
+                layer = layer,
+                label = labelString,
+                orig_file = archive,
+                orig_link = archiveLink,
+                download_date = Sys.Date(),
+                next_update = nextUpdate,
+                update_frequency = updateFrequency,
+                notes = notes)
+  if(!any(inv_geometries$source_file %in% fileName) | overwrite){
+    # in case the user wants to update, attach the new information to the table
+    # inv_geometries.csv
+    updateTable(index = doc, name = "inv_geometries", matchCols = c("source_file", "label"))
+  }
+
+  return(doc)
 }

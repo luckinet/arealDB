@@ -13,13 +13,10 @@
 #' @param licence_path [\code{character(1)}]\cr path to the local file in which
 #'   the licence text is stored.
 #' @param notes [\code{character(1)}]\cr optional notes.
-#' @param update [\code{logical(1)}]\cr whether or not the file
-#'   'inv_dataseries.csv' should be updated (obligatory to continue registering
-#'   geometries or tables associated to this dataseries).
 #' @param overwrite [\code{logical(1)}]\cr whether or not the dataseries to
 #'   register shall overwrite a potentially already existing older version.
 #' @return Returns a tibble of the new entry that is appended to
-#'   'inv_dataseries.csv' in case \code{update = TRUE}.
+#'   'inv_dataseries.csv'.
 #' @family register functions
 #' @examples
 #' if(dev.interactive()){
@@ -29,8 +26,7 @@
 #'   regDataseries(name = "gadm",
 #'                 description = "Database of Global Administrative Areas",
 #'                 homepage = "https://gadm.org/index.html",
-#'                 licence_link = "https://gadm.org/license.html",
-#'                 update = TRUE)
+#'                 licence_link = "https://gadm.org/license.html")
 #' }
 #' @importFrom readr read_csv
 #' @importFrom checkmate assertDataFrame assertNames assertCharacter
@@ -40,7 +36,7 @@
 
 regDataseries <- function(name = NULL, description = NULL, homepage = NULL,
                           licence_link = NULL, licence_path = NULL, notes = NULL,
-                          update = FALSE, overwrite = FALSE){
+                          overwrite = FALSE){
 
   # get tables
   inv_dataseries <- read_csv(paste0(getOption(x = "adb_path"), "/inv_dataseries.csv"), col_types = "icccccc")
@@ -58,7 +54,6 @@ regDataseries <- function(name = NULL, description = NULL, homepage = NULL,
   assertCharacter(x = licence_link, ignore.case = TRUE, any.missing = FALSE, len = 1, null.ok = TRUE)
   assertCharacter(x = licence_path, ignore.case = TRUE, any.missing = FALSE, len = 1, null.ok = TRUE)
   assertCharacter(x = notes, ignore.case = TRUE, any.missing = FALSE, len = 1, null.ok = TRUE)
-  assertLogical(x = update, len = 1)
   assertLogical(x = overwrite, len = 1)
 
   # ask for missing and required arguments
@@ -155,10 +150,8 @@ regDataseries <- function(name = NULL, description = NULL, homepage = NULL,
                  licence_link = theLicence_link,
                  licence_path = theLicence_path,
                  notes = notes)
-  if(update){
-    # in case the user wants to update, attach the new information to the table inv_dataseries.csv
-    updateTable(index = temp, name = "inv_dataseries", matchCols = c("name"))
-  }
+
+  updateTable(index = temp, name = "inv_dataseries", matchCols = c("name"))
 
   return(temp)
 }
