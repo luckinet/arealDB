@@ -74,8 +74,8 @@ test_that("make example DB until regTable", {
 
   makeExampleDB(until = "regTable", path = dbpath)
 
-  geoID <- read_csv(file = paste0(dbpath, "/inv_tables.csv"), col_types = "iiiccccDDcccc")
-  expect_true(object = all(dim(geoID) == c(2, 13)))
+  geoID <- read_csv(file = paste0(dbpath, "/inv_tables.csv"), col_types = "iiiccccccccDDcccc")
+  expect_true(object = all(dim(geoID) == c(2, 17)))
 
   expect_file_exists(x = paste0(dbpath, "/adb_tables/stage2/_al1_barleyMaize_1990_2017_madeUp.csv"))
   expect_file_exists(x = paste0(dbpath, "/adb_tables/stage2/aNation_al2_barleyMaize_1990_2017_madeUp.csv"))

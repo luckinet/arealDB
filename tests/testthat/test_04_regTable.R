@@ -1,3 +1,4 @@
+library(arealDB)
 library(testthat)
 library(checkmate)
 library(tabshiftr)
@@ -28,14 +29,14 @@ test_that("a table inventory entry is produced", {
                      archiveLink = "https://ec.europa.eu/eurostat/de/table1",
                      nextUpdate = "2019-10-01",
                      updateFrequency = "quarterly",
-                     metadataLink = "https://ec.europa.eu/eurostat/de/table1/metadata",
-                     update = TRUE)
+                     metadataLink = "https://ec.europa.eu/eurostat/de/table1/metadata")
 
-  expect_tibble(x = output, nrows = 1, ncols = 13, col.names = "strict")
-  expect_names(x = names(output), must.include = c("tabID", "geoID", "datID", "source_file",
-                                  "schema", "orig_file", "orig_link", "download_date",
-                                  "next_update", "update_frequency", "metadata_link",
-                                  "metadata_path", "notes"))
+  expect_tibble(x = output, nrows = 1, ncols = 17, col.names = "strict")
+  expect_names(x = names(output), must.include = c("tabID", "datID", "geoID", "geography", "level",
+                                                   "start_period", "end_period", "stage2_name",
+                                                   "schema", "stage1_name", "stage1_url",
+                                                   "download_date", "next_update", "update_frequency",
+                                                   "metadata_url", "metadata_path", "notes"))
   expect_file_exists(x = paste0(getOption("adb_path"), "/meta/schemas/schema_1.rds"))
 
 })
@@ -53,9 +54,9 @@ test_that("function asks for details, if not provided", {
     setObsVar(name = "harvested", unit = "ha", columns = 4) %>%
     setObsVar(name = "production", unit = "t", columns = 5)
 
-  expect_message(object = regTable())
-  output <- capture_messages(code = regTable())
-  expect_character(x = output, len = 12, any.missing = FALSE, unique = TRUE)
+  expect_message(object = regTable(diagnose = FALSE))
+  output <- capture_messages(code = regTable(diagnose = FALSE))
+  expect_character(x = output, len = 13, any.missing = FALSE, unique = TRUE)
   expect_equal(object = output[1], expected = "please type in to which data series this table belongs: \n")
   expect_equal(object = output[2], expected = "please type in to which geometry series this table belongs: \n")
   expect_equal(object = output[3], expected = "please type in the ontology label of the units: \n")
@@ -68,5 +69,6 @@ test_that("function asks for details, if not provided", {
   expect_equal(object = output[10], expected = "please type in when the table gets its next update (YYYY-MM-DD): \n")
   expect_equal(object = output[11], expected = "if there is already metadata available:\n -> type in the weblink to the metadataset: \n")
   expect_equal(object = output[12], expected = "if there was an existing metadataset downloaded:\n -> type in the local path to the metadataset: \n")
+  expect_equal(object = output[13], expected = "... please store the table as '_1__1990_2017_madeUp.csv' with utf-8 encoding in './adb_tables/stage2'\n")
 
 })
