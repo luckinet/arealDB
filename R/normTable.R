@@ -90,9 +90,11 @@ normTable <- function(input = NULL, pattern = NULL, ontoMatch = NULL,
 
   # check validity of arguments
   assertNames(x = colnames(inv_tables),
-              permutation.of = c("tabID", "datID", "geoID", "source_file", "schema",
-                                 "orig_file", "orig_link", "download_date", "next_update",
-                                 "update_frequency", "metadata_link", "metadata_path", "notes"))
+              permutation.of = c("tabID", "datID", "geoID", "geography", "level",
+                                 "start_period", "end_period", "stage2_name",
+                                 "schema", "stage1_name", "stage1_url",
+                                 "download_date", "next_update", "update_frequency",
+                                 "metadata_url", "metadata_path", "notes"))
   assertNames(x = colnames(inv_dataseries),
               permutation.of = c("datID", "name", "description", "homepage",
                                  "licence_link", "licence_path", "notes"))
@@ -114,7 +116,7 @@ normTable <- function(input = NULL, pattern = NULL, ontoMatch = NULL,
     file_name <- pathStr[length(pathStr)]
     fields <- str_split(file_name, "_")[[1]]
 
-    if(!file_name %in% inv_tables$source_file){
+    if(!file_name %in% inv_tables$stage2_name){
       message("\n--- ", i, " / ", length(input), " skipping ", rep("-", times = getOption("width")-(nchar(i)+nchar(length(input))+21+nchar(file_name))), " ", file_name, " ---")
       next
     } else {
@@ -122,7 +124,7 @@ normTable <- function(input = NULL, pattern = NULL, ontoMatch = NULL,
     }
 
     # get some variables
-    lut <- inv_tables[grep(pattern = paste0("^", file_name, "$"), x = inv_tables$source_file),]
+    lut <- inv_tables[grep(pattern = paste0("^", file_name, "$"), x = inv_tables$stage2_name),]
     if(file_name %in% lut$source_file){
       geoID <- lut$geoID
       tabID <- lut$tabID
