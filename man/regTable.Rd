@@ -20,7 +20,7 @@ regTable(
   metadataLink = NULL,
   metadataPath = NULL,
   notes = NULL,
-  diagnose = TRUE,
+  diagnose = FALSE,
   overwrite = FALSE
 )
 }

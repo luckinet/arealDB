@@ -31,11 +31,6 @@
 #'   played to signal the user that a point of interaction is reached by the
 #'   program, see \code{\link[beepr]{beep}}.
 #' @param simplify [\code{logical(1)}]\cr whether or not to simplify geometries.
-#' @param update [\code{logical(1)}]\cr whether or not the physical files should
-#'   be updated (\code{TRUE}) or the function should merely return the geometry
-#'   inventory of the handled files (\code{FALSE}, default). This is helpful to
-#'   check whether the metadata specification and the provided file(s) are
-#'   properly specified.
 #' @param verbose [\code{logical(1)}]\cr be verbose about what is happening
 #'   (default \code{FALSE}). Furthermore, you can use
 #'   \code{\link{suppressMessages}} to make this function completely silent.
@@ -65,8 +60,7 @@
 #'   spatial overlap and distinguish the geometries into those that overlap with
 #'   more and those with less than \code{thresh}. \item For all units that did
 #'   match, copy gazID from the geometries they overlap. \item For all units that
-#'   did not match, rebuild metadata and a new gazID. } \item If update = TRUE,
-#'   store the processed geometry at stage three.} \item Move the geometry to
+#'   did not match, rebuild metadata and a new gazID. } \item store the processed geometry at stage three.} \item Move the geometry to
 #'   the folder '/processed', if it is fully processed.}
 #' @family normalise functions
 #' @return This function harmonises and integrates so far unprocessed geometries
@@ -81,7 +75,7 @@
 #'   makeExampleDB(until = "regGeometry", path = tempdir())
 #'
 #'   # normalise all geometries ...
-#'   normGeometry(nation = "estonia", update = TRUE)
+#'   normGeometry(nation = "estonia")
 #'
 #'   # ... and check the result
 #'   st_layers(paste0(tempdir(), "/adb_geometries/stage3/Estonia.gpkg"))
@@ -100,11 +94,13 @@
 #' @importFrom tools file_ext
 #' @importFrom sf st_layers read_sf st_write st_join st_buffer st_equals st_sf
 #'   st_transform st_crs st_crs<- st_geometry_type st_area st_intersection
-#'   st_drivers NA_crs_ st_is_valid st_make_valid st_as_sf st_geometry st_intersects
+#'   st_drivers NA_crs_ st_is_valid st_make_valid st_as_sf st_geometry
+#'   st_intersects
 #' @importFrom rmapshaper ms_simplify
 #' @importFrom stringr str_split_1 str_to_title str_pad str_replace_all
 #' @importFrom tibble as_tibble add_column
-#' @importFrom dplyr bind_rows slice lag desc n_distinct left_join right_join first
+#' @importFrom dplyr bind_rows slice lag desc n_distinct left_join right_join
+#'   first
 #' @importFrom tidyr unite
 #' @importFrom tidyselect starts_with all_of
 #' @importFrom progress progress_bar
@@ -114,7 +110,7 @@
 
 normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10,
                          outType = "gpkg", priority = "ontology", beep = NULL,
-                         simplify = FALSE, update = FALSE, verbose = FALSE){
+                         simplify = FALSE, verbose = FALSE){
 
   # set internal paths
   intPaths <- paste0(getOption(x = "adb_path"))
@@ -144,7 +140,6 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
 
   # check validity of arguments
   assertIntegerish(x = thresh, any.missing = FALSE)
-  assertLogical(x = update, len = 1)
   assertLogical(x = simplify, len = 1)
   assertNames(x = outType, subset.of = c(tolower(st_drivers()$name), "rds"))
   assertNames(x = colnames(inv_geometries),
@@ -703,22 +698,20 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
 
         }
 
-        if(update){
-          # in case the user wants to update, output the simple feature
-          if(outType != "rds"){
-            st_write(obj = outGeom,
-                     dsn = paste0(intPaths, "/adb_geometries/stage3/", tempUnit, ".", outType),
-                     layer = tail(targetClass$label, 1),
-                     append = FALSE,
-                     quiet = TRUE)
-          } else {
-            saveRDS(object = outGeom, file = paste0(intPaths, "/adb_geometries/stage3/", tempUnit, ".rds"))
-          }
+        # in case the user wants to update, output the simple feature
+        if(outType != "rds"){
+          st_write(obj = outGeom,
+                   dsn = paste0(intPaths, "/adb_geometries/stage3/", tempUnit, ".", outType),
+                   layer = tail(targetClass$label, 1),
+                   append = FALSE,
+                   quiet = TRUE)
+        } else {
+          saveRDS(object = outGeom, file = paste0(intPaths, "/adb_geometries/stage3/", tempUnit, ".rds"))
         }
       }
     }
 
-    if(update & moveFile){
+    if(moveFile){
       message(paste0("    Moving '", file_name, "' to './stage2/processed'"))
       firstStage <- paste0(intPaths, "/adb_geometries/stage2")
       file.copy(from = paste0(firstStage, "/", file_name), to = paste0(firstStage, "/processed/", file_name))

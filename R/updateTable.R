@@ -48,7 +48,7 @@ updateTable <- function(index = NULL, name = NULL, matchCols = NULL, backup = TR
     }
 
     # join the old table with 'index'
-    index <- union(oldIndex, index) %>%
+    index <- dplyr::union(oldIndex, index) %>%
       group_by(across(all_of(matchCols))) %>%
       filter(row_number() == n()) %>%
       arrange(!!as.name(colnames(index)[1])) %>%

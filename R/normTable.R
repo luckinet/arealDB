@@ -6,11 +6,6 @@
 #'   chosen.
 #' @param pattern [\code{character(1)}]\cr an optional regular expression. Only
 #'   dataset names which match the regular expression will be processed.
-#' @param update [\code{logical(1)}]\cr whether or not the physical files should
-#'   be updated (\code{TRUE}) or the function should merely return the new
-#'   object (\code{FALSE}, default). This is helpful to check whether the
-#'   metadata specification and the provided file(s) (translation and ID tables)
-#'   are properly specified.
 #' @param beep [\code{integerish(1)}]\cr Number specifying what sound to be
 #'   played to signal the user that a point of interaction is reached by the
 #'   program, see \code{\link[beepr]{beep}}.
@@ -31,7 +26,7 @@
 #'   with the gazetteer to harmonise new territorial names (at this step, the
 #'   function might ask the user to edit the file 'matching.csv' to align new
 #'   names with already harmonised names). \item Harmonise territorial unit
-#'   names. \item If \code{update = TRUE}, store the processed data table at
+#'   names. \item store the processed data table at
 #'   stage three.}
 #' @family normalise functions
 #' @return This function harmonises and integrates so far unprocessed data
@@ -44,7 +39,7 @@
 #'   makeExampleDB(until = "normGeometry", path = tempdir())
 #'
 #'   # normalise all available data tables ...
-#'   normTable(update = TRUE)
+#'   normTable()
 #'
 #'   # ... and check the result
 #'   output <- readRDS(paste0(tempdir(), "/adb_tables/stage3/Estonia.rds"))
@@ -62,8 +57,7 @@
 #' @export
 
 normTable <- function(input = NULL, pattern = NULL, ontoMatch = NULL,
-                      outType = "rds", beep = NULL, update = FALSE,
-                      verbose = FALSE){
+                      outType = "rds", beep = NULL, verbose = FALSE){
 
   # set internal paths
   intPaths <- getOption(x = "adb_path")
@@ -84,7 +78,7 @@ normTable <- function(input = NULL, pattern = NULL, ontoMatch = NULL,
   moveFile <- TRUE
 
   # get tables
-  inv_tables <- read_csv(paste0(intPaths, "/inv_tables.csv"), col_types = "iiiccccDccccc")
+  inv_tables <- read_csv(paste0(intPaths, "/inv_tables.csv"), col_types = "iiicciiccccDccccc")
   inv_dataseries <- read_csv(paste0(intPaths, "/inv_dataseries.csv"), col_types = "icccccc")
   inv_geometries <- read_csv(paste0(intPaths, "/inv_geometries.csv"), col_types = "iicccccDDcc")
 
@@ -102,7 +96,6 @@ normTable <- function(input = NULL, pattern = NULL, ontoMatch = NULL,
               permutation.of = c("geoID", "datID", "source_file", "layer",
                                  "label", "orig_file", "orig_link", "download_date",
                                  "next_update", "update_frequency", "notes"))
-  assertLogical(x = update, len = 1)
   assertCharacter(x = ontoMatch, min.len = 1, any.missing = FALSE, null.ok = TRUE)
   assertNames(x = outType, subset.of = c("csv", "rds"))
 
@@ -125,7 +118,7 @@ normTable <- function(input = NULL, pattern = NULL, ontoMatch = NULL,
 
     # get some variables
     lut <- inv_tables[grep(pattern = paste0("^", file_name, "$"), x = inv_tables$stage2_name),]
-    if(file_name %in% lut$source_file){
+    if(file_name %in% lut$stage2_name){
       geoID <- lut$geoID
       tabID <- lut$tabID
       datID <- lut$datID
@@ -157,7 +150,7 @@ normTable <- function(input = NULL, pattern = NULL, ontoMatch = NULL,
     targetCols <- targetCols[targetCols %in% colnames(thisTable)]
 
     if(targetCols[1] != topClass){
-      theUnits <- str_split(string = lut$source_file, pattern = "_")[[1]][1]
+      theUnits <- str_split(string = lut$stage2_name, pattern = "_")[[1]][1]
       assertSubset(x = theUnits, choices = topUnits$label)
     } else {
       theUnits <- NULL
@@ -201,68 +194,63 @@ normTable <- function(input = NULL, pattern = NULL, ontoMatch = NULL,
              geoID = geoID)
 
     # produce output
-    if(update){
+    if(is.null(theUnits)){
+      theUnits <- unique(eval(expr = parse(text = targetCols[1]), envir = thatTable)) %>%
+        na.omit() %>%
+        as.character()
+    }
 
-      if(is.null(theUnits)){
-        theUnits <- unique(eval(expr = parse(text = targetCols[1]), envir = thatTable)) %>%
-          na.omit() %>%
-          as.character()
+    for(j in seq_along(theUnits)){
+
+      if(length(theUnits) != 1){
+        tempOut <- thatTable %>%
+          filter(.data[[targetCols[1]]] == theUnits[j])
+      } else {
+        tempOut <- thatTable
       }
+      tempOut <- tempOut %>%
+        unite(col = "gazName", all_of(targetCols), sep = ".") %>%
+        select(tabID, geoID, gazID, gazName, gazMatch, everything()) %>%
+        distinct()
 
-      for(j in seq_along(theUnits)){
+      # append output to previous file
+      avail <- list.files(path = paste0(intPaths, "/adb_tables/stage3/"), pattern = paste0("^", theUnits[j], ".", outType))
 
-        if(length(theUnits) != 1){
-          tempOut <- thatTable %>%
-            filter(.data[[targetCols[1]]] == theUnits[j])
+      if(length(avail) == 1){
+
+        if(outType == "csv"){
+          prevData <- read_csv(file = paste0(intPaths, "/adb_tables/stage3/", theUnits[j], ".csv"),
+                               col_types = cols(tabID = "i", geoID = "i", gazID = "c", gazName = "c", gazMatch = "c", year = "c"))
         } else {
-          tempOut <- thatTable
+          prevData <- readRDS(file = paste0(intPaths, "/adb_tables/stage3/", theUnits[j], ".rds"))
         }
-        tempOut <- tempOut %>%
-          unite(col = "gazName", all_of(targetCols), sep = ".") %>%
-          select(tabID, geoID, gazID, gazName, gazMatch, everything()) %>%
+
+        out <- tempOut %>%
+          bind_rows(prevData, .) %>%
           distinct()
 
-        # append output to previous file
-        avail <- list.files(path = paste0(intPaths, "/adb_tables/stage3/"), pattern = paste0("^", theUnits[j], ".", outType))
+        # here distinct rows only?
 
-        if(length(avail) == 1){
-
-          if(outType == "csv"){
-            prevData <- read_csv(file = paste0(intPaths, "/adb_tables/stage3/", theUnits[j], ".csv"),
-                                 col_types = cols(tabID = "i", geoID = "i", gazID = "c", gazName = "c", gazMatch = "c", year = "c"))
-          } else {
-            prevData <- readRDS(file = paste0(intPaths, "/adb_tables/stage3/", theUnits[j], ".rds"))
-          }
-
-          out <- tempOut %>%
-            bind_rows(prevData, .) %>%
-            distinct()
-
-          # here distinct rows only?
-
-        } else if(length(avail) > 1){
-          stop("the nation '", theUnits[j], "' exists several times in the output folder '/adb_tablse/stage3/'.")
-        } else {
-          out <- tempOut
-        }
-
-        # write file to 'stage3' and move to folder 'processed'
-        if(outType == "csv"){
-          write_csv(x = out,
-                    file = paste0(intPaths, "/adb_tables/stage3/", theUnits[j], ".csv"),
-                    na = "")
-        } else if(outType == "rds"){
-          saveRDS(object = out, file = paste0(intPaths, "/adb_tables/stage3/", theUnits[j], ".rds"))
-        }
-        ret <- bind_rows(ret, out)
+      } else if(length(avail) > 1){
+        stop("the nation '", theUnits[j], "' exists several times in the output folder '/adb_tablse/stage3/'.")
+      } else {
+        out <- tempOut
       }
 
-      if(moveFile){
-        file.copy(from = thisInput, to = paste0(intPaths, "/adb_tables/stage2/processed"))
-        file.remove(thisInput)
+      # write file to 'stage3' and move to folder 'processed'
+      if(outType == "csv"){
+        write_csv(x = out,
+                  file = paste0(intPaths, "/adb_tables/stage3/", theUnits[j], ".csv"),
+                  na = "")
+      } else if(outType == "rds"){
+        saveRDS(object = out, file = paste0(intPaths, "/adb_tables/stage3/", theUnits[j], ".rds"))
       }
-    } else {
-      ret <- thatTable
+      ret <- bind_rows(ret, out)
+    }
+
+    if(moveFile){
+      file.copy(from = thisInput, to = paste0(intPaths, "/adb_tables/stage2/processed"))
+      file.remove(thisInput)
     }
 
     gc()

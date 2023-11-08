@@ -13,7 +13,6 @@ normGeometry(
   priority = "ontology",
   beep = NULL,
   simplify = FALSE,
-  update = FALSE,
   verbose = FALSE
 )
 }
@@ -56,12 +55,6 @@ program, see \code{\link[beepr]{beep}}.}
 
 \item{simplify}{[\code{logical(1)}]\cr whether or not to simplify geometries.}
 
-\item{update}{[\code{logical(1)}]\cr whether or not the physical files should
-be updated (\code{TRUE}) or the function should merely return the geometry
-inventory of the handled files (\code{FALSE}, default). This is helpful to
-check whether the metadata specification and the provided file(s) are
-properly specified.}
-
 \item{verbose}{[\code{logical(1)}]\cr be verbose about what is happening
 (default \code{FALSE}). Furthermore, you can use
 \code{\link{suppressMessages}} to make this function completely silent.}
@@ -102,8 +95,7 @@ To normalise geometries, this function proceeds as follows:
   spatial overlap and distinguish the geometries into those that overlap with
   more and those with less than \code{thresh}. \item For all units that did
   match, copy gazID from the geometries they overlap. \item For all units that
-  did not match, rebuild metadata and a new gazID. } \item If update = TRUE,
-  store the processed geometry at stage three.} \item Move the geometry to
+  did not match, rebuild metadata and a new gazID. } \item store the processed geometry at stage three.} \item Move the geometry to
   the folder '/processed', if it is fully processed.}
 }
 \examples{
@@ -114,7 +106,7 @@ if(dev.interactive()){
   makeExampleDB(until = "regGeometry", path = tempdir())
 
   # normalise all geometries ...
-  normGeometry(nation = "estonia", update = TRUE)
+  normGeometry(nation = "estonia")
 
   # ... and check the result
   st_layers(paste0(tempdir(), "/adb_geometries/stage3/Estonia.gpkg"))

@@ -112,13 +112,13 @@ regTable <- function(..., subset = NULL, dSeries = NULL, gSeries = NULL,
                      label = NULL, begin = NULL, end = NULL, schema = NULL,
                      archive = NULL, archiveLink = NULL, nextUpdate = NULL,
                      updateFrequency = NULL, metadataLink = NULL, metadataPath = NULL,
-                     notes = NULL, diagnose = TRUE, overwrite = FALSE){
+                     notes = NULL, diagnose = FALSE, overwrite = FALSE){
 
   # set internal paths
   intPaths <- paste0(getOption(x = "adb_path"))
 
   # get tables
-  inv_tables <- read_csv(paste0(intPaths, "/inv_tables.csv"), col_types = "iiiccccccccDDcccc")
+  inv_tables <- read_csv(paste0(intPaths, "/inv_tables.csv"), col_types = "iiiccccccccDccccc")
   inv_dataseries <- read_csv(paste0(intPaths, "/inv_dataseries.csv"), col_types = "icccccc")
   inv_geometries <- read_csv(paste0(intPaths, "/inv_geometries.csv"), col_types = "iicccccDDcc")
 
@@ -464,7 +464,7 @@ regTable <- function(..., subset = NULL, dSeries = NULL, gSeries = NULL,
     isTable <- testDataFrame(x = temp)
     correctNames <- testNames(x = names(temp), must.include = names(schema@variables))
     if(isTable & correctNames){
-      schema_ok <- "schema ok"
+      message("schema ok")
     } else {
       stop(temp)
     }
@@ -492,7 +492,7 @@ regTable <- function(..., subset = NULL, dSeries = NULL, gSeries = NULL,
 
   if(!any(inv_tables$stage1_name %in% fileName) | overwrite){
     # in case the user wants to update, attach the new information to the table inv_sourceData.csv
-    updateTable(index = doc, name = "inv_tables", matchCols = c("stage1_name"))
+    updateTable(index = doc, name = "inv_tables", matchCols = "stage2_name")
   }
 
   return(doc)

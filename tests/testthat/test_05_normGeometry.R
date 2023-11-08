@@ -13,8 +13,7 @@ test_that("geometries can be normalised", {
   inPath <- system.file("test_datasets", package = "arealDB", mustWork = TRUE)
 
   # normalise first level ----
-  output <- normGeometry(input = paste0(getOption("adb_path"), "/adb_geometries/stage2/_al1__gadm.gpkg"),
-                         update = TRUE)
+  output <- normGeometry(input = paste0(getOption("adb_path"), "/adb_geometries/stage2/_al1__gadm.gpkg"))
   expect_tibble(x = output, nrows = 1, ncols = 11, col.names = "strict")
   expect_names(x = names(output), must.include = c("geoID", "datID", "source_file",
                                                    "layer", "label", "orig_file", "orig_link",
@@ -33,8 +32,7 @@ test_that("geometries can be normalised", {
                    y = c("gadm_1.3",NA, NA, NA, NA, NA, NA, NA, NA, NA, NA), )
 
   # normalise second level ----
-  output <- normGeometry(input = paste0(getOption("adb_path"), "/adb_geometries/stage2/_al2__gadm.gpkg"),
-                         update = TRUE)
+  output <- normGeometry(input = paste0(getOption("adb_path"), "/adb_geometries/stage2/_al2__gadm.gpkg"))
   expect_tibble(x = output, nrows = 1, ncols = 11, col.names = "strict")
   expect_names(x = names(output), must.include = c("geoID", "datID", "label", "source_file",
                                                    "layer", "orig_file", "orig_link",
@@ -53,8 +51,7 @@ test_that("geometries can be normalised", {
                    y = c("gadm_1.3","gadm_2.3", NA, NA, "gadm_3.3", NA, "gadm_4.3", NA, "gadm_5.3", NA, NA), )
 
   # normalise third level ----
-  output <- normGeometry(input = paste0(getOption("adb_path"), "/adb_geometries/stage2/_al3__gadm.gpkg"),
-                         update = TRUE)
+  output <- normGeometry(input = paste0(getOption("adb_path"), "/adb_geometries/stage2/_al3__gadm.gpkg"))
   expect_tibble(x = output, nrows = 1, ncols = 11, col.names = "strict")
   expect_names(x = names(output), must.include = c("geoID", "datID", "label", "source_file",
                         "layer", "orig_file", "orig_link",
@@ -63,8 +60,7 @@ test_that("geometries can be normalised", {
 
   # normalise a non-gadm dataset that has been attached to the DB ----
   output <- normGeometry(input = paste0(getOption("adb_path"), "/adb_geometries/stage2/_al3__madeUp.gpkg"),
-                         priority = "spatial",
-                         update = TRUE)
+                         priority = "spatial")
   expect_tibble(x = output, nrows = 1, ncols = 11, col.names = "strict")
   expect_names(x = names(output), must.include = c("geoID", "datID", "label", "source_file",
                         "layer", "orig_file", "orig_link",

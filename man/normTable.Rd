@@ -10,7 +10,6 @@ normTable(
   ontoMatch = NULL,
   outType = "rds",
   beep = NULL,
-  update = FALSE,
   verbose = FALSE
 )
 }
@@ -34,12 +33,6 @@ error-prone data-format but can only be read by R efficiently).}
 played to signal the user that a point of interaction is reached by the
 program, see \code{\link[beepr]{beep}}.}
 
-\item{update}{[\code{logical(1)}]\cr whether or not the physical files should
-be updated (\code{TRUE}) or the function should merely return the new
-object (\code{FALSE}, default). This is helpful to check whether the
-metadata specification and the provided file(s) (translation and ID tables)
-are properly specified.}
-
 \item{verbose}{[\code{logical(1)}]\cr be verbose about translating terms
 (default \code{FALSE}). Furthermore, you can use
 \code{\link{suppressMessages}} to make this function completely silent.}
@@ -62,7 +55,7 @@ To normalise data tables, this function proceeds as follows:
   with the gazetteer to harmonise new territorial names (at this step, the
   function might ask the user to edit the file 'matching.csv' to align new
   names with already harmonised names). \item Harmonise territorial unit
-  names. \item If \code{update = TRUE}, store the processed data table at
+  names. \item store the processed data table at
   stage three.}
 }
 \examples{
@@ -71,7 +64,7 @@ if(dev.interactive()){
   makeExampleDB(until = "normGeometry", path = tempdir())
 
   # normalise all available data tables ...
-  normTable(update = TRUE)
+  normTable()
 
   # ... and check the result
   output <- readRDS(paste0(tempdir(), "/adb_tables/stage3/Estonia.rds"))

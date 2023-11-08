@@ -193,11 +193,11 @@ makeExampleDB <- function(path = NULL, until = NULL, verbose = FALSE){
 
   # ... and then try to read them in via match_ontology above
   if(any(theSteps %in% "normGeometry")){
-    normGeometry(update = TRUE, verbose = verbose)
+    normGeometry(verbose = verbose)
   }
 
   if(any(theSteps %in% "normTable")){
-    normTable(update = TRUE, verbose = verbose)
+    normTable(verbose = verbose)
   }
 
 }
