@@ -94,9 +94,10 @@ To normalise geometries, this function proceeds as follows:
   parents, and save those that are not as a new geometry. \item Calculate
   spatial overlap and distinguish the geometries into those that overlap with
   more and those with less than \code{thresh}. \item For all units that did
-  match, copy gazID from the geometries they overlap. \item For all units that
-  did not match, rebuild metadata and a new gazID. } \item store the processed geometry at stage three.} \item Move the geometry to
-  the folder '/processed', if it is fully processed.}
+  match, copy gazID from the geometries they overlap. \item For all units
+  that did not match, rebuild metadata and a new gazID.} \item store the
+  processed geometry at stage three.} \item Move the geometry to the folder
+  '/processed', if it is fully processed.}
 }
 \examples{
 if(dev.interactive()){

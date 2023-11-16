@@ -59,9 +59,10 @@
 #'   parents, and save those that are not as a new geometry. \item Calculate
 #'   spatial overlap and distinguish the geometries into those that overlap with
 #'   more and those with less than \code{thresh}. \item For all units that did
-#'   match, copy gazID from the geometries they overlap. \item For all units that
-#'   did not match, rebuild metadata and a new gazID. } \item store the processed geometry at stage three.} \item Move the geometry to
-#'   the folder '/processed', if it is fully processed.}
+#'   match, copy gazID from the geometries they overlap. \item For all units
+#'   that did not match, rebuild metadata and a new gazID.} \item store the
+#'   processed geometry at stage three.} \item Move the geometry to the folder
+#'   '/processed', if it is fully processed.}
 #' @family normalise functions
 #' @return This function harmonises and integrates so far unprocessed geometries
 #'   at stage two into stage three of the geospatial database. It produces for
@@ -337,7 +338,7 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
         # in case the object is not fully valid (e.g., degenerate edges), make
         # it valid
         if(!all(st_is_valid(stage2Geom))){
-          stage2Geom <- stage2Geom <- st_make_valid(x = stage2Geom)
+          stage2Geom <- st_make_valid(x = stage2Geom)
         }
 
         # file exists? ----
@@ -390,16 +391,20 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
               message("  ! --> all features of the new geometry are already part of the target geometry !")
               next
             }
+            getParent <- FALSE
           } else {
             message("  ! --> no previously defined geometry exists at stage 3 !")
-            next
+            getParent <- TRUE
+            # next
           }
 
+          # if we are not at the topmost class, read the parent geometry
           if(!topClass %in% tail(targetClass$label, 1)){
             stage3Parent <- read_sf(dsn = paste0(intPaths, "/adb_geometries/stage3/", tempUnit, ".gpkg"),
                                     layer = allClasses[which(allClasses %in% tail(targetClass$label, 1)) - 1],
                                     stringsAsFactors = FALSE) %>%
               filter(geoID %in% gIDs & gazClass == parentClass)
+
             if(simplify){
               stage3Parent <- stage3Parent %>%
                 ms_simplify(keep = 0.5, method = "dp", keep_shapes = TRUE)
@@ -478,11 +483,11 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
                   pb$tick()
                   st_intersection(x = stage3GeomSimple[ix,], y = stage2GeomSimple[geomIntersections[[ix]],])
                 })) %>%
-                  st_make_valid() %>%
-                  mutate(intersect_area = as.numeric(st_area(.)),
-                         s3_prop = round(intersect_area/s3_area*100, 5),
-                         s2_prop = round(intersect_area/s2_area*100, 5)) %>%
-                  arrange(gazID)
+                st_make_valid() %>%
+                mutate(intersect_area = as.numeric(st_area(.)),
+                       s3_prop = round(intersect_area/s3_area*100, 5),
+                       s2_prop = round(intersect_area/s2_area*100, 5)) %>%
+                arrange(gazID)
 
               message("    -> Determining matches")
               tempGeom <- overlapGeom %>%
@@ -526,14 +531,38 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
                 ungroup()
 
             } else {
-              tempGeom <- stage2Geom %>%
-                rename(s2_geom = geom) %>%
-                mutate(new_name = TRUE,
-                       match = "exact")
+
+              if(getParent){
+
+                geomIntersections <- st_intersects(x = stage3Parent, y = stage2GeomSimple)
+                pb <- progress_bar$new(format = "[:bar] :current/:total (:percent)", total = dim(stage3Parent)[1])
+                tempGeom <- suppressWarnings(
+                  map_dfr(1:dim(stage3Parent)[1], function(ix){
+                    pb$tick()
+                    st_intersection(x = stage3Parent[ix,], y = stage2GeomSimple[geomIntersections[[ix]],])
+                  })) %>%
+                  st_make_valid() %>%
+                  mutate(intersect_area = as.numeric(st_area(.)),
+                         s3_prop = round(intersect_area/s3_area*100, 5),
+                         s2_prop = round(intersect_area/s2_area*100, 5),
+                         new_name = TRUE,
+                         outString = paste0(round(s2_prop), "<>", round(s3_prop)),
+                         match = paste0("nested [", outString, "_", gazID, "]")) %>%
+                  arrange(gazID)
+
+              } else {
+
+                tempGeom <- stage2Geom %>%
+                  rename(s2_geom = geom) %>%
+                  mutate(new_name = TRUE,
+                         match = "exact")
+
+              }
+
             }
 
             # in case new geometries overlap at the parent administrative level, get these information in there and assign the ID of that parent, where the largest overlap exists
-            if(dim(tempGeom)[1] != length(unique(tempGeom$external)) | (priority == "spatial" & !fileExists)){
+            if((dim(tempGeom)[1] != length(unique(tempGeom$external)) | (priority == "spatial" & !fileExists)) & !getParent){
 
               message("    -> Adapting IDs to parent level")
               pb <- progress_bar$new(format = "[:bar] :current/:total (:percent)", total = dim(stage3Parent)[1])
@@ -566,6 +595,7 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
                   rename(gazID2 = gazID) %>%
                   select(-gazName)
               }
+
               tempGeom <- tempGeom_dups %>%
                 left_join(parentOverlap, by = "external") %>%
                 group_by(external) %>%
@@ -592,10 +622,10 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
                      gazClass = tail(allCols, 1)) %>%
               select(gazID, gazName, gazClass, match, external, geoID, geom = s2_geom)
 
-            if(!fileExists){
-              tempGeom <- tempGeom %>%
-                mutate(match = paste0("close [xx<>xx_", gazID, "]"))
-            }
+            # if(!fileExists){
+            #   tempGeom <- tempGeom %>%
+            #     mutate(match = paste0("close [xx<>xx_", gazID, "]"))
+            # }
 
             outGeom <- outGeom %>%
               bind_rows(tempGeom)
@@ -676,7 +706,7 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
             }
           }
 
-          if(fileExists){
+          if(!getParent){
 
             outGeom <- stage3Geom %>%
               select(-siblings) %>%
