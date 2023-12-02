@@ -8,7 +8,7 @@ normGeometry(
   input = NULL,
   pattern = NULL,
   query = NULL,
-  thresh = 10,
+  thresh = 0,
   outType = "gpkg",
   priority = "ontology",
   beep = NULL,
