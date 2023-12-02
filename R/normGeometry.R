@@ -206,7 +206,11 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 0,
 
       if(unitCols[1] != topClass){
         theUnits <- str_split(string = geom_meta$source_file, pattern = "_")[[1]][1]
-        assertSubset(x = theUnits, choices = topUnits$label)
+        if(theUnits == ""){
+          theUnits <- NULL
+        } else {
+          assertSubset(x = theUnits, choices = topUnits$label)
+        }
       } else {
         theUnits <- NULL
       }
@@ -484,7 +488,8 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 0,
               overlapGeom <- suppressWarnings(
                 map_dfr(1:dim(stage3GeomSimple)[1], function(ix){
                   pb$tick()
-                  st_intersection(x = stage3GeomSimple[ix,], y = stage2GeomSimple[geomIntersections[[ix]],])
+                  st_intersection(x = stage3GeomSimple[ix,], y = stage2GeomSimple[geomIntersections[[ix]],],
+                                  dimensions = "polygon")
                 })) %>%
                 st_make_valid() %>%
                 mutate(intersect_area = as.numeric(st_area(.)),
