@@ -197,6 +197,7 @@ matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
 
   # ... to join them to the input table
   toOut <- table %>%
+    select(-any_of("id")) %>%
     unite(col = "external", all_of(allCols), sep = "][", remove = FALSE) %>%
     left_join(newConcepts, by = allCols, relationship = "many-to-many") %>%
     select(-all_of(allCols)) %>%
