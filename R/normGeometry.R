@@ -109,7 +109,7 @@
 #' @importFrom stats na.omit
 #' @export
 
-normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10,
+normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 0,
                          outType = "gpkg", priority = "ontology", beep = NULL,
                          simplify = FALSE, verbose = FALSE){
 
@@ -261,7 +261,8 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
                                 dataseries = dSeries,
                                 ontology = gazPath,
                                 verbose = verbose,
-                                beep = beep)
+                                beep = beep) %>%
+        mutate(unitCol := !!sym(unitCols[1]))
       # include a warning here in case matches other than 'close' have been used, which would lead to problems matching them in the ontology, or, alternatively implement a system that would derive the correct IDs automatically, just like below for when a spatial match is chosen
 
     } else if(priority == "spatial"){
@@ -271,7 +272,9 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
                                 dataseries = dSeries,
                                 ontology = gazPath,
                                 verbose = verbose,
-                                beep = beep)
+                                beep = beep) %>%
+        mutate(unitCol := !!sym(unitCols[1]),
+               !!unitCols[1] := external)
 
       harmGeom <- harmGeom %>%
         mutate(id = NA_character_,
@@ -283,7 +286,7 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
     }
 
     if(is.null(theUnits)){
-      theUnits <- unique(eval(expr = parse(text = unitCols[1]), envir = harmGeom)) %>%
+      theUnits <- unique(eval(expr = parse(text = "unitCol"), envir = harmGeom)) %>%
         as.character()
     }
 
@@ -303,7 +306,7 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
         if(length(theUnits) != 1){
           # create a geom specifically for the recent top territory
           stage2Geom <- harmGeom %>%
-            filter_at(vars(all_of(unitCols[1])), all_vars(. %in% tempUnit)) %>%
+            filter_at(vars("unitCol"), all_vars(. %in% tempUnit)) %>%
             select(all_of(allCols), id, match, external)
           assertChoice(x = allCols[1], choices = names(stage2Geom), .var.name = "names(nation_column)")
         } else {
