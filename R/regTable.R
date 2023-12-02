@@ -104,7 +104,7 @@
 #'   assertIntegerish assertSubset assertLogical testChoice assertChoice
 #'   assertFileExists assertClass assertTRUE testDataFrame testNames
 #' @importFrom dplyr filter distinct
-#' @importFrom stringr str_split
+#' @importFrom stringr str_split str_detect
 #' @importFrom tibble tibble
 #' @export
 
@@ -152,7 +152,7 @@ regTable <- function(..., subset = NULL, dSeries = NULL, gSeries = NULL,
   assertCharacter(x = dSeries, ignore.case = TRUE, any.missing = FALSE, len = 1, null.ok = TRUE)
   assertCharacter(x = gSeries, ignore.case = TRUE, any.missing = FALSE, len = 1, null.ok = TRUE)
   assertCharacter(x = label, any.missing = FALSE, len = 1, null.ok = TRUE)
-  assertIntegerish(x = begin, any.missing = FALSE, len = 1, lower = 1900, null.ok = TRUE)
+  assertIntegerish(x = begin, any.missing = FALSE, len = 1, lower = 1800, null.ok = TRUE)
   assertIntegerish(x = end, any.missing = FALSE, len = 1, upper = as.integer(format(Sys.Date(), "%Y")), null.ok = TRUE)
   assertClass(x = schema, classes = "schema", null.ok = TRUE)
   assertCharacter(x = archive, any.missing = FALSE, null.ok = TRUE)
@@ -211,6 +211,18 @@ regTable <- function(..., subset = NULL, dSeries = NULL, gSeries = NULL,
     dataSeries <- inv_dataseries$datID[inv_dataseries$name %in% dSeries]
   }
 
+  if(is.null(label)){
+    message("please type in the ontology label of the units: ")
+    if(!testing){
+      label <- readline()
+    } else {
+      label <- 1
+    }
+    if(is.na(label)){
+      label = NA_character_
+    }
+  }
+
   if(is.null(gSeries)){
     message("please type in to which geometry series this table belongs: ")
     if(!testing){
@@ -240,19 +252,6 @@ regTable <- function(..., subset = NULL, dSeries = NULL, gSeries = NULL,
     geomSeries <- inv_geometries$geoID[inv_geometries$datID %in% tempDatID & tempLabels == label]
     if(length(geomSeries) < 1){
       stop(paste0("! please first register geometries of the series '", gSeries,"' via 'regGeometries()' !"))
-    }
-  }
-
-
-  if(is.null(label)){
-    message("please type in the ontology label of the units: ")
-    if(!testing){
-      label <- readline()
-    } else {
-      label <- 1
-    }
-    if(is.na(label)){
-      label = NA_character_
     }
   }
 
@@ -364,7 +363,7 @@ regTable <- function(..., subset = NULL, dSeries = NULL, gSeries = NULL,
     if(updateFrequency %in% c("asNeeded", "notPlanned", "unknown")){
       nextUpdate <- as.Date(NA)
     } else {
-      message("please type in when the table gets its next update (YYYY-MM-DD): ")
+      message("please type in when the table gets its next update (YYYY-MM-DD / YYYY): ")
       if(!testing){
         nextUpdate <- as.Date(readline(), "%Y-%m-%d")
       } else {
@@ -374,6 +373,12 @@ regTable <- function(..., subset = NULL, dSeries = NULL, gSeries = NULL,
         # this might fail, there is no NA_Date_
         nextUpdate = as.Date(NA)
       }
+    }
+  } else {
+    if(nextUpdate %in% c("asNeeded", "notPlanned", "unknown")){
+      nextUpdate <- as.Date(NA)
+    } else {
+      nextUpdate <- as.Date(x = nextUpdate, tryFormats = c("%Y-%m-%d", "%Y"))
     }
   }
 
@@ -408,7 +413,9 @@ regTable <- function(..., subset = NULL, dSeries = NULL, gSeries = NULL,
   # if(update){
 
   # test whether the stage1 file is available
-  if(!testFileExists(x = paste0(intPaths, "/adb_tables/stage1/", dSeries, "/", fileArchive[1]))){
+  targetDir <- paste0(intPaths, "/adb_tables/stage1/", dSeries, "/")
+  targetFiles <- list.files(path = targetDir)
+  if(!any(str_detect(string = targetFiles, pattern = fileArchive[[1]]) | targetFiles == fileArchive[[1]])){
     message(paste0("... please store the archive '", fileArchive[[1]], "' in './adb_tables/stage1/", dSeries, "/'"))
     if(!testDirectoryExists(x = paste0(intPaths, "/adb_tables/stage1/", dSeries))){
       dir.create(path = paste0(intPaths, "/adb_tables/stage1/", dSeries))
