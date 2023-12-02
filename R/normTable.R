@@ -9,10 +9,6 @@
 #' @param beep [\code{integerish(1)}]\cr Number specifying what sound to be
 #'   played to signal the user that a point of interaction is reached by the
 #'   program, see \code{\link[beepr]{beep}}.
-#' @param outType [\code{logical(1)}]\cr the output file-type, currently
-#'   implemented options are either \emph{*.csv} (more exchangeable for a
-#'   workflow based on several programs) or \emph{*.rds} (smaller and less
-#'   error-prone data-format but can only be read by R efficiently).
 #' @param ontoMatch [\code{character(.)}]\cr name of the column(s) that shall be
 #'   matched with an ontology (defined in \code{\link{start_arealDB}}).
 #' @param verbose [\code{logical(1)}]\cr be verbose about translating terms
@@ -57,7 +53,7 @@
 #' @export
 
 normTable <- function(input = NULL, pattern = NULL, ontoMatch = NULL,
-                      outType = "rds", beep = NULL, verbose = FALSE){
+                      beep = NULL, verbose = FALSE){
 
   # set internal paths
   intPaths <- getOption(x = "adb_path")
@@ -80,7 +76,7 @@ normTable <- function(input = NULL, pattern = NULL, ontoMatch = NULL,
   # get tables
   inv_tables <- read_csv(paste0(intPaths, "/inv_tables.csv"), col_types = "iiicciiccccDccccc")
   inv_dataseries <- read_csv(paste0(intPaths, "/inv_dataseries.csv"), col_types = "icccccc")
-  inv_geometries <- read_csv(paste0(intPaths, "/inv_geometries.csv"), col_types = "iicccccDDcc")
+  inv_geometries <- read_csv(paste0(intPaths, "/inv_geometries.csv"), col_types = "iicccccDccc")
 
   # check validity of arguments
   assertNames(x = colnames(inv_tables),
@@ -97,7 +93,6 @@ normTable <- function(input = NULL, pattern = NULL, ontoMatch = NULL,
                                  "label", "orig_file", "orig_link", "download_date",
                                  "next_update", "update_frequency", "notes"))
   assertCharacter(x = ontoMatch, min.len = 1, any.missing = FALSE, null.ok = TRUE)
-  assertNames(x = outType, subset.of = c("csv", "rds"))
 
   ret <- NULL
   for(i in seq_along(input)){
@@ -176,16 +171,11 @@ normTable <- function(input = NULL, pattern = NULL, ontoMatch = NULL,
       message("    harmonizing thematic concepts ...")
       assertNames(x = ontoMatch, subset.of = names(thatTable))
       ontoPath <- getOption(x = "ontology_path")[[ontoMatch]]
-      thatTable <- matchOntology(table = thatTable,
-                                 columns = ontoMatch,
-                                 dataseries = dSeries,
-                                 ontology = ontoPath,
-                                 beep = beep) %>%
-        rename(ontoID = id, ontoName = all_of(ontoMatch)) %>%
-        unite(col = "ontoMatch", match, external, sep = "--", na.rm = TRUE) %>%
-        select(ontoName, ontoID, ontoMatch, everything()) %>%
-        select(-has_broader, -class, -description) %>%
-        filter(!is.na(ontoName))
+      matchOntology(table = thatTable,
+                    columns = ontoMatch,
+                    dataseries = dSeries,
+                    ontology = ontoPath,
+                    beep = beep)
     }
 
     thatTable <- thatTable %>%
@@ -214,16 +204,11 @@ normTable <- function(input = NULL, pattern = NULL, ontoMatch = NULL,
         distinct()
 
       # append output to previous file
-      avail <- list.files(path = paste0(intPaths, "/adb_tables/stage3/"), pattern = paste0("^", theUnits[j], ".", outType))
+      avail <- list.files(path = paste0(intPaths, "/adb_tables/stage3/"), pattern = paste0("^", theUnits[j], ".rds"))
 
       if(length(avail) == 1){
 
-        if(outType == "csv"){
-          prevData <- read_csv(file = paste0(intPaths, "/adb_tables/stage3/", theUnits[j], ".csv"),
-                               col_types = cols(tabID = "i", geoID = "i", gazID = "c", gazName = "c", gazMatch = "c", year = "c"))
-        } else {
-          prevData <- readRDS(file = paste0(intPaths, "/adb_tables/stage3/", theUnits[j], ".rds"))
-        }
+        prevData <- readRDS(file = paste0(intPaths, "/adb_tables/stage3/", theUnits[j], ".rds"))
 
         out <- tempOut %>%
           bind_rows(prevData, .) %>%
@@ -237,14 +222,7 @@ normTable <- function(input = NULL, pattern = NULL, ontoMatch = NULL,
         out <- tempOut
       }
 
-      # write file to 'stage3' and move to folder 'processed'
-      if(outType == "csv"){
-        write_csv(x = out,
-                  file = paste0(intPaths, "/adb_tables/stage3/", theUnits[j], ".csv"),
-                  na = "")
-      } else if(outType == "rds"){
-        saveRDS(object = out, file = paste0(intPaths, "/adb_tables/stage3/", theUnits[j], ".rds"))
-      }
+      saveRDS(object = out, file = paste0(intPaths, "/adb_tables/stage3/", theUnits[j], ".rds"))
       ret <- bind_rows(ret, out)
     }
 
