@@ -349,10 +349,20 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 0,
             if(dim(stage2Geom)[1] > dim(uniqueUnits)[1]){
               message("    Dissolving multiple polygons into a single multipolygon")
 
+              temp <- stage2Geom %>%
+                select(-c(all_of(unitCols))) %>%
+                st_drop_geometry()
+
               stage2Geom <- stage2Geom %>%
                 group_by(across(c(all_of(unitCols), "id"))) %>%
+                mutate(dup = if_else(n() > 1, TRUE, FALSE)) %>%
+                group_by(across(c(all_of(unitCols), "id", "dup"))) %>%
                 summarise() %>%
-                ungroup()
+                ungroup() %>%
+                mutate(id = if_else(dup, NA_character_, id),
+                       across(any_of(unitCols), ~if_else(dup, NA_character_, .x))) %>%
+                left_join(temp, by = "id") %>%
+                select(colnames(stage2Geom))
             }
           } else{
             message("  ! The geometry contains only POLYGON features but no unique names to summarise them.")
