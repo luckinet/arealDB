@@ -267,7 +267,25 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 0,
                                 verbose = verbose,
                                 beep = beep) %>%
         mutate(unitCol := !!sym(unitCols[1]))
-      # include a warning here in case matches other than 'close' have been used, which would lead to problems matching them in the ontology, or, alternatively implement a system that would derive the correct IDs automatically, just like below for when a spatial match is chosen
+
+      if(any(!harmGeom$match %in% "close")){
+        message("    ! contains geometries that have to be matched spatially for correct IDs !")
+        tempHarm <- harmGeom %>%
+          filter(match != "close") %>%
+          group_by(external) %>%
+          filter(row_number() == 1) %>%
+          mutate(across(any_of(unitCols), ~NA_character_),
+                 id = NA_character_,
+                 match = NA_character_,
+                 has_broader = NA_character_,
+                 class = NA_character_) %>%
+          ungroup()
+
+        harmGeom <- harmGeom %>%
+          filter(match == "close" | is.na(match)) %>%
+          bind_rows(tempHarm)
+
+      }
 
     } else if(priority == "spatial"){
 
@@ -315,7 +333,6 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 0,
           assertChoice(x = allCols[1], choices = names(stage2Geom), .var.name = "names(nation_column)")
         } else {
           stage2Geom <- harmGeom %>%
-            # select(all_of(allCols), id, match, external) %>%
             select(any_of(allCols), id, match, external)
         }
 
@@ -360,7 +377,7 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 0,
         }
 
         # ... if yes, read it in, otherwise create it
-        if(fileExists | priority == "spatial"){
+        if(fileExists | (priority == "spatial" & topClass != unitCols[1])){
 
           # read target geoms ----
           message("    Reading target geometries")
@@ -428,7 +445,6 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 0,
           message("    Joining target and source geometries")
           outGeom <- stage2Geom %>%
             filter(!is.na(id)) %>%
-            # unite(col = "gazName", all_of(allCols), sep = ".") %>%
             unite(col = "gazName", any_of(allCols), sep = ".") %>%
             mutate(geoID = newGID,
                    gazClass = tail(allCols, 1),
@@ -655,8 +671,8 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 0,
               separate(col = match, into = c("match", "amount"), sep = " ", fill = "right") %>%
               separate(col = amount, into = c("amount", "target"), sep = "_", fill = "right") %>%
               separate(col = amount, into = c("target_overlap", "source_overlap"), sep = "<>", fill = "right") %>%
-              mutate(target_overlap = as.numeric(target_overlap),
-                     source_overlap = as.numeric(source_overlap))
+              mutate(target_overlap = suppressWarnings(as.numeric(target_overlap)),
+                     source_overlap = suppressWarnings(as.numeric(source_overlap)))
 
             # 1. include new hamonised concepts in the ontology, in case it deviates more than 'thresh'
             newConcepts <- newOnto %>%
