@@ -54,7 +54,9 @@ globalVariables(c(
   "parentID",
   "source_overlap",
   "target_overlap",
-  "len"
+  "len",
+  "unitCol",
+  "dup"
 ))
 
 .onAttach <- function(libname, pkgname){
