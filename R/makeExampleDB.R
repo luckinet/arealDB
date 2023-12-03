@@ -56,6 +56,8 @@ makeExampleDB <- function(path = NULL, until = NULL, verbose = FALSE){
   on.exit(options(oldOptions))
   options(adb_testing = TRUE)
 
+  dir.create(file.path(path))
+  saveRDS(object = arealDB::territories, file = gazPath)
   if (any(theSteps %in% "start_arealDB")) {
     start_arealDB(root = path, gazetteer = gazPath, top = "al1", ontology = ontoPath)
   }
@@ -86,8 +88,6 @@ makeExampleDB <- function(path = NULL, until = NULL, verbose = FALSE){
             to = paste0(path, "/adb_tables/stage2/aNation_al2_barleyMaize_1990_2017_madeUp.csv"))
 
   # load gazetteer
-  file.copy(from = paste0(inPath, "/territories.rds"),
-            to = gazPath)
   file.copy(from = paste0(inPath, "/match_madeUp.csv"),
             to = paste0(path, "/meta/territories/match_madeUp.csv"))
   file.copy(from = paste0(inPath, "/match_gadm.csv"),
