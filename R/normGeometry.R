@@ -109,7 +109,7 @@
 #' @importFrom stats na.omit
 #' @export
 
-normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 0,
+normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10,
                          outType = "gpkg", priority = "ontology", beep = NULL,
                          simplify = FALSE, verbose = FALSE){
 

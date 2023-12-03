@@ -1,3 +1,7 @@
+# arealDB 0.7.0 - streamlined geometry matching
+
+- this include various smaller fixes that should ênable a more userfriendly and functional way of specifying geometries and running the normalisation process.
+
 # arealDB 0.6.4
 
 - adapt storing of stage1 files so that they are now aggregated into folders with their dataseries as name.
