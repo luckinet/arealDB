@@ -6,7 +6,11 @@ test_that("path has been added to the global options", {
 
   inPath <- system.file("test_datasets", package = "arealDB", mustWork = TRUE)
   dbpath <- paste0(tempdir(), "/newDB")
-  start_arealDB(root = dbpath, gazetteer = paste0(inPath, "/territories.rds"), ontology = list(commodity = paste0(inPath, "/ontology.rds")))
+  gazPath <- paste0(dbpath, "/territories.rds")
+
+  dir.create(file.path(dbpath))
+  saveRDS(object = arealDB::territories, file = gazPath)
+  start_arealDB(root = dbpath, gazetteer = gazPath, ontology = list(commodity = paste0(inPath, "/ontology.rds")))
 
   out <- getOption("adb_path")
   expect_character(x = out)
