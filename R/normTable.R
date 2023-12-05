@@ -9,6 +9,10 @@
 #' @param beep [\code{integerish(1)}]\cr Number specifying what sound to be
 #'   played to signal the user that a point of interaction is reached by the
 #'   program, see \code{\link[beepr]{beep}}.
+#' @param outType [\code{logical(1)}]\cr the output file-type, currently
+#'   implemented options are either \emph{*.csv} (more exchangeable for a
+#'   workflow based on several programs) or \emph{*.rds} (smaller and less
+#'   error-prone data-format but can only be read by R efficiently).
 #' @param ontoMatch [\code{character(.)}]\cr name of the column(s) that shall be
 #'   matched with an ontology (defined in \code{\link{start_arealDB}}).
 #' @param verbose [\code{logical(1)}]\cr be verbose about translating terms
@@ -53,7 +57,7 @@
 #' @export
 
 normTable <- function(input = NULL, pattern = NULL, ontoMatch = NULL,
-                      beep = NULL, verbose = FALSE){
+                      outType = "rds", beep = NULL, verbose = FALSE){
 
   # set internal paths
   intPaths <- getOption(x = "adb_path")
@@ -208,7 +212,13 @@ normTable <- function(input = NULL, pattern = NULL, ontoMatch = NULL,
 
       if(length(avail) == 1){
 
-        prevData <- readRDS(file = paste0(intPaths, "/adb_tables/stage3/", theUnits[j], ".rds"))
+        if(outType == "csv"){
+          prevData <- read_csv(file = paste0(intPaths, "/adb_tables/stage3/", theUnits[j], ".csv"),
+                               col_types = cols(tabID = "i", geoID = "i", gazID = "c", gazName = "c", gazMatch = "c", year = "c"))
+        } else {
+          prevData <- readRDS(file = paste0(intPaths, "/adb_tables/stage3/", theUnits[j], ".rds"))
+        }
+
 
         out <- tempOut %>%
           bind_rows(prevData, .) %>%
@@ -222,7 +232,14 @@ normTable <- function(input = NULL, pattern = NULL, ontoMatch = NULL,
         out <- tempOut
       }
 
-      saveRDS(object = out, file = paste0(intPaths, "/adb_tables/stage3/", theUnits[j], ".rds"))
+      # write file to 'stage3' and move to folder 'processed'
+      if(outType == "csv"){
+        write_csv(x = out,
+                  file = paste0(intPaths, "/adb_tables/stage3/", theUnits[j], ".csv"),
+                  na = "")
+      } else if(outType == "rds"){
+        saveRDS(object = out, file = paste0(intPaths, "/adb_tables/stage3/", theUnits[j], ".rds"))
+      }
       ret <- bind_rows(ret, out)
     }
 
