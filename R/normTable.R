@@ -208,7 +208,7 @@ normTable <- function(input = NULL, pattern = NULL, ontoMatch = NULL,
         distinct()
 
       # append output to previous file
-      avail <- list.files(path = paste0(intPaths, "/adb_tables/stage3/"), pattern = paste0("^", theUnits[j], ".rds"))
+      avail <- list.files(path = paste0(intPaths, "/adb_tables/stage3/"), pattern = paste0("^", theUnits[j], ".", outType))
 
       if(length(avail) == 1){
 
