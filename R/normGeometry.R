@@ -436,8 +436,16 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
           if(!topClass %in% tail(targetClass$label, 1)){
             stage3Parent <- read_sf(dsn = paste0(intPaths, "/adb_geometries/stage3/", tempUnit, ".gpkg"),
                                     layer = allClasses[which(allClasses %in% tail(targetClass$label, 1)) - 1],
-                                    stringsAsFactors = FALSE) %>%
-              filter(geoID %in% gIDs & gazClass == parentClass)
+                                    stringsAsFactors = FALSE)
+
+            # !!!!!! perhaps include here a more sophisticated system for versioning in case there are several external geometries read in (also see line 480) !!!!!!
+            if(!any(stage3Parent$geoID %in% gIDs)){
+              stage3Parent <- stage3Parent %>%
+                filter(geoID %in% stage3Parent$geoID[1] & gazClass == parentClass)
+            } else {
+              stage3Parent <- stage3Parent %>%
+                filter(geoID %in% gIDs & gazClass == parentClass)
+            }
 
             if(simplify){
               stage3Parent <- stage3Parent %>%
@@ -468,7 +476,12 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
 
             if(fileExists){
               message("    -> Simplifying geometries")
-              stage3GeomSimple <- stage3Geom
+              # !!!!!! perhaps include here a more sophisticated system for versioning in case there are several external geometries read in (also see line 441) !!!!!!
+              baseStage3geom <- stage3Geom %>%
+                filter(geoID == stage3Geom$geoID[1])
+
+              stage3GeomSimple <- baseStage3geom
+
               if(simplify){
                 stage3GeomSimple <- stage3GeomSimple %>%
                   ms_simplify(keep = 0.5, method = "dp", keep_shapes = TRUE)
@@ -476,7 +489,7 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
               stage3GeomSimple <- stage3GeomSimple %>%
                 st_make_valid() %>%
                 mutate(s3_area = as.numeric(st_area(.))) %>%
-                bind_cols(s3_geom = st_geometry(stage3Geom))
+                bind_cols(s3_geom = st_geometry(baseStage3geom))
 
               if(priority == "ontology"){
                 # in this case, names are matched first and for the remaining territories a spatial match is used
@@ -606,6 +619,7 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
                   pb$tick()
                   st_intersection(x = stage3Parent[ix,], y = stage2GeomSimple[geomIntersections[[ix]],])
                 })) %>%
+                st_make_valid() %>%
                 mutate(intersect_area = as.numeric(st_area(.)),
                        s3_prop = round(intersect_area/s3_area*100, 5),
                        s2_prop = round(intersect_area/s2_area*100, 5)) %>%
@@ -656,11 +670,6 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
                      gazClass = tail(allCols, 1)) %>%
               select(gazID, gazName, gazClass, match, external, geoID, geom = s2_geom)
 
-            # if(!fileExists){
-            #   tempGeom <- tempGeom %>%
-            #     mutate(match = paste0("close [xx<>xx_", gazID, "]"))
-            # }
-
             outGeom <- outGeom %>%
               bind_rows(tempGeom)
 
@@ -682,7 +691,8 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
               separate(col = amount, into = c("amount", "target"), sep = "_", fill = "right") %>%
               separate(col = amount, into = c("target_overlap", "source_overlap"), sep = "<>", fill = "right") %>%
               mutate(target_overlap = suppressWarnings(as.numeric(target_overlap)),
-                     source_overlap = suppressWarnings(as.numeric(source_overlap)))
+                     source_overlap = suppressWarnings(as.numeric(source_overlap))) %>%
+              distinct()
 
             # 1. include new hamonised concepts in the ontology, in case it deviates more than 'thresh'
             newConcepts <- newOnto %>%
