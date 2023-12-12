@@ -8,10 +8,10 @@
 #'   description" of the dataseries.
 #' @param homepage [\code{character(1)}]\cr the homepage of the data provider
 #'   where the dataseries or additional information can be found.
+#' @param version [\code{character(1)}]\cr the version number or download date
+#'   of the dataseries.
 #' @param licence_link [\code{character(1)}]\cr link to the licence or the
 #'   webpage from which the licence was copied.
-#' @param licence_path [\code{character(1)}]\cr path to the local file in which
-#'   the licence text is stored.
 #' @param notes [\code{character(1)}]\cr optional notes.
 #' @param overwrite [\code{logical(1)}]\cr whether or not the dataseries to
 #'   register shall overwrite a potentially already existing older version.
@@ -35,11 +35,11 @@
 #' @export
 
 regDataseries <- function(name = NULL, description = NULL, homepage = NULL,
-                          licence_link = NULL, licence_path = NULL, notes = NULL,
+                          version = NULL, licence_link = NULL, notes = NULL,
                           overwrite = FALSE){
 
   # get tables
-  inv_dataseries <- read_csv(paste0(getOption(x = "adb_path"), "/inv_dataseries.csv"), col_types = "icccccc")
+  inv_dataseries <- read_csv(paste0(getOption(x = "adb_path"), "/inv_dataseries.csv"), col_types = "iccccc")
 
   # in testing mode?
   testing <- getOption(x = "adb_testing")
@@ -47,12 +47,12 @@ regDataseries <- function(name = NULL, description = NULL, homepage = NULL,
   # check validity of arguments
   assertNames(x = colnames(inv_dataseries),
               permutation.of = c("datID", "name", "description", "homepage",
-                                 "licence_link", "licence_path", "notes"))
+                                 "version", "licence_link", "notes"))
   assertCharacter(x = name, ignore.case = TRUE, any.missing = FALSE, len = 1, null.ok = TRUE)
   assertCharacter(x = description, ignore.case = TRUE, any.missing = FALSE, len = 1, null.ok = TRUE)
   assertCharacter(x = homepage, ignore.case = TRUE, any.missing = FALSE, len = 1, null.ok = TRUE)
+  assertCharacter(x = version, ignore.case = TRUE, any.missing = FALSE, len = 1, null.ok = TRUE)
   assertCharacter(x = licence_link, ignore.case = TRUE, any.missing = FALSE, len = 1, null.ok = TRUE)
-  assertCharacter(x = licence_path, ignore.case = TRUE, any.missing = FALSE, len = 1, null.ok = TRUE)
   assertCharacter(x = notes, ignore.case = TRUE, any.missing = FALSE, len = 1, null.ok = TRUE)
   assertLogical(x = overwrite, len = 1)
 
@@ -104,6 +104,20 @@ regDataseries <- function(name = NULL, description = NULL, homepage = NULL,
     theHomepage <- homepage
   }
 
+  if(is.null(version)){
+    message("please type in the version or download date: ")
+    if(!testing){
+      theVersion <- readline()
+    } else {
+      theVersion <- NA
+    }
+    if(is.na(theVersion)){
+      theVersion = NA_character_
+    }
+  } else{
+    theVersion <- version
+  }
+
   if(is.null(licence_link)){
     message("please type in the weblink to the dataseries licence: ")
     if(!testing){
@@ -116,20 +130,6 @@ regDataseries <- function(name = NULL, description = NULL, homepage = NULL,
     }
   } else{
     theLicence_link <- licence_link
-  }
-
-  if(is.null(licence_path)){
-    message("please type in the path to the local folder where the licence is stored: ")
-    if(!testing){
-      theLicence_path <- readline()
-    } else {
-      theLicence_path <- NA
-    }
-    if(is.na(theLicence_path)){
-      theLicence_path = NA_character_
-    }
-  } else{
-    theLicence_path <- licence_path
   }
 
   if(is.null(notes)){
@@ -147,8 +147,8 @@ regDataseries <- function(name = NULL, description = NULL, homepage = NULL,
                  name = theName,
                  description = theDescription,
                  homepage = theHomepage,
+                 version = theVersion,
                  licence_link = theLicence_link,
-                 licence_path = theLicence_path,
                  notes = notes)
 
   updateTable(index = temp, name = "inv_dataseries", matchCols = c("name"))

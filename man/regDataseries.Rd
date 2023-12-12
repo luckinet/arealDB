@@ -8,8 +8,8 @@ regDataseries(
   name = NULL,
   description = NULL,
   homepage = NULL,
+  version = NULL,
   licence_link = NULL,
-  licence_path = NULL,
   notes = NULL,
   overwrite = FALSE
 )
@@ -23,11 +23,11 @@ description" of the dataseries.}
 \item{homepage}{[\code{character(1)}]\cr the homepage of the data provider
 where the dataseries or additional information can be found.}
 
+\item{version}{[\code{character(1)}]\cr the version number or download date
+of the dataseries.}
+
 \item{licence_link}{[\code{character(1)}]\cr link to the licence or the
 webpage from which the licence was copied.}
-
-\item{licence_path}{[\code{character(1)}]\cr path to the local file in which
-the licence text is stored.}
 
 \item{notes}{[\code{character(1)}]\cr optional notes.}
 
