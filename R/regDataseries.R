@@ -46,8 +46,7 @@ regDataseries <- function(name = NULL, description = NULL, homepage = NULL,
 
   # check validity of arguments
   assertNames(x = colnames(inv_dataseries),
-              permutation.of = c("datID", "name", "description", "homepage",
-                                 "version", "licence_link", "notes"))
+              permutation.of = c("datID", "name", "description", "homepage", "version", "licence_link", "notes"))
   assertCharacter(x = name, ignore.case = TRUE, any.missing = FALSE, len = 1, null.ok = TRUE)
   assertCharacter(x = description, ignore.case = TRUE, any.missing = FALSE, len = 1, null.ok = TRUE)
   assertCharacter(x = homepage, ignore.case = TRUE, any.missing = FALSE, len = 1, null.ok = TRUE)

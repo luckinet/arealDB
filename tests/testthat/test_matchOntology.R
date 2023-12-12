@@ -46,8 +46,7 @@ test_that("ontology is correct after geometry normalisation", {
                    y = c("gadm_1.3", "gadm_2.3", "gadm_6.3", "gadm_7.3", "gadm_3.3", "gadm_8.3", "gadm_4.3", "gadm_9.3", "gadm_5.3", "gadm_10.3", "gadm_11.3"))
 
   # normalise a non-gadm dataset that has been attached to the DB ----
-  output <- normGeometry(input = paste0(getOption("adb_path"), "/adb_geometries/stage2/_al3__madeUp.gpkg"),
-                         priority = "spatial")
+  output <- normGeometry(input = paste0(getOption("adb_path"), "/adb_geometries/stage2/_al3__madeUp.gpkg"))
 
   onto <- load_ontology(path = paste0(dbpath, "/territories.rds"))
   expect_set_equal(x = onto@concepts$harmonised$label,

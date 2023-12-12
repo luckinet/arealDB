@@ -1,6 +1,6 @@
+library(arealDB)
 library(testthat)
 library(checkmate)
-library(arealDB)
 context("regGeometry")
 
 
@@ -18,9 +18,7 @@ test_that("a geometry inventory entry is produced", {
                         updateFrequency = "quarterly")
 
   expect_tibble(x = output, nrows = 1, ncols = 11, col.names = "strict")
-  expect_names(x = names(output), must.include = c("geoID", "datID", "source_file", "layer",
-                                                   "label", "orig_file", "orig_link", "download_date",
-                                                   "next_update", "update_frequency", "notes"))
+  expect_names(x = names(output), must.include = c("geoID", "datID", "stage2_name", "layer", "label", "stage1_name", "stage1_url", "download_date", "next_update", "update_frequency", "notes"))
 
 })
 

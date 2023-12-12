@@ -111,12 +111,9 @@ regGeometry <- function(..., subset = NULL, gSeries = NULL, label = NULL,
   assertCharacter(x = notes, ignore.case = TRUE, any.missing = FALSE, len = 1, null.ok = TRUE)
   assertLogical(x = overwrite, len = 1)
   assertNames(x = colnames(inv_dataseries),
-              permutation.of = c("datID", "name", "description", "homepage",
-                                 "licence_link", "licence_path", "notes"))
+              permutation.of = c("datID", "name", "description", "homepage", "version", "licence_link", "notes"))
   assertNames(x = colnames(inv_geometries),
-              permutation.of = c("geoID", "datID", "source_file", "layer",
-                                 "label", "orig_file", "orig_link", "download_date",
-                                 "next_update", "update_frequency", "notes"))
+              permutation.of = c("geoID", "datID", "stage2_name", "layer", "label", "stage1_name", "stage1_url", "download_date", "next_update", "update_frequency", "notes"))
 
   broadest <- exprs(..., .named = TRUE)
   if(length(broadest) > 0){
@@ -165,21 +162,10 @@ regGeometry <- function(..., subset = NULL, gSeries = NULL, label = NULL,
     }
   }
 
-  # if(is.null(label)){
-  #   message("please type in the ontology label and the column name of the units (e.g. al1=NAME_0: ")
-  #   if(!testing){
-  #     theLabel <- readline()
-  #   } else {
-  #     theLabel <- "al1"
-  #   }
-  #   if(is.na(theLabel)){
-  #     theLabel = NA_character_
-  #   }
-  # } else {
-    assertSubset(x = names(label), choices = gazClasses$label)
-    theLabel <- tail(names(label), 1)
-    labelString <- paste0(paste0(names(label), "=", label), collapse = "|")
-  # }
+
+  assertSubset(x = names(label), choices = gazClasses$label)
+  theLabel <- tail(names(label), 1)
+  labelString <- paste0(paste0(names(label), "=", label), collapse = "|")
 
   if(is.null(archive)){
     message("please type in the archives' file name: ")
@@ -199,11 +185,11 @@ regGeometry <- function(..., subset = NULL, gSeries = NULL, label = NULL,
   filesTrace <- str_split(archive, "\\|")[[1]]
 
   newGID <- ifelse(length(inv_geometries$geoID)==0, 1, as.integer(max(inv_geometries$geoID)+1))
-  if(any(inv_geometries$source_file %in% fileName)){
+  if(any(inv_geometries$stage2_name %in% fileName)){
     if(overwrite){
-      newGID <- inv_geometries$geoID[which(inv_geometries$source_file %in% fileName)]
+      newGID <- inv_geometries$geoID[which(inv_geometries$stage2_name %in% fileName)]
     } else {
-      temp <- inv_geometries[which(inv_geometries$source_file %in% fileName), ]
+      temp <- inv_geometries[which(inv_geometries$stage2_name %in% fileName), ]
       message(paste0("! the geometry '", fileName, "' has already been registered !"))
       return(temp)
     }
@@ -284,7 +270,7 @@ regGeometry <- function(..., subset = NULL, gSeries = NULL, label = NULL,
   if(!testFileExists(x = filePath, extension = "gpkg")){
     processedPath <- paste0(intPaths, "/adb_geometries/stage2/processed/", fileName)
     if(testFileExists(x = processedPath, extension = "gpkg")){
-      temp <- inv_geometries[which(inv_geometries$source_file %in% fileName), ]
+      temp <- inv_geometries[which(inv_geometries$stage2_name %in% fileName), ]
       message(paste0("! the geometry '", fileName, "' has already been normalised !"))
       return(temp)
     }
@@ -325,19 +311,19 @@ regGeometry <- function(..., subset = NULL, gSeries = NULL, label = NULL,
   # construct new documentation
   doc <- tibble(geoID = newGID,
                 datID = dataSeries,
-                source_file = fileName,
+                stage2_name = fileName,
                 layer = layer,
                 label = labelString,
-                orig_file = archive,
-                orig_link = archiveLink,
+                stage1_name = archive,
+                stage1_url = archiveLink,
                 download_date = Sys.Date(),
                 next_update = nextUpdate,
                 update_frequency = updateFrequency,
                 notes = notes)
-  if(!any(inv_geometries$source_file %in% fileName) | overwrite){
+  if(!any(inv_geometries$stage2_name %in% fileName) | overwrite){
     # in case the user wants to update, attach the new information to the table
     # inv_geometries.csv
-    updateTable(index = doc, name = "inv_geometries", matchCols = c("source_file", "label"))
+    updateTable(index = doc, name = "inv_geometries", matchCols = c("stage2_name", "label"))
   }
 
   return(doc)

@@ -136,18 +136,11 @@ regTable <- function(..., subset = NULL, dSeries = NULL, gSeries = NULL,
 
   # check validity of arguments
   assertNames(x = colnames(inv_tables),
-              permutation.of = c("tabID", "datID", "geoID", "geography", "level",
-                                 "start_period", "end_period", "stage2_name",
-                                 "schema", "stage1_name", "stage1_url",
-                                 "download_date", "next_update", "update_frequency",
-                                 "metadata_url", "metadata_path", "notes"))
+              permutation.of = c("tabID", "datID", "geoID", "geography", "level", "start_period", "end_period", "stage2_name", "schema", "stage1_name", "stage1_url", "download_date", "next_update", "update_frequency", "metadata_url", "metadata_path", "notes"))
   assertNames(x = colnames(inv_dataseries),
-              permutation.of = c("datID", "name", "description", "homepage",
-                                 "licence_link", "licence_path", "notes"))
+              permutation.of = c("datID", "name", "description", "homepage", "version", "licence_link", "notes"))
   assertNames(x = colnames(inv_geometries),
-              permutation.of = c("geoID", "datID", "source_file", "layer",
-                                 "label", "orig_file", "orig_link", "download_date",
-                                 "next_update", "update_frequency", "notes"))
+              permutation.of = c("geoID", "datID", "stage2_name", "layer", "label", "stage1_name", "stage1_url", "download_date", "next_update", "update_frequency", "notes"))
   assertCharacter(x = subset, any.missing = FALSE, null.ok = TRUE)
   assertCharacter(x = dSeries, ignore.case = TRUE, any.missing = FALSE, len = 1, null.ok = TRUE)
   assertCharacter(x = gSeries, ignore.case = TRUE, any.missing = FALSE, len = 1, null.ok = TRUE)
@@ -340,10 +333,7 @@ regTable <- function(..., subset = NULL, dSeries = NULL, gSeries = NULL,
     if(!testing){
       updateFrequency <- readline()
       while(!is.element(updateFrequency,
-                        c("continual", "daily","weekly", "fortnightly",
-                          "quarterly", "biannually", "annually", "asNeeded",
-                          "irregular", "notPlanned", "unknown", "periodic",
-                          "semimonthly", "biennially"))){
+                        c("continual", "daily","weekly", "fortnightly", "quarterly", "biannually", "annually", "asNeeded", "irregular", "notPlanned", "unknown", "periodic", "semimonthly", "biennially"))){
         # test missing
         message(paste(" -> input one of: continual, daily, weekly, fortnightly, quarterly, biannually, annually, asNeeded, irregular, notPlanned, unknown, periodic, semimonthly, biennially \n
                       please repeat: "))
@@ -354,7 +344,6 @@ regTable <- function(..., subset = NULL, dSeries = NULL, gSeries = NULL,
     }
     if(is.na(updateFrequency)){
       # this might fail, there is no NA_Date_
-      # also, it should be impossible to land here
       updateFrequency = as.Date(NA)
     }
   }
@@ -409,8 +398,6 @@ regTable <- function(..., subset = NULL, dSeries = NULL, gSeries = NULL,
   if(is.null(notes)){
     notes = NA_character_
   }
-
-  # if(update){
 
   # test whether the stage1 file is available
   targetDir <- paste0(intPaths, "/adb_tables/stage1/", dSeries, "/")
@@ -498,32 +485,9 @@ regTable <- function(..., subset = NULL, dSeries = NULL, gSeries = NULL,
                 notes = notes)
 
   if(!any(inv_tables$stage1_name %in% fileName) | overwrite){
-    # in case the user wants to update, attach the new information to the table inv_sourceData.csv
     updateTable(index = doc, name = "inv_tables", matchCols = "stage2_name")
   }
 
   return(doc)
-  # } else {
-
-    # stage1Exists <- testFileExists(x = paste0(intPaths, "/adb_tables/stage1/", fileArchive[1]), "r")
-    # stage2Exists <- testFileExists(x = filePath, "r", extension = "csv")
-    # if(stage2Exists){
-    #
-    # } else {
-    #   schema_ok <- "not checked"
-    # }
-
-    # diag <- tibble(stage1_name = fileArchive[1],
-    #                stage2_name = fileName,
-    #                schema_name = schemaName,
-    #                stage1_ok = stage1Exists,
-    #                stage2_ok = stage2Exists,
-    #                schema = schema_ok)
-
-  #   updateTable(index = diag, name = "diag_tables", matchCols = c("stage2_name"), backup = FALSE)
-  #
-  #   return(diag)
-  # }
-
 
 }
