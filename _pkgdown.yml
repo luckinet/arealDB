@@ -32,6 +32,7 @@ reference:
   - title: helpers
     contents:
       - matchOntology
+      - updateOntology
       - getColTypes
       - testCompressed
       - updateTable
