@@ -1,8 +1,8 @@
+library(arealDB)
+library(ontologics)
 library(sf)
 library(testthat)
 library(checkmate)
-library(arealDB)
-library(ontologics)
 context("normGeometry")
 
 test_that("geometries can be normalised", {
