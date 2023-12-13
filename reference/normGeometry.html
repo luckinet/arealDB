@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">arealDB</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.6.4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.7.1</span>
       </span>
     </div>
 
@@ -68,7 +68,6 @@
 <span>  query <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  thresh <span class="op">=</span> <span class="fl">10</span>,</span>
 <span>  outType <span class="op">=</span> <span class="st">"gpkg"</span>,</span>
-<span>  priority <span class="op">=</span> <span class="st">"ontology"</span>,</span>
 <span>  beep <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  simplify <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
@@ -105,18 +104,6 @@ derived from the meta-data of the currently handled geometry.</p></dd>
 are stored in the same file, otherwise the different layers are provided
 separately. For an R-based workflow, <code>"rds"</code> could be an efficient
 option.</p></dd>
-
-
-<dt>priority</dt>
-<dd><p>[<code>character(1)</code>]<br> how to match the new geometries with
-  the already harmonised database. This can either be</p>
-<p></p><ul><li><p><code>"spatial"</code>: where all territories are intersected spatially or</p></li>
-<li><p><code>"ontology"</code>: where territories are matched by comparing their
-    name with the ontology
-    and those that do not match are intersected spatially,</p></li>
-<li><p><code>"both"</code>: where territories are matched with the ontology and
-    spatially, and conflicts are indicated</p></li>
-</ul></dd>
 
 
 <dt>beep</dt>
@@ -175,10 +162,10 @@ program, see <code><a href="https://rdrr.io/pkg/beepr/man/beep.html" class="exte
 <li><p>Calculate
   spatial overlap and distinguish the geometries into those that overlap with
   more and those with less than <code>thresh</code>.</p></li>
-<li><p>For all units that did
+<li><p>For all units that dName
   match, copy gazID from the geometries they overlap.</p></li>
 <li><p>For all units
-  that did not match, rebuild metadata and a new gazID.</p></li>
+  that dName not match, rebuild metadata and a new gazID.</p></li>
 </ol></li>
 <li><p>store the
   processed geometry at stage three.</p></li>
