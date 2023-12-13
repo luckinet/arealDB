@@ -1,6 +1,12 @@
+# arealDB 0.7.1 
+
+- entirely remove matching via gazatteer for any level below the first level that serves for identifying unique territories (which resulted in a vast simplification of the `normGeometry()` function).
+- include a `version = ` for dataseries.
+
+
 # arealDB 0.7.0 - streamlined geometry matching
 
-- this include various smaller fixes that should ênable a more userfriendly and functional way of specifying geometries and running the normalisation process.
+- this include various smaller fixes that should enable a more userfriendly and functional way of specifying geometries and running the normalisation process.
 
 # arealDB 0.6.4
 
