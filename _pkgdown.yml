@@ -36,6 +36,9 @@ reference:
       - getColTypes
       - testCompressed
       - updateTable
+  - title: data
+    contents:
+      - territories
 
 navbar:
   left:
