@@ -10,7 +10,6 @@ normGeometry(
   query = NULL,
   thresh = 10,
   outType = "gpkg",
-  priority = "ontology",
   beep = NULL,
   simplify = FALSE,
   verbose = FALSE
@@ -36,18 +35,6 @@ derived from the meta-data of the currently handled geometry.}
 are stored in the same file, otherwise the different layers are provided
 separately. For an R-based workflow, \code{"rds"} could be an efficient
 option.}
-
-\item{priority}{[\code{character(1)}]\cr how to match the new geometries with
-  the already harmonised database. This can either be
-
-  \itemize{
-    \item \code{"spatial"}: where all territories are intersected spatially or
-    \item \code{"ontology"}: where territories are matched by comparing their
-    name with the ontology
-    and those that do not match are intersected spatially,
-    \item \code{"both"}: where territories are matched with the ontology and
-    spatially, and conflicts are indicated
-  }}
 
 \item{beep}{[\code{integerish(1)}]\cr Number specifying what sound to be
 played to signal the user that a point of interaction is reached by the
@@ -93,9 +80,9 @@ To normalise geometries, this function proceeds as follows:
   Check whether the new geometries are all within the already defined
   parents, and save those that are not as a new geometry. \item Calculate
   spatial overlap and distinguish the geometries into those that overlap with
-  more and those with less than \code{thresh}. \item For all units that did
+  more and those with less than \code{thresh}. \item For all units that dName
   match, copy gazID from the geometries they overlap. \item For all units
-  that did not match, rebuild metadata and a new gazID.} \item store the
+  that dName not match, rebuild metadata and a new gazID.} \item store the
   processed geometry at stage three.} \item Move the geometry to the folder
   '/processed', if it is fully processed.}
 }
