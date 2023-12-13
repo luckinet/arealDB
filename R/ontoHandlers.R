@@ -7,8 +7,8 @@
 #' @param columns [\code{character(1)}]\cr the columns containing the concepts
 #' @param dataseries [\code{character(1)}]\cr the source dataseries from which
 #'   territories are sourced.
-#' @param ontology [\code{onto}]\cr either a path where the ontology/gazetteer
-#'   is stored, or an already loaded ontology.
+#' @param ontology [\code{onto}]\cr path where the ontology/gazetteer
+#'   is stored.
 #' @param beep [\code{integerish(1)}]\cr Number specifying what sound to be
 #'   played to signal the user that a point of interaction is reached by the
 #'   program, see \code{\link[beepr]{beep}}.
@@ -212,5 +212,103 @@ matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
     select(all_of(allCols), id, match, external, has_broader, class, description, everything())
 
   return(out)
+
+}
+
+#' Update the the gazetteer
+#'
+#' This function takes a table (spatial) and updates all territorial concepts in
+#' the provided gazetteer.
+#' @param table [\code{character(1)}]\cr a table that contains a match column as
+#'   the basis to update the gazetteer.
+#' @param threshold [\code{numeric(1)}]\cr a threshol value above which matches
+#'   are updated in the gazetteer.
+#' @param dataseries [\code{character(1)}]\cr the source dataseries of the
+#'   external concepts for which the gazetteer shall be updated.
+#' @param ontology [\code{onto}]\cr path where the ontology/gazetteer is stored.
+#' @return called for its side-effect of updating a gazetteer
+#' @importFrom checkmate assertNumeric assertCharacter
+#' @importFrom sf st_drop_geometry
+#' @importFrom dplyr rowwise mutate distinct filter select left_join
+#' @importFrom stringr str_split_1 str_replace_all
+#' @importFrom tidyr separate_rows separate
+#' @importFrom ontologics get_concept new_concept new_mapping
+#' @export
+
+updateOntology <- function(table = NULL, threshold = NULL, dataseries = NULL,
+                           ontology = NULL){
+
+  assertNumeric(x = threshold, len = 1, lower = 0, upper = 100, any.missing = FALSE)
+  assertCharacter(x = dataseries, len = 1, any.missing = FALSE)
+  ontoPath <- ontology
+
+  newOnto <- table %>%
+    st_drop_geometry() %>%
+    rowwise() %>%
+    mutate(parentID = paste0(head(str_split_1(gazID, "[.]"), -1), collapse = ".")) %>%
+    separate_rows("match", sep = " \\| ") %>%
+    mutate(match = str_replace_all(match, "\\[|\\]", "")) %>%
+    separate(col = match, into = c("match", "amount"), sep = " ", fill = "right") %>%
+    separate(col = amount, into = c("amount", "target"), sep = "_", fill = "right") %>%
+    separate(col = amount, into = c("target_overlap", "source_overlap"), sep = "<>", fill = "right") %>%
+    mutate(target_overlap = suppressWarnings(as.numeric(target_overlap)),
+           source_overlap = suppressWarnings(as.numeric(source_overlap))) %>%
+    distinct()
+
+  # 1. include new hamonised concepts in the ontology, in case it deviates more than 'threshold'
+  newConcepts <- newOnto %>%
+    filter(target_overlap < (100-threshold) | source_overlap < (100-threshold))
+  newConcepts <- newConcepts %>%
+    select(id = parentID, gazClass, external) %>%
+    left_join(get_concept(id = newConcepts$parentID, ontology = ontoPath), by = "id") %>%
+    select(external, gazClass, id, label, class) %>%
+    distinct()
+
+  if(dim(newConcepts)[1] != 0){
+
+    new_concept(new = newConcepts$external,
+                broader = newConcepts %>% select(id, label, class),
+                description = paste0("external concept originating in the dataseries '", dataseries, "'"),
+                class = newConcepts$gazClass,
+                ontology =  ontoPath)
+
+  }
+
+  # 2. define mappings of the new concepts with harmonised concepts
+  harmOnto <- get_concept(id = newOnto$target, ontology = ontoPath)
+
+  if(any(newOnto$match == "close")){
+    newClose <- newOnto %>%
+      filter(match == "close")
+    new_mapping(new =  newClose$external,
+                target = harmOnto %>% filter(id %in% newClose$target) %>% select(id, label, class, has_broader),
+                source = dataseries, match = "close", certainty = 3, type = "concept", ontology = ontoPath)
+  }
+
+  if(any(newOnto$match == "narrower")){
+    newNarrower <- newOnto %>%
+      filter(match == "narrower")
+    oldNarrower <- harmOnto %>%
+      filter(id %in% newNarrower$target) %>%
+      select(id, label, class, has_broader) %>%
+      left_join(newNarrower, by = c("id" = "target")) %>%
+      select(id, label, class, has_broader)
+    new_mapping(new = newNarrower$external,
+                target = oldNarrower,
+                source = dataseries, match = "narrower", certainty = 3, type = "concept", ontology = ontoPath)
+  }
+
+  if(any(newOnto$match == "broader")){
+    newBroader <- newOnto %>%
+      filter(match == "broader")
+    oldBroader <- harmOnto %>%
+      filter(id %in% newBroader$target) %>%
+      select(id, label, class, has_broader) %>%
+      right_join(newBroader, ., by = c("target" = "id")) %>%
+      select(id = target, label, class, has_broader)
+    new_mapping(new = newBroader$external,
+                target = oldBroader,
+                source = dataseries, match = "broader", certainty = 3, type = "concept", ontology = ontoPath)
+  }
 
 }
