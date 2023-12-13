@@ -86,7 +86,7 @@ normTable <- function(input = NULL, pattern = NULL, ontoMatch = NULL,
   assertNames(x = colnames(inv_tables),
               permutation.of = c("tabID", "datID", "geoID", "geography", "level", "start_period", "end_period", "stage2_name", "schema", "stage1_name", "stage1_url", "download_date", "next_update", "update_frequency", "metadata_url", "metadata_path", "notes"))
   assertNames(x = colnames(inv_dataseries),
-              permutation.of = c("datID", "name", "description", "homepage", "licence_link", "licence_path", "notes"))
+              permutation.of = c("datID", "name", "description", "homepage", "version", "licence_link", "notes"))
   assertNames(x = colnames(inv_geometries),
               permutation.of = c("geoID", "datID", "stage2_name", "layer", "label", "stage1_name", "stage1_url", "download_date", "next_update", "update_frequency", "notes"))
   assertCharacter(x = ontoMatch, min.len = 1, any.missing = FALSE, null.ok = TRUE)

@@ -8,8 +8,8 @@
 #'   description" of the dataseries.
 #' @param homepage [\code{character(1)}]\cr the homepage of the data provider
 #'   where the dataseries or additional information can be found.
-#' @param version [\code{character(1)}]\cr the version number or download date
-#'   of the dataseries.
+#' @param version [\code{character(1)}]\cr the version number or date when meta
+#'   data of the dataseries were recorded.
 #' @param licence_link [\code{character(1)}]\cr link to the licence or the
 #'   webpage from which the licence was copied.
 #' @param notes [\code{character(1)}]\cr optional notes.
