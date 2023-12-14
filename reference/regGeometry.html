@@ -69,6 +69,7 @@ geospatial database.</p>
 <span>  subset <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  gSeries <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  label <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  ancillary <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  layer <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  archive <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  archiveLink <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -104,6 +105,19 @@ only one municipality) or of a target variable.</p></dd>
 common in the ontology and this geometry. Must be of the form
 <code>list(class = columnName)</code>, with 'class' as the class of the ontology
 corresponding to the respective column name in the geometry.</p></dd>
+
+
+<dt>ancillary</dt>
+<dd><p>[<code>list(.)</code>]<br> optinal list of columns containing
+ancillary information. Must be of the form
+<code>list(attribute = columnName)</code>, where <code>attribute</code> can be one or
+several of</p><ul><li><p><code>"name_ltn"</code> (the english name in latin letters)</p></li>
+<li><p><code>"name_lcl"</code> (the name in local language and letters)</p></li>
+<li><p><code>"code"</code> (any code describing the unit)</p></li>
+<li><p><code>"type"</code> (the type of territorial unit)</p></li>
+<li><p><code>"uri"</code> (the semantic web URI) or</p></li>
+<li><p><code>"flag"</code> (any flag attributed to the unit).</p></li>
+</ul></dd>
 
 
 <dt>layer</dt>
@@ -194,6 +208,7 @@ register shall overwrite a potentially already existing older version.</p></dd>
 <span class="r-in"><span>  <span class="co"># NAME_0 and NAME_1</span></span></span>
 <span class="r-in"><span>  <span class="fu">regGeometry</span><span class="op">(</span>gSeries <span class="op">=</span> <span class="st">"gadm"</span>,</span></span>
 <span class="r-in"><span>              label <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>al1 <span class="op">=</span> <span class="st">"NAME_0"</span>, al2 <span class="op">=</span> <span class="st">"NAME_1"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>              ancillary <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>name_lcl <span class="op">=</span> <span class="st">"VARNAME_1"</span>, code <span class="op">=</span> <span class="st">"GID_1"</span>, type <span class="op">=</span> <span class="st">"TYPE_1"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>              layer <span class="op">=</span> <span class="st">"example_geom2"</span>,</span></span>
 <span class="r-in"><span>              archive <span class="op">=</span> <span class="st">"example_geom.7z|example_geom2.gpkg"</span>,</span></span>
 <span class="r-in"><span>              archiveLink <span class="op">=</span> <span class="st">"https://gadm.org/"</span>,</span></span>
