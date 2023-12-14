@@ -65,9 +65,6 @@ start_arealDB <- function(root = NULL, gazetteer = NULL, top = NULL,
   if(!testDirectory(x = file.path(root, "log"), access = "rw")){
     dir.create(file.path(root, "log"))
   }
-  # if(!testDirectory(x = file.path(root, "incoming"), access = "rw")){
-  #   dir.create(file.path(root, "incoming"))
-  # }
   if(!testDirectory(x = file.path(root, "meta"), access = "rw")){
     dir.create(file.path(root, "meta"))
   }

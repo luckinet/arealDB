@@ -84,15 +84,15 @@
 #'
 #'   regTable(nation = "Estonia",
 #'            subset = "barleyMaize",
+#'            label = "al1",
 #'            dSeries = "madeUp",
 #'            gSeries = "gadm",
-#'            level = 1,
 #'            begin = 1990,
 #'            end = 2017,
 #'            schema = schema_madeUp,
 #'            archive = "example_table.7z|example_table1.csv",
 #'            archiveLink = "...",
-#'            nextUpdate = "2019-10-01",
+#'            nextUpdate = "2024-10-01",
 #'            updateFrequency = "quarterly",
 #'            metadataLink = "...",
 #'            metadataPath = "my/local/path")
