@@ -50,6 +50,6 @@ test_that("geometries can be normalised", {
   expect_data_frame(x = final, nrows = 12, ncols = 7)
   expect_names(x = names(final), identical.to = c("gazID", "gazName", "gazClass", "match", "external", "geoID", "geom"))
   expect_names(x = final$gazID, identical.to = c(".001.001.001", ".001.001.002", ".001.001.003", ".001.001.004", ".001.002.001", ".001.002.001", ".001.003.001", ".001.003.001", ".001.004.001", ".001.004.001", ".001.004.002", ".001.004.002"))
-  expect_names(x = final$match, identical.to = c("close", "close", "broader [83<>100_.001.001.001] | broader [17<>20_.001.001.002]", "narrower [100<>80_.001.001.002]", "close", "close [100<>100_.001.002.001]", "close", "close [100<>100_.001.003.001]", "close", "close [100<>100_.001.004.001]", "close", "close [100<>100_.001.004.002]"))
+  expect_names(x = final$match, identical.to = c("exact", "exact", "broader [83<>100_.001.001.001] | broader [17<>20_.001.001.002]", "narrower [100<>80_.001.001.002]", "exact", "close [100<>100_.001.002.001]", "exact", "close [100<>100_.001.003.001]", "exact", "close [100<>100_.001.004.001]", "exact", "close [100<>100_.001.004.002]"))
 
 })
