@@ -271,6 +271,9 @@ updateOntology <- function(table = NULL, threshold = NULL, dataseries = NULL,
                 description = paste0("external concept originating in the dataseries '", dataseries, "'"),
                 class = newConcepts$gazClass,
                 ontology =  ontoPath)
+    new_mapping(new =  newConcepts$external,
+                target = get_concept(label = newConcepts$external, ontology = ontoPath) %>% select(id, label, class, has_broader),
+                source = dataseries, match = "exact", certainty = 3, type = "concept", ontology = ontoPath)
 
   }
 
