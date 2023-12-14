@@ -7,6 +7,7 @@
 normTable(
   input = NULL,
   pattern = NULL,
+  query = NULL,
   ontoMatch = NULL,
   outType = "rds",
   beep = NULL,
@@ -20,6 +21,10 @@ chosen.}
 
 \item{pattern}{[\code{character(1)}]\cr an optional regular expression. Only
 dataset names which match the regular expression will be processed.}
+
+\item{query}{[\code{character(1)}]\cr the expression that would be used in
+\code{\link[dplyr]{filter}} to subset a tibble in terms of the columns
+defined via the schema and given as a single character string.}
 
 \item{ontoMatch}{[\code{character(.)}]\cr name of the column(s) that shall be
 matched with an ontology (defined in \code{\link{start_arealDB}}).}

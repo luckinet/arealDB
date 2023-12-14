@@ -9,6 +9,7 @@ regGeometry(
   subset = NULL,
   gSeries = NULL,
   label = NULL,
+  ancillary = NULL,
   layer = NULL,
   archive = NULL,
   archiveLink = NULL,
@@ -35,6 +36,17 @@ only one municipality) or of a target variable.}
 common in the ontology and this geometry. Must be of the form
 \code{list(class = columnName)}, with 'class' as the class of the ontology
 corresponding to the respective column name in the geometry.}
+
+\item{ancillary}{[\code{list(.)}]\cr optinal list of columns containing
+ancillary information. Must be of the form
+\code{list(attribute = columnName)}, where \code{attribute} can be one or
+several of \itemize{
+  \item \code{"name_ltn"} (the english name in latin letters)
+  \item \code{"name_lcl"} (the name in local language and letters)
+  \item \code{"code"} (any code describing the unit)
+  \item \code{"type"} (the type of territorial unit)
+  \item \code{"uri"} (the semantic web URI) or
+  \item \code{"flag"} (any flag attributed to the unit).}}
 
 \item{layer}{[\code{character}]\cr the name of the file's layer from which
 the geometry should be created (if applicable).}
@@ -97,6 +109,7 @@ if(dev.interactive()){
   # NAME_0 and NAME_1
   regGeometry(gSeries = "gadm",
               label = list(al1 = "NAME_0", al2 = "NAME_1"),
+              ancillary = list(name_lcl = "VARNAME_1", code = "GID_1", type = "TYPE_1"),
               layer = "example_geom2",
               archive = "example_geom.7z|example_geom2.gpkg",
               archiveLink = "https://gadm.org/",
