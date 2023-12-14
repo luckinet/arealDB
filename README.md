@@ -16,7 +16,7 @@ Status](https://img.shields.io/codecov/c/github/EhrmannS/arealDB/master.svg)](ht
 ## Overview
 
 Areal data are a rather frequent type of data in many applications of
-the environmental and socioeconomic sciences, where various aspects are
+the environmental and socio-economic sciences, where various aspects are
 summarized for particular areas such as administrative territories. Many
 of those applications surpass the spatial, temporal or thematic scope of
 any single data source, so that data must be harmonised and normalised
@@ -63,33 +63,34 @@ To study how `arealDB` works, one can make use of the function
 can be “simulated” with dummy data. This can be used to train yourself
 on a particular step based on a fully valid database up until a certain
 stage of the process. For instance, to set up database that has merely
-just been started, but doesn’t contain any thematic data yet, one would
-use
+just been started, but doesn’t contain any thematic data or geometries
+yet, one would use
 `makeExampleDB(path = paste0(tempdir(), "/newDB"), until = "start_arealDB")`.
 
 In principle, `arealDB` follows a simple process involving three stages:
 
-1.  **Setup the database (*stage1*):** To start a new areal database,
+1.  **Setup the database (*stage 1*):** To start a new areal database,
     one needs to specify a gazetteer that contains the valid names of
-    territories and optionally an ontology that contains the terms that
-    valid for the target variable(s).
-2.  **Register dataseries, geometries and tables (*stage2*):** Data are
-    typically part of some series of data, a collection of tables that
-    are formatted by the same entity and typically in the same or very
-    similar way across all tables. A data item that shall be inserted
-    into a database is registered by calling the registration function.
-    This function registers the configuration of the file and/or records
-    meta-data. For areal data there is typically a spatial reference to
-    which the data shall be associated. These geometries would be
-    registered before the tables containing the data.
-3.  **Normalize geometries and tables (*stage3*):** After registering
+    territories and optionally an ontology containing harmonised labels
+    for the concepts in the thematic data.
+
+2.  **Register data series, geometries and tables (*stage 2*):** A data
+    item that shall be inserted into a database is registered by calling
+    a register function, which records the configuration (to reorganise
+    it internally into a common standard) of the file and meta-data.
+    Just like the thematic data, which are typically in a table, the
+    spatial data (geometries) and the data series are registered in that
+    way.
+
+3.  **Normalize geometries and tables (*stage 3*):** After registering
     all relevant data, they are reshaped into a standardized database
     format. In this process terms of territories and target variables
     are “translated” according to gazetteer and ontology, spatial data
     are standardized and validated, thematic data are standardized and
     matched to spatial data, and the spatial data are matched with the
     optionally already existing spatial database, for instance if that
-    has been built off the GADM or GAUL standardized datasets.
+    has been built off the GADM (recommended) or GAUL or other
+    standardized datasets.
 
 ## Acknowledgement
 
