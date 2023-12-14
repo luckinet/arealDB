@@ -94,7 +94,7 @@ if(dev.interactive()){
   makeExampleDB(until = "regGeometry", path = tempdir())
 
   # normalise all geometries ...
-  normGeometry(nation = "estonia")
+  normGeometry(pattern = "estonia")
 
   # ... and check the result
   st_layers(paste0(tempdir(), "/adb_geometries/stage3/Estonia.gpkg"))

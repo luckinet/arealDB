@@ -50,6 +50,7 @@ if(dev.interactive()){
 
   regDataseries(name = "gadm",
                 description = "Database of Global Administrative Areas",
+                version = "3.6",
                 homepage = "https://gadm.org/index.html",
                 licence_link = "https://gadm.org/license.html")
 }
