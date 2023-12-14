@@ -188,7 +188,7 @@ program, see <code><a href="https://rdrr.io/pkg/beepr/man/beep.html" class="exte
 <span class="r-in"><span>  <span class="fu"><a href="makeExampleDB.html">makeExampleDB</a></span><span class="op">(</span>until <span class="op">=</span> <span class="st">"regGeometry"</span>, path <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span>  <span class="co"># normalise all geometries ...</span></span></span>
-<span class="r-in"><span>  <span class="fu">normGeometry</span><span class="op">(</span>nation <span class="op">=</span> <span class="st">"estonia"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu">normGeometry</span><span class="op">(</span>pattern <span class="op">=</span> <span class="st">"estonia"</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span>  <span class="co"># ... and check the result</span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_layers.html" class="external-link">st_layers</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"/adb_geometries/stage3/Estonia.gpkg"</span><span class="op">)</span><span class="op">)</span></span></span>
