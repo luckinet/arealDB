@@ -2,7 +2,7 @@
 
 - entirely remove matching via gazatteer for any level below the first level that serves for identifying unique territories (which resulted in a vast simplification of the `normGeometry()` function).
 - include a `version = ` for dataseries.
-
+- include `query = ` argument also for tables.
 
 # arealDB 0.7.0 - streamlined geometry matching
 
