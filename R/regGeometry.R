@@ -15,6 +15,16 @@
 #'   common in the ontology and this geometry. Must be of the form
 #'   \code{list(class = columnName)}, with 'class' as the class of the ontology
 #'   corresponding to the respective column name in the geometry.
+#' @param ancillary [\code{list(.)}]\cr optinal list of columns containing
+#'   ancillary information. Must be of the form
+#'   \code{list(attribute = columnName)}, where \code{attribute} can be one or
+#'   several of \itemize{
+#'     \item \code{"name_ltn"} (the english name in latin letters)
+#'     \item \code{"name_lcl"} (the name in local language and letters)
+#'     \item \code{"code"} (any code describing the unit)
+#'     \item \code{"type"} (the type of territorial unit)
+#'     \item \code{"uri"} (the semantic web URI) or
+#'     \item \code{"flag"} (any flag attributed to the unit).}
 #' @param layer [\code{character}]\cr the name of the file's layer from which
 #'   the geometry should be created (if applicable).
 #' @param archive [\code{character(1)}]\cr the original file (perhaps a *.zip)
@@ -62,6 +72,7 @@
 #'   # NAME_0 and NAME_1
 #'   regGeometry(gSeries = "gadm",
 #'               label = list(al1 = "NAME_0", al2 = "NAME_1"),
+#'               ancillary = list(name_lcl = "VARNAME_1", code = "GID_1", type = "TYPE_1"),
 #'               layer = "example_geom2",
 #'               archive = "example_geom.7z|example_geom2.gpkg",
 #'               archiveLink = "https://gadm.org/",
@@ -79,9 +90,9 @@
 #' @export
 
 regGeometry <- function(..., subset = NULL, gSeries = NULL, label = NULL,
-                        layer = NULL, archive = NULL, archiveLink = NULL,
-                        nextUpdate = NULL, updateFrequency = NULL, notes = NULL,
-                        overwrite = FALSE){
+                        ancillary = NULL, layer = NULL, archive = NULL,
+                        archiveLink = NULL, nextUpdate = NULL, updateFrequency = NULL,
+                        notes = NULL, overwrite = FALSE){
 
   # set internal paths
   intPaths <- paste0(getOption(x = "adb_path"))
@@ -90,7 +101,7 @@ regGeometry <- function(..., subset = NULL, gSeries = NULL, label = NULL,
 
   # get tables
   inv_dataseries <- read_csv(paste0(intPaths, "/inv_dataseries.csv"), col_types = "icccccc")
-  inv_geometries <- read_csv(paste0(intPaths, "/inv_geometries.csv"), col_types = "iicccccDDcc")
+  inv_geometries <- read_csv(paste0(intPaths, "/inv_geometries.csv"), col_types = "iiccccccDDcc")
 
   if(dim(inv_dataseries)[1] == 0){
     stop("'inv_dataseries.csv' does not contain any entries!")
@@ -103,6 +114,7 @@ regGeometry <- function(..., subset = NULL, gSeries = NULL, label = NULL,
   assertList(x = label, any.missing = FALSE)
   assertCharacter(x = subset, any.missing = FALSE, null.ok = TRUE)
   assertCharacter(x = gSeries, ignore.case = TRUE, any.missing = FALSE, len = 1, null.ok = TRUE)
+  assertList(x = ancillary, max.len = 6, null.ok = TRUE)
   assertCharacter(x = layer, any.missing = FALSE, null.ok = TRUE)
   assertCharacter(x = archive, any.missing = FALSE, null.ok = TRUE)
   assertCharacter(x = archiveLink, any.missing = FALSE, null.ok = TRUE)
@@ -113,7 +125,8 @@ regGeometry <- function(..., subset = NULL, gSeries = NULL, label = NULL,
   assertNames(x = colnames(inv_dataseries),
               permutation.of = c("datID", "name", "description", "homepage", "version", "licence_link", "notes"))
   assertNames(x = colnames(inv_geometries),
-              permutation.of = c("geoID", "datID", "stage2_name", "layer", "label", "stage1_name", "stage1_url", "download_date", "next_update", "update_frequency", "notes"))
+              permutation.of = c("geoID", "datID", "stage2_name", "layer", "label", "ancillary", "stage1_name", "stage1_url", "download_date", "next_update", "update_frequency", "notes"))
+  if(!is.null(ancillary)) assertNames(x = names(ancillary), subset.of = c("name_ltn", "name_lcl", "code", "type", "uri", "flag"))
 
   broadest <- exprs(..., .named = TRUE)
   if(length(broadest) > 0){
@@ -166,6 +179,12 @@ regGeometry <- function(..., subset = NULL, gSeries = NULL, label = NULL,
   assertSubset(x = names(label), choices = gazClasses$label)
   theLabel <- tail(names(label), 1)
   labelString <- paste0(paste0(names(label), "=", label), collapse = "|")
+
+  if(!is.null(ancillary)){
+    ancillaryString <- paste0(paste0(names(ancillary), "=", ancillary), collapse = "|")
+  } else {
+    ancillaryString <- ""
+  }
 
   if(is.null(archive)){
     message("please type in the archives' file name: ")
@@ -314,6 +333,7 @@ regGeometry <- function(..., subset = NULL, gSeries = NULL, label = NULL,
                 stage2_name = fileName,
                 layer = layer,
                 label = labelString,
+                ancillary = ancillaryString,
                 stage1_name = archive,
                 stage1_url = archiveLink,
                 download_date = Sys.Date(),

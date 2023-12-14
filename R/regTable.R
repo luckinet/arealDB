@@ -120,7 +120,7 @@ regTable <- function(..., subset = NULL, dSeries = NULL, gSeries = NULL,
   # get tables
   inv_tables <- read_csv(paste0(intPaths, "/inv_tables.csv"), col_types = "iiiccccccccDccccc")
   inv_dataseries <- read_csv(paste0(intPaths, "/inv_dataseries.csv"), col_types = "icccccc")
-  inv_geometries <- read_csv(paste0(intPaths, "/inv_geometries.csv"), col_types = "iicccccDDcc")
+  inv_geometries <- read_csv(paste0(intPaths, "/inv_geometries.csv"), col_types = "iiccccccDDcc")
 
   if(dim(inv_dataseries)[1] == 0){
     stop("'inv_dataseries.csv' does not contain any entries!")
@@ -140,7 +140,7 @@ regTable <- function(..., subset = NULL, dSeries = NULL, gSeries = NULL,
   assertNames(x = colnames(inv_dataseries),
               permutation.of = c("datID", "name", "description", "homepage", "version", "licence_link", "notes"))
   assertNames(x = colnames(inv_geometries),
-              permutation.of = c("geoID", "datID", "stage2_name", "layer", "label", "stage1_name", "stage1_url", "download_date", "next_update", "update_frequency", "notes"))
+              permutation.of = c("geoID", "datID", "stage2_name", "layer", "label", "ancillary", "stage1_name", "stage1_url", "download_date", "next_update", "update_frequency", "notes"))
   assertCharacter(x = subset, any.missing = FALSE, null.ok = TRUE)
   assertCharacter(x = dSeries, ignore.case = TRUE, any.missing = FALSE, len = 1, null.ok = TRUE)
   assertCharacter(x = gSeries, ignore.case = TRUE, any.missing = FALSE, len = 1, null.ok = TRUE)

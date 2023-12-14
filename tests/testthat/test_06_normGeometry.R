@@ -14,8 +14,8 @@ test_that("geometries can be normalised", {
 
   # normalise first level ----
   output <- normGeometry(input = paste0(getOption("adb_path"), "/adb_geometries/stage2/_al1__gadm.gpkg"))
-  expect_tibble(x = output, nrows = 1, ncols = 11, col.names = "strict")
-  expect_names(x = names(output), must.include = c("geoID", "datID", "stage2_name", "layer", "label", "stage1_name", "stage1_url", "download_date", "next_update", "update_frequency", "notes"))
+  expect_tibble(x = output, nrows = 1, ncols = 12, col.names = "strict")
+  expect_names(x = names(output), must.include = c("geoID", "datID", "stage2_name", "layer", "label", "ancillary", "stage1_name", "stage1_url", "download_date", "next_update", "update_frequency", "notes"))
   expect_file_exists(x = paste0(getOption("adb_path"), "/adb_geometries/stage2/processed/_al1__gadm.gpkg"))
 
   final <- st_read(dsn = paste0(getOption("adb_path"), "/adb_geometries/stage3/a_nation.gpkg"), layer = "al1", quiet = TRUE)
@@ -25,8 +25,8 @@ test_that("geometries can be normalised", {
 
   # normalise second level ----
   output <- normGeometry(input = paste0(getOption("adb_path"), "/adb_geometries/stage2/_al2__gadm.gpkg"))
-  expect_tibble(x = output, nrows = 1, ncols = 11, col.names = "strict")
-  expect_names(x = names(output), must.include = c("geoID", "datID", "label", "stage2_name", "layer", "stage1_name", "stage1_url", "download_date", "next_update", "update_frequency", "notes"))
+  expect_tibble(x = output, nrows = 1, ncols = 12, col.names = "strict")
+  expect_names(x = names(output), must.include = c("geoID", "datID", "stage2_name", "layer", "label", "ancillary", "stage1_name", "stage1_url", "download_date", "next_update", "update_frequency", "notes"))
   expect_file_exists(x = paste0(getOption("adb_path"), "/adb_geometries/stage2/processed/_al2__gadm.gpkg"))
 
   final <- st_read(dsn = paste0(getOption("adb_path"), "/adb_geometries/stage3/a_nation.gpkg"), layer = "al2", quiet = TRUE)
@@ -36,14 +36,14 @@ test_that("geometries can be normalised", {
 
   # normalise third level ----
   output <- normGeometry(input = paste0(getOption("adb_path"), "/adb_geometries/stage2/_al3__gadm.gpkg"))
-  expect_tibble(x = output, nrows = 1, ncols = 11, col.names = "strict")
-  expect_names(x = names(output), must.include = c("geoID", "datID", "label", "stage2_name", "layer", "stage1_name", "stage1_url", "download_date", "next_update", "update_frequency", "notes"))
+  expect_tibble(x = output, nrows = 1, ncols = 12, col.names = "strict")
+  expect_names(x = names(output), must.include = c("geoID", "datID", "stage2_name", "layer", "label", "ancillary", "stage1_name", "stage1_url", "download_date", "next_update", "update_frequency", "notes"))
   expect_file_exists(x = paste0(getOption("adb_path"), "/adb_geometries/stage2/processed/_al3__gadm.gpkg"))
 
   # normalise a non-gadm dataset that has been attached to the DB ----
   output <- normGeometry(input = paste0(getOption("adb_path"), "/adb_geometries/stage2/_al3__madeUp.gpkg"))
-  expect_tibble(x = output, nrows = 1, ncols = 11, col.names = "strict")
-  expect_names(x = names(output), must.include = c("geoID", "datID", "label", "stage2_name", "layer", "stage1_name", "stage1_url", "download_date", "next_update", "update_frequency", "notes"))
+  expect_tibble(x = output, nrows = 1, ncols = 12, col.names = "strict")
+  expect_names(x = names(output), must.include = c("geoID", "datID", "stage2_name", "layer", "label", "ancillary", "stage1_name", "stage1_url", "download_date", "next_update", "update_frequency", "notes"))
 
   final <- st_read(dsn = paste0(getOption("adb_path"), "/adb_geometries/stage3/a_nation.gpkg"), layer = "al3", quiet = TRUE)
   expect_class(x = final, classes = c("sf"))

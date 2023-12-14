@@ -17,8 +17,8 @@ test_that("a geometry inventory entry is produced", {
                         nextUpdate = "2019-10-01",
                         updateFrequency = "quarterly")
 
-  expect_tibble(x = output, nrows = 1, ncols = 11, col.names = "strict")
-  expect_names(x = names(output), must.include = c("geoID", "datID", "stage2_name", "layer", "label", "stage1_name", "stage1_url", "download_date", "next_update", "update_frequency", "notes"))
+  expect_tibble(x = output, nrows = 1, ncols = 12, col.names = "strict")
+  expect_names(x = names(output), must.include = c("geoID", "datID", "stage2_name", "layer", "label", "ancillary", "stage1_name", "stage1_url", "download_date", "next_update", "update_frequency", "notes"))
 
 })
 

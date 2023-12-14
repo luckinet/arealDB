@@ -40,8 +40,8 @@ test_that("make example DB until regGeometry", {
 
   makeExampleDB(until = "regGeometry", path = dbpath)
 
-  geoID <- read_csv(file = paste0(dbpath, "/inv_geometries.csv"), col_types = "iicccccDDcc")
-  expect_true(object = all(dim(geoID) == c(4, 11)))
+  geoID <- read_csv(file = paste0(dbpath, "/inv_geometries.csv"), col_types = "iiccccccDDcc")
+  expect_true(object = all(dim(geoID) == c(4, 12)))
 
   expect_file_exists(x = paste0(dbpath, "/adb_geometries/stage2/_al1__gadm.gpkg"))
   expect_file_exists(x = paste0(dbpath, "/adb_geometries/stage2/_al2__gadm.gpkg"))
