@@ -6,15 +6,18 @@
 #'   chosen.
 #' @param pattern [\code{character(1)}]\cr an optional regular expression. Only
 #'   dataset names which match the regular expression will be processed.
-#' @param beep [\code{integerish(1)}]\cr Number specifying what sound to be
-#'   played to signal the user that a point of interaction is reached by the
-#'   program, see \code{\link[beepr]{beep}}.
+#' @param query [\code{character(1)}]\cr the expression that would be used in
+#'   \code{\link[dplyr]{filter}} to subset a tibble in terms of the columns
+#'   defined via the schema and given as a single character string.
+#' @param ontoMatch [\code{character(.)}]\cr name of the column(s) that shall be
+#'   matched with an ontology (defined in \code{\link{start_arealDB}}).
 #' @param outType [\code{logical(1)}]\cr the output file-type, currently
 #'   implemented options are either \emph{*.csv} (more exchangeable for a
 #'   workflow based on several programs) or \emph{*.rds} (smaller and less
 #'   error-prone data-format but can only be read by R efficiently).
-#' @param ontoMatch [\code{character(.)}]\cr name of the column(s) that shall be
-#'   matched with an ontology (defined in \code{\link{start_arealDB}}).
+#' @param beep [\code{integerish(1)}]\cr Number specifying what sound to be
+#'   played to signal the user that a point of interaction is reached by the
+#'   program, see \code{\link[beepr]{beep}}.
 #' @param verbose [\code{logical(1)}]\cr be verbose about translating terms
 #'   (default \code{FALSE}). Furthermore, you can use
 #'   \code{\link{suppressMessages}} to make this function completely silent.
@@ -56,7 +59,7 @@
 #' @importFrom utils read.csv
 #' @export
 
-normTable <- function(input = NULL, pattern = NULL, ontoMatch = NULL,
+normTable <- function(input = NULL, pattern = NULL, query = NULL, ontoMatch = NULL,
                       outType = "rds", beep = NULL, verbose = FALSE){
 
   # set internal paths
@@ -80,15 +83,16 @@ normTable <- function(input = NULL, pattern = NULL, ontoMatch = NULL,
   # get tables
   inv_tables <- read_csv(paste0(intPaths, "/inv_tables.csv"), col_types = "iiicciiccccDccccc")
   inv_dataseries <- read_csv(paste0(intPaths, "/inv_dataseries.csv"), col_types = "icccccc")
-  inv_geometries <- read_csv(paste0(intPaths, "/inv_geometries.csv"), col_types = "iicccccDccc")
+  # inv_geometries <- read_csv(paste0(intPaths, "/inv_geometries.csv"), col_types = "iiccccccDccc")
 
   # check validity of arguments
+  assertCharacter(x = query, len = 1, null.ok = TRUE)
   assertNames(x = colnames(inv_tables),
               permutation.of = c("tabID", "datID", "geoID", "geography", "level", "start_period", "end_period", "stage2_name", "schema", "stage1_name", "stage1_url", "download_date", "next_update", "update_frequency", "metadata_url", "metadata_path", "notes"))
   assertNames(x = colnames(inv_dataseries),
               permutation.of = c("datID", "name", "description", "homepage", "version", "licence_link", "notes"))
-  assertNames(x = colnames(inv_geometries),
-              permutation.of = c("geoID", "datID", "stage2_name", "layer", "label", "stage1_name", "stage1_url", "download_date", "next_update", "update_frequency", "notes"))
+  # assertNames(x = colnames(inv_geometries),
+  #             permutation.of = c("geoID", "datID", "stage2_name", "layer", "label", "ancillary", "stage1_name", "stage1_url", "download_date", "next_update", "update_frequency", "notes"))
   assertCharacter(x = ontoMatch, min.len = 1, any.missing = FALSE, null.ok = TRUE)
 
   ret <- NULL
@@ -135,6 +139,11 @@ normTable <- function(input = NULL, pattern = NULL, ontoMatch = NULL,
     message("    reorganising table with '", thisSchema, "' ...")
     thisTable <- thisTable %>%
       reorganise(schema = algorithm)
+
+    if(!is.null(query)){
+      thisTable <- thisTable %>%
+        filter(eval(parse(text = query)))
+    }
 
     message("    harmonizing territory names ...")
     targetCols <- get_class(ontology = gazPath) %>%
