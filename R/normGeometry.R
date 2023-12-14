@@ -603,8 +603,8 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
               group_by(gazName) %>%
               mutate(rn = row_number()) %>%
               ungroup() %>%
-              mutate(tempID = str_pad(string = rn + siblings, width = 3, pad = 0),
-                     # thisName = str_to_title(external),
+              mutate(siblings = if_else(is.na(siblings), 0, siblings),
+                     tempID = str_pad(string = rn + siblings, width = 3, pad = 0),
                      thisName = external,
                      gazID = if_else(!new_name, gazID, paste0(gazID, ".", tempID)),
                      gazName = if_else(!new_name, gazName, paste0(gazName, ".", thisName)),
