@@ -86,7 +86,7 @@
 #'   st_drivers NA_crs_ st_is_valid st_make_valid st_as_sf st_geometry
 #'   st_intersects
 #' @importFrom rmapshaper ms_simplify
-#' @importFrom stringr str_split_1 str_to_title str_pad
+#' @importFrom stringr str_split_1 str_to_title str_pad str_detect
 #' @importFrom tibble as_tibble add_column
 #' @importFrom dplyr bind_rows slice lag desc n_distinct left_join right_join
 #'   first
@@ -123,15 +123,16 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
   moveFile <- TRUE
 
   # get tables
-  inv_geometries <- read_csv(paste0(intPaths, "/inv_geometries.csv"), col_types = "iicccccDDcc")
+  inv_geometries <- read_csv(paste0(intPaths, "/inv_geometries.csv"), col_types = "iiccccccDDcc")
   inv_dataseries <- read_csv(paste0(intPaths, "/inv_dataseries.csv"), col_types = "icccccc")
 
   # check validity of arguments
+  assertCharacter(x = query, len = 1, null.ok = TRUE)
   assertIntegerish(x = thresh, any.missing = FALSE)
   assertLogical(x = simplify, len = 1)
   assertNames(x = outType, subset.of = c(tolower(st_drivers()$name), "rds"))
   assertNames(x = colnames(inv_geometries),
-              permutation.of = c("geoID", "datID", "stage2_name", "layer", "label", "stage1_name", "stage1_url", "download_date", "next_update", "update_frequency", "notes"))
+              permutation.of = c("geoID", "datID", "stage2_name", "layer", "label", "ancillary", "stage1_name", "stage1_url", "download_date", "next_update", "update_frequency", "notes"))
   assertNames(x = colnames(inv_dataseries),
               permutation.of = c("datID", "name", "description", "homepage", "version", "licence_link", "notes"))
 
@@ -158,6 +159,7 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
       newGID <- gSeries$geoID
       gLayer <- gSeries$layer
       gLabel <- gSeries$label
+      gAncill <- gSeries$ancillary
       gIDs <- inv_geometries$geoID[inv_geometries$datID == gSeries$datID]
 
       # manage dataseries
@@ -244,28 +246,56 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
       allCols <- territoryCols
     }
 
-    # construct the harmonised names for the first territorial class
+    # identify whether the new geometry is first and therefore the geometric
+    # basis, or whether something has already been defined at that level
+    testBasis <- get_class(external = TRUE, ontology = gazPath)
+    newParent <- testBasis %>%
+      filter(label %in% tail(targetLabel, 1)) %>%
+      pull(has_broader)
+    testBasis <- testBasis %>%
+      filter(has_broader %in% newParent) %>%
+      filter(row_number() == 1)
+
+    if(tail(targetLabel, 1) == testBasis$label & str_detect(testBasis$id, dName)){
+      tempCols <- territoryCols
+      spatMatch <- FALSE
+    } else {
+      tempCols <- territoryCols[1]
+      spatMatch <- TRUE
+    }
+
+    # construct the harmonised names and ID
     harmGeom <- matchOntology(table = inGeom,
-                              columns = territoryCols[1],
+                              columns = tempCols,
                               dataseries = dName,
                               ontology = gazPath,
                               verbose = verbose,
                               beep = beep) %>%
       mutate(unitCol := !!sym(topClass))
 
-    if(tail(targetClass$label, 1) != topClass){
-      harmGeom <- harmGeom %>%
-        mutate(id = NA_character_) %>%
-        mutate(external = paste0(!!sym(tail(territoryCols, 1)), "_-_-", row_number()))
+    if(spatMatch){
+
+      if(tail(targetClass$label, 1) != topClass){
+        harmGeom <- harmGeom %>%
+          mutate(id = NA_character_) %>%
+          mutate(external = paste0(!!sym(tail(territoryCols, 1)), "_-_-", row_number()))
+      } else {
+        harmGeom <- harmGeom %>%
+          mutate(external = paste0(external, "_-_-", row_number()))
+      }
+
     } else {
+      # if geometries are not matched spatially, just ignore all territories that have no match in the ontology
       harmGeom <- harmGeom %>%
-        mutate(external = paste0(external, "_-_-", row_number()))
+        filter(!is.na(id))
     }
+
     harmGeom <- harmGeom %>%
       select(all_of(territoryCols), id, match, external, everything())
 
     if(is.null(theUnits)){
       theUnits <- unique(eval(expr = parse(text = "unitCol"), envir = harmGeom)) %>%
+        na.omit() %>%
         as.character()
     }
 
@@ -574,7 +604,8 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
               mutate(rn = row_number()) %>%
               ungroup() %>%
               mutate(tempID = str_pad(string = rn + siblings, width = 3, pad = 0),
-                     thisName = str_to_title(external),
+                     # thisName = str_to_title(external),
+                     thisName = external,
                      gazID = if_else(!new_name, gazID, paste0(gazID, ".", tempID)),
                      gazName = if_else(!new_name, gazName, paste0(gazName, ".", thisName)),
                      geoID = newGID,
@@ -601,23 +632,6 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
         } else {
 
           message("    Creating new basis dataset for class ", tail(targetClass$label, 1), ".")
-          if(tail(targetClass$label, 1) != topClass){
-
-            stage2Geom <- matchOntology(table = stage2Geom %>% select(-match, -external),
-                                        columns = territoryCols,
-                                        dataseries = dName,
-                                        ontology = gazPath,
-                                        verbose = verbose,
-                                        beep = beep)
-
-          } else {
-            stage2Geom <- stage2Geom %>%
-              separate_wider_delim(cols = external, delim = "_-_-", names = "external", too_many = "drop") %>%
-              st_sf()
-          }
-
-          if(any(is.na(stage2Geom$id))) stop("! some new to-define geometries can't be matched with the gazetteer !")
-
           outGeom <- suppressMessages(
             stage2Geom %>%
               unite(col = "gazName", all_of(territoryCols), sep = ".") %>%
@@ -640,6 +654,7 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
         }
       }
     }
+
 
     if(moveFile){
       message(paste0("    Moving '", file_name, "' to './stage2/processed'"))
