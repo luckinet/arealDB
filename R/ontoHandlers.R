@@ -272,7 +272,7 @@ updateOntology <- function(table = NULL, threshold = NULL, dataseries = NULL,
                 class = newConcepts$gazClass,
                 ontology =  ontoPath)
     new_mapping(new =  newConcepts$external,
-                target = get_concept(label = newConcepts$external, class = newConcepts$gazClass, ontology = ontoPath) %>% select(id, label, class, has_broader),
+                target = get_concept(label = newConcepts$external, class = newConcepts$gazClass, has_broader = newConcepts$id, ontology = ontoPath) %>% select(id, label, class, has_broader),
                 source = dataseries, match = "exact", certainty = 3, type = "concept", ontology = ontoPath)
 
   }
