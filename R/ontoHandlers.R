@@ -242,27 +242,26 @@ updateOntology <- function(table = NULL, threshold = NULL, dataseries = NULL,
   assertCharacter(x = dataseries, len = 1, any.missing = FALSE)
   ontoPath <- ontology
 
-  newOnto <- table %>%
-    st_drop_geometry() %>%
+  longTable <- table %>%
     rowwise() %>%
     mutate(parentID = paste0(head(str_split_1(gazID, "[.]"), -1), collapse = ".")) %>%
     separate_rows("match", sep = " \\| ") %>%
     mutate(match = str_replace_all(match, "\\[|\\]", "")) %>%
     separate(col = match, into = c("match", "amount"), sep = " ", fill = "right") %>%
-    separate(col = amount, into = c("amount", "target"), sep = "_", fill = "right") %>%
-    separate(col = amount, into = c("target_overlap", "source_overlap"), sep = "<>", fill = "right") %>%
-    mutate(target_overlap = suppressWarnings(as.numeric(target_overlap)),
-           source_overlap = suppressWarnings(as.numeric(source_overlap))) %>%
+    separate(col = amount, into = c("amount", "targetID"), sep = "_", fill = "right") %>%
+    separate(col = amount, into = c("source_overlap", "target_overlap"), sep = "<>", fill = "right") %>%
+    mutate(source_overlap = suppressWarnings(as.numeric(source_overlap)),
+           target_overlap = suppressWarnings(as.numeric(target_overlap))) %>%
     distinct()
 
-  # 1. include new hamonised concepts in the ontology, in case it deviates more than 'threshold'
-  newConcepts <- newOnto %>%
-    filter(target_overlap < (100-threshold) | source_overlap < (100-threshold))
+  # 1. include new hamonised concepts in the ontology, in case they deviate more than 'threshold'
+  newConcepts <- longTable %>%
+    filter(new_name)
   newConcepts <- newConcepts %>%
-    select(id = parentID, gazClass, external) %>%
+    select(id = parentID, external, gazClass) %>%
+    distinct() %>%
     left_join(get_concept(id = newConcepts$parentID, ontology = ontoPath), by = "id") %>%
-    select(external, gazClass, id, label, class) %>%
-    distinct()
+    select(external, gazClass, id, label, class)
 
   if(dim(newConcepts)[1] != 0){
 
@@ -271,46 +270,63 @@ updateOntology <- function(table = NULL, threshold = NULL, dataseries = NULL,
                 description = paste0("external concept originating in the dataseries '", dataseries, "'"),
                 class = newConcepts$gazClass,
                 ontology =  ontoPath)
-    new_mapping(new =  newConcepts$external,
-                target = get_concept(label = newConcepts$external, class = newConcepts$gazClass, has_broader = newConcepts$id, ontology = ontoPath) %>% select(id, label, class, has_broader),
+    temp <- get_concept(has_broader = newConcepts$id, label = newConcepts$external, str_detect(description, !!dataseries), ontology = ontoPath) %>%
+      arrange(label) %>%
+      select(id, label, class, has_broader)
+    new_mapping(new =  sort(newConcepts$external),
+                target = temp,
                 source = dataseries, match = "exact", certainty = 3, type = "concept", ontology = ontoPath)
 
   }
 
   # 2. define mappings of the new concepts with harmonised concepts
-  harmOnto <- get_concept(id = newOnto$target, ontology = ontoPath)
+  harmOnto <- get_concept(id = longTable$targetID, ontology = ontoPath)
 
-  if(any(newOnto$match == "close")){
-    newClose <- newOnto %>%
+  if(any(longTable$match == "close")){
+    newClose <- longTable %>%
       filter(match == "close")
+    newClose <- harmOnto %>%
+      filter(id %in% newClose$targetID) %>%
+      select(id, label, class, has_broader) %>%
+      left_join(newClose %>% select(id = targetID, external), ., by = "id")
+
+    assertCharacter(x = newClose$id, any.missing = FALSE)
+    assertCharacter(x = newClose$label, any.missing = FALSE)
+    assertCharacter(x = newClose$class, any.missing = FALSE)
     new_mapping(new =  newClose$external,
-                target = harmOnto %>% filter(id %in% newClose$target) %>% select(id, label, class, has_broader),
+                target = newClose %>% select(id, label, class, has_broader),
                 source = dataseries, match = "close", certainty = 3, type = "concept", ontology = ontoPath)
   }
 
-  if(any(newOnto$match == "narrower")){
-    newNarrower <- newOnto %>%
+  if(any(longTable$match == "narrower")){
+    newNarrower <- longTable %>%
       filter(match == "narrower")
-    oldNarrower <- harmOnto %>%
-      filter(id %in% newNarrower$target) %>%
+    newNarrower <- harmOnto %>%
+      filter(id %in% newNarrower$targetID) %>%
       select(id, label, class, has_broader) %>%
-      left_join(newNarrower, by = c("id" = "target")) %>%
-      select(id, label, class, has_broader)
+      left_join(newNarrower %>% select(id = targetID, external), ., by = "id")
+
+    assertCharacter(x = newNarrower$id, any.missing = FALSE)
+    assertCharacter(x = newNarrower$label, any.missing = FALSE)
+    assertCharacter(x = newNarrower$class, any.missing = FALSE)
     new_mapping(new = newNarrower$external,
-                target = oldNarrower,
+                target = newNarrower %>% select(id, label, class, has_broader),
                 source = dataseries, match = "narrower", certainty = 3, type = "concept", ontology = ontoPath)
   }
 
-  if(any(newOnto$match == "broader")){
-    newBroader <- newOnto %>%
+  if(any(longTable$match == "broader")){
+    newBroader <- longTable %>%
       filter(match == "broader")
-    oldBroader <- harmOnto %>%
-      filter(id %in% newBroader$target) %>%
+    newBroader <- harmOnto %>%
+      filter(id %in% newBroader$targetID) %>%
       select(id, label, class, has_broader) %>%
-      right_join(newBroader, ., by = c("target" = "id")) %>%
-      select(id = target, label, class, has_broader)
+      left_join(newBroader %>% select(id = targetID, external), ., by = "id")
+
+    assertCharacter(x = newBroader$id, any.missing = FALSE)
+    assertCharacter(x = newBroader$label, any.missing = FALSE)
+    assertCharacter(x = newBroader$class, any.missing = FALSE)
     new_mapping(new = newBroader$external,
-                target = oldBroader,
+                target = newBroader %>% select(id, label, class, has_broader),
                 source = dataseries, match = "broader", certainty = 3, type = "concept", ontology = ontoPath)
   }
 
