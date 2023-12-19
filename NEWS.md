@@ -1,16 +1,20 @@
+# arealDB 0.8.0 - better gazetteer matching
+
+- introduction of the function `updateOntology()`. This updates the gazetteer after a full spatial match has been carried out, drastically taking complexity out of the functions and guaranteeing proper match between the spatial files and the gazetteer
+
 # arealDB 0.7.1 
 
-- entirely remove matching via gazatteer for any level below the first level that serves for identifying unique territories (which resulted in a vast simplification of the `normGeometry()` function).
-- include a `version = ` for dataseries.
+- entirely remove matching via gazetteer for any level below the first level that serves for identifying unique territories (which resulted in a vast simplification of the `normGeometry()` function).
+- include a `version = ` for data series.
 - include `query = ` argument also for tables.
 
 # arealDB 0.7.0 - streamlined geometry matching
 
-- this include various smaller fixes that should enable a more userfriendly and functional way of specifying geometries and running the normalisation process.
+- this include various smaller fixes that should enable a more user-friendly and functional way of specifying geometries and running the normalisation process.
 
 # arealDB 0.6.4
 
-- adapt storing of stage1 files so that they are now aggregated into folders with their dataseries as name.
+- adapt storing of stage1 files so that they are now aggregated into folders with their data series as name.
 
 # arealDB 0.6.3
 
