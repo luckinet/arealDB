@@ -118,7 +118,7 @@ regGeometry <- function(..., subset = NULL, gSeries = NULL, label = NULL,
   assertCharacter(x = layer, any.missing = FALSE, null.ok = TRUE)
   assertCharacter(x = archive, any.missing = FALSE, null.ok = TRUE)
   assertCharacter(x = archiveLink, any.missing = FALSE, null.ok = TRUE)
-  assertCharacter(x = nextUpdate, any.missing = FALSE, null.ok = TRUE)
+  assertCharacter(x = nextUpdate, any.missing = FALSE, null.ok = TRUE, pattern = "[0-9]{4}-[0-9]{2}-[0-9]{2}")
   assertCharacter(x = updateFrequency, any.missing = FALSE, null.ok = TRUE)
   assertCharacter(x = notes, ignore.case = TRUE, any.missing = FALSE, len = 1, null.ok = TRUE)
   assertLogical(x = overwrite, len = 1)
