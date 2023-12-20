@@ -272,7 +272,10 @@ updateOntology <- function(table = NULL, threshold = NULL, dataseries = NULL,
                 ontology =  ontoPath)
     temp <- get_concept(has_broader = newConcepts$id, label = newConcepts$external, str_detect(description, !!dataseries), ontology = ontoPath) %>%
       arrange(label) %>%
-      select(id, label, class, has_broader)
+      select(id, label, class, has_broader) %>%
+      group_by(label, class, has_broader) %>% # in case an entry is various times in the table, filter only the first one
+      filter(row_number() == 1) %>%
+      ungroup()
     new_mapping(new =  sort(newConcepts$external),
                 target = temp,
                 source = dataseries, match = "exact", certainty = 3, type = "concept", ontology = ontoPath)
