@@ -95,6 +95,7 @@
 #' @importFrom progress progress_bar
 #' @importFrom utils tail head
 #' @importFrom stats na.omit
+#' @importFrom beepr beep
 #' @export
 
 normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10,
@@ -637,6 +638,7 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
 
   gc()
 
+  if(!is.null(beep)) beep(beep)
   message()
   return(outgSeries)
 }

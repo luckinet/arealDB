@@ -57,6 +57,7 @@
 #' @importFrom stringr str_split str_detect
 #' @importFrom tidyselect everything
 #' @importFrom utils read.csv
+#' @importFrom beepr beep
 #' @export
 
 normTable <- function(input = NULL, pattern = NULL, query = NULL, ontoMatch = NULL,
@@ -254,6 +255,7 @@ normTable <- function(input = NULL, pattern = NULL, query = NULL, ontoMatch = NU
 
   }
 
+  if(!is.null(beep)) beep(beep)
   invisible(ret)
 
 }

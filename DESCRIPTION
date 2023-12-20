@@ -58,7 +58,8 @@ Imports:
     ontologics,
     purrr,
     rmapshaper,
-    progress
+    progress,
+    beepr
 Suggests: 
     testthat,
     knitr,
