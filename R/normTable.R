@@ -178,11 +178,14 @@ normTable <- function(input = NULL, pattern = NULL, query = NULL, ontoMatch = NU
       message("    harmonizing thematic concepts ...")
       assertNames(x = ontoMatch, subset.of = names(thatTable))
       ontoPath <- getOption(x = "ontology_path")[[ontoMatch]]
-      matchOntology(table = thatTable,
-                    columns = ontoMatch,
-                    dataseries = dSeries,
-                    ontology = ontoPath,
-                    beep = beep)
+      thatTable <- matchOntology(table = thatTable,
+                                 columns = ontoMatch,
+                                 dataseries = dSeries,
+                                 ontology = ontoPath,
+                                 beep = beep) %>%
+        unite(col = "ontoMatch", match, external, sep = "--", na.rm = TRUE) %>%
+        rename(ontoID = id) %>%
+        select(-has_broader, -class, -description)
     }
 
     thatTable <- thatTable %>%
