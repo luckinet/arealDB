@@ -1,3 +1,7 @@
+# arealDB 0.8.1
+
+- re-enable matching with the ontology when normalising a table, by default
+
 # arealDB 0.8.0 - better gazetteer matching
 
 - introduction of the function `updateOntology()`. This updates the gazetteer after a full spatial match has been carried out, drastically taking complexity out of the functions and guaranteeing proper match between the spatial files and the gazetteer
