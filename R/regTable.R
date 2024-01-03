@@ -150,7 +150,7 @@ regTable <- function(..., subset = NULL, dSeries = NULL, gSeries = NULL,
   assertClass(x = schema, classes = "schema", null.ok = TRUE)
   assertCharacter(x = archive, any.missing = FALSE, null.ok = TRUE)
   assertCharacter(x = archiveLink, any.missing = FALSE, null.ok = TRUE)
-  assertCharacter(x = nextUpdate, any.missing = FALSE, null.ok = TRUE, pattern = "[0-9]{4}-[0-9]{2}-[0-9]{2}")
+  assertCharacter(x = nextUpdate, any.missing = FALSE, null.ok = TRUE, pattern = "[0-9]{4}-[0-9]{2}-[0-9]{2}|unknown")
   assertCharacter(x = updateFrequency, any.missing = FALSE, null.ok = TRUE)
   assertCharacter(x = metadataLink, any.missing = FALSE, null.ok = TRUE)
   assertCharacter(x = metadataPath, any.missing = FALSE, null.ok = TRUE)
