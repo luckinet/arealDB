@@ -10,11 +10,7 @@
 #'   \code{\link[dplyr]{filter}} to subset a tibble in terms of the columns
 #'   defined via the schema and given as a single character string.
 #' @param ontoMatch [\code{character(.)}]\cr name of the column(s) that shall be
-#'   matched with an ontology (defined in \code{\link{start_arealDB}}).
-#' @param outType [\code{logical(1)}]\cr the output file-type, currently
-#'   implemented options are either \emph{*.csv} (more exchangeable for a
-#'   workflow based on several programs) or \emph{*.rds} (smaller and less
-#'   error-prone data-format but can only be read by R efficiently).
+#'   matched with an ontology (defined in \code{\link{adb_init}}).
 #' @param beep [\code{integerish(1)}]\cr Number specifying what sound to be
 #'   played to signal the user that a point of interaction is reached by the
 #'   program, see \code{\link[beepr]{beep}}.
@@ -39,13 +35,13 @@
 #' @examples
 #' if(dev.interactive()){
 #'   # build the example database
-#'   makeExampleDB(until = "normGeometry", path = tempdir())
+#'   adb_example(until = "normGeometry", path = tempdir())
 #'
 #'   # normalise all available data tables ...
 #'   normTable()
 #'
 #'   # ... and check the result
-#'   output <- readRDS(paste0(tempdir(), "/adb_tables/stage3/Estonia.rds"))
+#'   output <- readRDS(paste0(tempdir(), "/tables/stage3/Estonia.rds"))
 #' }
 #' @importFrom checkmate assertNames assertFileExists assertLogical
 #' @importFrom ontologics load_ontology
@@ -61,7 +57,7 @@
 #' @export
 
 normTable <- function(input = NULL, pattern = NULL, query = NULL, ontoMatch = NULL,
-                      outType = "rds", beep = NULL, verbose = FALSE){
+                      beep = NULL, verbose = FALSE){
 
   # set internal paths
   intPaths <- getOption(x = "adb_path")
@@ -73,7 +69,7 @@ normTable <- function(input = NULL, pattern = NULL, query = NULL, ontoMatch = NU
     arrange(label)
 
   if(is.null(input)){
-    input <- list.files(path = paste0(intPaths, "/adb_tables/stage2"), full.names = TRUE, pattern = pattern)
+    input <- list.files(path = paste0(intPaths, "/tables/stage2"), full.names = TRUE, pattern = pattern)
   } else {
     assertFileExists(x = input, access = "r")
   }
@@ -82,18 +78,16 @@ normTable <- function(input = NULL, pattern = NULL, query = NULL, ontoMatch = NU
   moveFile <- TRUE
 
   # get tables
-  inv_tables <- read_csv(paste0(intPaths, "/inv_tables.csv"), col_types = "iiicciiccccDccccc")
-  inv_dataseries <- read_csv(paste0(intPaths, "/inv_dataseries.csv"), col_types = "icccccc")
-  # inv_geometries <- read_csv(paste0(intPaths, "/inv_geometries.csv"), col_types = "iiccccccDccc")
+  inventory <- readRDS(paste0(getOption(x = "adb_path"), "/meta/inventory.rds"))
+  inv_dataseries <- inventory$dataseries
+  inv_tables <- inventory$tables
 
   # check validity of arguments
   assertCharacter(x = query, len = 1, null.ok = TRUE)
   assertNames(x = colnames(inv_tables),
-              permutation.of = c("tabID", "datID", "geoID", "geography", "level", "start_period", "end_period", "stage2_name", "schema", "stage1_name", "stage1_url", "download_date", "next_update", "update_frequency", "metadata_url", "metadata_path", "notes"))
+              permutation.of = c("tabID", "datID", "geoID", "geography", "level", "start_period", "end_period", "stage2_name", "schema", "stage1_name", "stage1_url", "download_date", "update_frequency", "metadata_url", "metadata_path", "notes"))
   assertNames(x = colnames(inv_dataseries),
               permutation.of = c("datID", "name", "description", "homepage", "version", "licence_link", "notes"))
-  # assertNames(x = colnames(inv_geometries),
-  #             permutation.of = c("geoID", "datID", "stage2_name", "layer", "label", "ancillary", "stage1_name", "stage1_url", "download_date", "next_update", "update_frequency", "notes"))
   assertCharacter(x = ontoMatch, min.len = 1, any.missing = FALSE, null.ok = TRUE)
 
   ret <- NULL
@@ -214,23 +208,17 @@ normTable <- function(input = NULL, pattern = NULL, query = NULL, ontoMatch = NU
         distinct()
 
       # append output to previous file
-      avail <- list.files(path = paste0(intPaths, "/adb_tables/stage3/"), pattern = paste0("^", theUnits[j], ".", outType))
+      # avail <- list.files(path = paste0(intPaths, "/tables/stage3/"), pattern = paste0("^", theUnits[j], ".", outType))
+      avail <- list.files(path = paste0(intPaths, "/tables/stage3/"), pattern = paste0("^", theUnits[j], ".rds"))
 
       if(length(avail) == 1){
 
-        if(outType == "csv"){
-          prevData <- read_csv(file = paste0(intPaths, "/adb_tables/stage3/", theUnits[j], ".csv"),
-                               col_types = cols(tabID = "i", geoID = "i", gazID = "c", gazName = "c", gazMatch = "c", year = "c"))
-        } else {
-          prevData <- readRDS(file = paste0(intPaths, "/adb_tables/stage3/", theUnits[j], ".rds"))
-        }
+        prevData <- readRDS(file = paste0(intPaths, "/tables/stage3/", theUnits[j], ".rds"))
 
 
         out <- tempOut %>%
           bind_rows(prevData, .) %>%
           distinct()
-
-        # here distinct rows only?
 
       } else if(length(avail) > 1){
         stop("the nation '", theUnits[j], "' exists several times in the output folder '/adb_tablse/stage3/'.")
@@ -238,19 +226,13 @@ normTable <- function(input = NULL, pattern = NULL, query = NULL, ontoMatch = NU
         out <- tempOut
       }
 
-      # write file to 'stage3' and move to folder 'processed'
-      if(outType == "csv"){
-        write_csv(x = out,
-                  file = paste0(intPaths, "/adb_tables/stage3/", theUnits[j], ".csv"),
-                  na = "")
-      } else if(outType == "rds"){
-        saveRDS(object = out, file = paste0(intPaths, "/adb_tables/stage3/", theUnits[j], ".rds"))
-      }
+      saveRDS(object = out, file = paste0(intPaths, "/tables/stage3/", theUnits[j], ".rds"))
+
       ret <- bind_rows(ret, out)
     }
 
     if(moveFile){
-      file.copy(from = thisInput, to = paste0(intPaths, "/adb_tables/stage2/processed"))
+      file.copy(from = thisInput, to = paste0(intPaths, "/tables/stage2/processed"))
       file.remove(thisInput)
     }
 

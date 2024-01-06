@@ -5,11 +5,6 @@
 #'   is left empty, all files at stage two as subset by \code{pattern} are
 #'   chosen.
 #' @param thresh [\code{integerish(1)}]\cr
-#' @param outType [\code{character(1)}]\cr the output file-type, see
-#'   \code{\link{st_drivers}} for a list. If a file-type supports layers, they
-#'   are stored in the same file, otherwise the different layers are provided
-#'   separately. For an R-based workflow, \code{"rds"} could be an efficient
-#'   option.
 #' @param pattern [\code{character(1)}]\cr an optional regular expression. Only
 #'   dataset names which match the regular expression will be processed.
 #' @param query [\code{character(1)}]\cr part of the SQL query (starting from
@@ -62,14 +57,14 @@
 #'   library(sf)
 #'
 #'   # build the example database
-#'   makeExampleDB(until = "regGeometry", path = tempdir())
+#'   adb_example(until = "regGeometry", path = tempdir())
 #'
 #'   # normalise all geometries ...
 #'   normGeometry(pattern = "estonia")
 #'
 #'   # ... and check the result
-#'   st_layers(paste0(tempdir(), "/adb_geometries/stage3/Estonia.gpkg"))
-#'   output <- st_read(paste0(tempdir(), "/adb_geometries/stage3/Estonia.gpkg"))
+#'   st_layers(paste0(tempdir(), "/geometries/stage3/Estonia.gpkg"))
+#'   output <- st_read(paste0(tempdir(), "/geometries/stage3/Estonia.gpkg"))
 #' }
 #' @importFrom checkmate assertFileExists assertIntegerish assertLogical
 #'   assertCharacter assertChoice testFileExists
@@ -89,7 +84,7 @@
 #' @importFrom stringr str_split_1 str_to_title str_pad str_detect
 #' @importFrom tibble as_tibble add_column
 #' @importFrom dplyr bind_rows slice lag desc n_distinct left_join right_join
-#'   first
+#'   first row_number
 #' @importFrom tidyr unite
 #' @importFrom tidyselect starts_with all_of
 #' @importFrom progress progress_bar
@@ -99,7 +94,7 @@
 #' @export
 
 normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10,
-                         outType = "gpkg", beep = NULL, simplify = FALSE, verbose = FALSE){
+                         beep = NULL, simplify = FALSE, verbose = FALSE){
 
   # set internal paths
   intPaths <- paste0(getOption(x = "adb_path"))
@@ -115,7 +110,7 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
     pull(label)
 
   if(is.null(input)){
-    input <- list.files(path = paste0(intPaths, "/adb_geometries/stage2"), full.names = TRUE, pattern = pattern)
+    input <- list.files(path = paste0(intPaths, "/geometries/stage2"), full.names = TRUE, pattern = pattern)
   } else {
     assertFileExists(x = input, access = "r")
   }
@@ -124,16 +119,16 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
   moveFile <- TRUE
 
   # get tables
-  inv_geometries <- read_csv(paste0(intPaths, "/inv_geometries.csv"), col_types = "iiccccccDDcc")
-  inv_dataseries <- read_csv(paste0(intPaths, "/inv_dataseries.csv"), col_types = "icccccc")
+  inventory <- readRDS(paste0(getOption(x = "adb_path"), "/meta/inventory.rds"))
+  inv_dataseries <- inventory$dataseries
+  inv_geometries <- inventory$geometries
 
   # check validity of arguments
   assertCharacter(x = query, len = 1, null.ok = TRUE)
   assertIntegerish(x = thresh, any.missing = FALSE)
   assertLogical(x = simplify, len = 1)
-  assertNames(x = outType, subset.of = c(tolower(st_drivers()$name), "rds"))
   assertNames(x = colnames(inv_geometries),
-              permutation.of = c("geoID", "datID", "stage2_name", "layer", "label", "ancillary", "stage1_name", "stage1_url", "download_date", "next_update", "update_frequency", "notes"))
+              permutation.of = c("geoID", "datID", "stage2_name", "layer", "label", "ancillary", "stage1_name", "stage1_url", "download_date", "update_frequency", "notes"))
   assertNames(x = colnames(inv_dataseries),
               permutation.of = c("datID", "name", "description", "homepage", "version", "licence_link", "notes"))
 
@@ -220,12 +215,12 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
     if(!is.null(query)){
       moveFile <- FALSE
       input_geom <- read_sf(dsn = thisInput,
-                        query = paste0("select * from ", gLayer, " ", query),
-                        stringsAsFactors = FALSE)
+                            query = paste0("select * from ", gLayer, " ", query),
+                            stringsAsFactors = FALSE)
     } else {
       input_geom <- read_sf(dsn = thisInput,
-                        layer = gLayer,
-                        stringsAsFactors = FALSE)
+                            layer = gLayer,
+                            stringsAsFactors = FALSE)
     }
 
     # stop this iteration when 'input_geom' has zero rows
@@ -363,9 +358,9 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
 
         # determine whether a geometry with the nation as name already exists and
         # whether that contains the correct layer ...
-        fileExists <- testFileExists(x = paste0(intPaths, "/adb_geometries/stage3/", tempUnit, ".gpkg"))
+        fileExists <- testFileExists(x = paste0(intPaths, "/geometries/stage3/", tempUnit, ".gpkg"))
         if(fileExists){
-          targetLayers <- st_layers(dsn = paste0(intPaths, "/adb_geometries/stage3/", tempUnit, ".gpkg"))
+          targetLayers <- st_layers(dsn = paste0(intPaths, "/geometries/stage3/", tempUnit, ".gpkg"))
           if(!grepl(pattern = tail(targetClass$label, 1), x = paste0(targetLayers$name, collapse = "|"))){
             fileExists <- FALSE
           }
@@ -378,7 +373,7 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
           message("    Reading target geometries")
           topLayer <- targetLayers$name[which.min(targetLayers$features)]
 
-          target_geom <- read_sf(dsn = paste0(intPaths, "/adb_geometries/stage3/", tempUnit, ".gpkg"),
+          target_geom <- read_sf(dsn = paste0(intPaths, "/geometries/stage3/", tempUnit, ".gpkg"),
                                  layer = tail(targetClass$label, 1),
                                  stringsAsFactors = FALSE)
 
@@ -500,7 +495,7 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
 
             # if we are not at the topmost class, read the parent geometry
             if(!topClass %in% tail(targetClass$label, 1)){
-              targetParent_geom <- read_sf(dsn = paste0(intPaths, "/adb_geometries/stage3/", tempUnit, ".gpkg"),
+              targetParent_geom <- read_sf(dsn = paste0(intPaths, "/geometries/stage3/", tempUnit, ".gpkg"),
                                            layer = allClasses[which(allClasses %in% tail(targetClass$label, 1)) - 1],
                                            stringsAsFactors = FALSE)
 
@@ -611,23 +606,19 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
 
         }
 
-        # in case the user wants to update, output the simple feature
-        if(outType != "rds"){
-          st_write(obj = output_geom,
-                   dsn = paste0(intPaths, "/adb_geometries/stage3/", tempUnit, ".", outType),
-                   layer = tail(targetClass$label, 1),
-                   append = FALSE,
-                   quiet = TRUE)
-        } else {
-          saveRDS(object = output_geom, file = paste0(intPaths, "/adb_geometries/stage3/", tempUnit, ".rds"))
-        }
+        st_write(obj = output_geom,
+                 dsn = paste0(intPaths, "/geometries/stage3/", tempUnit, ".gpkg"),
+                 layer = tail(targetClass$label, 1),
+                 append = FALSE,
+                 quiet = TRUE)
+
       }
     }
 
 
     if(moveFile){
       message(paste0("    Moving '", file_name, "' to './stage2/processed'"))
-      firstStage <- paste0(intPaths, "/adb_geometries/stage2")
+      firstStage <- paste0(intPaths, "/geometries/stage2")
       file.copy(from = paste0(firstStage, "/", file_name), to = paste0(firstStage, "/processed/", file_name))
       file.remove(paste0(firstStage, "/", file_name))
     }
