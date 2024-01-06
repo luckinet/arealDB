@@ -21,7 +21,7 @@
 #' @examples
 #' if(dev.interactive()){
 #'   # start the example database
-#'   makeExampleDB(until = "match_gazetteer", path = tempdir())
+#'   adb_exampleDB(until = "match_gazetteer", path = tempdir())
 #'
 #'   regDataseries(name = "gadm",
 #'                 description = "Database of Global Administrative Areas",
@@ -39,8 +39,12 @@ regDataseries <- function(name = NULL, description = NULL, homepage = NULL,
                           version = NULL, licence_link = NULL, notes = NULL,
                           overwrite = FALSE){
 
+  # set internal paths
+  intPaths <- paste0(getOption(x = "adb_path"))
+
   # get tables
-  inv_dataseries <- read_csv(paste0(getOption(x = "adb_path"), "/inv_dataseries.csv"), col_types = "iccccc")
+  inventory <- readRDS(paste0(getOption(x = "adb_path"), "/meta/inventory.rds"))
+  inv_dataseries <- inventory$dataseries
 
   # in testing mode?
   testing <- getOption(x = "adb_testing")
@@ -151,7 +155,9 @@ regDataseries <- function(name = NULL, description = NULL, homepage = NULL,
                  licence_link = theLicence_link,
                  notes = notes)
 
-  updateTable(index = temp, name = "inv_dataseries", matchCols = c("name"))
+  inventory$dataseries <- bind_rows(inv_dataseries, temp)
+  saveRDS(object = inventory, file = paste0(intPaths, "/meta/inventory.rds"))
+
 
   return(temp)
 }
