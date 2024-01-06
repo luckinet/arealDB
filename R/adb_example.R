@@ -22,10 +22,10 @@
 #' @examples
 #' if(dev.interactive()){
 #' # to build the full example database
-#' makeExampleDB(path = paste0(tempdir(), "/newDB"))
+#' adb_example(path = paste0(tempdir(), "/newDB"))
 #'
 #' # to make the example database until a certain step
-#' makeExampleDB(path = paste0(tempdir(), "/newDB"), until = "regDataseries")
+#' adb_example(path = paste0(tempdir(), "/newDB"), until = "regDataseries")
 #'
 #' }
 #' @importFrom checkmate assertChoice testDirectoryExists
@@ -33,10 +33,11 @@
 #' @importFrom tabshiftr setFormat setIDVar setObsVar
 #' @export
 
-makeExampleDB <- function(path = NULL, until = NULL, verbose = FALSE){
+adb_example <- function(path = NULL, until = NULL, verbose = FALSE){
 
+  # set internal paths
   inPath <- system.file("test_datasets", package = "arealDB", mustWork = TRUE)
-  steps <- c("start_arealDB", "regDataseries", "regGeometry", "regTable", "normGeometry", "normTable")
+  steps <- c("adb_init", "regDataseries", "regGeometry", "regTable", "normGeometry", "normTable")
   if (is.null(until)) {
     until <- "normTable"
   }
@@ -58,34 +59,38 @@ makeExampleDB <- function(path = NULL, until = NULL, verbose = FALSE){
 
   dir.create(file.path(path))
   saveRDS(object = arealDB::territories, file = gazPath)
-  if (any(theSteps %in% "start_arealDB")) {
-    start_arealDB(root = path, gazetteer = gazPath, top = "al1", ontology = ontoPath)
+  if (any(theSteps %in% "adb_init")) {
+    adb_init(root = path,
+             version = "some_0.0.1", licence = "https://creativecommons.org/licenses/by-sa/4.0/",
+             gazetteer = gazPath, top = "al1",
+             ontology = ontoPath,
+             variables = c("harvested", "production"))
   }
 
   # load input data
   file.copy(from = paste0(inPath, "/example_geom.7z"),
-            to = paste0(path, "/adb_geometries/stage1/example_geom.7z"))
-  dir.create(file.path(path, "/adb_tables/stage1/madeUp/"))
+            to = paste0(path, "/geometries/stage1/example_geom.7z"))
+  dir.create(file.path(path, "/tables/stage1/madeUp/"))
   file.copy(from = paste0(inPath, "/example_table.7z"),
-            to = paste0(path, "/adb_tables/stage1/madeUp/example_table.7z"))
+            to = paste0(path, "/tables/stage1/madeUp/example_table.7z"))
 
   # load geometries
   file.copy(from = paste0(inPath, "/example_geom1.gpkg"),
-            to = paste0(path, "/adb_geometries/stage2/_al1__gadm.gpkg"))
+            to = paste0(path, "/geometries/stage2/_al1__gadm.gpkg"))
   file.copy(from = paste0(inPath, "/example_geom2.gpkg"),
-            to = paste0(path, "/adb_geometries/stage2/_al2__gadm.gpkg"))
+            to = paste0(path, "/geometries/stage2/_al2__gadm.gpkg"))
   file.copy(from = paste0(inPath, "/example_geom3.gpkg"),
-            to = paste0(path, "/adb_geometries/stage2/_al3__gadm.gpkg"))
+            to = paste0(path, "/geometries/stage2/_al3__gadm.gpkg"))
   file.copy(from = paste0(inPath, "/example_geom4.gpkg"),
-            to = paste0(path, "/adb_geometries/stage2/_al3__madeUp.gpkg"))
+            to = paste0(path, "/geometries/stage2/_al3__madeUp.gpkg"))
 
   # load tables (and schema)
   file.copy(from = paste0(inPath, "/example_schema.rds"),
             to = paste0(path, "/meta/schemas/example_schema.rds"))
   file.copy(from = paste0(inPath, "/example_table1.csv"),
-            to = paste0(path, "/adb_tables/stage2/_al1_barleyMaize_1990_2017_madeUp.csv"))
+            to = paste0(path, "/tables/stage2/_al1_barleyMaize_1990_2017_madeUp.csv"))
   file.copy(from = paste0(inPath, "/example_table2.csv"),
-            to = paste0(path, "/adb_tables/stage2/aNation_al2_barleyMaize_1990_2017_madeUp.csv"))
+            to = paste0(path, "/tables/stage2/aNation_al2_barleyMaize_1990_2017_madeUp.csv"))
 
   # load gazetteer
   file.copy(from = paste0(inPath, "/match_madeUp.csv"),
@@ -98,11 +103,13 @@ makeExampleDB <- function(path = NULL, until = NULL, verbose = FALSE){
     regDataseries(name = "gadm",
                   description = "Database of Global Administrative Areas",
                   homepage = "https://gadm.org/index.html",
+                  version = "1.0",
                   licence_link = "https://gadm.org/license.html")
 
     regDataseries(name = "madeUp",
                   description = "Made-Up Concepts",
                   homepage = "https://en.wikipedia.org/wiki/String_theory",
+                  version = "1.0",
                   licence_link = "https://creativecommons.org/share-your-work/public-domain/cc0/")
   }
 
@@ -113,7 +120,7 @@ makeExampleDB <- function(path = NULL, until = NULL, verbose = FALSE){
                 layer = "example_geom1",
                 archive = "example_geom.7z|example_geom1.gpkg",
                 archiveLink = "https://gadm.org/",
-                nextUpdate = "2019-10-01",
+                downloadDate = as.Date("2019-10-01"),
                 updateFrequency = "quarterly")
 
     regGeometry(gSeries = "gadm",
@@ -121,7 +128,7 @@ makeExampleDB <- function(path = NULL, until = NULL, verbose = FALSE){
                 layer = "example_geom2",
                 archive = "example_geom.7z|example_geom2.gpkg",
                 archiveLink = "https://gadm.org/",
-                nextUpdate = "2019-10-01",
+                downloadDate = as.Date("2019-10-01"),
                 updateFrequency = "quarterly")
 
     regGeometry(gSeries = "gadm",
@@ -129,7 +136,7 @@ makeExampleDB <- function(path = NULL, until = NULL, verbose = FALSE){
                 layer = "example_geom3",
                 archive = "example_geom.7z|example_geom3.gpkg",
                 archiveLink = "https://gadm.org/",
-                nextUpdate = "2019-10-01",
+                downloadDate = as.Date("2019-10-01"),
                 updateFrequency = "quarterly")
 
     regGeometry(gSeries = "madeUp",
@@ -137,7 +144,7 @@ makeExampleDB <- function(path = NULL, until = NULL, verbose = FALSE){
                 layer = "example_geom4",
                 archive = "example_geom.7z|example_geom4.gpkg",
                 archiveLink = "https://gadm.org/",
-                nextUpdate = "2019-10-01",
+                downloadDate = as.Date("2019-10-01"),
                 updateFrequency = "quarterly")
 
   }
@@ -148,8 +155,8 @@ makeExampleDB <- function(path = NULL, until = NULL, verbose = FALSE){
       setIDVar(name = "al1", columns = 1) %>%
       setIDVar(name = "year", columns = 2) %>%
       setIDVar(name = "commodity", columns = 3) %>%
-      setObsVar(name = "harvested", unit = "ha", columns = 4) %>%
-      setObsVar(name = "production", unit = "t", columns = 5)
+      setObsVar(name = "harvested", columns = 4) %>%
+      setObsVar(name = "production", columns = 5)
 
     meta_madeUp_2 <- tabshiftr::schema_default %>%
       setFormat(decimal = ".", na_values = c("", "NA")) %>%
@@ -157,8 +164,8 @@ makeExampleDB <- function(path = NULL, until = NULL, verbose = FALSE){
       setIDVar(name = "al2", columns = 2) %>%
       setIDVar(name = "year", columns = 3) %>%
       setIDVar(name = "commodity", columns = 4) %>%
-      setObsVar(name = "harvested", unit = "ha", columns = 5) %>%
-      setObsVar(name = "production", unit = "t", columns = 6)
+      setObsVar(name = "harvested", columns = 5) %>%
+      setObsVar(name = "production", columns = 6)
 
     regTable(subset = "barleyMaize",
              dSeries = "madeUp",
@@ -169,12 +176,12 @@ makeExampleDB <- function(path = NULL, until = NULL, verbose = FALSE){
              schema = meta_madeUp_1,
              archive = "example_table.7z|example_table1.csv",
              archiveLink = "https://en.wikipedia.org/wiki/Data_lineage",
-             nextUpdate = "2019-10-01",
+             downloadDate = as.Date("2019-10-01"),
              updateFrequency = "quarterly",
              metadataLink = "https://en.wikipedia.org/wiki/Metadata",
              metadataPath = "my/local/path")
 
-    regTable(nation = "aNation",
+    regTable(al1 = "aNation",
              subset = "barleyMaize",
              dSeries = "madeUp",
              gSeries = "gadm",
@@ -184,7 +191,7 @@ makeExampleDB <- function(path = NULL, until = NULL, verbose = FALSE){
              schema = meta_madeUp_2,
              archive = "example_table.7z|example_table2.csv",
              archiveLink = "https://en.wikipedia.org/wiki/Data_lineage",
-             nextUpdate = "2019-10-01",
+             downloadDate = as.Date("2019-10-01"),
              updateFrequency = "quarterly",
              metadataLink = "https://en.wikipedia.org/wiki/Metadata",
              metadataPath = "my/local/path")
