@@ -9,7 +9,6 @@ normGeometry(
   pattern = NULL,
   query = NULL,
   thresh = 10,
-  outType = "gpkg",
   beep = NULL,
   simplify = FALSE,
   verbose = FALSE
@@ -29,12 +28,6 @@ WHERE) used to subset the input geometries, for example \code{where NAME_0
 derived from the meta-data of the currently handled geometry.}
 
 \item{thresh}{[\code{integerish(1)}]\cr}
-
-\item{outType}{[\code{character(1)}]\cr the output file-type, see
-\code{\link{st_drivers}} for a list. If a file-type supports layers, they
-are stored in the same file, otherwise the different layers are provided
-separately. For an R-based workflow, \code{"rds"} could be an efficient
-option.}
 
 \item{beep}{[\code{integerish(1)}]\cr Number specifying what sound to be
 played to signal the user that a point of interaction is reached by the
@@ -91,14 +84,14 @@ if(dev.interactive()){
   library(sf)
 
   # build the example database
-  makeExampleDB(until = "regGeometry", path = tempdir())
+  adb_exampleDB(until = "regGeometry", path = tempdir())
 
   # normalise all geometries ...
   normGeometry(pattern = "estonia")
 
   # ... and check the result
-  st_layers(paste0(tempdir(), "/adb_geometries/stage3/Estonia.gpkg"))
-  output <- st_read(paste0(tempdir(), "/adb_geometries/stage3/Estonia.gpkg"))
+  st_layers(paste0(tempdir(), "/geometries/stage3/Estonia.gpkg"))
+  output <- st_read(paste0(tempdir(), "/geometries/stage3/Estonia.gpkg"))
 }
 }
 \seealso{

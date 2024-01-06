@@ -2,7 +2,7 @@
 % Please edit documentation in R/ontoHandlers.R
 \name{updateOntology}
 \alias{updateOntology}
-\title{Update the the gazetteer}
+\title{Update the an ontology}
 \usage{
 updateOntology(
   table = NULL,

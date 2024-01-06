@@ -15,7 +15,7 @@ regTable(
   schema = NULL,
   archive = NULL,
   archiveLink = NULL,
-  nextUpdate = NULL,
+  downloadDate = NULL,
   updateFrequency = NULL,
   metadataLink = NULL,
   metadataPath = NULL,
@@ -58,8 +58,8 @@ boundaries emerge.}
 
 \item{archiveLink}{[\code{character(1)}]\cr download-link of the archive.}
 
-\item{nextUpdate}{[\code{character(1)}]\cr when does the geometry dataset get
-updated the next time (format restricted to: YYYY-MM-DD).}
+\item{downloadDate}{[\code{character(1)}]\cr value describing the download
+date of this dataset (in YYYY-MM-DD format).}
 
 \item{updateFrequency}{[\code{character(1)}]\cr value describing the
 frequency with which the dataset is updated, according to the ISO 19115
@@ -115,7 +115,7 @@ When processing areal data tables, carry out the following steps:
 \examples{
 if(dev.interactive()){
   # build the example database
-  makeExampleDB(until = "regGeometry", path = tempdir())
+  adb_exampleDB(until = "regGeometry", path = tempdir())
 
   # the schema description for this table
   library(tabshiftr)

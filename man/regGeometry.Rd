@@ -13,7 +13,7 @@ regGeometry(
   layer = NULL,
   archive = NULL,
   archiveLink = NULL,
-  nextUpdate = NULL,
+  downloadDate = NULL,
   updateFrequency = NULL,
   notes = NULL,
   overwrite = FALSE
@@ -38,8 +38,8 @@ common in the ontology and this geometry. Must be of the form
 corresponding to the respective column name in the geometry.}
 
 \item{ancillary}{[\code{list(.)}]\cr optinal list of columns containing
-ancillary information. Must be of the form
-\code{list(attribute = columnName)}, where \code{attribute} can be one or
+ancillary information. Must be of the form \code{list(attribute =
+columnName)}, where \code{attribute} can be one or
 several of \itemize{
   \item \code{"name_ltn"} (the english name in latin letters)
   \item \code{"name_lcl"} (the name in local language and letters)
@@ -56,8 +56,8 @@ from which the geometry emerges.}
 
 \item{archiveLink}{[\code{character(1)}]\cr download-link of the archive.}
 
-\item{nextUpdate}{[\code{character(1)}]\cr value describing the next
-anticipated update of this dataset (in YYYY-MM-DD format).}
+\item{downloadDate}{[\code{character(1)}]\cr value describing the download
+date of this dataset (in YYYY-MM-DD format).}
 
 \item{updateFrequency}{[\code{character(1)}]\cr value describing the
 frequency with which the dataset is updated, according to the ISO 19115
@@ -94,7 +94,7 @@ When processing geometries to which areal data shall be linked,
 \examples{
 if(dev.interactive()){
   # build the example database
-  makeExampleDB(until = "regDataseries", path = tempdir())
+  adb_exampleDB(until = "regDataseries", path = tempdir())
 
   # The GADM dataset comes as *.7z archive
   regGeometry(gSeries = "gadm",

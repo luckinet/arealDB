@@ -46,7 +46,7 @@ of a dataseries to enable provenance tracking and reproducability.
 \examples{
 if(dev.interactive()){
   # start the example database
-  makeExampleDB(until = "match_gazetteer", path = tempdir())
+  adb_exampleDB(until = "match_gazetteer", path = tempdir())
 
   regDataseries(name = "gadm",
                 description = "Database of Global Administrative Areas",

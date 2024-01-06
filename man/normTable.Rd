@@ -9,7 +9,6 @@ normTable(
   pattern = NULL,
   query = NULL,
   ontoMatch = NULL,
-  outType = "rds",
   beep = NULL,
   verbose = FALSE
 )
@@ -27,12 +26,7 @@ dataset names which match the regular expression will be processed.}
 defined via the schema and given as a single character string.}
 
 \item{ontoMatch}{[\code{character(.)}]\cr name of the column(s) that shall be
-matched with an ontology (defined in \code{\link{start_arealDB}}).}
-
-\item{outType}{[\code{logical(1)}]\cr the output file-type, currently
-implemented options are either \emph{*.csv} (more exchangeable for a
-workflow based on several programs) or \emph{*.rds} (smaller and less
-error-prone data-format but can only be read by R efficiently).}
+matched with an ontology (defined in \code{\link{adb_init}}).}
 
 \item{beep}{[\code{integerish(1)}]\cr Number specifying what sound to be
 played to signal the user that a point of interaction is reached by the
@@ -66,13 +60,13 @@ To normalise data tables, this function proceeds as follows:
 \examples{
 if(dev.interactive()){
   # build the example database
-  makeExampleDB(until = "normGeometry", path = tempdir())
+  adb_exampleDB(until = "normGeometry", path = tempdir())
 
   # normalise all available data tables ...
   normTable()
 
   # ... and check the result
-  output <- readRDS(paste0(tempdir(), "/adb_tables/stage3/Estonia.rds"))
+  output <- readRDS(paste0(tempdir(), "/tables/stage3/Estonia.rds"))
 }
 }
 \seealso{
