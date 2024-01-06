@@ -10,30 +10,31 @@ test_that("ontology is correct after geometry normalisation", {
 
   dbpath <- paste0(tempdir(), "/newDB")
 
-  makeExampleDB(until = "regTable", path = dbpath)
+  adb_example(until = "regTable", path = dbpath)
 
   # normalise first level ----
-  output <- normGeometry(input = paste0(getOption("adb_path"), "/adb_geometries/stage2/_al1__gadm.gpkg"))
+  output <- normGeometry(input = paste0(getOption("adb_path"), "/geometries/stage2/_al1__gadm.gpkg"))
 
-  onto <- load_ontology(path = paste0(dbpath, "/territories.rds"))
+  # use adb_ontology here instead
+  onto <- load_ontology(path = paste0(dbpath, "/meta/territories.rds"))
   expect_set_equal(x = onto@concepts$harmonised$label,
                    y = c("a_nation", "county_1", "municipality1_1", "municipality1_2", "county_2", "municipality2_1", "county_3", "municipality3", "county_4", "municipality4_1", "municipality4_2"))
   expect_set_equal(x = onto@concepts$harmonised$has_close_match,
                    y = c("gadm_1.3", NA, NA, NA, NA, NA, NA, NA, NA, NA, NA))
 
   # normalise second level ----
-  output <- normGeometry(input = paste0(getOption("adb_path"), "/adb_geometries/stage2/_al2__gadm.gpkg"))
+  output <- normGeometry(input = paste0(getOption("adb_path"), "/geometries/stage2/_al2__gadm.gpkg"))
 
-  onto <- load_ontology(path = paste0(dbpath, "/territories.rds"))
+  onto <- load_ontology(path = paste0(dbpath, "/meta/territories.rds"))
   expect_set_equal(x = onto@concepts$harmonised$label,
                    y = c("a_nation", "county_1", "municipality1_1", "municipality1_2", "county_2", "municipality2_1", "county_3", "municipality3", "county_4", "municipality4_1", "municipality4_2"))
   expect_set_equal(x = onto@concepts$harmonised$has_close_match,
                    y = c("gadm_1.3", "gadm_2.3", NA, NA, "gadm_3.3", NA, "gadm_4.3", NA, "gadm_5.3", NA, NA))
 
   # normalise third level ----
-  output <- normGeometry(input = paste0(getOption("adb_path"), "/adb_geometries/stage2/_al3__gadm.gpkg"))
+  output <- normGeometry(input = paste0(getOption("adb_path"), "/geometries/stage2/_al3__gadm.gpkg"))
 
-  onto <- load_ontology(path = paste0(dbpath, "/territories.rds"))
+  onto <- load_ontology(path = paste0(dbpath, "/meta/territories.rds"))
   expect_set_equal(x = onto@concepts$harmonised$label,
                    y = c("a_nation", "county_1", "municipality1_1", "municipality1_2", "county_2", "municipality2_1", "county_3", "municipality3", "county_4", "municipality4_1", "municipality4_2"))
   expect_set_equal(x = onto@concepts$harmonised$has_close_match,
@@ -42,9 +43,9 @@ test_that("ontology is correct after geometry normalisation", {
                    y = c(NA, NA, "gadm_6.3", "gadm_7.3", NA, "gadm_8.3", NA, "gadm_9.3", NA, "gadm_10.3", "gadm_11.3"))
 
   # normalise a non-gadm dataset that has been attached to the DB ----
-  output <- normGeometry(input = paste0(getOption("adb_path"), "/adb_geometries/stage2/_al3__madeUp.gpkg"))
+  output <- normGeometry(input = paste0(getOption("adb_path"), "/geometries/stage2/_al3__madeUp.gpkg"))
 
-  onto <- load_ontology(path = paste0(dbpath, "/territories.rds"))
+  onto <- load_ontology(path = paste0(dbpath, "/meta/territories.rds"))
   expect_set_equal(x = onto@concepts$harmonised$label,
                    y = c("a_nation", "county_1", "municipality1_1", "municipality1_2", "Gemeinde 13", "Gemeinde 14", "county_2", "municipality2_1", "county_3", "municipality3", "county_4", "municipality4_1", "municipality4_2"))
   expect_set_equal(x = onto@concepts$harmonised$has_close_match,
@@ -62,11 +63,11 @@ test_that("ontology is correct after table normalisation", {
 
   dbpath <- paste0(tempdir(), "/newDB")
 
-  makeExampleDB(until = "normGeometry", path = dbpath)
+  adb_example(until = "normGeometry", path = dbpath)
 
   output <- normTable()
 
-  onto <- load_ontology(path = paste0(dbpath, "/territories.rds"))
+  onto <- load_ontology(path = paste0(dbpath, "/meta/territories.rds"))
   expect_set_equal(x = onto@concepts$harmonised$label,
                    y = c("a_nation", "county_1", "municipality1_1", "municipality1_2", "Gemeinde 13", "Gemeinde 14", "county_2", "municipality2_1", "county_3", "municipality3", "county_4", "municipality4_1", "municipality4_2"))
   expect_set_equal(x = onto@concepts$harmonised$has_close_match,

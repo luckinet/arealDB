@@ -1,6 +1,6 @@
 library(testthat)
 library(checkmate)
-context("start_arealDB")
+context("adb_init")
 
 test_that("path has been added to the global options", {
 
@@ -10,7 +10,11 @@ test_that("path has been added to the global options", {
 
   dir.create(file.path(dbpath))
   saveRDS(object = arealDB::territories, file = gazPath)
-  start_arealDB(root = dbpath, gazetteer = gazPath, ontology = list(commodity = paste0(inPath, "/ontology.rds")))
+  adb_init(root = dbpath,
+           version = "some0.0.1", licence = "https://creativecommons.org/licenses/by-sa/4.0/",
+           gazetteer = gazPath, top = "al1",
+           ontology = list(commodity = paste0(inPath, "/ontology.rds")),
+           variables = "test")
 
   out <- getOption("adb_path")
   expect_character(x = out)
@@ -18,5 +22,5 @@ test_that("path has been added to the global options", {
 })
 
 test_that("Error if arguments have wrong value", {
-  expect_error(start_arealDB(root = 1))
+  expect_error(adb_init(root = 1))
 })

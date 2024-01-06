@@ -8,7 +8,7 @@ context("regDataseries")
 test_that("a dataseries inventory entry can be produced", {
 
   dbpath <- paste0(tempdir(), "/newDB")
-  makeExampleDB(until = "start_arealDB", path = dbpath)
+  adb_example(until = "adb_init", path = dbpath)
   inPath <- system.file("test_datasets", package = "arealDB", mustWork = TRUE)
 
   output <- regDataseries(name = "gadm",
@@ -21,15 +21,15 @@ test_that("a dataseries inventory entry can be produced", {
   expect_names(x = names(output), must.include = c("datID", "name", "description", "homepage", "version", "licence_link", "notes"))
 
   # check also whether the entry is in inv_dataseries.csv
-  db <- read_csv(file = paste0(getOption("adb_path"), "/inv_dataseries.csv"), col_types = c("icccccc"))
+  db <- readRDS(file = paste0(getOption("adb_path"), "/meta/inventory.rds"))
 
-  expect_equal(output[-7], db[-7])
+  expect_equal(output[-7], db$dataseries[-7])
 })
 
 test_that("function asks for details, if not provided", {
 
   dbpath <- paste0(tempdir(), "/newDB")
-  makeExampleDB(until = "start_arealDB", path = dbpath)
+  adb_example(until = "adb_init", path = dbpath)
 
   expect_message(object = regDataseries())
   output <- capture_messages(code = regDataseries())
