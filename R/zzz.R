@@ -49,7 +49,8 @@ globalVariables(c(
   "thisName",
   "unitCol",
   "new_label",
-  "len"
+  "len",
+  "dataseries"
 ))
 
 .onAttach <- function(libname, pkgname){
