@@ -1,3 +1,10 @@
+# arealDB 0.9.0 - frontend update
+
+- new functions `adb_backup()`, `adb_inventory()`, `adb_data()`, `adb_metadata()`, `adb_ontology()` and `adb_reset()`
+- renamed functions `makeExmapleDB()` to `adb_example()` and `start_arealDB()` to `adb_init()`
+- some fixes to the backend as well, where now *.csv tables are not used anymore, but information are stored in *.rds files, as they are not meant to be interacted with. This is now done via the `adb_*()` functions, which ensure that nothing is modified to a degree that it breaks
+- 
+
 # arealDB 0.8.1
 
 - re-enable matching with the ontology when normalising a table, by default
