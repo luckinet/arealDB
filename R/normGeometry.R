@@ -306,6 +306,7 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
         tempUnit <- theUnits[j]
 
         if(is.na(tempUnit)) next
+        if(tempUnit == "ignore") next
         message(paste0(" -> processing '", tempUnit, "' ..."))
 
         if(length(na.omit(theUnits)) != 1){

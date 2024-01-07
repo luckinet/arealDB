@@ -146,7 +146,6 @@ matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
         distinct() %>%
         filter(!is.na(external)) %>%
         filter(!is.na(id)) %>%
-        # filter(class == allCols[i]) %>%
         arrange(id)
 
       if(dim(tempConcepts)[1] != 0){
@@ -178,8 +177,7 @@ matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
         distinct() %>%
         left_join(externalConcepts %>% select(externalID = id, external = label), by = "externalID") %>%
         filter(!is.na(external)) %>%
-        select(-externalID) #%>%
-        # filter(class == allCols[i])
+        select(-externalID)
 
     }
 
