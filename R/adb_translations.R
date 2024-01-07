@@ -29,7 +29,7 @@ adb_translations <- function(type = NULL, dataseries = NULL){
   }
   tabType <- str_split(tabType, "[.]")[[1]][1]
 
-  tables <- list.files(path = tabType, pattern = dataseries, full.names = TRUE)
+  tables <- list.files(path = tabType, pattern = paste0(dataseries, "*.rds"), full.names = TRUE)
   out <- readRDS(file = tables)
 
   return(out)
