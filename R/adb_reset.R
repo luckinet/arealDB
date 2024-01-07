@@ -1,21 +1,19 @@
 #' Reset an areal database to its unfilled state
 #'
-#' @param onto [\code{logical(1)}]\cr whether or not to reset the ontology.
-#' @param gaz [\code{logical(1)}]\cr whether or not to reset the gazetteer
-#' @param schemas [\code{logical(1)}]\cr whether or not to reset schemas.
-#' @param tables [\code{logical(1)}]\cr whether or not to reset the tables.
-#' @param geometries [\code{logical(1)}]\cr whether or not to reset the
-#'   geometries.
+#' @param what [\code{logical(1)}]\cr what to reset, either \code{"onto"},
+#'   \code{"gaz"}, \code{"schemas"}, \code{"tables"}, \code{"geometries"} or
+#'   \code{"all"}, the default.
 #' @return no return value, called for its side effect of reorganising an areal
 #'   database into a state where no reg* or norm* functions have been run
 #' @importFrom checkmate assertLogical
 #' @export
 
-adb_reset <- function(onto = TRUE, gaz = TRUE, schemas = TRUE,
-                      tables = TRUE, geometries = TRUE){
+adb_reset <- function(what = "all"){
 
-  assertLogical(x = onto, len = 1, any.missing = FALSE)
-  assertLogical(x = gaz, len = 1, any.missing = FALSE)
+  assertChoice(x = what, choices = c("onto", "gaz", "schemas", "tables", "geometries", "all"))
+  if(what == "all"){
+    what <- c("onto", "gaz", "schemas", "tables", "geometries")
+  }
 
   # set internal paths
   intPaths <- paste0(getOption(x = "adb_path"))
@@ -26,12 +24,12 @@ adb_reset <- function(onto = TRUE, gaz = TRUE, schemas = TRUE,
 
   # remove metadata
   unlink(paste0(intPaths, "/meta/inventory.rds"))
-  if(gaz) unlink(paste0(intPaths, "/meta/lucki_gazetteer.rds"))
-  if(onto) unlink(paste0(intPaths, "/meta/lucki_onto.rds"))
-  if(schemas) unlink(list.files(paste0(intPaths, "/meta/schemas/"), full.names = TRUE))
+  if("gaz" %in% what) unlink(paste0(intPaths, "/meta/lucki_gazetteer.rds"))
+  if("onto" %in% what) unlink(paste0(intPaths, "/meta/lucki_onto.rds"))
+  if("schemas" %in% what) unlink(list.files(paste0(intPaths, "/meta/schemas/"), full.names = TRUE))
 
   # move geometries from stage2/processed, to stage2
-  if(geometries){
+  if("geometries" %in% what){
 
     geom_stage2 <- list.files(path = paste0(intPaths, "/geometries/stage2/processed/"))
     geom_stage2_full <- list.files(path = paste0(intPaths, "/geometries/stage2/processed/"), full.names = TRUE)
@@ -49,7 +47,7 @@ adb_reset <- function(onto = TRUE, gaz = TRUE, schemas = TRUE,
   }
 
   # move tables from stage2/processed, to stage2
-  if(tables){
+  if("tables" %in% what){
 
     tab_stage2 <- list.files(path = paste0(intPaths, "/tables/stage2/processed/"))
     tab_stage2_full <- list.files(path = paste0(intPaths, "/tables/stage2/processed/"), full.names = TRUE)
