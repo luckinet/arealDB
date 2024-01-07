@@ -93,10 +93,10 @@ adb_example <- function(path = NULL, until = NULL, verbose = FALSE){
             to = paste0(path, "/tables/stage2/aNation_al2_barleyMaize_1990_2017_madeUp.csv"))
 
   # load gazetteer
-  file.copy(from = paste0(inPath, "/match_madeUp.csv"),
-            to = paste0(path, "/meta/territories/match_madeUp.csv"))
-  file.copy(from = paste0(inPath, "/match_gadm.csv"),
-            to = paste0(path, "/meta/territories/match_gadm.csv"))
+  file.copy(from = paste0(inPath, "/match_madeUp.rds"),
+            to = paste0(path, "/meta/territories/match_madeUp.rds"))
+  file.copy(from = paste0(inPath, "/match_gadm.rds"),
+            to = paste0(path, "/meta/territories/match_gadm.rds"))
 
 
   if (any(theSteps %in% "regDataseries")) {
