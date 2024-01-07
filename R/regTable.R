@@ -307,7 +307,8 @@ regTable <- function(..., subset = NULL, dSeries = NULL, gSeries = NULL,
   }
 
   # put together file name and get confirmation that file should exist now
-  fileName <- paste0(mainPoly, "_", label, "_", subset, "_", begin, "_", end, "_", dSeries, ".csv")
+  tempName <- paste0(mainPoly, "_", label, "_", subset, "_", begin, "_", end, "_", dSeries)
+  fileName <- paste0(tempName, ".csv")
   filePath <- paste0(intPaths, "/tables/stage2/", fileName)
   fileArchive <- str_split(archive, "\\|")[[1]]
 
@@ -319,7 +320,7 @@ regTable <- function(..., subset = NULL, dSeries = NULL, gSeries = NULL,
       return(paste0("'", fileName, "' has already been registered."))
     }
   } else {
-    theSchemaName <- paste0("schema_", newTID)
+    theSchemaName <- paste0(tempName, "_schema")
   }
 
   # make a schema description
