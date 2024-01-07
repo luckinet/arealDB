@@ -84,7 +84,7 @@ if(dev.interactive()){
   library(sf)
 
   # build the example database
-  adb_exampleDB(until = "regGeometry", path = tempdir())
+  adb_example(until = "regGeometry", path = tempdir())
 
   # normalise all geometries ...
   normGeometry(pattern = "estonia")

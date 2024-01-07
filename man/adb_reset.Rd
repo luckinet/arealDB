@@ -4,25 +4,12 @@
 \alias{adb_reset}
 \title{Reset an areal database to its unfilled state}
 \usage{
-adb_reset(
-  onto = TRUE,
-  gaz = TRUE,
-  schemas = TRUE,
-  tables = TRUE,
-  geometries = TRUE
-)
+adb_reset(what = "all")
 }
 \arguments{
-\item{onto}{[\code{logical(1)}]\cr whether or not to reset the ontology.}
-
-\item{gaz}{[\code{logical(1)}]\cr whether or not to reset the gazetteer}
-
-\item{schemas}{[\code{logical(1)}]\cr whether or not to reset schemas.}
-
-\item{tables}{[\code{logical(1)}]\cr whether or not to reset the tables.}
-
-\item{geometries}{[\code{logical(1)}]\cr whether or not to reset the
-geometries.}
+\item{what}{[\code{logical(1)}]\cr what to reset, either \code{"onto"},
+\code{"gaz"}, \code{"schemas"}, \code{"tables"}, \code{"geometries"} or
+\code{"all"}, the default.}
 }
 \value{
 no return value, called for its side effect of reorganising an areal

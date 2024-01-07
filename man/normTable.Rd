@@ -60,7 +60,7 @@ To normalise data tables, this function proceeds as follows:
 \examples{
 if(dev.interactive()){
   # build the example database
-  adb_exampleDB(until = "normGeometry", path = tempdir())
+  adb_example(until = "normGeometry", path = tempdir())
 
   # normalise all available data tables ...
   normTable()
