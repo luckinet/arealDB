@@ -13,18 +13,25 @@ development:
   mode: release
 
 reference:
-  - title: start database
-    desc: functions to start a database (stage one)
+  - title: utility functions
+    desc: functions to manage and access an areal database
     contents:
-      - makeExampleDB
-      - start_arealDB
+      - adb_backup
+      - adb_data
+      - adb_example
+      - adb_inventory
+      - adb_metadata
+      - adb_ontology
+      - adb_reset
+      - adb_schemas
+      - adb_translations
   - title: register data
     desc: functions that register data and metadata (stage two)
     contents:
       - regDataseries
       - regGeometry
       - regTable
-  - title: normalise database
+  - title: normalise data
     desc: functions that harmonise and integrate data into the database (stage three)
     contents:
       - normGeometry
@@ -35,7 +42,6 @@ reference:
       - updateOntology
       - getColTypes
       - testCompressed
-      - updateTable
   - title: data
     contents:
       - territories
