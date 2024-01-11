@@ -59,6 +59,8 @@
 normTable <- function(input = NULL, pattern = NULL, query = NULL, ontoMatch = NULL,
                       beep = NULL, verbose = FALSE){
 
+  # input = NULL; pattern = NULL; query = NULL; ontoMatch = NULL; beep = NULL; verbose = FALSE; i <- 1
+
   # set internal paths
   intPaths <- getOption(x = "adb_path")
   gazPath <- getOption(x = "gazetteer_path")
@@ -147,7 +149,6 @@ normTable <- function(input = NULL, pattern = NULL, query = NULL, ontoMatch = NU
 
     if(targetCols[1] != topClass){
       theUnits <- str_split(string = lut$stage2_name, pattern = "_")[[1]][1]
-      assertSubset(x = theUnits, choices = topUnits$label)
     } else {
       theUnits <- NULL
     }

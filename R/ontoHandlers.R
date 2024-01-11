@@ -74,7 +74,7 @@ matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
   srcID <- get_source(label = dataseries, ontology = ontoPath) %>%
     pull(id)
 
-  # # prepare object to write into
+  # prepare object to write into
   if(inherits(x = table, what = "sf")){
     tab <- table %>%
       st_drop_geometry()
@@ -190,6 +190,8 @@ matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
         left_join(newConcepts %>% select(has_broader = id, any_of(allCols), new_label), by = "has_broader") %>%
         unite(col = "new_label", new_label, label, sep = "][", remove = TRUE)
     }
+    newConcepts <- newConcepts %>%
+      filter(is.na(description) & match == "close")
 
   }
 
