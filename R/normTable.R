@@ -131,7 +131,8 @@ normTable <- function(input = NULL, pattern = NULL, query = NULL, ontoMatch = NU
     # reorganise data
     message("\n--> reading new data table ...")
     thisTable <- read.csv(file = thisInput, header = FALSE, strip.white = TRUE, as.is = TRUE, na.strings = algorithm@format$na, encoding = "UTF-8") %>%
-      as_tibble()
+      as_tibble() %>%
+      mutate(across(where(is.character), ~na_if(x = ., y = "")))
 
     message("    reorganising table with '", thisSchema, "' ...")
     thisTable <- thisTable %>%
