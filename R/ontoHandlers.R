@@ -55,8 +55,13 @@ matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
                   }))
 
   # fill from left to right
+  fixParent <- NULL
   for(i in seq_along(allCols)){
     if(i == 1) next
+    if(!allCols[i] %in% names(table)){
+      table <- add_column(.data = table, !!allCols[i] := NA_character_, .after = allCols[i-1])
+      fixParent <- c(fixParent, allCols[i])
+    }
     table <- table %>%
       mutate(!!allCols[i] := if_else(is.na(!!sym(allCols[i])), !!sym(allCols[i-1]), !!sym(allCols[i])))
   }
@@ -181,6 +186,24 @@ matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
 
     }
 
+    # fix the parent of the current level
+    if(i != 1){
+      if(allCols[i-1] %in% fixParent){
+        theseConcepts <- tempConcepts %>%
+          filter(external %in% unique(table[[allCols[i]]])) %>%
+          select(external, id = has_broader)
+        parentConcepts <- newConcepts %>%
+          select(id, allCols[i-1]) %>%
+          left_join(theseConcepts, ., by = "id") %>%
+          select(!!allCols[i] := external, allCols[i-1])
+
+        table <- table %>%
+          select(-allCols[i-1]) %>%
+          left_join(parentConcepts, by = allCols[i]) %>%
+          select(all_of(allCols), everything())
+      }
+    }
+
     if(i == 1){
       newConcepts <- tempConcepts %>%
         rename(!!allCols[i] := external, new_label = label)
@@ -190,8 +213,8 @@ matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
         left_join(newConcepts %>% select(has_broader = id, any_of(allCols), new_label), by = "has_broader") %>%
         unite(col = "new_label", new_label, label, sep = "][", remove = TRUE)
     }
-    newConcepts <- newConcepts %>%
-      filter(is.na(description) & match == "close")
+    # newConcepts <- newConcepts %>%
+    #   filter(is.na(description) & match == "close")
 
   }
 
