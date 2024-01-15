@@ -2,7 +2,7 @@
 % Please edit documentation in R/adb_init.R
 \name{adb_init}
 \alias{adb_init}
-\title{Set the root path of an areal database}
+\title{Initiate an areal database}
 \usage{
 adb_init(root, version, licence, gazetteer, top, ontology, variables)
 }

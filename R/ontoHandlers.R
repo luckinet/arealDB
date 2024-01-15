@@ -238,7 +238,7 @@ matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
 
 }
 
-#' Update the an ontology
+#' Update an ontology
 #'
 #' This function takes a table (spatial) and updates all territorial concepts in
 #' the provided gazetteer.

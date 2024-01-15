@@ -2,7 +2,7 @@
 % Please edit documentation in R/adb_example.R
 \name{adb_example}
 \alias{adb_example}
-\title{Build an example database}
+\title{Build an example areal database}
 \usage{
 adb_example(path = NULL, until = NULL, verbose = FALSE)
 }
