@@ -21,7 +21,7 @@ reference:
       - adb_inventory
       - adb_ontology
       - adb_reset
-      - abd_restore
+      - adb_restore
       - adb_schemas
       - adb_translations
   - title: register data
