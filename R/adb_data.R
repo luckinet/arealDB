@@ -22,9 +22,7 @@
 #'   value (instead, the resulting object is stored in \code{outPath}),
 #'   otherwise ...
 #' @examples
-#'
-#' @importFrom beepr beep
-#' @export
+
 
 adb_data <- function(root, ..., variables = NULL, merge = FALSE,
                      outPath = NULL, outType = NULL){

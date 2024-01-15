@@ -1,6 +1,7 @@
+#' Load the metadata from an areal database
+#'
 
-
-adb_metadata <- function(dimensions, inventory = NULL){
+adb_metadata <- function(){
 
   # set internal paths
   intPaths <- paste0(getOption(x = "adb_path"))
