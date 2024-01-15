@@ -246,11 +246,11 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
 
     # identify whether the new geometry is first and therefore the geometric
     # basis, or whether something has already been defined at that level
-    testBasis <- get_class(external = TRUE, ontology = gazPath)
-    newParent <- testBasis %>%
+    gazClasses <- get_class(external = TRUE, ontology = gazPath)
+    newParent <- gazClasses %>%
       filter(label %in% tail(targetLabel, 1)) %>%
       pull(has_broader)
-    testBasis <- testBasis %>%
+    testBasis <- gazClasses %>%
       filter(has_broader %in% newParent) %>%
       filter(row_number() == 1)
 
@@ -413,7 +413,7 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
           base_geom <- target_geom %>%
             filter(geoID == target_geom$geoID[1])
 
-          # simplify and store in seperate object
+          # simplify and store in separate object
           if(simplify){
             new_geom_simple <- new_geom %>%
               ms_simplify(keep = 0.5, method = "dp", keep_shapes = TRUE) %>%
@@ -597,6 +597,53 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
             arrange(gazID, geoID)
 
         } else {
+
+          # if it has been identified that the new geometries need to be matched spatially in the
+          # absence of a file/layer, it means that it must be intersected with the parent layer,
+          # to derive the correct IDs
+          if(spatMatch){
+            new_geom <- new_geom %>%
+              rename(new_label = !!sym(tail(territoryCols, 1))) %>%
+              select(-external, -match, -id, -all_of(head(territoryCols, -1))) %>%
+              ms_simplify(keep = 0.5, method = "dp", keep_shapes = TRUE) %>%
+              mutate(new_area = as.numeric(st_area(.)))  %>%
+              st_make_valid()
+
+            targetParent_geom <- read_sf(dsn = paste0(intPaths, "/geometries/stage3/", tempUnit, ".gpkg"),
+                                         layer = allClasses[which(allClasses %in% tail(targetClass$label, 1)) - 1],
+                                         stringsAsFactors = FALSE) %>%
+              filter(geoID %in% gIDs) %>%
+              mutate(target_area = as.numeric(st_area(.)))
+
+            message("    -> Adapting IDs to parent level")
+            pb <- progress_bar$new(format = "[:bar] :current/:total (:percent)", total = dim(targetParent_geom)[1])
+            geom_intersect <- st_intersects(x = targetParent_geom, y = new_geom)
+            parentOverlap <-  suppressWarnings(
+              map_dfr(1:dim(targetParent_geom)[1], function(ix){
+                pb$tick()
+                st_intersection(x = targetParent_geom[ix,], y = new_geom[geom_intersect[[ix]],])
+              })) %>%
+              st_make_valid() %>%
+              mutate(intersect_area = as.numeric(st_area(.)),
+                     target_prop = round(intersect_area/target_area*100, 5),
+                     new_prop = round(intersect_area/new_area*100, 5))
+
+            new_geom <- parentOverlap %>%
+              filter(new_prop > thresh) %>%
+              group_by(gazName) %>%
+              arrange(new_label) %>%
+              mutate(newID = str_pad(string = row_number(), width = 3, pad = 0)) %>%
+              ungroup() %>%
+              rowwise() %>%
+              mutate(id = paste0(gazID, ".", newID),
+                     !!tail(territoryCols, 1) := new_label,
+                     external = new_label,
+                     match = "exact") %>%
+              separate_wider_delim(cols = gazName, delim = ".", names = head(territoryCols, -1)) %>%
+              select(all_of(territoryCols), id, match, external, geom) %>%
+              arrange(id)
+
+          }
 
           message("    Creating new basis dataset for class ", tail(targetClass$label, 1), ".")
           output_geom <- suppressMessages(
