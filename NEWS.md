@@ -1,9 +1,9 @@
 # arealDB 0.9.0 - frontend update
 
-- new functions `adb_backup()`, `adb_data()`, `adb_inventory()`, `adb_metadata()`, `adb_ontology()`, `adb_reset()`, `adb_schemas()` and `adb_translations()` to access the respective part of an areal database.
+- new functions `adb_backup()`, `adb_data()`, `adb_inventory()`, `adb_metadata()`, `adb_ontology()`, `adb_reset()`, `adb_restore()`, `adb_schemas()` and `adb_translations()` to access the respective part of an areal database.
 - renamed functions `makeExmapleDB()` to `adb_example()` and `start_arealDB()` to `adb_init()`
 - some fixes to the backend as well, where now *.csv tables are not used anymore, but information are stored in *.rds files, as they are not meant to be interacted with. This is now done via the `adb_*()` functions, which ensure that nothing is modified to a degree that it breaks
-- 
+- incl. a new feature, where a table that has a missing target column is fixed by matching the child items and then selecting the parent from that as the missing target column
 
 # arealDB 0.8.1
 
