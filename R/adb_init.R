@@ -1,4 +1,4 @@
-#' Set the root path of an areal database
+#' Initiate an areal database
 #'
 #' Initiate a geospatial database or register a database that exists at the root
 #' path.
@@ -36,6 +36,7 @@
 #' getOption("adb_path"); getOption("gazetteer_path")
 #' @importFrom checkmate testDirectory testFileExists assertFileExists
 #'   assertList
+#' @importFrom stringr str_detect
 #' @importFrom readr write_csv write_lines
 #' @export
 
@@ -47,6 +48,9 @@ adb_init <- function(root, version, licence, gazetteer, top, ontology, variables
       warning("no gazetteer was found in the provided path!")
     }
     assertList(x = ontology, min.len = 1, any.missing = FALSE, names = "named")
+  }
+  if(str_detect(string = version, pattern = "_")){
+    stop("please chose a version name that does not contain the symbol '_'")
   }
 
   # shitty windows workaround, because a directory may not have a trailing slash

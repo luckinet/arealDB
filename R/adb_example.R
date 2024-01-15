@@ -1,4 +1,4 @@
-#' Build an example database
+#' Build an example areal database
 #'
 #' This function helps setting up an example database up until a certain step.
 #' @param path [\code{character(1)}]\cr The database gets created by default in
@@ -61,7 +61,7 @@ adb_example <- function(path = NULL, until = NULL, verbose = FALSE){
   saveRDS(object = arealDB::territories, file = gazPath)
   if (any(theSteps %in% "adb_init")) {
     adb_init(root = path,
-             version = "some_0.0.1", licence = "https://creativecommons.org/licenses/by-sa/4.0/",
+             version = "some0.0.1", licence = "https://creativecommons.org/licenses/by-sa/4.0/",
              gazetteer = gazPath, top = "al1",
              ontology = ontoPath,
              variables = c("harvested", "production"))
