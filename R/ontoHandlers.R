@@ -18,7 +18,7 @@
 #' @importFrom checkmate assertFileExists
 #' @importFrom utils head
 #' @importFrom ontologics load_ontology new_source get_concept new_mapping
-#'   make_tree edit_matches
+#'   make_tree
 #' @importFrom purrr map_dfr
 #' @importFrom dplyr pull filter select mutate distinct bind_cols rename
 #'   everything left_join rename_with na_if
@@ -152,7 +152,7 @@ matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
                match = str_replace(string = match, pattern = "_match", replacement = "")) %>%
         filter(!is.na(external)) %>%
         filter(match != "exact") %>%
-        left_join(toMatch %>% select(external = label, has_broader, class), ., by = c("external", "has_broader", "class")) %>%
+        left_join(toMatch %>% select(external = label, class), ., by = c("external", "class")) %>%
         filter(!is.na(id)) %>%
         arrange(id)
 
