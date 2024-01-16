@@ -638,7 +638,7 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
               mutate(id = paste0(gazID, ".", newID),
                      !!tail(territoryCols, 1) := new_label,
                      external = new_label,
-                     match = "exact") %>%
+                     match = "close") %>%
               separate_wider_delim(cols = gazName, delim = ".", names = head(territoryCols, -1)) %>%
               select(all_of(territoryCols), id, match, external, geom) %>%
               arrange(id)
