@@ -51,7 +51,23 @@ globalVariables(c(
   "new_label",
   "len",
   "dataseries",
-  "newID"
+  "newID",
+  "harmLab",
+  "sort_in",
+  "label_harm",
+  "label_new",
+  "label.x",
+  "label.y",
+  "dist",
+  "dist_0",
+  "dist_1",
+  "dist_2",
+  "has_0_differences",
+  "has_new_close_match",
+  "",
+  "",
+  "",
+  ""
 ))
 
 .onAttach <- function(libname, pkgname){
