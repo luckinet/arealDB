@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">arealDB</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.8.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.9.0</span>
       </span>
     </div>
 
@@ -56,17 +56,53 @@
     </div>
 
     <table class="ref-index"><colgroup><col class="alias"><col class="title"></colgroup><tbody><tr><th colspan="2">
-          <h2 id="start-database">start database <a href="#start-database" class="anchor" aria-hidden="true"></a></h2>
-          <p class="section-desc"></p><p>functions to start a database (stage one)</p>
+          <h2 id="utility-functions">utility functions <a href="#utility-functions" class="anchor" aria-hidden="true"></a></h2>
+          <p class="section-desc"></p><p>functions to manage and access an areal database</p>
         </th>
       </tr></tbody><tbody><tr><td>
-          <p><code><a href="makeExampleDB.html">makeExampleDB()</a></code> </p>
+          <p><code><a href="adb_backup.html">adb_backup()</a></code> </p>
         </td>
-        <td><p>Build an example database</p></td>
+        <td><p>Backup the current state of an areal database</p></td>
       </tr><tr><td>
-          <p><code><a href="start_arealDB.html">start_arealDB()</a></code> <code><a href="start_arealDB.html">setPath()</a></code> </p>
+          <p><code><a href="adb_data.html">adb_data()</a></code> </p>
         </td>
-        <td><p>Set the root path</p></td>
+        <td><p>Load the data from an areal database</p></td>
+      </tr><tr><td>
+          <p><code><a href="adb_example.html">adb_example()</a></code> </p>
+        </td>
+        <td><p>Build an example areal database</p></td>
+      </tr><tr><td>
+          <p><code><a href="adb_init.html">adb_init()</a></code> </p>
+        </td>
+        <td><p>Initiate an areal database</p></td>
+      </tr><tr><td>
+          <p><code><a href="adb_inventory.html">adb_inventory()</a></code> </p>
+        </td>
+        <td><p>Load the inventory of the currently active areal database</p></td>
+      </tr><tr><td>
+          <p><code><a href="adb_metadata.html">adb_metadata()</a></code> </p>
+        </td>
+        <td><p>Load the metadata from an areal database</p></td>
+      </tr><tr><td>
+          <p><code><a href="adb_ontology.html">adb_ontology()</a></code> </p>
+        </td>
+        <td><p>Load the currently active ontology</p></td>
+      </tr><tr><td>
+          <p><code><a href="adb_reset.html">adb_reset()</a></code> </p>
+        </td>
+        <td><p>Reset an areal database to its unfilled state</p></td>
+      </tr><tr><td>
+          <p><code><a href="adb_restore.html">adb_restore()</a></code> </p>
+        </td>
+        <td><p>Restore the database from a backup</p></td>
+      </tr><tr><td>
+          <p><code><a href="adb_schemas.html">adb_schemas()</a></code> </p>
+        </td>
+        <td><p>Load the schemas of the currently active areal database</p></td>
+      </tr><tr><td>
+          <p><code><a href="adb_translations.html">adb_translations()</a></code> </p>
+        </td>
+        <td><p>Load the translation tables of the currently active areal database</p></td>
       </tr></tbody><tbody><tr><th colspan="2">
           <h2 id="register-data">register data <a href="#register-data" class="anchor" aria-hidden="true"></a></h2>
           <p class="section-desc"></p><p>functions that register data and metadata (stage two)</p>
@@ -84,7 +120,7 @@
         </td>
         <td><p>Register a new areal data table</p></td>
       </tr></tbody><tbody><tr><th colspan="2">
-          <h2 id="normalise-database">normalise database <a href="#normalise-database" class="anchor" aria-hidden="true"></a></h2>
+          <h2 id="normalise-data">normalise data <a href="#normalise-data" class="anchor" aria-hidden="true"></a></h2>
           <p class="section-desc"></p><p>functions that harmonise and integrate data into the database (stage three)</p>
         </th>
       </tr></tbody><tbody><tr><td>
@@ -106,7 +142,11 @@
       </tr><tr><td>
           <p><code><a href="updateOntology.html">updateOntology()</a></code> </p>
         </td>
-        <td><p>Update the the gazetteer</p></td>
+        <td><p>Update an ontology</p></td>
+      </tr><tr><td>
+          <p><code><a href="edit_matches.html">edit_matches()</a></code> </p>
+        </td>
+        <td><p>Edit matches manually in a csv-table</p></td>
       </tr><tr><td>
           <p><code><a href="getColTypes.html">getColTypes()</a></code> </p>
         </td>
@@ -115,10 +155,6 @@
           <p><code><a href="testCompressed.html">testCompressed()</a></code> </p>
         </td>
         <td><p>Test whether a file is a compressed file</p></td>
-      </tr><tr><td>
-          <p><code><a href="updateTable.html">updateTable()</a></code> </p>
-        </td>
-        <td><p>Update a table</p></td>
       </tr></tbody><tbody><tr><th colspan="2">
           <h2 id="data">data <a href="#data" class="anchor" aria-hidden="true"></a></h2>
           <p class="section-desc"></p>

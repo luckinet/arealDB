@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">arealDB</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.8.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.9.0</span>
       </span>
     </div>
 
@@ -73,7 +73,7 @@
 <span>  schema <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  archive <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  archiveLink <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  nextUpdate <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  downloadDate <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  updateFrequency <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  metadataLink <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  metadataPath <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -138,9 +138,9 @@ boundaries emerge.</p></dd>
 <dd><p>[<code>character(1)</code>]<br> download-link of the archive.</p></dd>
 
 
-<dt>nextUpdate</dt>
-<dd><p>[<code>character(1)</code>]<br> when does the geometry dataset get
-updated the next time (format restricted to: YYYY-MM-DD).</p></dd>
+<dt>downloadDate</dt>
+<dd><p>[<code>character(1)</code>]<br> value describing the download
+date of this dataset (in YYYY-MM-DD format).</p></dd>
 
 
 <dt>updateFrequency</dt>
@@ -221,7 +221,7 @@ register shall overwrite a potentially already existing older version.</p></dd>
     <h2>Examples</h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/grDevices/dev.interactive.html" class="external-link">dev.interactive</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">{</span></span></span>
 <span class="r-in"><span>  <span class="co"># build the example database</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="makeExampleDB.html">makeExampleDB</a></span><span class="op">(</span>until <span class="op">=</span> <span class="st">"regGeometry"</span>, path <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu">adb_exampleDB</span><span class="op">(</span>until <span class="op">=</span> <span class="st">"regGeometry"</span>, path <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span>  <span class="co"># the schema description for this table</span></span></span>
 <span class="r-in"><span>  <span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/luckinet/tabshiftr" class="external-link">tabshiftr</a></span><span class="op">)</span></span></span>

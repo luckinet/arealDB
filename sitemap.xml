@@ -22,13 +22,46 @@
     <loc>http://EhrmannS.github.io/arealDB/news/index.html</loc>
   </url>
   <url>
+    <loc>http://EhrmannS.github.io/arealDB/reference/adb_backup.html</loc>
+  </url>
+  <url>
+    <loc>http://EhrmannS.github.io/arealDB/reference/adb_data.html</loc>
+  </url>
+  <url>
+    <loc>http://EhrmannS.github.io/arealDB/reference/adb_example.html</loc>
+  </url>
+  <url>
+    <loc>http://EhrmannS.github.io/arealDB/reference/adb_init.html</loc>
+  </url>
+  <url>
+    <loc>http://EhrmannS.github.io/arealDB/reference/adb_inventory.html</loc>
+  </url>
+  <url>
+    <loc>http://EhrmannS.github.io/arealDB/reference/adb_metadata.html</loc>
+  </url>
+  <url>
+    <loc>http://EhrmannS.github.io/arealDB/reference/adb_ontology.html</loc>
+  </url>
+  <url>
+    <loc>http://EhrmannS.github.io/arealDB/reference/adb_reset.html</loc>
+  </url>
+  <url>
+    <loc>http://EhrmannS.github.io/arealDB/reference/adb_restore.html</loc>
+  </url>
+  <url>
+    <loc>http://EhrmannS.github.io/arealDB/reference/adb_schemas.html</loc>
+  </url>
+  <url>
+    <loc>http://EhrmannS.github.io/arealDB/reference/adb_translations.html</loc>
+  </url>
+  <url>
+    <loc>http://EhrmannS.github.io/arealDB/reference/edit_matches.html</loc>
+  </url>
+  <url>
     <loc>http://EhrmannS.github.io/arealDB/reference/getColTypes.html</loc>
   </url>
   <url>
     <loc>http://EhrmannS.github.io/arealDB/reference/index.html</loc>
-  </url>
-  <url>
-    <loc>http://EhrmannS.github.io/arealDB/reference/makeExampleDB.html</loc>
   </url>
   <url>
     <loc>http://EhrmannS.github.io/arealDB/reference/matchOntology.html</loc>
@@ -49,9 +82,6 @@
     <loc>http://EhrmannS.github.io/arealDB/reference/regTable.html</loc>
   </url>
   <url>
-    <loc>http://EhrmannS.github.io/arealDB/reference/start_arealDB.html</loc>
-  </url>
-  <url>
     <loc>http://EhrmannS.github.io/arealDB/reference/territories.html</loc>
   </url>
   <url>
@@ -59,8 +89,5 @@
   </url>
   <url>
     <loc>http://EhrmannS.github.io/arealDB/reference/updateOntology.html</loc>
-  </url>
-  <url>
-    <loc>http://EhrmannS.github.io/arealDB/reference/updateTable.html</loc>
   </url>
 </urlset>

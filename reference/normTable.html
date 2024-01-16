@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">arealDB</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.8.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.9.0</span>
       </span>
     </div>
 
@@ -67,7 +67,6 @@
 <span>  pattern <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  query <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  ontoMatch <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  outType <span class="op">=</span> <span class="st">"rds"</span>,</span>
 <span>  beep <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -94,14 +93,7 @@ defined via the schema and given as a single character string.</p></dd>
 
 <dt>ontoMatch</dt>
 <dd><p>[<code>character(.)</code>]<br> name of the column(s) that shall be
-matched with an ontology (defined in <code><a href="start_arealDB.html">start_arealDB</a></code>).</p></dd>
-
-
-<dt>outType</dt>
-<dd><p>[<code>logical(1)</code>]<br> the output file-type, currently
-implemented options are either <em>*.csv</em> (more exchangeable for a
-workflow based on several programs) or <em>*.rds</em> (smaller and less
-error-prone data-format but can only be read by R efficiently).</p></dd>
+matched with an ontology (defined in <code><a href="adb_init.html">adb_init</a></code>).</p></dd>
 
 
 <dt>beep</dt>
@@ -151,13 +143,13 @@ program, see <code><a href="https://rdrr.io/pkg/beepr/man/beep.html" class="exte
     <h2>Examples</h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/grDevices/dev.interactive.html" class="external-link">dev.interactive</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">{</span></span></span>
 <span class="r-in"><span>  <span class="co"># build the example database</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="makeExampleDB.html">makeExampleDB</a></span><span class="op">(</span>until <span class="op">=</span> <span class="st">"normGeometry"</span>, path <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="adb_example.html">adb_example</a></span><span class="op">(</span>until <span class="op">=</span> <span class="st">"normGeometry"</span>, path <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span>  <span class="co"># normalise all available data tables ...</span></span></span>
 <span class="r-in"><span>  <span class="fu">normTable</span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span>  <span class="co"># ... and check the result</span></span></span>
-<span class="r-in"><span>  <span class="va">output</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"/adb_tables/stage3/Estonia.rds"</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">output</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/readRDS.html" class="external-link">readRDS</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"/tables/stage3/Estonia.rds"</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
 </code></pre></div>
     </div>

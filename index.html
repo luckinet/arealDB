@@ -40,7 +40,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">arealDB</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.8.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.9.0</span>
       </span>
     </div>
 
@@ -113,7 +113,7 @@ Schematic overview of the result
 <div class="section level2">
 <h2 id="getting-started">Getting started<a class="anchor" aria-label="anchor" href="#getting-started"></a>
 </h2>
-<p>To study how <code>arealDB</code> works, one can make use of the function <code><a href="reference/makeExampleDB.html">makeExampleDB()</a></code>, where the full process of building an areal database can be “simulated” with dummy data. This can be used to train yourself on a particular step based on a fully valid database up until a certain stage of the process. For instance, to set up database that has merely just been started, but doesn’t contain any thematic data or geometries yet, one would use <code>makeExampleDB(path = paste0(tempdir(), "/newDB"), until = "start_arealDB")</code>.</p>
+<p>To study how <code>arealDB</code> works, one can make use of the function <code>makeExampleDB()</code>, where the full process of building an areal database can be “simulated” with dummy data. This can be used to train yourself on a particular step based on a fully valid database up until a certain stage of the process. For instance, to set up database that has merely just been started, but doesn’t contain any thematic data or geometries yet, one would use <code>makeExampleDB(path = paste0(tempdir(), "/newDB"), until = "start_arealDB")</code>.</p>
 <p>In principle, <code>arealDB</code> follows a simple process involving three stages:</p>
 <ol style="list-style-type: decimal">
 <li><p><strong>Setup the database (<em>stage 1</em>):</strong> To start a new areal database, one needs to specify a gazetteer that contains the valid names of territories and optionally an ontology containing harmonised labels for the concepts in the thematic data.</p></li>

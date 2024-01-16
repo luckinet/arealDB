@@ -18,7 +18,7 @@ geospatial database."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">arealDB</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.8.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.9.0</span>
       </span>
     </div>
 
@@ -73,7 +73,7 @@ geospatial database.</p>
 <span>  layer <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  archive <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  archiveLink <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  nextUpdate <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  downloadDate <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  updateFrequency <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  notes <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  overwrite <span class="op">=</span> <span class="cn">FALSE</span></span>
@@ -109,8 +109,8 @@ corresponding to the respective column name in the geometry.</p></dd>
 
 <dt>ancillary</dt>
 <dd><p>[<code>list(.)</code>]<br> optinal list of columns containing
-ancillary information. Must be of the form
-<code>list(attribute = columnName)</code>, where <code>attribute</code> can be one or
+ancillary information. Must be of the form <code>list(attribute =
+columnName)</code>, where <code>attribute</code> can be one or
 several of</p><ul><li><p><code>"name_ltn"</code> (the english name in latin letters)</p></li>
 <li><p><code>"name_lcl"</code> (the name in local language and letters)</p></li>
 <li><p><code>"code"</code> (any code describing the unit)</p></li>
@@ -134,9 +134,9 @@ from which the geometry emerges.</p></dd>
 <dd><p>[<code>character(1)</code>]<br> download-link of the archive.</p></dd>
 
 
-<dt>nextUpdate</dt>
-<dd><p>[<code>character(1)</code>]<br> value describing the next
-anticipated update of this dataset (in YYYY-MM-DD format).</p></dd>
+<dt>downloadDate</dt>
+<dd><p>[<code>character(1)</code>]<br> value describing the download
+date of this dataset (in YYYY-MM-DD format).</p></dd>
 
 
 <dt>updateFrequency</dt>
@@ -193,7 +193,7 @@ register shall overwrite a potentially already existing older version.</p></dd>
     <h2>Examples</h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/grDevices/dev.interactive.html" class="external-link">dev.interactive</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span><span class="op">{</span></span></span>
 <span class="r-in"><span>  <span class="co"># build the example database</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="makeExampleDB.html">makeExampleDB</a></span><span class="op">(</span>until <span class="op">=</span> <span class="st">"regDataseries"</span>, path <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu">adb_exampleDB</span><span class="op">(</span>until <span class="op">=</span> <span class="st">"regDataseries"</span>, path <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span>  <span class="co"># The GADM dataset comes as *.7z archive</span></span></span>
 <span class="r-in"><span>  <span class="fu">regGeometry</span><span class="op">(</span>gSeries <span class="op">=</span> <span class="st">"gadm"</span>,</span></span>

@@ -33,7 +33,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">arealDB</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.8.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.9.0</span>
       </span>
     </div>
 
@@ -258,7 +258,7 @@ meta-data that allow identification of those names.</p>
 <h3 id="start-the-database-stage-1">Start the database (stage 1)<a class="anchor" aria-label="anchor" href="#start-the-database-stage-1"></a>
 </h3>
 <p>To build a new database with <code>arealDB</code>, one has to start
-with the <code><a href="../reference/start_arealDB.html">start_arealDB()</a></code> function. Also when resuming to
+with the <code>start_arealDB()</code> function. Also when resuming to
 work with that database, it is required to run this function again, as
 it pastes the current root directory into the options of R, based on
 which paths for files are derived. The argument <code>gazetteer =</code>
@@ -271,7 +271,7 @@ top-most level in the gazetteer). It is, however, optional to provide an
 ontology. In case the thematic data do already contain well harmonized
 value terms, this can be omitted.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/start_arealDB.html">start_arealDB</a></span><span class="op">(</span>root <span class="op">=</span> <span class="va">DBDir</span>,</span>
+<code class="sourceCode R"><span><span class="fu">start_arealDB</span><span class="op">(</span>root <span class="op">=</span> <span class="va">DBDir</span>,</span>
 <span>              gazetteer <span class="op">=</span> <span class="va">gazDir</span>, top <span class="op">=</span> <span class="st">"al1"</span>,</span>
 <span>              ontology <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"targetVar"</span> <span class="op">=</span> <span class="va">ontoDir</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>As there is sometimes more than one target variable recorded in an
@@ -324,7 +324,7 @@ combination. <code>name</code> must, in this case, be a class in the
 gazetteer (such as <em>nation</em> in our gazetteer). In case the
 geometries contain several territorial units that shall be handled
 separately, the territory names are taken from what has been defined as
-<code>top =</code> in <code><a href="../reference/start_arealDB.html">start_arealDB()</a></code>. Relations between
+<code>top =</code> in <code>start_arealDB()</code>. Relations between
 the columns/attributes in the geometry and the gazetteer are defined in
 the argument <code>label =</code>, where a list that links them is
 provided.</p>
