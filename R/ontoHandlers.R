@@ -130,50 +130,73 @@ matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
 
     }
 
-    # ... if this is not the case, the only path forward is to first create mappings with the ontology
+    # if not all external concepts have an ID, edit the matches...
     if(any(is.na(externalConcepts$id))){
 
-      relatedConcepts <- edit_matches(new = externalConcepts$label,
-                                      target = externalConcepts %>% select(has_broader, class),
+      toMatch <- externalConcepts %>%
+        filter(is.na(id))
+
+      relatedConcepts <- edit_matches(new = toMatch$label,
+                                      target = toMatch %>% select(has_broader, class),
                                       source = dataseries,
                                       ontology = ontology,
                                       matchDir = paste0(intPaths, "/meta/", type, "/"),
                                       verbose = verbose,
                                       beep = beep)
 
-      tempConcepts <- relatedConcepts %>%
+      newRelatedConcepts <- relatedConcepts %>%
         pivot_longer(cols = c(has_broader_match, has_close_match, has_exact_match, has_narrower_match),
                      names_to = "match", values_to = "external") %>%
-        separate_rows(external, sep = " \\| ") %>%
+        separate_longer_delim(cols = external, delim = " | ") %>%
         mutate(external = na_if(x = external, y = ""),
                match = str_replace(string = match, pattern = "has_", replacement = ""),
                match = str_replace(string = match, pattern = "_match", replacement = "")) %>%
-        distinct() %>%
         filter(!is.na(external)) %>%
+        filter(match != "exact") %>%
+        left_join(toMatch %>% select(external = label, has_broader, class), ., by = c("external", "has_broader", "class")) %>%
         filter(!is.na(id)) %>%
         arrange(id)
 
-      if(dim(tempConcepts)[1] != 0){
-        new_mapping(new = tempConcepts$external,
-                    target = tempConcepts %>% select(id, label, class, has_broader),
+      if(dim(newRelatedConcepts)[1] != 0){
+        new_mapping(new = newRelatedConcepts$external,
+                    target = newRelatedConcepts %>% select(id, label, class, has_broader),
                     source = dataseries,
-                    match = tempConcepts$match,
+                    match = newRelatedConcepts$match,
                     certainty = 3,
                     ontology = ontoPath,
                     verbose = verbose,
                     beep = beep)
       }
 
-    } else {
+      # ... and query the ontology again, this should now include the newly created
+      # concepts as well (except those that were to be ignored)
+      if(i == 1){
+        externalConcepts <- get_concept(label = tempTab$label, has_source = srcID,
+                                        external = TRUE, ontology = ontoPath) %>%
+          mutate(len = lengths(str_split(has_broader, "[.]"))) %>%
+          filter(len == parentLen) %>%
+          select(-len) %>%
+          left_join(tibble(label = tempTab$label), ., by = "label") %>%
+          mutate(class = allCols[i])
+      } else {
+        externalConcepts <- get_concept(label = tempTab$label, has_source = srcID,
+                                        has_broader = tempTab$has_broader,
+                                        external = TRUE, ontology = ontoPath) %>%
+          left_join(tempTab, ., by = c("label", "has_broader")) %>%
+          mutate(class = allCols[i])
+      }
 
-      tempConcepts <-  get_concept(str_detect(has_close_match, paste0(externalConcepts$id, collapse = "|")) |
+
+    } #else {
+
+      tempConcepts <- get_concept(str_detect(has_close_match, paste0(externalConcepts$id, collapse = "|")) |
                                     str_detect(has_broader_match, paste0(externalConcepts$id, collapse = "|")) |
                                     str_detect(has_narrower_match, paste0(externalConcepts$id, collapse = "|")) |
                                     str_detect(has_exact_match, paste0(externalConcepts$id, collapse = "|")),
                                   ontology = ontoPath) %>%
         pivot_longer(cols = c(has_broader_match, has_close_match, has_exact_match, has_narrower_match),
                      names_to = "match", values_to = "external") %>%
-        separate_rows(external, sep = " \\| ") %>%
+        separate_longer_delim(cols = external, delim = " | ") %>%
         filter(!is.na(external)) %>%
         mutate(externalID = str_split_i(external, "[.]", 1),
                match = str_replace(string = match, pattern = "has_", replacement = ""),
@@ -182,39 +205,38 @@ matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
         distinct() %>%
         left_join(externalConcepts %>% select(externalID = id, external = label), by = "externalID") %>%
         filter(!is.na(external)) %>%
+        filter(match != "exact") %>%
         select(-externalID)
 
-    }
+      #}
 
-    # fix the parent of the current level
-    if(i != 1){
-      if(allCols[i-1] %in% fixParent){
-        theseConcepts <- tempConcepts %>%
-          filter(external %in% unique(table[[allCols[i]]])) %>%
-          select(external, id = has_broader)
-        parentConcepts <- newConcepts %>%
-          select(id, allCols[i-1]) %>%
-          left_join(theseConcepts, ., by = "id") %>%
-          select(!!allCols[i] := external, allCols[i-1])
+      # fix the parent of the current level
+      if(i != 1){
+        if(allCols[i-1] %in% fixParent){
+          theseConcepts <- tempConcepts %>%
+            filter(external %in% unique(table[[allCols[i]]])) %>%
+            select(external, id = has_broader)
+          parentConcepts <- newConcepts %>%
+            select(id, allCols[i-1]) %>%
+            left_join(theseConcepts, ., by = "id") %>%
+            select(!!allCols[i] := external, allCols[i-1])
 
-        table <- table %>%
-          select(-allCols[i-1]) %>%
-          left_join(parentConcepts, by = allCols[i]) %>%
-          select(all_of(allCols), everything())
+          table <- table %>%
+            select(-allCols[i-1]) %>%
+            left_join(parentConcepts, by = allCols[i]) %>%
+            select(all_of(allCols), everything())
+        }
       }
-    }
 
-    if(i == 1){
-      newConcepts <- tempConcepts %>%
-        rename(!!allCols[i] := external, new_label = label)
-    } else {
-      newConcepts <- tempConcepts %>%
-        rename(!!allCols[i] := external) %>%
-        left_join(newConcepts %>% select(has_broader = id, any_of(allCols), new_label), by = "has_broader") %>%
-        unite(col = "new_label", new_label, label, sep = "][", remove = TRUE)
-    }
-    # newConcepts <- newConcepts %>%
-    #   filter(is.na(description) & match == "close")
+      if(i == 1){
+        newConcepts <- tempConcepts %>%
+          rename(!!allCols[i] := external, new_label = label)
+      } else {
+        newConcepts <- tempConcepts %>%
+          rename(!!allCols[i] := external) %>%
+          left_join(newConcepts %>% select(has_broader = id, any_of(allCols), new_label), by = "has_broader") %>%
+          unite(col = "new_label", new_label, label, sep = "][", remove = TRUE)
+      }
 
   }
 
