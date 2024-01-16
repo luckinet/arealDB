@@ -17,8 +17,11 @@ reference:
     desc: functions to manage and access an areal database
     contents:
       - adb_backup
+      - adb_data
       - adb_example
+      - adb_init
       - adb_inventory
+      - adb_metadata
       - adb_ontology
       - adb_reset
       - adb_restore
