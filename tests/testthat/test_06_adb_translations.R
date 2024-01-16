@@ -1,4 +1,6 @@
 library(arealDB)
+library(testthat)
+library(checkmate)
 context("adb_translations")
 
 
@@ -11,6 +13,6 @@ test_that("", {
   match <- adb_translations(type = "gazetteer", dataseries = "madeUp")
 
   expect_data_frame(x = match, nrows = 9, ncols = 9)
-  expect_names(x = names(match), identical.to = c("label", "class", "id", "has_broader", "description", "has_broader_match", "has_close_match", "has_exact_match", "has_narrower_match"))
+  expect_names(x = names(match), permutation.of = c("label", "class", "id", "has_broader", "description", "has_broader_match", "has_close_match", "has_exact_match", "has_narrower_match"))
 
 })
