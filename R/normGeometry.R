@@ -96,7 +96,7 @@
 normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10,
                          beep = NULL, simplify = FALSE, verbose = FALSE){
 
-  # input = NULL; pattern = NULL; query = NULL; thresh = 10; beep = NULL; simplify = FALSE; verbose = FALSE; i = 1
+  # input = NULL; pattern = NULL; query = NULL; thresh = 10; beep = NULL; simplify = FALSE; verbose = FALSE; i = 1; library(tidyverse); library(sf); library(stringr)
 
   # set internal paths
   intPaths <- paste0(getOption(x = "adb_path"))
@@ -196,6 +196,7 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
                   ontology = gazPath)
 
       territoryCols <- targetClass$label
+      filledClasses <- allClasses[which(allClasses %in% head(territoryCols, 1)) : which(allClasses %in% tail(territoryCols, 1))]
 
       if(territoryCols[1] != topClass){
         theUnits <- str_split(string = gSeries$stage2_name, pattern = "_")[[1]][1]
@@ -239,7 +240,7 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
       input_geom <- input_geom %>%
         add_column(tibble(!!topClass := theUnits), .before = territoryCols[1])
       territoryCols <- c(topClass, territoryCols)
-      allCols <- allClasses[which(allClasses %in% head(territoryCols, 1)) : which(allClasses %in% tail(territoryCols, 1))]
+      allCols <- filledClasses
     } else {
       allCols <- territoryCols
     }
@@ -646,8 +647,8 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
                      !!tail(territoryCols, 1) := new_label,
                      external = new_label,
                      match = "close") %>%
-              separate_wider_delim(cols = gazName, delim = ".", names = head(territoryCols, -1)) %>%
-              select(all_of(territoryCols), id, match, external, geom) %>%
+              separate_wider_delim(cols = gazName, delim = ".", names = head(filledClasses, -1)) %>%
+              select(all_of(filledClasses), id, match, external, geom) %>%
               arrange(id)
 
           }
@@ -655,7 +656,7 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
           message("    Creating new basis dataset for class ", tail(targetClass$label, 1), ".")
           output_geom <- suppressMessages(
             new_geom %>%
-              unite(col = "gazName", all_of(territoryCols), sep = ".") %>%
+              unite(col = "gazName", all_of(filledClasses), sep = ".") %>%
               mutate(gazClass = tail(targetClass$label, 1),
                      geoID = newGID) %>%
               st_sf() %>%

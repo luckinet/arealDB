@@ -59,7 +59,8 @@ Imports:
     purrr,
     rmapshaper,
     progress,
-    beepr
+    beepr,
+    fuzzyjoin
 Suggests: 
     testthat,
     knitr,
