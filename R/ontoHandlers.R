@@ -7,8 +7,7 @@
 #' @param columns [\code{character(1)}]\cr the columns containing the concepts
 #' @param dataseries [\code{character(1)}]\cr the source dataseries from which
 #'   territories are sourced.
-#' @param ontology [\code{onto}]\cr path where the ontology/gazetteer
-#'   is stored.
+#' @param ontology [\code{onto}]\cr path where the ontology/gazetteer is stored.
 #' @param beep [\code{integerish(1)}]\cr Number specifying what sound to be
 #'   played to signal the user that a point of interaction is reached by the
 #'   program, see \code{\link[beepr]{beep}}.
@@ -27,7 +26,7 @@
 #' @importFrom tidyselect all_of any_of where
 #' @importFrom stringr str_split_i str_replace str_replace_all
 #' @importFrom tidyr separate_rows separate pivot_wider fill pivot_longer
-#'   separate_wider_delim contains
+#'   separate_longer_delim separate_wider_delim contains
 #' @importFrom sf st_drop_geometry
 #' @export
 

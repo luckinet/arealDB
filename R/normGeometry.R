@@ -502,7 +502,6 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
                                            layer = allClasses[which(allClasses %in% tail(targetClass$label, 1)) - 1],
                                            stringsAsFactors = FALSE)
 
-              # !!!!!! perhaps include here a more sophisticated system for versioning in case there are several external geometries read in (also see line 480) !!!!!!
               if(!any(targetParent_geom$geoID %in% gIDs)){
                 targetParent_geom <- targetParent_geom %>%
                   filter(geoID %in% targetParent_geom$geoID[1] & gazClass == parentClass)
@@ -611,8 +610,16 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
 
             targetParent_geom <- read_sf(dsn = paste0(intPaths, "/geometries/stage3/", tempUnit, ".gpkg"),
                                          layer = allClasses[which(allClasses %in% tail(targetClass$label, 1)) - 1],
-                                         stringsAsFactors = FALSE) %>%
-              filter(geoID %in% gIDs) %>%
+                                         stringsAsFactors = FALSE)
+
+            if(!any(targetParent_geom$geoID %in% gIDs)){
+              targetParent_geom <- targetParent_geom %>%
+                filter(geoID %in% targetParent_geom$geoID[1] & gazClass == parentClass)
+            } else {
+              targetParent_geom <- targetParent_geom %>%
+                filter(geoID %in% gIDs & gazClass == parentClass)
+            }
+            targetParent_geom <- targetParent_geom %>%
               mutate(target_area = as.numeric(st_area(.)))
 
             message("    -> Adapting IDs to parent level")

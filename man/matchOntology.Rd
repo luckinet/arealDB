@@ -22,8 +22,7 @@ should be harmonised by matching with the gazetteer.}
 \item{dataseries}{[\code{character(1)}]\cr the source dataseries from which
 territories are sourced.}
 
-\item{ontology}{[\code{onto}]\cr path where the ontology/gazetteer
-is stored.}
+\item{ontology}{[\code{onto}]\cr path where the ontology/gazetteer is stored.}
 
 \item{verbose}{[`logical(1)`][logical]\cr whether or not to give detailed
 information on the process of this function.}
