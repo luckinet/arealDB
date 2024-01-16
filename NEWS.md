@@ -2,8 +2,9 @@
 
 - new functions `adb_backup()`, `adb_data()`, `adb_inventory()`, `adb_metadata()`, `adb_ontology()`, `adb_reset()`, `adb_restore()`, `adb_schemas()` and `adb_translations()` to access the respective part of an areal database.
 - renamed functions `makeExmapleDB()` to `adb_example()` and `start_arealDB()` to `adb_init()`
-- some fixes to the backend as well, where now *.csv tables are not used anymore, but information are stored in *.rds files, as they are not meant to be interacted with. This is now done via the `adb_*()` functions, which ensure that nothing is modified to a degree that it breaks
+- some fixes to the backend as well, where now *.csv tables are not used any more, but information are stored in *.rds files, as they are not meant to be interacted with. This is now done via the `adb_*()` functions, which ensure that nothing is modified to a degree that it breaks
 - incl. a new feature, where a table that has a missing target column is fixed by matching the child items and then selecting the parent from that as the missing target column
+- move the function `edit_matches()`, that was so far located in the `ontologics` package to here, as it is primarily used in `arealDB` and not really a usecase for `ontologics`
 
 # arealDB 0.8.1
 

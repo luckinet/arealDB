@@ -42,6 +42,7 @@ reference:
     contents:
       - matchOntology
       - updateOntology
+      - edit_matches
       - getColTypes
       - testCompressed
   - title: data
