@@ -7,13 +7,19 @@
 #' @param compress [\code{logical(1)}]\cr whether or not the database should be
 #'   compressed into a \emph{tar.gz} archive. Will delete the database folder in
 #'   \code{outPath}.
-#' @param outPath [\code{character(1)}]\cr directory, where the archive should be
-#'   stored.
+#' @param outPath [\code{character(1)}]\cr directory, where the archive should
+#'   be stored.
 #' @details
 #'
 #' @return no return value, called for the side-effect of creating a database
 #'   archive.
 #' @examples
+#' @importFrom checkmate assertCharacter assertLogical assertDirectoryExists
+#'   testDirectoryExists
+#' @importFrom purrr map
+#' @importFrom stringr str_split
+#' @importFrom readr write_csv
+#' @importFrom utils capture.output sessionInfo tar
 
 
 adb_archive <- function(pattern = NULL, variables = NULL, compress = FALSE, outPath = NULL){

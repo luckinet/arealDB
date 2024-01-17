@@ -17,8 +17,8 @@ variables, to select.}
 compressed into a \emph{tar.gz} archive. Will delete the database folder in
 \code{outPath}.}
 
-\item{outPath}{[\code{character(1)}]\cr directory, where the archive should be
-stored.}
+\item{outPath}{[\code{character(1)}]\cr directory, where the archive should
+be stored.}
 }
 \value{
 no return value, called for the side-effect of creating a database
