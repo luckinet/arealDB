@@ -23,7 +23,7 @@ adb_ontology <- function(..., type = "ontology"){
   # set internal paths
   intPaths <- paste0(getOption(x = "adb_path"))
   if(type == "ontology"){
-    thePath <- paste0(getOption(x = "ontology_path"))
+    thePath <- paste0(unique(getOption(x = "ontology_path")))
   } else {
     thePath <- paste0(getOption(x = "gazetteer_path"))
   }

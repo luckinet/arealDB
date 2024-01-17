@@ -41,3 +41,27 @@ testCompressed <- function(x){
 
   return(grepl("^.*(.gz|.bz2|.tar|.zip|.tgz|.gzip|.7z)[[:space:]]*$", x))
 }
+
+#' Open file when it's not open
+#'
+#' @param file a file to store with a delay.
+#' @param fun the function to use.
+#' @details This function takes the \code{file} and only opens it, if it is not
+#' currently already open. In the case it's already open, it prompts the user to
+#' confirm when the file is closed (and processed by the other process) and then
+#' opens it again.
+#' @importFrom checkmate assertChoice
+
+delayedRead <- function(file, fun = NULL, ...){
+
+  assertChoice(x = fun, choices = c("readRDS", "read_csv"))
+
+  # readRDS()
+  # read_csv()
+
+
+  # https://stackoverflow.com/questions/20038732/how-to-check-a-file-is-opened-or-closed-in-r
+
+
+
+}
