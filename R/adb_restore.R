@@ -25,6 +25,9 @@ adb_restore <- function(version = NULL, date = NULL){
 
   # restore inventory tables/gazetteer/ontology
   inv_full <- list.files(path = paste0(intPaths, "/backup/meta/"), pattern = version, full.names = TRUE)
+  if(length(inv_full) == 0){
+    message("no metadata found")
+  }
 
   inv <- map(.x = inv_full, .f = function(ix){
     temp <- tail(str_split(string = ix, pattern = "/")[[1]], 1)
@@ -37,6 +40,9 @@ adb_restore <- function(version = NULL, date = NULL){
 
   # restore translation tables
   gaz_full <- list.files(path = paste0(intPaths, "/backup/meta/", gazFolder), pattern = version, full.names = TRUE)
+  if(length(gaz_full) == 0){
+    message("no gazetteer found")
+  }
 
   gaz <- map(.x = gaz_full, .f = function(ix){
     temp <- tail(str_split(string = ix, pattern = "/")[[1]], 1)
@@ -48,6 +54,9 @@ adb_restore <- function(version = NULL, date = NULL){
             overwrite = TRUE)
 
   onto_full <- list.files(path = paste0(intPaths, "/backup/meta/", ontoFolder), pattern = version, full.names = TRUE)
+  if(length(onto_full) == 0){
+    message("no ontology found")
+  }
 
   onto <- map(.x = onto_full, .f = function(ix){
     temp <- tail(str_split(string = ix, pattern = "/")[[1]], 1)
@@ -60,6 +69,9 @@ adb_restore <- function(version = NULL, date = NULL){
 
   # restore tables/stage3
   stage3tables_full <- list.files(path = paste0(intPaths, "/backup/tables/"), pattern = version, full.names = TRUE)
+  if(length(stage3tables_full) == 0){
+    message("no tables found")
+  }
 
   stage3tables <- map(.x = stage3tables_full, .f = function(ix){
     temp <- tail(str_split(string = ix, pattern = "/")[[1]], 1)
@@ -72,6 +84,9 @@ adb_restore <- function(version = NULL, date = NULL){
 
   # restore geometries/stage3
   stage3geometries_full <- list.files(path = paste0(intPaths, "/backup/geometries/"), pattern = version, full.names = TRUE)
+  if(length(stage3geometries_full) == 0){
+    message("no geometries found")
+  }
 
   stage3geometries <- map(.x = stage3geometries_full, .f = function(ix){
     temp <- tail(str_split(string = ix, pattern = "/")[[1]], 1)

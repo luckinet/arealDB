@@ -40,11 +40,12 @@ reference:
       - normTable
   - title: helpers
     contents:
-      - matchOntology
-      - updateOntology
+      - delayedRead
       - edit_matches
       - getColTypes
+      - matchOntology
       - testCompressed
+      - updateOntology
   - title: data
     contents:
       - territories
