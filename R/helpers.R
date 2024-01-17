@@ -46,6 +46,7 @@ testCompressed <- function(x){
 #'
 #' @param file a file to store with a delay.
 #' @param fun the function to use.
+#' @param ... arguments to the \emph{write} functions.
 #' @details This function takes the \code{file} and only opens it, if it is not
 #' currently already open. In the case it's already open, it prompts the user to
 #' confirm when the file is closed (and processed by the other process) and then

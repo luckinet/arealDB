@@ -10,6 +10,8 @@ delayedRead(file, fun = NULL, ...)
 \item{file}{a file to store with a delay.}
 
 \item{fun}{the function to use.}
+
+\item{...}{arguments to the \emph{write} functions.}
 }
 \description{
 Open file when it's not open
