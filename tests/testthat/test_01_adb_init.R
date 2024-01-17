@@ -12,6 +12,7 @@ test_that("path has been added to the global options", {
   saveRDS(object = arealDB::territories, file = gazPath)
   adb_init(root = dbpath,
            version = "some0.0.1", licence = "https://creativecommons.org/licenses/by-sa/4.0/",
+           author = list(cre = "Gordon Freeman", aut = "Alyx Vance", ctb = "The G-Man"),
            gazetteer = gazPath, top = "al1",
            ontology = list(commodity = paste0(inPath, "/ontology.rds")),
            variables = "test")
