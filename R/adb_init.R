@@ -6,6 +6,9 @@
 #'   or shall contain an areal database.
 #' @param version [\code{character(1)}]\cr version identifier for this areal
 #'   database.
+#' @param author [\code{character(1)}]\cr authors that contributed to building
+#'   this areal database. Should be a list with items \code{"cre"} (creator),
+#'   \code{"aut"} (authors) and \code{"ctb"} (contributors).
 #' @param licence [\code{character(1)}]\cr licence (link) for this areal
 #'   database.
 #' @param gazetteer [\code{character(1)}]\cr path to the gazetteer that holds
@@ -28,6 +31,7 @@
 #' @examples
 #' adb_init(root = paste0(tempdir(), "/newDB"),
 #'          version = "1.0.0", licence = "CC-BY-0.4",
+#'          author = list(cre = "Gordon Freeman", aut = "Alyx Vance", ctb = "The G-Man"),
 #'          gazetteer = paste0(tempdir(), "/newDB/territories.rds"),
 #'          top = "al1",
 #'          ontology = list(var = paste0(tempdir(), "/newDB/ontology.rds")),
@@ -40,7 +44,7 @@
 #' @importFrom readr write_csv write_lines
 #' @export
 
-adb_init <- function(root, version, licence, gazetteer, top, ontology, variables){
+adb_init <- function(root, version, author, licence, gazetteer, top, ontology, variables){
 
   assertCharacter(x = root, len = 1)
   if(!getOption("adb_testing")){
@@ -192,15 +196,16 @@ adb_init <- function(root, version, licence, gazetteer, top, ontology, variables
   }
 
   if(!testFileExists(x = file.path(root, "db_metadata.txt"))){
-    db_desc <- paste0("version: ", version, "\n",
-                      "licence: ", licence, "\n",
-                      "gazetteer: ", gazetteer, "\n",
-                      "ontology: ", paste0(unique(ontology), collapse = " | "), "\n",
-                      "variables: ", paste0(variables, collapse = ", "), "\n")
+    db_info <- list(version = version,
+                    author = author,
+                    licence = licence,
+                    gazetteer = gazetteer,
+                    ontology = unique(ontology),
+                    variables = variables)
     # re-design this so it contains more official data that can be sensibly reused
 
-    message("creating ", paste0(".../db_metadata.txt"))
-    write_lines(x = db_desc, file = paste0(root, "/db_metadata.txt"))
+    message("creating ", paste0(".../db_info.RData"))
+    save(db_info, file = paste0(root, "/db_info.RData"))
   }
 
   oldOptions <- options()
