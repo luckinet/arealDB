@@ -359,7 +359,7 @@ edit_matches <- function(new, target = NULL, source = NULL, ontology = NULL,
       arrange(id)
 
     newGrep <- str_replace_all(new, c("\\(" = "\\\\(", "\\)" = "\\\\)", "\\*" = "\\\\*"))
-    newGrep <- paste0("^", newGrep, "$")
+    # newGrep <- paste0("^", newGrep, "$")
     out <- related %>%
       filter(str_detect(has_close_match, paste0(newGrep, collapse = "|")) |
                str_detect(has_broader_match, paste0(newGrep, collapse = "|")) |
