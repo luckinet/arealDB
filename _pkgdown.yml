@@ -16,8 +16,8 @@ reference:
   - title: utility functions
     desc: functions to manage and access an areal database
     contents:
+      - adb_archive
       - adb_backup
-      - adb_data
       - adb_example
       - adb_init
       - adb_inventory
