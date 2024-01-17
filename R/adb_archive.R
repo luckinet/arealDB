@@ -20,7 +20,7 @@
 #' @importFrom stringr str_split
 #' @importFrom readr write_csv
 #' @importFrom utils capture.output sessionInfo tar
-
+#' @export
 
 adb_archive <- function(pattern = NULL, variables = NULL, compress = FALSE, outPath = NULL){
 
