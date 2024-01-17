@@ -22,10 +22,10 @@
     <loc>http://EhrmannS.github.io/arealDB/news/index.html</loc>
   </url>
   <url>
-    <loc>http://EhrmannS.github.io/arealDB/reference/adb_backup.html</loc>
+    <loc>http://EhrmannS.github.io/arealDB/reference/adb_archive.html</loc>
   </url>
   <url>
-    <loc>http://EhrmannS.github.io/arealDB/reference/adb_data.html</loc>
+    <loc>http://EhrmannS.github.io/arealDB/reference/adb_backup.html</loc>
   </url>
   <url>
     <loc>http://EhrmannS.github.io/arealDB/reference/adb_example.html</loc>
@@ -53,6 +53,9 @@
   </url>
   <url>
     <loc>http://EhrmannS.github.io/arealDB/reference/adb_translations.html</loc>
+  </url>
+  <url>
+    <loc>http://EhrmannS.github.io/arealDB/reference/delayedRead.html</loc>
   </url>
   <url>
     <loc>http://EhrmannS.github.io/arealDB/reference/edit_matches.html</loc>

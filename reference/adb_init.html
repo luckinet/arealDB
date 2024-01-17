@@ -64,7 +64,7 @@ path.</p>
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">adb_init</span><span class="op">(</span><span class="va">root</span>, <span class="va">version</span>, <span class="va">licence</span>, <span class="va">gazetteer</span>, <span class="va">top</span>, <span class="va">ontology</span>, <span class="va">variables</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">adb_init</span><span class="op">(</span><span class="va">root</span>, <span class="va">version</span>, <span class="va">author</span>, <span class="va">licence</span>, <span class="va">gazetteer</span>, <span class="va">top</span>, <span class="va">ontology</span>, <span class="va">variables</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -77,6 +77,12 @@ or shall contain an areal database.</p></dd>
 <dt>version</dt>
 <dd><p>[<code>character(1)</code>]<br> version identifier for this areal
 database.</p></dd>
+
+
+<dt>author</dt>
+<dd><p>[<code>character(1)</code>]<br> authors that contributed to building
+this areal database. Should be a list with items <code>"cre"</code> (creator),
+<code>"aut"</code> (authors) and <code>"ctb"</code> (contributors).</p></dd>
 
 
 <dt>licence</dt>
@@ -126,12 +132,13 @@ available in this areal database.</p></dd>
     <h2>Examples</h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu">adb_init</span><span class="op">(</span>root <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"/newDB"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>         version <span class="op">=</span> <span class="st">"1.0.0"</span>, licence <span class="op">=</span> <span class="st">"CC-BY-0.4"</span>,</span></span>
+<span class="r-in"><span>         author <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>cre <span class="op">=</span> <span class="st">"Gordon Freeman"</span>, aut <span class="op">=</span> <span class="st">"Alyx Vance"</span>, ctb <span class="op">=</span> <span class="st">"The G-Man"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>         gazetteer <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"/newDB/territories.rds"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>         top <span class="op">=</span> <span class="st">"al1"</span>,</span></span>
 <span class="r-in"><span>         ontology <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>var <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"/newDB/ontology.rds"</span><span class="op">)</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>         variables <span class="op">=</span> <span class="st">"test"</span><span class="op">)</span></span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>no gazetteer was found in the provided path!</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> creating root directory /tmp/Rtmp9kSJV8/newDB</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> creating root directory /tmp/RtmpQXbpjh/newDB</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> creating .../tables</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> creating .../tables/stage1</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> creating .../tables/stage2</span>
@@ -150,11 +157,11 @@ available in this areal database.</p></dd>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> creating .../meta/ontology</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> copying ontology to .../meta/ontology.rds</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> creating .../meta/inventory.rds</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> creating .../db_metadata.txt</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> creating .../db_info.RData</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"adb_path"</span><span class="op">)</span>; <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"gazetteer_path"</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/tmp/Rtmp9kSJV8/newDB"</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/tmp/Rtmp9kSJV8/newDB/meta/territories.rds"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/tmp/RtmpQXbpjh/newDB"</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] "/tmp/RtmpQXbpjh/newDB/meta/territories.rds"</span>
 </code></pre></div>
     </div>
   </div>
