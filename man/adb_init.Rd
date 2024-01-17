@@ -4,7 +4,7 @@
 \alias{adb_init}
 \title{Initiate an areal database}
 \usage{
-adb_init(root, version, licence, gazetteer, top, ontology, variables)
+adb_init(root, version, author, licence, gazetteer, top, ontology, variables)
 }
 \arguments{
 \item{root}{[\code{character(1)}]\cr path to the root directory that contains
@@ -12,6 +12,10 @@ or shall contain an areal database.}
 
 \item{version}{[\code{character(1)}]\cr version identifier for this areal
 database.}
+
+\item{author}{[\code{character(1)}]\cr authors that contributed to building
+this areal database. Should be a list with items \code{"cre"} (creator),
+\code{"aut"} (authors) and \code{"ctb"} (contributors).}
 
 \item{licence}{[\code{character(1)}]\cr licence (link) for this areal
 database.}
@@ -48,6 +52,7 @@ This is the first function that is run in a project, as it initiates
 \examples{
 adb_init(root = paste0(tempdir(), "/newDB"),
          version = "1.0.0", licence = "CC-BY-0.4",
+         author = list(cre = "Gordon Freeman", aut = "Alyx Vance", ctb = "The G-Man"),
          gazetteer = paste0(tempdir(), "/newDB/territories.rds"),
          top = "al1",
          ontology = list(var = paste0(tempdir(), "/newDB/ontology.rds")),
