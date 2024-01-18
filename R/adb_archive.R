@@ -37,8 +37,8 @@ adb_archive <- function(pattern = NULL, variables = NULL, compress = FALSE, outP
   version <- paste0(db_info$version, "_", format(Sys.Date(), "%Y%m%d"))
 
   # derive path
-  message("\n-> creating archive '", archivePath, "'")
   archivePath <- paste0(outPath, "arealDB_", version, "/")
+  message("\n-> creating archive '", archivePath, "'")
   if(!testDirectoryExists(x = archivePath, access = "rw")){
     dir.create(path = archivePath)
     dir.create(path = paste0(archivePath, "geometries"))

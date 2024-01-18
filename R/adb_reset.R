@@ -10,9 +10,9 @@
 
 adb_reset <- function(what = "all"){
 
-  assertChoice(x = what, choices = c("onto", "gaz", "schemas", "tables", "geometries", "all"))
+  assertChoice(x = what, choices = c("onto", "gaz", "schemas", "tables", "geometries", "inventory", "all"))
   if(what == "all"){
-    what <- c("onto", "gaz", "schemas", "tables", "geometries")
+    what <- c("onto", "gaz", "schemas", "tables", "geometries", "inventory")
   }
 
   # set internal paths
@@ -23,7 +23,7 @@ adb_reset <- function(what = "all"){
   }
 
   # remove metadata
-  unlink(paste0(intPaths, "/meta/inventory.rds"))
+  if("inventory" %in% what) unlink(paste0(intPaths, "/meta/inventory.rds"))
   if("gaz" %in% what) unlink(paste0(intPaths, "/meta/lucki_gazetteer.rds"))
   if("onto" %in% what) unlink(paste0(intPaths, "/meta/lucki_onto.rds"))
   if("schemas" %in% what) unlink(list.files(paste0(intPaths, "/meta/schemas/"), full.names = TRUE))
