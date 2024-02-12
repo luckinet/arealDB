@@ -2,13 +2,16 @@
 #'
 #' This function takes a table to replace the values of various columns with
 #' harmonised values listed in the project specific gazetteer.
-#' @param table [\code{character(1)}]\cr a table that contains columns that
-#'   should be harmonised by matching with the gazetteer.
-#' @param columns [\code{character(1)}]\cr the columns containing the concepts
-#' @param dataseries [\code{character(1)}]\cr the source dataseries from which
-#'   territories are sourced.
+#' @param table [`data.frame(1)`][data.frame]\cr a table that contains columns
+#'   that should be harmonised by matching with the gazetteer.
+#' @param columns [`character(1)`][character]\cr the columns containing the
+#'   concepts
+#' @param dataseries [`character(1)`][character]\cr the source dataseries from
+#'   which territories are sourced.
 #' @param ontology [\code{onto}]\cr path where the ontology/gazetteer is stored.
-#' @param beep [\code{integerish(1)}]\cr Number specifying what sound to be
+#' @param colsAsClass [`logical(1)`][logical]\cr whether to match \code{columns}
+#'   by their name with the respective classes, or with concepts of all classes.
+#' @param beep [`integerish(1)`][integer]\cr Number specifying what sound to be
 #'   played to signal the user that a point of interaction is reached by the
 #'   program, see \code{\link[beepr]{beep}}.
 #' @param verbose [`logical(1)`][logical]\cr whether or not to give detailed
@@ -31,9 +34,15 @@
 #' @export
 
 matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
-                          ontology = NULL, verbose = FALSE, beep = NULL){
+                          ontology = NULL, colsAsClass = TRUE, verbose = FALSE,
+                          beep = NULL){
 
+  assertDataFrame(x = table, min.cols = length(columns))
+  assertCharacter(x = columns, any.missing = FALSE)
+  assertCharacter(x = dataseries, len = 1, any.missing = FALSE)
   assertIntegerish(x = beep, len = 1, lower = 1, upper = 11, null.ok = TRUE)
+  assertLogical(x = colsAsClass, len = 1, any.missing = FALSE)
+  assertLogical(x = verbose, len = 1, any.missing = FALSE)
 
   # set internal paths
   intPaths <- paste0(getOption(x = "adb_path"))
@@ -42,8 +51,12 @@ matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
   allCols <- get_class(ontology = ontoPath) %>%
     pull(label)
 
-  assertSubset(x = head(columns, 1), choices = allCols)
-  allCols <- allCols[which(allCols %in% head(columns, 1)) : which(allCols %in% tail(columns, 1))]
+  if(colsAsClass){
+    assertSubset(x = head(columns, 1), choices = allCols)
+    allCols <- allCols[which(allCols %in% head(columns, 1)) : which(allCols %in% tail(columns, 1))]
+  } else {
+    allCols <- columns
+  }
 
   # remove white-space and dots
   table <- table %>%
@@ -104,7 +117,12 @@ matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
       parentLen <- get_class(ontology = ontoPath) %>%
         filter(label == allCols[i]) %>%
         pull(id)
-      parentLen <- length(str_split(parentLen, "[.]")[[1]])-1
+
+      if(length(parentLen) != 0){
+        parentLen <- length(str_split(parentLen, "[.]")[[1]])-1
+      } else {
+        parentLen <- 0
+      }
 
       externalConcepts <- get_concept(label = tempTab$label, has_source = srcID,
                                       external = TRUE, ontology = ontoPath) %>%
