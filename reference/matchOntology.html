@@ -69,6 +69,7 @@ harmonised values listed in the project specific gazetteer.</p>
 <span>  columns <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  dataseries <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  ontology <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  colsAsClass <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  beep <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -77,21 +78,27 @@ harmonised values listed in the project specific gazetteer.</p>
     <div id="arguments">
     <h2>Arguments</h2>
     <dl><dt>table</dt>
-<dd><p>[<code>character(1)</code>]<br> a table that contains columns that
-should be harmonised by matching with the gazetteer.</p></dd>
+<dd><p>[`data.frame(1)`][data.frame]<br> a table that contains columns
+that should be harmonised by matching with the gazetteer.</p></dd>
 
 
 <dt>columns</dt>
-<dd><p>[<code>character(1)</code>]<br> the columns containing the concepts</p></dd>
+<dd><p>[`character(1)`][character]<br> the columns containing the
+concepts</p></dd>
 
 
 <dt>dataseries</dt>
-<dd><p>[<code>character(1)</code>]<br> the source dataseries from which
-territories are sourced.</p></dd>
+<dd><p>[`character(1)`][character]<br> the source dataseries from
+which territories are sourced.</p></dd>
 
 
 <dt>ontology</dt>
 <dd><p>[<code>onto</code>]<br> path where the ontology/gazetteer is stored.</p></dd>
+
+
+<dt>colsAsClass</dt>
+<dd><p>[`logical(1)`][logical]<br> whether to match <code>columns</code>
+by their name with the respective classes, or with concepts of all classes.</p></dd>
 
 
 <dt>verbose</dt>
@@ -100,7 +107,7 @@ information on the process of this function.</p></dd>
 
 
 <dt>beep</dt>
-<dd><p>[<code>integerish(1)</code>]<br> Number specifying what sound to be
+<dd><p>[`integerish(1)`][integer]<br> Number specifying what sound to be
 played to signal the user that a point of interaction is reached by the
 program, see <code><a href="https://rdrr.io/pkg/beepr/man/beep.html" class="external-link">beep</a></code>.</p></dd>
 
