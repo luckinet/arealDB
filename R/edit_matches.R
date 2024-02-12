@@ -74,29 +74,41 @@ edit_matches <- function(new, target = NULL, source = NULL, ontology = NULL,
   # get the classes within which to search
   filterClasses <- ontology@classes$harmonised %>%
     filter(label %in% target$class)
-  filterClassLevel <- length(str_split(string = filterClasses$id, pattern = "[.]")[[1]])
-  if(dim(filterClasses)[1] == 0){
-    stop("no classes are matched in the ontology.")
-  }
-  while(!any(is.na(filterClasses$has_broader))){
-    filterClasses <- ontology@classes$harmonised %>%
-      filter(label %in% filterClasses$label | label %in% filterClasses$has_broader)
-  }
-  filterClasses <- filterClasses %>%
-    pull(label) %>%
-    unique()
 
-  # identify level of the target concepts
-  target <- target %>%
-    mutate(lvl = length(str_split(has_broader, "[.]")[[1]]))
+  if(dim(filterClasses)[1] != 0){
 
-  # set a filter in case target concepts have broader concepts
-  if(all(target$lvl < filterClassLevel-1)){
-    parentFilter <- unique(target$has_broader)
-    withBroader <- NULL
+    filterClassLevel <- length(str_split(string = filterClasses$id, pattern = "[.]")[[1]])
+    if(dim(filterClasses)[1] == 0){
+      stop("no classes are matched in the ontology.")
+    }
+    while(!any(is.na(filterClasses$has_broader))){
+      filterClasses <- ontology@classes$harmonised %>%
+        filter(label %in% filterClasses$label | label %in% filterClasses$has_broader)
+    }
+    filterClasses <- filterClasses %>%
+      pull(label) %>%
+      unique()
+
+    # identify level of the target concepts
+    target <- target %>%
+      mutate(lvl = length(str_split(has_broader, "[.]")[[1]]))
+
+    # set a filter in case target concepts have broader concepts
+    if(all(target$lvl < filterClassLevel-1)){
+      parentFilter <- unique(target$has_broader)
+      withBroader <- NULL
+    } else {
+      parentFilter <- NA
+      withBroader <- "has_broader"
+    }
+
+    ignoreClass <- tail(filterClasses, 1)
   } else {
+    filterClasses <- get_class(ontology = ontology) %>%
+      pull(label)
     parentFilter <- NA
-    withBroader <- "has_broader"
+    withBroader <- NULL
+    ignoreClass <- head(filterClasses, 1)
   }
 
   temp <- get_concept(label = new, class = target$class, has_broader = target$has_broader, ontology = ontology) %>%
@@ -315,9 +327,9 @@ edit_matches <- function(new, target = NULL, source = NULL, ontology = NULL,
       toIgnore <- related %>%
         filter(id == "ignore") %>%
         mutate(label = "ignore",
-               class = tail(filterClasses, 1),
+               class = ignoreClass,
                has_close_match = sort_in,
-               id = str_replace_all(ontology@classes$harmonised$id[ontology@classes$harmonised$label == tail(filterClasses, 1)], pattern = "x", replacement = "0")) %>%
+               id = str_replace_all(ontology@classes$harmonised$id[ontology@classes$harmonised$label == ignoreClass], pattern = "x", replacement = "0")) %>%
         group_by(id, label, class, has_broader_match, has_exact_match, has_narrower_match) %>%
         summarise(has_close_match = paste0(na.omit(has_close_match), collapse = " | "), .groups = "keep") %>%
         ungroup()
