@@ -54,8 +54,10 @@ matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
   if(colsAsClass){
     assertSubset(x = head(columns, 1), choices = allCols)
     allCols <- allCols[which(allCols %in% head(columns, 1)) : which(allCols %in% tail(columns, 1))]
+    withClass <- "class"
   } else {
     allCols <- columns
+    withClass <- NULL
   }
 
   # remove white-space and dots
@@ -170,7 +172,7 @@ matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
                match = str_replace(string = match, pattern = "_match", replacement = "")) %>%
         filter(!is.na(external)) %>%
         filter(match != "exact") %>%
-        left_join(toMatch %>% select(external = label, class), ., by = c("external", "class")) %>%
+        left_join(toMatch %>% select(external = label, any_of(withClass)), ., by = c("external", withClass)) %>%
         filter(!is.na(id)) %>%
         arrange(id)
 
@@ -190,9 +192,15 @@ matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
       if(i == 1){
         externalConcepts <- get_concept(label = tempTab$label, has_source = srcID,
                                         external = TRUE, ontology = ontoPath) %>%
-          mutate(len = lengths(str_split(has_broader, "[.]"))) %>%
-          filter(len == parentLen) %>%
-          select(-len) %>%
+          mutate(len = lengths(str_split(has_broader, "[.]")))
+
+        if(colsAsClass){
+          externalConcepts <- externalConcepts %>%
+            filter(len == parentLen) %>%
+            select(-len)
+        }
+
+        externalConcepts <- externalConcepts %>%
           left_join(tibble(label = tempTab$label), ., by = "label") %>%
           mutate(class = allCols[i])
       } else {
