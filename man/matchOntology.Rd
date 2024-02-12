@@ -9,25 +9,30 @@ matchOntology(
   columns = NULL,
   dataseries = NULL,
   ontology = NULL,
+  colsAsClass = TRUE,
   verbose = FALSE,
   beep = NULL
 )
 }
 \arguments{
-\item{table}{[\code{character(1)}]\cr a table that contains columns that
-should be harmonised by matching with the gazetteer.}
+\item{table}{[`data.frame(1)`][data.frame]\cr a table that contains columns
+that should be harmonised by matching with the gazetteer.}
 
-\item{columns}{[\code{character(1)}]\cr the columns containing the concepts}
+\item{columns}{[`character(1)`][character]\cr the columns containing the
+concepts}
 
-\item{dataseries}{[\code{character(1)}]\cr the source dataseries from which
-territories are sourced.}
+\item{dataseries}{[`character(1)`][character]\cr the source dataseries from
+which territories are sourced.}
 
 \item{ontology}{[\code{onto}]\cr path where the ontology/gazetteer is stored.}
+
+\item{colsAsClass}{[`logical(1)`][logical]\cr whether to match \code{columns}
+by their name with the respective classes, or with concepts of all classes.}
 
 \item{verbose}{[`logical(1)`][logical]\cr whether or not to give detailed
 information on the process of this function.}
 
-\item{beep}{[\code{integerish(1)}]\cr Number specifying what sound to be
+\item{beep}{[`integerish(1)`][integer]\cr Number specifying what sound to be
 played to signal the user that a point of interaction is reached by the
 program, see \code{\link[beepr]{beep}}.}
 }
