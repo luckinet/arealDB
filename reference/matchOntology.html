@@ -69,9 +69,10 @@ harmonised values listed in the project specific gazetteer.</p>
 <span>  columns <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  dataseries <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  ontology <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  beep <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  colsAsClass <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  verbose <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  beep <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  groupMatches <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -96,20 +97,26 @@ which territories are sourced.</p></dd>
 <dd><p>[<code>onto</code>]<br> path where the ontology/gazetteer is stored.</p></dd>
 
 
+<dt>beep</dt>
+<dd><p>[`integerish(1)`][integer]<br> Number specifying what sound to be
+played to signal the user that a point of interaction is reached by the
+program, see <code><a href="https://rdrr.io/pkg/beepr/man/beep.html" class="external-link">beep</a></code>.</p></dd>
+
+
 <dt>colsAsClass</dt>
 <dd><p>[`logical(1)`][logical]<br> whether to match <code>columns</code>
 by their name with the respective classes, or with concepts of all classes.</p></dd>
 
 
+<dt>groupMatches</dt>
+<dd><p>[`logical(1)`][logical]<br> whether or not to group
+harmonized concepts when there are more than one match (for example for
+broader or narrower matches).</p></dd>
+
+
 <dt>verbose</dt>
 <dd><p>[`logical(1)`][logical]<br> whether or not to give detailed
 information on the process of this function.</p></dd>
-
-
-<dt>beep</dt>
-<dd><p>[`integerish(1)`][integer]<br> Number specifying what sound to be
-played to signal the user that a point of interaction is reached by the
-program, see <code><a href="https://rdrr.io/pkg/beepr/man/beep.html" class="external-link">beep</a></code>.</p></dd>
 
 </dl></div>
     <div id="value">
