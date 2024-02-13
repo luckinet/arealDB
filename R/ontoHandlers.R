@@ -9,11 +9,14 @@
 #' @param dataseries [`character(1)`][character]\cr the source dataseries from
 #'   which territories are sourced.
 #' @param ontology [\code{onto}]\cr path where the ontology/gazetteer is stored.
-#' @param colsAsClass [`logical(1)`][logical]\cr whether to match \code{columns}
-#'   by their name with the respective classes, or with concepts of all classes.
 #' @param beep [`integerish(1)`][integer]\cr Number specifying what sound to be
 #'   played to signal the user that a point of interaction is reached by the
 #'   program, see \code{\link[beepr]{beep}}.
+#' @param colsAsClass [`logical(1)`][logical]\cr whether to match \code{columns}
+#'   by their name with the respective classes, or with concepts of all classes.
+#' @param groupMatches [`logical(1)`][logical]\cr whether or not to group
+#'   harmonized concepts when there are more than one match (for example for
+#'   broader or narrower matches).
 #' @param verbose [`logical(1)`][logical]\cr whether or not to give detailed
 #'   information on the process of this function.
 #' @return Returns a table that resembles the input table where the target
@@ -34,14 +37,15 @@
 #' @export
 
 matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
-                          ontology = NULL, colsAsClass = TRUE, verbose = FALSE,
-                          beep = NULL){
+                          ontology = NULL, beep = NULL, colsAsClass = TRUE,
+                          groupMatches = FALSE, verbose = FALSE){
 
   assertDataFrame(x = table, min.cols = length(columns))
   assertCharacter(x = columns, any.missing = FALSE)
   assertCharacter(x = dataseries, len = 1, any.missing = FALSE)
   assertIntegerish(x = beep, len = 1, lower = 1, upper = 11, null.ok = TRUE)
   assertLogical(x = colsAsClass, len = 1, any.missing = FALSE)
+  assertLogical(x = groupMatches, len = 1, any.missing = FALSE)
   assertLogical(x = verbose, len = 1, any.missing = FALSE)
 
   # set internal paths
@@ -276,6 +280,13 @@ matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
   if(remakeSF){
     toOut <- toOut %>%
       st_sf()
+  }
+
+  if(groupMatches){
+    matchCols <- c(allCols, "id", "match", "external", "has_broader", "class", "description")
+    toOut <- toOut %>%
+      group_by(across(-matchCols)) %>%
+      summarise(across(.cols = matchCols, .fns = ~paste0(.x, collapse = " | ")))
   }
 
   out <- toOut %>%

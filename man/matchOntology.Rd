@@ -9,9 +9,10 @@ matchOntology(
   columns = NULL,
   dataseries = NULL,
   ontology = NULL,
+  beep = NULL,
   colsAsClass = TRUE,
-  verbose = FALSE,
-  beep = NULL
+  groupMatches = FALSE,
+  verbose = FALSE
 )
 }
 \arguments{
@@ -26,15 +27,19 @@ which territories are sourced.}
 
 \item{ontology}{[\code{onto}]\cr path where the ontology/gazetteer is stored.}
 
-\item{colsAsClass}{[`logical(1)`][logical]\cr whether to match \code{columns}
-by their name with the respective classes, or with concepts of all classes.}
-
-\item{verbose}{[`logical(1)`][logical]\cr whether or not to give detailed
-information on the process of this function.}
-
 \item{beep}{[`integerish(1)`][integer]\cr Number specifying what sound to be
 played to signal the user that a point of interaction is reached by the
 program, see \code{\link[beepr]{beep}}.}
+
+\item{colsAsClass}{[`logical(1)`][logical]\cr whether to match \code{columns}
+by their name with the respective classes, or with concepts of all classes.}
+
+\item{groupMatches}{[`logical(1)`][logical]\cr whether or not to group
+harmonized concepts when there are more than one match (for example for
+broader or narrower matches).}
+
+\item{verbose}{[`logical(1)`][logical]\cr whether or not to give detailed
+information on the process of this function.}
 }
 \value{
 Returns a table that resembles the input table where the target
