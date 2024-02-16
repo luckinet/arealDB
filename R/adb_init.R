@@ -195,7 +195,7 @@ adb_init <- function(root, version, author, licence, gazetteer, top, ontology, v
     saveRDS(object = inventory, file = paste0(root, "/meta/inventory.rds"))
   }
 
-  if(!testFileExists(x = file.path(root, "db_info.RData"))){
+  if(!testFileExists(x = file.path(root, "adb_info.RData"))){
     db_info <- list(version = version,
                     author = author,
                     licence = licence,
@@ -204,8 +204,8 @@ adb_init <- function(root, version, author, licence, gazetteer, top, ontology, v
                     variables = variables)
     # re-design this so it contains more official data that can be sensibly reused
 
-    message("creating ", paste0(".../db_info.RData"))
-    save(db_info, file = paste0(root, "/db_info.RData"))
+    message("creating ", paste0(".../adb_info.RData"))
+    save(db_info, file = paste0(root, "/adb_info.RData"))
   }
 
   oldOptions <- options()
