@@ -19,8 +19,6 @@
 #' @param ontology [\code{list(.)}]\cr named list with the path(s) of
 #'   ontologies, where the list name identifies the variable that shall be
 #'   matched with the ontology at the path.
-#' @param variables [\code{character(.)}]\cr a set of variable names that are
-#'   available in this areal database.
 #' @details This is the first function that is run in a project, as it initiates
 #'   the areal database by creating the default sub-directories and initial
 #'   inventory tables. When a database has already been set up, this function is
@@ -44,7 +42,7 @@
 #' @importFrom readr write_csv write_lines
 #' @export
 
-adb_init <- function(root, version, author, licence, gazetteer, top, ontology, variables){
+adb_init <- function(root, version, author, licence, gazetteer, top, ontology){
 
   assertCharacter(x = root, len = 1)
   if(!getOption("adb_testing")){
@@ -200,8 +198,7 @@ adb_init <- function(root, version, author, licence, gazetteer, top, ontology, v
                     author = author,
                     licence = licence,
                     gazetteer = gazetteer,
-                    ontology = unique(ontology),
-                    variables = variables)
+                    ontology = unique(ontology))
     # re-design this so it contains more official data that can be sensibly reused
 
     message("creating ", paste0(".../adb_info.RData"))
@@ -212,7 +209,6 @@ adb_init <- function(root, version, author, licence, gazetteer, top, ontology, v
   on.exit(options(oldOptions))
 
   options(adb_path = root)
-  options(adb_variables = variables)
   options(gazetteer_path = gazetteer)
   options(gazetteer_top = top)
   options(ontology_path = ontology)

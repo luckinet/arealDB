@@ -4,7 +4,7 @@
 \alias{adb_init}
 \title{Initiate an areal database}
 \usage{
-adb_init(root, version, author, licence, gazetteer, top, ontology, variables)
+adb_init(root, version, author, licence, gazetteer, top, ontology)
 }
 \arguments{
 \item{root}{[\code{character(1)}]\cr path to the root directory that contains
@@ -30,9 +30,6 @@ shall be started.}
 \item{ontology}{[\code{list(.)}]\cr named list with the path(s) of
 ontologies, where the list name identifies the variable that shall be
 matched with the ontology at the path.}
-
-\item{variables}{[\code{character(.)}]\cr a set of variable names that are
-available in this areal database.}
 }
 \value{
 No return value, called for the side effect of creating the

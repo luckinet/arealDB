@@ -64,8 +64,7 @@ adb_example <- function(path = NULL, until = NULL, verbose = FALSE){
              version = "some0.0.1", licence = "https://creativecommons.org/licenses/by-sa/4.0/",
              author = "Steffen Ehrmann",
              gazetteer = gazPath, top = "al1",
-             ontology = ontoPath,
-             variables = c("harvested", "production"))
+             ontology = ontoPath)
   }
 
   # load input data
