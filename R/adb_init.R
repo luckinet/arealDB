@@ -32,8 +32,7 @@
 #'          author = list(cre = "Gordon Freeman", aut = "Alyx Vance", ctb = "The G-Man"),
 #'          gazetteer = paste0(tempdir(), "/newDB/territories.rds"),
 #'          top = "al1",
-#'          ontology = list(var = paste0(tempdir(), "/newDB/ontology.rds")),
-#'          variables = "test")
+#'          ontology = list(var = paste0(tempdir(), "/newDB/ontology.rds")))
 #'
 #' getOption("adb_path"); getOption("gazetteer_path")
 #' @importFrom checkmate testDirectory testFileExists assertFileExists

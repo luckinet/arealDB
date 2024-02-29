@@ -21,7 +21,8 @@
 #'   information on the process of this function.
 #' @return Returns a table that resembles the input table where the target
 #'   columns were translated according to the provided ontology.
-#' @importFrom checkmate assertFileExists
+#' @importFrom checkmate assertDataFrame assertCharacter assertIntegerish
+#'   assertLogical
 #' @importFrom utils head
 #' @importFrom ontologics load_ontology new_source get_concept new_mapping
 #'   make_tree
