@@ -50,8 +50,11 @@ matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
   assertLogical(x = verbose, len = 1, any.missing = FALSE)
 
   # set internal paths
-  intPaths <- paste0(getOption(x = "adb_path"))
   ontoPath <- ontology
+  ontoMatching <- str_split(string = "/media/se87kuhe/projects/loca/00_data/working/04_occurrence_data/meta/lucki_onto.rds", pattern = "[.]")[[1]][1]
+  if(!testDirectoryExists(ontoMatching)){
+    dir.create(ontoMatching)
+  }
 
   allCols <- get_class(ontology = ontoPath) %>%
     pull(label)
@@ -164,7 +167,7 @@ matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
                                       target = toMatch %>% select(has_broader, class),
                                       source = dataseries,
                                       ontology = ontology,
-                                      matchDir = paste0(intPaths, "/meta/", type, "/"),
+                                      matchDir = paste0(ontoMatching, "/"),
                                       verbose = verbose,
                                       beep = beep)
 
