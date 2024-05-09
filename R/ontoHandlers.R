@@ -167,7 +167,7 @@ matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
                                       target = toMatch %>% select(has_broader, class),
                                       source = dataseries,
                                       ontology = ontology,
-                                      matchDir = paste0(ontoMatching, "/"),
+                                      matchDir = ontoMatching,
                                       verbose = verbose,
                                       beep = beep)
 
