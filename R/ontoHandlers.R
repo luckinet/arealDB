@@ -51,7 +51,7 @@ matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
 
   # set internal paths
   ontoPath <- ontology
-  ontoMatching <- str_split(string = "/media/se87kuhe/projects/loca/00_data/working/04_occurrence_data/meta/lucki_onto.rds", pattern = "[.]")[[1]][1]
+  ontoMatching <- str_split(string = ontoPath, pattern = "[.]")[[1]][1]
   if(!testDirectoryExists(ontoMatching)){
     dir.create(ontoMatching)
   }
