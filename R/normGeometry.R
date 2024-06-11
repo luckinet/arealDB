@@ -659,16 +659,26 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
                            dataseries = dName,
                            ontology = gazPath)
 
-          }
+            message("    Creating new basis dataset for class ", tail(targetClass$label, 1), ".")
+            output_geom <- suppressMessages(
+              new_geom %>%
+                unite(col = "gazName", all_of(filledClasses), sep = ".") %>%
+                mutate(gazClass = tail(targetClass$label, 1),
+                       geoID = newGID) %>%
+                st_sf() %>%
+                select(gazID, gazName, gazClass, match, external, geoID))
 
-          message("    Creating new basis dataset for class ", tail(targetClass$label, 1), ".")
-          output_geom <- suppressMessages(
-            new_geom %>%
-              unite(col = "gazName", all_of(filledClasses), sep = ".") %>%
-              mutate(gazClass = tail(targetClass$label, 1),
-                     geoID = newGID) %>%
-              st_sf() %>%
-              select(gazID, gazName, gazClass, match, external, geoID))
+          } else {
+
+            message("    Creating new basis dataset for class ", tail(targetClass$label, 1), ".")
+            output_geom <- suppressMessages(
+              new_geom %>%
+                unite(col = "gazName", all_of(filledClasses), sep = ".") %>%
+                mutate(gazClass = tail(targetClass$label, 1),
+                       geoID = newGID) %>%
+                st_sf() %>%
+                select(gazID = id, gazName, gazClass, match, external, geoID))
+          }
 
         }
 

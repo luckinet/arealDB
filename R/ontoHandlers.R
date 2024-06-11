@@ -361,7 +361,7 @@ updateOntology <- function(table = NULL, threshold = NULL, dataseries = NULL,
       group_by(label, class, has_broader) %>%
       filter(row_number() == 1) %>% # in case an entry is various times in the table, filter only the first one
       ungroup()
-    new_mapping(new =  sort(newConcepts$external),
+    new_mapping(new = sort(newConcepts$external),
                 target = temp,
                 source = dataseries, match = "close", certainty = 3, type = "concept", ontology = ontoPath)
 
@@ -370,52 +370,56 @@ updateOntology <- function(table = NULL, threshold = NULL, dataseries = NULL,
   # 2. define mappings of the new concepts with harmonised concepts
   harmOnto <- get_concept(id = longTable$targetID, ontology = ontoPath)
 
-  if(any(longTable$match == "close")){
-    newClose <- longTable %>%
-      filter(match == "close")
-    newClose <- harmOnto %>%
-      filter(id %in% newClose$targetID) %>%
-      select(id, label, class, has_broader) %>%
-      left_join(newClose %>% select(id = targetID, external), ., by = "id")
+  if(dim(harmOnto)[1] != 0){
 
-    assertCharacter(x = newClose$id, any.missing = FALSE)
-    assertCharacter(x = newClose$label, any.missing = FALSE)
-    assertCharacter(x = newClose$class, any.missing = FALSE)
-    new_mapping(new =  newClose$external,
-                target = newClose %>% select(id, label, class, has_broader),
-                source = dataseries, match = "close", certainty = 3, type = "concept", ontology = ontoPath)
-  }
+    if(any(longTable$match == "close")){
+      newClose <- longTable %>%
+        filter(match == "close")
+      newClose <- harmOnto %>%
+        filter(id %in% newClose$targetID) %>%
+        select(id, label, class, has_broader) %>%
+        left_join(newClose %>% select(id = targetID, external), ., by = "id")
 
-  if(any(longTable$match == "narrower")){
-    newNarrower <- longTable %>%
-      filter(match == "narrower")
-    newNarrower <- harmOnto %>%
-      filter(id %in% newNarrower$targetID) %>%
-      select(id, label, class, has_broader) %>%
-      left_join(newNarrower %>% select(id = targetID, external), ., by = "id")
+      assertCharacter(x = newClose$id, any.missing = FALSE)
+      assertCharacter(x = newClose$label, any.missing = FALSE)
+      assertCharacter(x = newClose$class, any.missing = FALSE)
+      new_mapping(new =  newClose$external,
+                  target = newClose %>% select(id, label, class, has_broader),
+                  source = dataseries, match = "close", certainty = 3, type = "concept", ontology = ontoPath)
+    }
 
-    assertCharacter(x = newNarrower$id, any.missing = FALSE)
-    assertCharacter(x = newNarrower$label, any.missing = FALSE)
-    assertCharacter(x = newNarrower$class, any.missing = FALSE)
-    new_mapping(new = newNarrower$external,
-                target = newNarrower %>% select(id, label, class, has_broader),
-                source = dataseries, match = "narrower", certainty = 3, type = "concept", ontology = ontoPath)
-  }
+    if(any(longTable$match == "narrower")){
+      newNarrower <- longTable %>%
+        filter(match == "narrower")
+      newNarrower <- harmOnto %>%
+        filter(id %in% newNarrower$targetID) %>%
+        select(id, label, class, has_broader) %>%
+        left_join(newNarrower %>% select(id = targetID, external), ., by = "id")
 
-  if(any(longTable$match == "broader")){
-    newBroader <- longTable %>%
-      filter(match == "broader")
-    newBroader <- harmOnto %>%
-      filter(id %in% newBroader$targetID) %>%
-      select(id, label, class, has_broader) %>%
-      left_join(newBroader %>% select(id = targetID, external), ., by = "id")
+      assertCharacter(x = newNarrower$id, any.missing = FALSE)
+      assertCharacter(x = newNarrower$label, any.missing = FALSE)
+      assertCharacter(x = newNarrower$class, any.missing = FALSE)
+      new_mapping(new = newNarrower$external,
+                  target = newNarrower %>% select(id, label, class, has_broader),
+                  source = dataseries, match = "narrower", certainty = 3, type = "concept", ontology = ontoPath)
+    }
 
-    assertCharacter(x = newBroader$id, any.missing = FALSE)
-    assertCharacter(x = newBroader$label, any.missing = FALSE)
-    assertCharacter(x = newBroader$class, any.missing = FALSE)
-    new_mapping(new = newBroader$external,
-                target = newBroader %>% select(id, label, class, has_broader),
-                source = dataseries, match = "broader", certainty = 3, type = "concept", ontology = ontoPath)
+    if(any(longTable$match == "broader")){
+      newBroader <- longTable %>%
+        filter(match == "broader")
+      newBroader <- harmOnto %>%
+        filter(id %in% newBroader$targetID) %>%
+        select(id, label, class, has_broader) %>%
+        left_join(newBroader %>% select(id = targetID, external), ., by = "id")
+
+      assertCharacter(x = newBroader$id, any.missing = FALSE)
+      assertCharacter(x = newBroader$label, any.missing = FALSE)
+      assertCharacter(x = newBroader$class, any.missing = FALSE)
+      new_mapping(new = newBroader$external,
+                  target = newBroader %>% select(id, label, class, has_broader),
+                  source = dataseries, match = "broader", certainty = 3, type = "concept", ontology = ontoPath)
+    }
+
   }
 
 }
