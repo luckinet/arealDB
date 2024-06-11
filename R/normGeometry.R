@@ -8,8 +8,8 @@
 #' @param pattern [\code{character(1)}]\cr an optional regular expression. Only
 #'   dataset names which match the regular expression will be processed.
 #' @param query [\code{character(1)}]\cr part of the SQL query (starting from
-#'   WHERE) used to subset the input geometries, for example \code{where NAME_0
-#'   = 'France'}. The first part of the query (where the layer is defined) is
+#'   WHERE) used to subset the input geometries, for example \code{"where NAME_0
+#'   = 'Estonia'"}. The first part of the query (where the layer is defined) is
 #'   derived from the meta-data of the currently handled geometry.
 #' @param beep [\code{integerish(1)}]\cr Number specifying what sound to be
 #'   played to signal the user that a point of interaction is reached by the
@@ -643,13 +643,21 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
               mutate(newID = str_pad(string = row_number(), width = 3, pad = 0)) %>%
               ungroup() %>%
               rowwise() %>%
-              mutate(id = paste0(gazID, ".", newID),
+              mutate(gazID = paste0(gazID, ".", newID),
                      !!tail(territoryCols, 1) := new_label,
                      external = new_label,
-                     match = "close") %>%
+                     match = "close",
+                     new_name = TRUE,
+                     gazClass = tail(allCols, 1)) %>%
               separate_wider_delim(cols = gazName, delim = ".", names = head(filledClasses, -1)) %>%
-              select(all_of(filledClasses), id, match, external, geom) %>%
-              arrange(id)
+              select(all_of(filledClasses), gazID, match, external, geom, new_name, gazClass) %>%
+              arrange(gazID)
+
+            message("    -> Updating ontology")
+            updateOntology(table = new_geom %>% st_drop_geometry() %>% select(-geom),
+                           threshold = thresh,
+                           dataseries = dName,
+                           ontology = gazPath)
 
           }
 
@@ -660,7 +668,7 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
               mutate(gazClass = tail(targetClass$label, 1),
                      geoID = newGID) %>%
               st_sf() %>%
-              select(gazID = id, gazName, gazClass, match, external, geoID))
+              select(gazID, gazName, gazClass, match, external, geoID))
 
         }
 
