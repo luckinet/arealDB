@@ -23,7 +23,8 @@ dataset names which match the regular expression will be processed.}
 
 \item{query}{[\code{character(1)}]\cr the expression that would be used in
 \code{\link[dplyr]{filter}} to subset a tibble in terms of the columns
-defined via the schema and given as a single character string.}
+defined via the schema and given as a single character string, such as
+\code{"al1 == 'Estonia'"}.}
 
 \item{ontoMatch}{[\code{character(.)}]\cr name of the column(s) that shall be
 matched with an ontology (defined in \code{\link{adb_init}}).}
