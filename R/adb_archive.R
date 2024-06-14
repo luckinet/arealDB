@@ -33,7 +33,7 @@ adb_archive <- function(pattern = NULL, variables = NULL, compress = FALSE, outP
   intPaths <- paste0(getOption(x = "adb_path"))
 
   # derive current version
-  load(paste0(intPaths, "/db_info.RData"))
+  load(paste0(intPaths, "/adb_info.RData"))
   version <- paste0(db_info$version, "_", format(Sys.Date(), "%Y%m%d"))
 
   # derive path
