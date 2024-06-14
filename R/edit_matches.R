@@ -45,6 +45,7 @@
 #'   bind_rows distinct arrange any_of if_any
 #' @importFrom tidyselect everything starts_with
 #' @importFrom tidyr pivot_longer pivot_wider separate_wider_delim
+#'   separate_wider_regex
 #' @importFrom tibble add_column
 #' @importFrom fuzzyjoin stringdist_left_join
 #' @export
@@ -221,7 +222,10 @@ edit_matches <- function(new, target = NULL, source = NULL, ontology = NULL,
     joined <- missingConcepts %>%
       select(label_new = label, has_broader) %>%
       mutate(label = tolower(label_new)) %>%
-      stringdist_left_join(toJoin, by = "label", distance_col = "dist", max_dist = 2)
+      stringdist_left_join(toJoin, by = "label", distance_col = "dist", max_dist = 2) |>
+      separate_wider_regex(id, c(id_new = ".*", "[.]", rest = ".*"), cols_remove = FALSE) |>
+      filter(has_broader == id_new) |>
+      select(-id_new, -rest)
 
     if(!all(is.na(joined$dist))){
       joined <- joined %>%
