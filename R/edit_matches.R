@@ -112,8 +112,8 @@ edit_matches <- function(new, target = NULL, source = NULL, ontology = NULL,
     ignoreClass <- head(filterClasses, 1)
   }
 
-  temp <- get_concept(label = new, class = target$class, has_broader = target$has_broader, ontology = ontology) %>%
-    left_join(tibble(label = new, has_broader = target$has_broader), ., by = c("label", "has_broader"))
+  newMatches <- get_concept(label = new, class = target$class, has_broader = target$has_broader, ontology = ontology) %>%
+    left_join(tibble(label = new, has_broader = target$has_broader, class = target$class), ., by = c("label", "has_broader", "class"))
 
   # determine previous matches from matching table
   if(testFileExists(paste0(matchDir, sourceFile))){
@@ -123,14 +123,6 @@ edit_matches <- function(new, target = NULL, source = NULL, ontology = NULL,
                           has_close_match = character(), has_broader_match = character(), has_narrower_match = character(), has_exact_match = character())
   }
 
-  # prevMatchLabels <- prevMatches %>%
-  #   filter(class %in% filterClasses) %>%
-  #   pivot_longer(cols = c(has_broader_match, has_close_match, has_exact_match, has_narrower_match), values_to = "labels") %>%
-  #   filter(!is.na(labels)) %>%
-  #   distinct(labels) %>%
-  #   separate_longer_delim(cols = labels, delim = " | ") %>%
-  #   pull(labels)
-
   # gather all concepts for the focal data-series (previous matches from
   # matching table and matches that may already be in the ontology) ...
   dsConcepts <- prevMatches %>%
@@ -139,7 +131,8 @@ edit_matches <- function(new, target = NULL, source = NULL, ontology = NULL,
     pivot_longer(cols = c(has_broader_match, has_close_match, has_exact_match, has_narrower_match),
                  names_to = "match", values_to = "label") %>%
     separate_longer_delim(cols = label, delim = " | ") %>%
-    full_join(temp, by = c("label", "class", "id", "has_broader", "description")) %>%
+    # full_join(newMatches, by = c("label", "class", "id", "has_broader", "description")) %>%
+    full_join(newMatches |> select(label, has_broader, class), by = c("label", "has_broader", "class")) %>%
     mutate(harmLab = if_else(is.na(harmLab), label, harmLab),
            label = if_else(is.na(match), if_else(!is.na(id), label, NA_character_), label),
            match = if_else(is.na(match), if_else(!is.na(id), "has_close_match", "sort_in"), match)) %>%
@@ -174,9 +167,6 @@ edit_matches <- function(new, target = NULL, source = NULL, ontology = NULL,
   inclConcepts <- dsConcepts %>%
     filter(!is.na(id))
   missingConcepts <- dsConcepts %>%
-    filter(is.na(id)) |>
-    select(label, all_of(withBroader)) |>
-    left_join(prevMatches, by = c("label", withBroader)) %>%
     filter(is.na(id))
 
   if(dim(missingConcepts)[1] != 0){
