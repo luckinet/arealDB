@@ -175,8 +175,8 @@ edit_matches <- function(new, target = NULL, source = NULL, ontology = NULL,
     filter(!is.na(id))
   missingConcepts <- dsConcepts %>%
     filter(is.na(id)) |>
-    select(label, has_broader) |>
-    left_join(prevMatches, by = c("label", "has_broader")) %>%
+    select(label, all_of(withBroader)) |>
+    left_join(prevMatches, by = c("label", withBroader)) %>%
     filter(is.na(id))
 
   if(dim(missingConcepts)[1] != 0){
