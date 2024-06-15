@@ -123,13 +123,13 @@ edit_matches <- function(new, target = NULL, source = NULL, ontology = NULL,
                           has_close_match = character(), has_broader_match = character(), has_narrower_match = character(), has_exact_match = character())
   }
 
-  prevMatchLabels <- prevMatches %>%
-    filter(class %in% filterClasses) %>%
-    pivot_longer(cols = c(has_broader_match, has_close_match, has_exact_match, has_narrower_match), values_to = "labels") %>%
-    filter(!is.na(labels)) %>%
-    distinct(labels) %>%
-    separate_longer_delim(cols = labels, delim = " | ") %>%
-    pull(labels)
+  # prevMatchLabels <- prevMatches %>%
+  #   filter(class %in% filterClasses) %>%
+  #   pivot_longer(cols = c(has_broader_match, has_close_match, has_exact_match, has_narrower_match), values_to = "labels") %>%
+  #   filter(!is.na(labels)) %>%
+  #   distinct(labels) %>%
+  #   separate_longer_delim(cols = labels, delim = " | ") %>%
+  #   pull(labels)
 
   # gather all concepts for the focal data-series (previous matches from
   # matching table and matches that may already be in the ontology) ...
@@ -174,7 +174,10 @@ edit_matches <- function(new, target = NULL, source = NULL, ontology = NULL,
   inclConcepts <- dsConcepts %>%
     filter(!is.na(id))
   missingConcepts <- dsConcepts %>%
-    filter(is.na(id) & !label %in% prevMatchLabels)
+    filter(is.na(id)) |>
+    select(label, has_broader) |>
+    left_join(prevMatches, by = c("label", "has_broader")) %>%
+    filter(is.na(id))
 
   if(dim(missingConcepts)[1] != 0){
 
@@ -211,6 +214,7 @@ edit_matches <- function(new, target = NULL, source = NULL, ontology = NULL,
       mutate(description = na_if(description, "")) %>%
       select(id, label, class, has_broader, description) %>%
       left_join(inclConcepts %>% select(-description), by = c("id", "label", "class", "has_broader")) %>%
+      distinct(label, class, id, has_broader, .keep_all = TRUE) |>
       filter(!is.na(class))
 
     toJoin <- relate %>%
