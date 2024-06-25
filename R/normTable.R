@@ -60,7 +60,7 @@
 normTable <- function(input = NULL, pattern = NULL, query = NULL, ontoMatch = NULL,
                       beep = NULL, verbose = FALSE){
 
-  # input = NULL; pattern = NULL; query = NULL; ontoMatch = NULL; beep = NULL; verbose = FALSE; i <- 1
+  # input = NULL; pattern = NULL; query = NULL; ontoMatch = NULL; beep = NULL; verbose = FALSE; i <- 1; colsAsClass = TRUE; groupMatches = FALSE
 
   # set internal paths
   intPaths <- getOption(x = "adb_path")
