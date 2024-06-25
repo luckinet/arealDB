@@ -6,7 +6,7 @@
 \usage{
 edit_matches(
   new,
-  target = NULL,
+  topLevel,
   source = NULL,
   ontology = NULL,
   matchDir = NULL,
@@ -16,11 +16,12 @@ edit_matches(
 }
 \arguments{
 \item{new}{[`data.frame(.)`][data.frame]\cr the new concepts that shall be
-manually matched.}
+manually matched, includes "label", "class" and "has_broader" columns.}
 
-\item{target}{[`data.frame(.)`][data.frame]\cr the attributes, in terms of
-columns in the ontology, of new concepts that help to match new and target
-concepts manually.}
+\item{topLevel}{[`logical(1)`][logical]\cr whether or not the new concepts
+are at the highest level only, i.e., have to be matched without context, or
+whether they are contain columns that must be matched within parent
+columns.}
 
 \item{source}{[`character(1)`][character]\cr any character uniquely
 identifying the source dataset of the new concepts.}
