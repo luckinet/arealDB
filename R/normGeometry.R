@@ -96,7 +96,7 @@
 normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10,
                          beep = NULL, simplify = FALSE, verbose = FALSE){
 
-  # input = NULL; pattern = NULL; query = NULL; thresh = 10; beep = NULL; simplify = FALSE; verbose = FALSE; i = 1; library(tidyverse); library(sf); library(stringr)
+  # input = NULL; pattern = NULL; query = NULL; thresh = 10; beep = NULL; simplify = FALSE; verbose = FALSE; i = 1; library(tidyverse); library(sf); library(stringr); library(progress)
 
   # set internal paths
   intPaths <- paste0(getOption(x = "adb_path"))
@@ -494,41 +494,35 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
             summarise(match = paste0(match, collapse = " | ")) %>%
             ungroup()
 
-          # in case new geometries overlap at the parent administrative level, get these information in there and assign the ID of that parent, where the largest overlap exists
-          if(dim(temp_geom)[1] != length(unique(temp_geom$external))){
+          # if we are not at the topmost class, read the parent geometry
+          if(!topClass %in% tail(targetClass$label, 1)){
+            targetParent_geom <- read_sf(dsn = paste0(intPaths, "/geometries/stage3/", tempUnit, ".gpkg"),
+                                         layer = allClasses[which(allClasses %in% tail(targetClass$label, 1)) - 1],
+                                         stringsAsFactors = FALSE)
 
-            # if we are not at the topmost class, read the parent geometry
-            if(!topClass %in% tail(targetClass$label, 1)){
-              targetParent_geom <- read_sf(dsn = paste0(intPaths, "/geometries/stage3/", tempUnit, ".gpkg"),
-                                           layer = allClasses[which(allClasses %in% tail(targetClass$label, 1)) - 1],
-                                           stringsAsFactors = FALSE)
-
-              if(!any(targetParent_geom$geoID %in% gIDs)){
-                targetParent_geom <- targetParent_geom %>%
-                  filter(geoID %in% targetParent_geom$geoID[1] & gazClass == parentClass)
-              } else {
-                targetParent_geom <- targetParent_geom %>%
-                  filter(geoID %in% gIDs & gazClass == parentClass)
-              }
-
-              if(simplify){
-                targetParent_geom <- targetParent_geom %>%
-                  ms_simplify(keep = 0.5, method = "dp", keep_shapes = TRUE)
-              }
+            if(!any(targetParent_geom$geoID %in% gIDs)){
               targetParent_geom <- targetParent_geom %>%
-                st_make_valid() %>%
-                mutate(target_area = as.numeric(st_area(.))) %>%
-                rowwise() %>%
-                mutate(siblings = 0L) %>%
-                select(-match, -external)
+                filter(geoID %in% targetParent_geom$geoID[1] & gazClass == parentClass)
             } else {
-              stop("not sure, but there is an error in your data...")
+              targetParent_geom <- targetParent_geom %>%
+                filter(geoID %in% gIDs & gazClass == parentClass)
             }
+
+            if(simplify){
+              targetParent_geom <- targetParent_geom %>%
+                ms_simplify(keep = 0.5, method = "dp", keep_shapes = TRUE)
+            }
+            targetParent_geom <- targetParent_geom %>%
+              st_make_valid() %>%
+              mutate(target_area = as.numeric(st_area(.))) %>%
+              rowwise() %>%
+              mutate(siblings = 0L) %>%
+              select(-match, -external)
 
             message("    -> Adapting IDs to parent level")
             pb <- progress_bar$new(format = "[:bar] :current/:total (:percent)", total = dim(targetParent_geom)[1])
             geom_intersect <- st_intersects(x = targetParent_geom, y = new_geom)
-            parentOverlap <-  suppressWarnings(
+            parentOverlap <- suppressWarnings(
               map_dfr(1:dim(targetParent_geom)[1], function(ix){
                 pb$tick()
                 st_intersection(x = targetParent_geom[ix,], y = new_geom[geom_intersect[[ix]],])
@@ -536,55 +530,69 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
               st_make_valid() %>%
               mutate(intersect_area = as.numeric(st_area(.)),
                      target_prop = round(intersect_area/target_area*100, 5),
-                     new_prop = round(intersect_area/new_area*100, 5)) %>%
-              group_by(external) %>%
-              arrange(target_prop) %>%
-              filter(row_number() == 1) %>%
-              select(gazID, gazName, external) %>%
+                     new_prop = round(intersect_area/new_area*100, 5))
+
+            parentOverlap <- parentOverlap |>
+              filter(new_prop > thresh) |>
+              select(parentID = gazID, parentName = gazName, external) %>%
               st_drop_geometry()
+          } else {
+            parentOverlap <- tibble(parentID = character(), parentName = character(), external = character())
+          }
+
+          # in case new geometries overlap at the parent administrative level,
+          # get these information in there and assign the ID
+          if(dim(temp_geom)[1] != length(unique(temp_geom$external))){
 
             temp_geom_clean <- temp_geom %>%
               group_by(external) %>%
               filter(n() == 1)
 
+            # for duplicates, reassign siblings, gazID and gazName according to
+            # parent geometries ...
             temp_geom_dups <- temp_geom %>%
               group_by(external) %>%
               filter(n() > 1) %>%
-              rename(gazID2 = gazID) %>%
               select(-gazName)
 
+            # ... and summarise according to the external cocepts
             temp_geom <- temp_geom_dups %>%
               left_join(parentOverlap, by = "external") %>%
               group_by(external) %>%
               separate_rows(match, sep = " \\| ") %>%
-              mutate(base_siblings = if_else(gazID2 == gazID, base_siblings, NA_integer_),
+              mutate(base_siblings = if_else(gazID == parentID, base_siblings, NA_integer_),
                      base_siblings = first(na.omit(base_siblings))) %>%
               ungroup() %>%
-              group_by(external, new_geom, new_name, gazID, gazName, base_siblings) %>%
+              group_by(external, new_geom, new_name, gazID = parentID, gazName = parentName, base_siblings) %>%
               summarise(match = paste0(match, collapse = " | ")) %>%
               bind_rows(temp_geom_clean)
 
           }
 
+          # after summarizing overlaps, bring in the parent gazID and gazName
+          # and reconstruct the full ID and Name
           output_geom <- temp_geom %>%
+            left_join(parentOverlap, by = "external") %>%
             separate_wider_delim(cols = external, delim = "_-_-", names = "external", too_many = "drop") %>%
-            group_by(gazName) %>%
+            group_by(parentName, new_name) %>%
             mutate(rn = row_number()) %>%
             ungroup() %>%
-            mutate(base_siblings = if_else(is.na(base_siblings), 0, base_siblings),
+            mutate(base_siblings = if_else(is.na(base_siblings) | gazID != parentID, 0, base_siblings),
                    tempID = str_pad(string = rn + base_siblings, width = 3, pad = 0),
                    thisName = external,
-                   gazID = if_else(!new_name, gazID, paste0(gazID, ".", tempID)),
-                   gazName = if_else(!new_name, gazName, paste0(gazName, ".", thisName)),
+                   gazID = if_else(!new_name, gazID, paste0(parentID, ".", tempID)),
+                   gazName = if_else(!new_name, gazName, paste0(parentName, ".", thisName)),
                    geoID = newGID,
                    gazClass = tail(allCols, 1)) %>%
           select(gazID, gazName, gazClass, match, external, new_name, geoID, geom = new_geom)
 
-          # update ontology, but only if we are not handling the topmost class, because in that case it has been harmonised with the gazetteer already
+          # update ontology, but only if we are not handling the topmost class,
+          # because in that case it has been harmonised with the gazetteer
+          # already
           if(unique(output_geom$gazClass) != topClass){
 
             message("    -> Updating ontology")
-            updateOntology(table = output_geom %>% st_drop_geometry() %>% select(-geom),
+            updateOntology(table = output_geom %>% select(-geom),
                            threshold = thresh,
                            dataseries = dName,
                            ontology = gazPath)
