@@ -4,10 +4,11 @@
 #' actually writing into the ontology, but instead storing the resulting
 #' matching table as csv.
 #' @param new [`data.frame(.)`][data.frame]\cr the new concepts that shall be
-#'   manually matched.
-#' @param target [`data.frame(.)`][data.frame]\cr the attributes, in terms of
-#'   columns in the ontology, of new concepts that help to match new and target
-#'   concepts manually.
+#'   manually matched, includes "label", "class" and "has_broader" columns.
+#' @param topLevel [`logical(1)`][logical]\cr whether or not the new concepts
+#'   are at the highest level only, i.e., have to be matched without context, or
+#'   whether they are contain columns that must be matched within parent
+#'   columns.
 #' @param source [`character(1)`][character]\cr any character uniquely
 #'   identifying the source dataset of the new concepts.
 #' @param ontology [`ontology(1)`][list]\cr either a path where the ontology is
@@ -50,16 +51,18 @@
 #' @importFrom fuzzyjoin stringdist_left_join
 #' @export
 
-edit_matches <- function(new, target = NULL, source = NULL, ontology = NULL,
+edit_matches <- function(new, topLevel, source = NULL, ontology = NULL,
                          matchDir = NULL, verbose = TRUE, beep = NULL){
 
-  assertCharacter(x = new)
-  assertNames(x = names(target), must.include = c("class", "has_broader"))
+  assertDataFrame(x = new)
+  assertNames(x = names(new), must.include = c("label", "class", "has_broader"))
+  assertLogical(x = topLevel, any.missing = FALSE, len = 1)
   assertCharacter(x = source, len = 1, any.missing = FALSE)
   assertDirectoryExists(x = matchDir, access = "rw")
 
-  intPaths <- getOption(x = "adb_path")
   sourceFile <- paste0("match_", source, ".rds")
+  sourceID <- get_source(label = source, ontology = ontology) %>%
+    pull(id)
 
   if(inherits(x = ontology, what = "onto")){
     ontoPath <- NULL
@@ -74,7 +77,14 @@ edit_matches <- function(new, target = NULL, source = NULL, ontology = NULL,
 
   # get the classes within which to search
   filterClasses <- ontology@classes$harmonised %>%
-    filter(label %in% target$class)
+    filter(label %in% new$class)
+
+  if(topLevel){
+    joinCols <- c("label", "class")
+  } else {
+    joinCols <- c("label", "class", "has_broader")
+  }
+
 
   if(dim(filterClasses)[1] != 0){
 
@@ -91,12 +101,13 @@ edit_matches <- function(new, target = NULL, source = NULL, ontology = NULL,
       unique()
 
     # identify level of the target concepts
-    target <- target %>%
+    new <- new %>%
       mutate(lvl = length(str_split(has_broader, "[.]")[[1]]))
 
     # set a filter in case target concepts have broader concepts
-    if(all(target$lvl < filterClassLevel-1)){
-      parentFilter <- unique(target$has_broader)
+    if(all(new$lvl <= filterClassLevel-1)){
+    # if(all(target$lvl < filterClassLevel-1)){
+      parentFilter <- unique(new$has_broader)
       withBroader <- NULL
     } else {
       parentFilter <- NA
@@ -112,65 +123,33 @@ edit_matches <- function(new, target = NULL, source = NULL, ontology = NULL,
     ignoreClass <- head(filterClasses, 1)
   }
 
-  temp <- get_concept(label = new, class = target$class, has_broader = target$has_broader, ontology = ontology) %>%
-    left_join(tibble(label = new, has_broader = target$has_broader), ., by = c("label", "has_broader"))
+  ontoMatches <- get_concept(label = new$label, class = new$class, has_broader = new$has_broader, ontology = ontology) %>%
+    rename(harmLab = label) %>%
+    pivot_longer(cols = c(has_broader_match, has_close_match, has_exact_match, has_narrower_match),
+                 names_to = "match", values_to = "label")
 
-  # determine previous matches from matching table
+  # determine previous matches from matching table (and make them long)
   if(testFileExists(paste0(matchDir, sourceFile))){
-    prevMatches <- readRDS(file = paste0(matchDir, sourceFile))
+    dsMatches <- readRDS(file = paste0(matchDir, sourceFile))
   } else {
-    prevMatches <- tibble(id = character(), label = character(), description = character(), class = character(), has_broader = character(),
-                          has_close_match = character(), has_broader_match = character(), has_narrower_match = character(), has_exact_match = character())
+    dsMatches <- tibble(id = character(), label = character(), class = character(), has_broader = character(), description = character(),
+                        has_broader_match = character(), has_close_match = character(), has_exact_match = character(), has_narrower_match = character())
   }
 
-  #   dsConcepts <- prevMatches %>%
-  #     filter(class %in% filterClasses) %>%
-  #     rename(harmLab = label) %>%
-  #     pivot_longer(cols = c(has_broader_match, has_close_match, has_exact_match, has_narrower_match),
-  #                  names_to = "match", values_to = "label") %>%
-  #     separate_longer_delim(cols = label, delim = " | ")
-  #
-  #   ignoreConcepts <- dsConcepts |>
-  #     filter(!is.na(label)) |>
-  #     filter(harmLab == "ignore") |>
-  #     pull(label) |>
-  #     unique()
-  #
-  #   newMatches <- get_concept(label = new, class = target$class, has_broader = target$has_broader, ontology = ontology) %>%
-  #     left_join(tibble(label = new, has_broader = target$has_broader, class = target$class), ., by = c("label", "has_broader", "class")) |>
-  #     select(label, has_broader, class) |>
-  #     select(where(function(x){ any(!is.na(x)) })) |>
-  #     filter(!label %in% ignoreConcepts) |>
-  #     distinct()
-  #
-  #   dsConcepts <- dsConcepts %>%
-  #     full_join(newMatches, by = colnames(newMatches)) %>%
-  #     mutate(harmLab = if_else(is.na(harmLab), label, harmLab),
-  #            label = if_else(is.na(match), if_else(!is.na(id), label, NA_character_), label),
-  #            match = if_else(is.na(match), if_else(!is.na(id), "has_close_match", "sort_in"), match)) %>%
-  #     pivot_wider(id_cols = c(harmLab, class, id, has_broader, description), names_from = match,
-  #                 values_from = label, values_fn = ~paste0(na.omit(.x), collapse = " | ")) %>%
-  #     mutate(across(where(is.character), ~na_if(x = ., y = ""))) %>%
-  #     filter(harmLab != "ignore") %>%
-  #     rename(label = harmLab)
-
-  prevMatchLabels <- prevMatches %>%
-    filter(class %in% filterClasses) %>%
-    pivot_longer(cols = c(has_broader_match, has_close_match, has_exact_match, has_narrower_match), values_to = "labels") %>%
-    filter(!is.na(labels)) %>%
-    distinct(labels) %>%
-    separate_longer_delim(cols = labels, delim = " | ") %>%
-    pull(labels)
-
-  # gather all concepts for the focal data-series (previous matches from
-  # matching table and matches that may already be in the ontology) ...
-  dsConcepts <- prevMatches %>%
+  dsMatchesLong <- dsMatches %>%
     filter(class %in% filterClasses) %>%
     rename(harmLab = label) %>%
     pivot_longer(cols = c(has_broader_match, has_close_match, has_exact_match, has_narrower_match),
                  names_to = "match", values_to = "label") %>%
-    separate_longer_delim(cols = label, delim = " | ") %>%
-    full_join(temp, by = c("label", "class", "id", "has_broader", "description")) %>%
+    separate_longer_delim(cols = label, delim = " | ") |>
+    filter(!is.na(label))
+
+  # gather all concepts for the focal data-series (previous matches from
+  # matching table and matches that may already be in the ontology) and join
+  # with new concepts
+  dsConcepts <- dsMatchesLong %>%
+    bind_rows(ontoMatches) |>
+    full_join(new |> select(all_of(joinCols)), by = joinCols) %>%
     mutate(harmLab = if_else(is.na(harmLab), label, harmLab),
            label = if_else(is.na(match), if_else(!is.na(id), label, NA_character_), label),
            match = if_else(is.na(match), if_else(!is.na(id), "has_close_match", "sort_in"), match)) %>%
@@ -205,7 +184,6 @@ edit_matches <- function(new, target = NULL, source = NULL, ontology = NULL,
   inclConcepts <- dsConcepts %>%
     filter(!is.na(id))
   missingConcepts <- dsConcepts %>%
-    # filter(is.na(id) & !label %in% prevMatchLabels)
     filter(is.na(id))
 
   if(dim(missingConcepts)[1] != 0){
@@ -323,7 +301,7 @@ edit_matches <- function(new, target = NULL, source = NULL, ontology = NULL,
     }
 
     sortIn <- stillMissing %>%
-      left_join(tibble(label = unique(new)), by = "label") %>%
+      left_join(tibble(label = unique(new$label)), by = "label") %>%
       mutate(sort_in = label,
              label = NA_character_,
              class = NA_character_) %>%
@@ -344,8 +322,8 @@ edit_matches <- function(new, target = NULL, source = NULL, ontology = NULL,
       if(verbose){
         message("--- column description ---\n")
         message("sort_in             cut out these values and sort them either into 'has_broader_match', \n                    'has_exact_match', has_narrower_match or 'has_close_match'")
-        message("has_broader         the broader concept id of each of the already harmonised concepts")
-        message("id                  filter by this column to jump to the subset you need to edit")
+        message("has_broader         the id of the broader concept of the already harmonised concepts")
+        message("id                  the id of concepts to which the new terms should be related")
         message("label               concepts to which the new terms should be related")
         message("class               the class of harmonised concepts")
         message("description         the description of each concept")
@@ -393,7 +371,7 @@ edit_matches <- function(new, target = NULL, source = NULL, ontology = NULL,
 
   if(!is.null(related)){
 
-    matchingTable <- prevMatches %>%
+    matchingTable <- dsMatches %>%
       filter(!id == "ignore") %>%
       bind_rows(related) %>%
       pivot_longer(cols = c(has_broader_match, has_close_match, has_exact_match, has_narrower_match),
@@ -407,8 +385,8 @@ edit_matches <- function(new, target = NULL, source = NULL, ontology = NULL,
       filter(!is.na(id)) %>%
       arrange(id)
 
-    newGrep <- str_replace_all(new, c("\\(" = "\\\\(", "\\)" = "\\\\)", "\\*" = "\\\\*",
-                                      "\\[" = "\\\\[", "\\]" = "\\\\]"))
+    newGrep <- str_replace_all(new$label, c("\\(" = "\\\\(", "\\)" = "\\\\)", "\\*" = "\\\\*",
+                                            "\\[" = "\\\\[", "\\]" = "\\\\]"))
     # newGrep <- paste0("^", newGrep, "$")
     out <- related %>%
       filter(str_detect(has_close_match, paste0(newGrep, collapse = "|")) |
