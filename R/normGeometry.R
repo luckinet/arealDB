@@ -15,6 +15,9 @@
 #'   played to signal the user that a point of interaction is reached by the
 #'   program, see \code{\link[beepr]{beep}}.
 #' @param simplify [\code{logical(1)}]\cr whether or not to simplify geometries.
+#' @param stringdist [`logical(1)`][logical]\cr whether or not to use string
+#'   distance to find matches (should not be used for large datasets/when a
+#'   memory error is shown).
 #' @param verbose [\code{logical(1)}]\cr be verbose about what is happening
 #'   (default \code{FALSE}). Furthermore, you can use
 #'   \code{\link{suppressMessages}} to make this function completely silent.
@@ -94,9 +97,10 @@
 #' @export
 
 normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10,
-                         beep = NULL, simplify = FALSE, verbose = FALSE){
+                         beep = NULL, simplify = FALSE, stringdist = TRUE,
+                         verbose = FALSE){
 
-  # input = NULL; pattern = NULL; query = NULL; thresh = 10; beep = NULL; simplify = FALSE; verbose = FALSE; i = 1; library(tidyverse); library(sf); library(stringr); library(progress)
+  # input = NULL; pattern = NULL; query = NULL; thresh = 10; beep = NULL; simplify = FALSE; stringdist = TRUE; verbose = FALSE; i = 1; library(tidyverse); library(sf); library(stringr); library(progress)
 
   # set internal paths
   intPaths <- paste0(getOption(x = "adb_path"))
@@ -268,6 +272,7 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
                                      columns = tempCols,
                                      dataseries = dName,
                                      ontology = gazPath,
+                                     stringdist = stringdist,
                                      verbose = verbose,
                                      beep = beep) %>%
       mutate(unitCol := !!sym(topClass))

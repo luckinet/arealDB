@@ -17,6 +17,9 @@
 #' @param groupMatches [`logical(1)`][logical]\cr whether or not to group
 #'   harmonized concepts when there are more than one match (for example for
 #'   broader or narrower matches).
+#' @param stringdist [`logical(1)`][logical]\cr whether or not to use string
+#'   distance to find matches (should not be used for large datasets/when a
+#'   memory error is shown).
 #' @param verbose [`logical(1)`][logical]\cr whether or not to give detailed
 #'   information on the process of this function.
 #' @return Returns a table that resembles the input table where the target
@@ -39,7 +42,10 @@
 
 matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
                           ontology = NULL, beep = NULL, colsAsClass = TRUE,
-                          groupMatches = FALSE, verbose = FALSE){
+                          groupMatches = FALSE, stringdist = TRUE,
+                          verbose = FALSE){
+
+  # table = thisTable; columns = targetCols; dataseries = dSeries; ontology = gazPath; colsAsClass = TRUE; groupMatches = FALSE
 
   assertDataFrame(x = table, min.cols = length(columns))
   assertCharacter(x = columns, any.missing = FALSE)

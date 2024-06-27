@@ -15,6 +15,9 @@
 #'   stored, or an already loaded ontology.
 #' @param matchDir [`character(1)`][character]\cr the directory where to store
 #'   source-specific matching tables.
+#' @param stringdist [`logical(1)`][logical]\cr whether or not to use string
+#'   distance to find matches (should not be used for large datasets/when a
+#'   memory error is shown).
 #' @param verbose [`logical(1)`][logical]\cr whether or not to give detailed
 #'   information on the process of this function.
 #' @param beep [`integerish(1)`][integer]\cr Number specifying what sound to be
@@ -52,7 +55,8 @@
 #' @export
 
 edit_matches <- function(new, topLevel, source = NULL, ontology = NULL,
-                         matchDir = NULL, verbose = TRUE, beep = NULL){
+                         matchDir = NULL, stringdist = TRUE, verbose = TRUE,
+                         beep = NULL){
 
   assertDataFrame(x = new)
   assertNames(x = names(new), must.include = c("label", "class", "has_broader"))
