@@ -12,6 +12,7 @@ matchOntology(
   beep = NULL,
   colsAsClass = TRUE,
   groupMatches = FALSE,
+  stringdist = TRUE,
   verbose = FALSE
 )
 }
@@ -37,6 +38,10 @@ by their name with the respective classes, or with concepts of all classes.}
 \item{groupMatches}{[`logical(1)`][logical]\cr whether or not to group
 harmonized concepts when there are more than one match (for example for
 broader or narrower matches).}
+
+\item{stringdist}{[`logical(1)`][logical]\cr whether or not to use string
+distance to find matches (should not be used for large datasets/when a
+memory error is shown).}
 
 \item{verbose}{[`logical(1)`][logical]\cr whether or not to give detailed
 information on the process of this function.}

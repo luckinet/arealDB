@@ -10,6 +10,7 @@ edit_matches(
   source = NULL,
   ontology = NULL,
   matchDir = NULL,
+  stringdist = TRUE,
   verbose = TRUE,
   beep = NULL
 )
@@ -31,6 +32,10 @@ stored, or an already loaded ontology.}
 
 \item{matchDir}{[`character(1)`][character]\cr the directory where to store
 source-specific matching tables.}
+
+\item{stringdist}{[`logical(1)`][logical]\cr whether or not to use string
+distance to find matches (should not be used for large datasets/when a
+memory error is shown).}
 
 \item{verbose}{[`logical(1)`][logical]\cr whether or not to give detailed
 information on the process of this function.}

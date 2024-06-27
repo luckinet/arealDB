@@ -11,6 +11,7 @@ normGeometry(
   thresh = 10,
   beep = NULL,
   simplify = FALSE,
+  stringdist = TRUE,
   verbose = FALSE
 )
 }
@@ -34,6 +35,10 @@ played to signal the user that a point of interaction is reached by the
 program, see \code{\link[beepr]{beep}}.}
 
 \item{simplify}{[\code{logical(1)}]\cr whether or not to simplify geometries.}
+
+\item{stringdist}{[`logical(1)`][logical]\cr whether or not to use string
+distance to find matches (should not be used for large datasets/when a
+memory error is shown).}
 
 \item{verbose}{[\code{logical(1)}]\cr be verbose about what is happening
 (default \code{FALSE}). Furthermore, you can use
