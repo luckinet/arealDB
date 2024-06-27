@@ -89,7 +89,6 @@ edit_matches <- function(new, topLevel, source = NULL, ontology = NULL,
     joinCols <- c("label", "class", "has_broader")
   }
 
-
   if(dim(filterClasses)[1] != 0){
 
     filterClassLevel <- length(str_split(string = filterClasses$id, pattern = "[.]")[[1]])
@@ -110,7 +109,6 @@ edit_matches <- function(new, topLevel, source = NULL, ontology = NULL,
 
     # set a filter in case target concepts have broader concepts
     if(all(new$lvl <= filterClassLevel-1)){
-    # if(all(target$lvl < filterClassLevel-1)){
       parentFilter <- unique(new$has_broader)
       withBroader <- NULL
     } else {
@@ -246,15 +244,32 @@ edit_matches <- function(new, topLevel, source = NULL, ontology = NULL,
       rename(label_harm = label) %>%
       mutate(label = tolower(label_harm)) %>%
       filter(!is.na(label_harm)) %>%
+      filter(class == tail(filterClasses, 1)) |>
+      filter(has_broader %in% parentFilter) |>
       select(-has_broader, -has_broader_match, -has_close_match, -has_exact_match, -has_narrower_match)
 
-    joined <- missingConcepts %>%
+    # joined <- missingConcepts %>%
+    #   select(label_new = label, has_broader) %>%
+    #   mutate(label = tolower(label_new)) %>%
+    #   stringdist_left_join(toJoin, by = "label", distance_col = "dist", max_dist = 2) |>
+    #   separate_wider_regex(id, c(id_new = ".*", "[.]", rest = ".*"), cols_remove = FALSE) |>
+    #   filter(has_broader == id_new) |>
+    #   select(-id_new, -rest)
+
+    tempJoin <- missingConcepts %>%
       select(label_new = label, has_broader) %>%
-      mutate(label = tolower(label_new)) %>%
-      stringdist_left_join(toJoin, by = "label", distance_col = "dist", max_dist = 2) |>
-      separate_wider_regex(id, c(id_new = ".*", "[.]", rest = ".*"), cols_remove = FALSE) |>
-      filter(has_broader == id_new) |>
-      select(-id_new, -rest)
+      mutate(label = tolower(label_new))
+
+    if(stringdist){
+      joined <- stringdist_left_join(x = tempJoin, y = toJoin, by = "label", distance_col = "dist", max_dist = 2) |>
+        separate_wider_regex(id, c(id_new = ".*", "[.]", rest = ".*"), cols_remove = FALSE) |>
+        filter(has_broader == id_new) |>
+        select(-id_new, -rest)
+    } else {
+      joined <- left_join(x = tempJoin, y = toJoin, by = "label", multiple = "first") |>
+        select(-label) |>
+        mutate(label.x = NA, label.y = NA, dist = 0)
+    }
 
     if(!all(is.na(joined$dist))){
       joined <- joined %>%
@@ -263,6 +278,7 @@ edit_matches <- function(new, topLevel, source = NULL, ontology = NULL,
         arrange(dist) %>%
         mutate(dist = paste0("dist_", dist)) %>%
         pivot_wider(names_from = dist, values_from = label_harm)
+
       if(!"dist_0" %in% colnames(joined)){
         joined <- joined %>%
           add_column(dist_0 = NA_character_, .after = "description")
@@ -297,7 +313,7 @@ edit_matches <- function(new, topLevel, source = NULL, ontology = NULL,
         left_join(hits, by = c("id", "label", "class", withBroader)) %>%
         left_join(numbers, by = "label") %>%
         rowwise() %>%
-        mutate(has_new_close_match = if_else(grepl(x = has_close_match, pattern = has_new_close_match), NA_character_, has_new_close_match)) %>%
+        mutate(has_new_close_match = if_else(has_close_match %in% has_new_close_match, NA_character_, has_new_close_match)) %>%
         unite(col = "has_close_match", has_close_match, has_new_close_match, sep = " | ", na.rm = TRUE) %>%
         mutate(across(where(is.character), function(x) na_if(x, ""))) %>%
         select(-n)
@@ -405,8 +421,16 @@ edit_matches <- function(new, topLevel, source = NULL, ontology = NULL,
 
     newGrep <- str_replace_all(new$label, c("\\(" = "\\\\(", "\\)" = "\\\\)", "\\*" = "\\\\*",
                                             "\\[" = "\\\\[", "\\]" = "\\\\]"))
-    # newGrep <- paste0("^", newGrep, "$")
+
+    # only return objects that fall within those broader concepts that are in
+    # the final matching table at the current class
+    new_parentFilter <- matchingTable |>
+      filter(class == tail(filterClasses, 1)) |>
+      distinct(has_broader) |>
+      pull(has_broader)
+
     out <- related %>%
+      filter(has_broader %in% new_parentFilter) %>%
       filter(str_detect(has_close_match, paste0(newGrep, collapse = "|")) |
                str_detect(has_broader_match, paste0(newGrep, collapse = "|")) |
                str_detect(has_narrower_match, paste0(newGrep, collapse = "|")) |
