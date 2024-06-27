@@ -148,6 +148,20 @@ edit_matches <- function(new, topLevel, source = NULL, ontology = NULL,
     separate_longer_delim(cols = label, delim = " | ") |>
     filter(!is.na(label))
 
+  # ignore concepts that were previously tagged 'ignore'
+  new <- new |>
+    left_join(dsMatchesLong |> select(label, class, harmLab) |> distinct(), by = c("label", "class")) |>
+    filter(!harmLab %in% "ignore") |>
+    distinct() |>
+    select(-harmLab)
+
+  # ... and return an empty object if everything is to ignore
+  if(dim(new)[1] == 0){
+    out <- tibble(id = character(), label = character(), class = character(), has_broader = character(), description = character(),
+                  has_broader_match = character(), has_close_match = character(), has_exact_match = character(), has_narrower_match = character())
+    return(out)
+  }
+
   # gather all concepts for the focal data-series (previous matches from
   # matching table and matches that may already be in the ontology) and join
   # with new concepts
