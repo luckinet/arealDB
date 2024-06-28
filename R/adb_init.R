@@ -193,15 +193,15 @@ adb_init <- function(root, version, author, licence, gazetteer, top, ontology){
   }
 
   if(!testFileExists(x = file.path(root, "adb_info.RData"))){
-    db_info <- list(version = version,
-                    author = author,
-                    licence = licence,
-                    gazetteer = gazetteer,
-                    ontology = unique(ontology))
+    adb_info <- list(version = version,
+                     author = author,
+                     licence = licence,
+                     gazetteer = gazetteer,
+                     ontology = unique(ontology))
     # re-design this so it contains more official data that can be sensibly reused
 
     message("creating ", paste0(".../adb_info.RData"))
-    save(db_info, file = paste0(root, "/adb_info.RData"))
+    save(adb_info, file = paste0(root, "/adb_info.RData"))
   }
 
   oldOptions <- options()

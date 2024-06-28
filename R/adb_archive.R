@@ -1,4 +1,4 @@
-#' Load the data from an areal database
+#' Archive the data from an areal database
 #'
 #' @param pattern [\code{character(1)}]\cr a regular expression used to filter
 #'   files to load.
@@ -9,11 +9,11 @@
 #'   \code{outPath}.
 #' @param outPath [\code{character(1)}]\cr directory, where the archive should
 #'   be stored.
-#' @details
-#'
+#' @details This function prepares and packages the data into an archiveable
+#'   form. This contains geopacakge files for geometries and csv files for all
+#'   tables, such as inventory, matching and thematic data tables.
 #' @return no return value, called for the side-effect of creating a database
 #'   archive.
-#' @examples
 #' @importFrom checkmate assertCharacter assertLogical assertDirectoryExists
 #'   testDirectoryExists
 #' @importFrom purrr map
@@ -34,61 +34,70 @@ adb_archive <- function(pattern = NULL, variables = NULL, compress = FALSE, outP
 
   # derive current version
   load(paste0(intPaths, "/adb_info.RData"))
-  version <- paste0(db_info$version, "_", format(Sys.Date(), "%Y%m%d"))
+  version <- paste0(adb_info$version, "_", format(Sys.Date(), "%Y%m%d"))
 
   # derive path
   archivePath <- paste0(outPath, "arealDB_", version, "/")
   message("\n-> creating archive '", archivePath, "'")
   if(!testDirectoryExists(x = archivePath, access = "rw")){
-    dir.create(path = archivePath)
     dir.create(path = paste0(archivePath, "geometries"))
     dir.create(path = paste0(archivePath, "tables"))
     dir.create(path = paste0(archivePath, "meta"))
+    dir.create(path = archivePath)
   }
 
   message("-> archiving tables")
   stage3tables_full <- list.files(path = paste0(intPaths, "/tables/stage3"), full.names = TRUE)
-  stage3tables <- map(.x = list.files(path = paste0(intPaths, "/tables/stage3")), .f = function(ix){
-    temp <- str_split(ix, "[.]")[[1]][1]
-  }) %>% unlist()
+  if(length(stage3tables_full) != 0){
 
-  pb <- progress_bar$new(format = "[:bar] :current/:total (:percent)", total = length(stage3tables))
-  for(i in seq_along(stage3tables)){
-    temp <- readRDS(file = stage3tables_full[i])
-    write_csv(x = temp, file = paste0(archivePath, "tables/", stage3tables[i], ".csv"), na = "")
-    pb$tick()
+    stage3tables <- map(.x = list.files(path = paste0(intPaths, "/tables/stage3")), .f = function(ix){
+      temp <- str_split(ix, "[.]")[[1]][1]
+    }) |>
+      unlist()
+
+    pb <- progress_bar$new(format = "[:bar] :current/:total (:percent)", total = length(stage3tables))
+    for(i in seq_along(stage3tables)){
+      temp <- readRDS(file = stage3tables_full[i])
+      write_csv(x = temp, file = paste0(archivePath, "tables/", stage3tables[i], ".csv"), na = "")
+      pb$tick()
+    }
+
   }
 
   message("-> archiving geometries")
   stage3geometries_full <- list.files(path = paste0(intPaths, "/geometries/stage3"), full.names = TRUE)
-  stage3geometries <- list.files(path = paste0(intPaths, "/geometries/stage3"))
-  file.copy(from = stage3geometries_full,
-            to = paste0(archivePath, "geometries/", stage3geometries),
-            overwrite = TRUE)
+  if(length(stage3geometries_full) != 0){
+
+    stage3geometries <- list.files(path = paste0(intPaths, "/geometries/stage3"))
+    file.copy(from = stage3geometries_full,
+              to = paste0(archivePath, "geometries/", stage3geometries),
+              overwrite = TRUE)
+
+  }
 
   message("-> archiving inventory tables")
-  adb_inventory(type = "dataseries") %>%
+  adb_inventory(type = "dataseries") |>
     write_csv(file = paste0(archivePath, "meta/inv_dataseries.csv"), na = "")
-  adb_inventory(type = "geometries") %>%
+  adb_inventory(type = "geometries") |>
     write_csv(file = paste0(archivePath, "meta/inv_geometries.csv"), na = "")
-  adb_inventory(type = "tables") %>%
+  adb_inventory(type = "tables") |>
     write_csv(file = paste0(archivePath, "meta/inv_tables.csv"), na = "")
-  adb_ontology(type = "ontology") %>%
+  adb_ontology(type = "ontology") |>
     write_csv(file = paste0(archivePath, "meta/ontology.csv"), na = "")
-  adb_ontology(type = "gazetteer") %>%
+  adb_ontology(type = "gazetteer") |>
     write_csv(file = paste0(archivePath, "meta/gazetteer.csv"), na = "")
 
   message("-> archiving metadata")
   sI <- sessionInfo()
   save(sI, file = paste0(archivePath, "R_sessionInfo.RData"))
   write_lines(x = capture.output(sI), file = paste0(archivePath, "R_sessionInfo.txt"))
-  save(db_info, file = paste0(archivePath, "dbInfo.RData"))
-  db_desc_lines <- paste0("version:\n", db_info$version, "\n\n",
-                          "authors:\n", paste0("creator: ", paste0(db_info$author$cre, collapse = ", "), "\nauthor: ", paste0(db_info$author$aut, collapse = ", "), "\ncontributor: ", paste0(db_info$author$ctb, collapse = ", ")), "\n\n",
-                          "licence:\n", db_info$licence, "\n\n",
-                          "gazetteer:\n", db_info$gazetteer, "\n\n", # these two should presumably be replaced with a version label as well
-                          "ontology:\n", unique(db_info$ontology), "\n\n", # these two should presumably be replaced with a version label as well
-                          "variables:\n", paste0(db_info$variables, collapse = ", "), "\n\n")
+  save(adb_info, file = paste0(archivePath, "dbInfo.RData"))
+  db_desc_lines <- paste0("version:\n", adb_info$version, "\n\n",
+                          "authors:\n", paste0("creator: ", paste0(adb_info$author$cre, collapse = ", "), "\nauthor: ", paste0(adb_info$author$aut, collapse = ", "), "\ncontributor: ", paste0(adb_info$author$ctb, collapse = ", ")), "\n\n",
+                          "licence:\n", adb_info$licence, "\n\n",
+                          "gazetteer:\n", adb_info$gazetteer, "\n\n", # these two should presumably be replaced with a version label as well
+                          "ontology:\n", unique(adb_info$ontology), "\n\n", # these two should presumably be replaced with a version label as well
+                          "variables:\n", paste0(adb_info$variables, collapse = ", "), "\n\n")
   write_lines(x = db_desc_lines, file = paste0(archivePath, "dbInfo.txt"))
 
   if(compress){
