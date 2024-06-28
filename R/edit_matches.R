@@ -125,10 +125,10 @@ edit_matches <- function(new, topLevel, source = NULL, ontology = NULL,
     ignoreClass <- head(filterClasses, 1)
   }
 
-  ontoMatches <- get_concept(label = new$label, class = new$class, has_broader = new$has_broader, ontology = ontology) %>%
-    rename(harmLab = label) %>%
-    pivot_longer(cols = c(has_broader_match, has_close_match, has_exact_match, has_narrower_match),
-                 names_to = "match", values_to = "label")
+  # ontoMatches <- get_concept(label = new$label, class = new$class, has_broader = new$has_broader, ontology = ontology) %>%
+  #   rename(harmLab = label) %>%
+  #   pivot_longer(cols = c(has_broader_match, has_close_match, has_exact_match, has_narrower_match),
+  #                names_to = "match", values_to = "label")
 
   # determine previous matches from matching table (and make them long)
   if(testFileExists(paste0(matchDir, sourceFile))){
@@ -147,8 +147,13 @@ edit_matches <- function(new, topLevel, source = NULL, ontology = NULL,
     filter(!is.na(label))
 
   # ignore concepts that were previously tagged 'ignore'
+  tempIgnore <- dsMatchesLong |>
+    filter(harmLab == "ignore") |>
+    select(label, class, harmLab) |>
+    distinct()
+
   new <- new |>
-    left_join(dsMatchesLong |> select(label, class, harmLab) |> distinct(), by = c("label", "class")) |>
+    left_join(tempIgnore, by = c("label", "class")) |>
     filter(!harmLab %in% "ignore") |>
     distinct() |>
     select(-harmLab)
@@ -164,7 +169,7 @@ edit_matches <- function(new, topLevel, source = NULL, ontology = NULL,
   # matching table and matches that may already be in the ontology) and join
   # with new concepts
   dsConcepts <- dsMatchesLong %>%
-    bind_rows(ontoMatches) |>
+    # bind_rows(ontoMatches) |>
     full_join(new |> select(all_of(joinCols)), by = joinCols) %>%
     mutate(harmLab = if_else(is.na(harmLab), label, harmLab),
            label = if_else(is.na(match), if_else(!is.na(id), label, NA_character_), label),
@@ -305,18 +310,18 @@ edit_matches <- function(new, topLevel, source = NULL, ontology = NULL,
                label = has_0_differences) %>%
         select(label, id, all_of(withBroader), class, has_new_close_match)
 
-      numbers <- relate %>%
-        group_by(label) %>%
-        summarise(n = n())
+      # numbers <- relate %>%
+      #   group_by(label) %>%
+      #   summarise(n = n())
 
       relate <- relate %>%
         left_join(hits, by = c("id", "label", "class", withBroader)) %>%
-        left_join(numbers, by = "label") %>%
+        # left_join(numbers, by = "label") %>%
         rowwise() %>%
         mutate(has_new_close_match = if_else(has_close_match %in% has_new_close_match, NA_character_, has_new_close_match)) %>%
         unite(col = "has_close_match", has_close_match, has_new_close_match, sep = " | ", na.rm = TRUE) %>%
-        mutate(across(where(is.character), function(x) na_if(x, ""))) %>%
-        select(-n)
+        mutate(across(where(is.character), function(x) na_if(x, ""))) #%>%
+        # select(-n)
 
       stillMissing <- joined %>%
         filter(is.na(has_0_differences)) %>%
