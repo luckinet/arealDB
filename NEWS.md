@@ -1,4 +1,7 @@
-# arealDB 0.9.1
+# arealDB 0.9.2
+
+- various fixes to the internal processing of matching tabular to geometric data.
+- various fixes to finding matches between harmonized and external geometries.
 
 # arealDB 0.9.0 - frontend update
 
