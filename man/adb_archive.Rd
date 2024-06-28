@@ -2,7 +2,7 @@
 % Please edit documentation in R/adb_archive.R
 \name{adb_archive}
 \alias{adb_archive}
-\title{Load the data from an areal database}
+\title{Archive the data from an areal database}
 \usage{
 adb_archive(pattern = NULL, variables = NULL, compress = FALSE, outPath = NULL)
 }
@@ -25,5 +25,10 @@ no return value, called for the side-effect of creating a database
   archive.
 }
 \description{
-Load the data from an areal database
+Archive the data from an areal database
+}
+\details{
+This function prepares and packages the data into an archiveable
+  form. This contains geopacakge files for geometries and csv files for all
+  tables, such as inventory, matching and thematic data tables.
 }

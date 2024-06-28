@@ -11,8 +11,7 @@ No return value, called for the side effect of saving the inventory,
   the stage3 files and modified ontology/gazetteer into the backup directory.
 }
 \description{
-Make sure to provide enough storage space, or implement some version control
-system for the data.
+Backup the current state of an areal database
 }
 \details{
 This function creates a tag that is composed of the version and the
