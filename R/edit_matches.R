@@ -271,8 +271,10 @@ edit_matches <- function(new, topLevel, source = NULL, ontology = NULL,
         filter(has_broader == id_new) |>
         select(-id_new, -rest)
     } else {
-      joined <- left_join(x = tempJoin, y = toJoin, by = "label", multiple = "first") |>
-        select(-label) |>
+      joined <- left_join(x = tempJoin, y = toJoin, by = "label") |>
+        separate_wider_regex(id, c(id_new = ".*", "[.]", rest = ".*"), cols_remove = FALSE) |>
+        filter(has_broader == id_new) |>
+        select(-label, -id_new, -rest) |>
         mutate(label.x = NA, label.y = NA, dist = 0)
     }
 
