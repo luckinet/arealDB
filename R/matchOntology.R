@@ -195,15 +195,6 @@ matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
 
 
       if(dim(newRelatedConcepts)[1] != 0){
-        new_mapping(new = newRelatedConcepts$external,
-                    target = newRelatedConcepts %>% select(id, label, class, has_broader),
-                    source = dataseries,
-                    match = newRelatedConcepts$match,
-                    certainty = 3,
-                    ontology = ontoPath,
-                    verbose = verbose,
-                    beep = beep)
-
         # if(dim(newRelatedConcepts)[1] > dim(toMatch)[1]) stop("   !   matching led to more ouput than input concepts  -> doublecheck translations !")
 
         if(i != 1 & any(!newRelatedConcepts$has_broader %in% toMatch$has_broader)){
@@ -260,6 +251,16 @@ matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
 
           if(dim(newConcepts)[1] != oldDim + dim(tempTab_broader)[1]) stop("some mismatch occurred.")
         }
+
+        new_mapping(new = newRelatedConcepts$external,
+                    target = newRelatedConcepts %>% select(id, label, class, has_broader),
+                    source = dataseries,
+                    match = newRelatedConcepts$match,
+                    certainty = 3,
+                    ontology = ontoPath,
+                    verbose = verbose,
+                    beep = beep)
+
       }
 
       # ... and query the ontology again, this should now include the newly created
