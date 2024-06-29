@@ -193,6 +193,7 @@ matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
         filter(!is.na(id)) %>%
         arrange(id)
 
+
       if(dim(newRelatedConcepts)[1] != 0){
         new_mapping(new = newRelatedConcepts$external,
                     target = newRelatedConcepts %>% select(id, label, class, has_broader),
@@ -202,6 +203,8 @@ matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
                     ontology = ontoPath,
                     verbose = verbose,
                     beep = beep)
+
+        # if(dim(newRelatedConcepts)[1] > dim(toMatch)[1]) stop("   !   matching led to more ouput than input concepts  -> doublecheck translations !")
 
         if(i != 1 & any(!newRelatedConcepts$has_broader %in% toMatch$has_broader)){
 
@@ -223,7 +226,7 @@ matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
             filter(n() > 1) |>
             ungroup()
 
-          if(dim(temp_dups)[1] != 0 | dim(newRelatedConcepts_dups)[1] != 0) stop("there are duplicates in the new concepts.")
+          if(dim(temp_dups)[1] != 0 | dim(newRelatedConcepts_dups)[1] != 0) stop("there are duplicates in the new concepts after correcting parents.")
 
           # in case concepts were matched in another parent, those parents need to be considered correctly in 'tempTab' and 'newConcepts'
           tempTab_new <- tempTab |>
