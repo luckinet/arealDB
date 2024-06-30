@@ -40,8 +40,11 @@ adb_backup <- function(){
   stage3tables_full <- list.files(path = paste0(intPaths, "/tables/stage3"), full.names = TRUE)
   if(length(stage3tables_full) != 0){
 
+    pb <- progress_bar$new(format = "[:bar] :current/:total (:percent)", total = length(stage3tables_full))
+
     message(" -> backing up tables")
     stage3tables <- map(.x = list.files(path = paste0(intPaths, "/tables/stage3")), .f = function(ix){
+      pb$tick()
       temp <- str_split(ix, "[.]")[[1]]
       paste0(temp[1], "_", version, ".", temp[2])
     }) |> unlist()
@@ -55,8 +58,11 @@ adb_backup <- function(){
   stage3geometries_full <- list.files(path = paste0(intPaths, "/geometries/stage3"), full.names = TRUE)
   if(length(stage3geometries_full) != 0){
 
+    pb <- progress_bar$new(format = "[:bar] :current/:total (:percent)", total = length(stage3geometries_full))
+
     message(" -> backing up geometries")
     stage3geometries <- map(.x = list.files(path = paste0(intPaths, "/geometries/stage3")), .f = function(ix){
+      pb$tick()
       temp <- str_split(ix, "[.]")[[1]]
       paste0(temp[1], "_", version, ".", temp[2])
     }) |>
