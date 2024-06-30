@@ -140,6 +140,7 @@ normTable <- function(input = NULL, pattern = NULL, query = NULL, ontoMatch = NU
       reorganise(schema = algorithm)
 
     if(!is.null(query)){
+      moveFile <- FALSE
       thisTable <- thisTable %>%
         filter(eval(parse(text = query)))
     }
@@ -165,6 +166,7 @@ normTable <- function(input = NULL, pattern = NULL, query = NULL, ontoMatch = NU
                                columns = targetCols,
                                dataseries = dSeries,
                                ontology = gazPath,
+                               verbose = verbose,
                                beep = beep) %>%
       unite(col = "gazMatch", match, external, sep = "--", na.rm = TRUE) %>%
       rename(gazID = id) %>%
@@ -179,6 +181,7 @@ normTable <- function(input = NULL, pattern = NULL, query = NULL, ontoMatch = NU
                                  columns = ontoMatch,
                                  dataseries = dSeries,
                                  ontology = ontoPath,
+                                 verbose = verbose,
                                  beep = beep) %>%
         unite(col = "ontoMatch", match, external, sep = "--", na.rm = TRUE) %>%
         rename(ontoID = id) %>%
