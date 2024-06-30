@@ -160,8 +160,8 @@ edit_matches <- function(new, topLevel, source = NULL, ontology = NULL,
 
   # ... and return an empty object if everything is to ignore
   if(dim(new)[1] == 0){
-    out <- tibble(id = character(), label = character(), class = character(), has_broader = character(), description = character(),
-                  has_broader_match = character(), has_close_match = character(), has_exact_match = character(), has_narrower_match = character())
+    out <- tibble(label = character(), class = character(), id = character(), has_new_broader = character(), description = character(),
+                  match = character(), external = character(), has_source = character(), has_broader = character())
     return(out)
   }
 
@@ -253,14 +253,6 @@ edit_matches <- function(new, topLevel, source = NULL, ontology = NULL,
       filter(has_broader %in% parentFilter) |>
       select(-has_broader, -has_broader_match, -has_close_match, -has_exact_match, -has_narrower_match)
 
-    # joined <- missingConcepts %>%
-    #   select(label_new = label, has_broader) %>%
-    #   mutate(label = tolower(label_new)) %>%
-    #   stringdist_left_join(toJoin, by = "label", distance_col = "dist", max_dist = 2) |>
-    #   separate_wider_regex(id, c(id_new = ".*", "[.]", rest = ".*"), cols_remove = FALSE) |>
-    #   filter(has_broader == id_new) |>
-    #   select(-id_new, -rest)
-
     tempJoin <- missingConcepts %>%
       select(label_new = label, has_broader) %>%
       mutate(label = tolower(label_new))
@@ -312,18 +304,12 @@ edit_matches <- function(new, topLevel, source = NULL, ontology = NULL,
                label = has_0_differences) %>%
         select(label, id, all_of(withBroader), class, has_new_close_match)
 
-      # numbers <- relate %>%
-      #   group_by(label) %>%
-      #   summarise(n = n())
-
       relate <- relate %>%
         left_join(hits, by = c("id", "label", "class", withBroader)) %>%
-        # left_join(numbers, by = "label") %>%
         rowwise() %>%
         mutate(has_new_close_match = if_else(has_close_match %in% has_new_close_match, NA_character_, has_new_close_match)) %>%
         unite(col = "has_close_match", has_close_match, has_new_close_match, sep = " | ", na.rm = TRUE) %>%
-        mutate(across(where(is.character), function(x) na_if(x, ""))) #%>%
-        # select(-n)
+        mutate(across(where(is.character), function(x) na_if(x, "")))
 
       stillMissing <- joined %>%
         filter(is.na(has_0_differences)) %>%
@@ -426,8 +412,7 @@ edit_matches <- function(new, topLevel, source = NULL, ontology = NULL,
       filter(!is.na(id)) %>%
       arrange(id)
 
-    newGrep <- str_replace_all(new$label, c("\\(" = "\\\\(", "\\)" = "\\\\)", "\\*" = "\\\\*",
-                                            "\\[" = "\\\\[", "\\]" = "\\\\]"))
+    saveRDS(object = matchingTable, file = paste0(matchDir, sourceFile))
 
     # only return objects that fall within those broader concepts that are in
     # the final matching table at the current class
@@ -437,16 +422,29 @@ edit_matches <- function(new, topLevel, source = NULL, ontology = NULL,
       pull(has_broader)
 
     out <- related %>%
-      filter(has_broader %in% new_parentFilter) %>%
-      filter(str_detect(has_close_match, paste0(newGrep, collapse = "|")) |
-               str_detect(has_broader_match, paste0(newGrep, collapse = "|")) |
-               str_detect(has_narrower_match, paste0(newGrep, collapse = "|")) |
-               str_detect(has_exact_match, paste0(newGrep, collapse = "|"))) %>%
-      arrange(id)
+      pivot_longer(cols = c(has_broader_match, has_close_match, has_exact_match, has_narrower_match),
+                   names_to = "match", values_to = "external") %>%
+      separate_longer_delim(cols = external, delim = " | ") %>%
+      filter(!is.na(external)) |>
+      distinct() |>
+      rename(has_new_broader = has_broader) |>
+      mutate(match = str_replace(string = match, pattern = "has_", replacement = ""),
+             match = str_replace(string = match, pattern = "_match", replacement = "")) |>
+      right_join(new |> select(external = label, class, has_source, has_broader), by = c("external", "class"))
+
+    # newGrep <- str_replace_all(new$label, c("\\(" = "\\\\(", "\\)" = "\\\\)", "\\*" = "\\\\*",
+    #                                         "\\[" = "\\\\[", "\\]" = "\\\\]"))
+    #
+    # out <- related %>%
+    #   mutate(has_new_broader = has_broader) |>
+    #   filter(has_broader %in% new_parentFilter) %>%
+    #   filter(str_detect(has_close_match, paste0(newGrep, collapse = "|")) |
+    #            str_detect(has_broader_match, paste0(newGrep, collapse = "|")) |
+    #            str_detect(has_narrower_match, paste0(newGrep, collapse = "|")) |
+    #            str_detect(has_exact_match, paste0(newGrep, collapse = "|"))) %>%
+    #   arrange(id)
 
   }
-
-  saveRDS(object = matchingTable, file = paste0(matchDir, sourceFile))
 
   return(out)
 }
