@@ -69,7 +69,8 @@ globalVariables(c(
   "rest",
   "parentName",
   "new_parent_label",
-  "has_new_broader"
+  "has_new_broader",
+  "has_source"
 ))
 
 .onAttach <- function(libname, pkgname){
