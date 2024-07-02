@@ -13,6 +13,7 @@ matchOntology(
   colsAsClass = TRUE,
   groupMatches = FALSE,
   stringdist = TRUE,
+  strictMatch = FALSE,
   verbose = FALSE
 )
 }
@@ -42,6 +43,10 @@ broader or narrower matches).}
 \item{stringdist}{[`logical(1)`][logical]\cr whether or not to use string
 distance to find matches (should not be used for large datasets/when a
 memory error is shown).}
+
+\item{strictMatch}{[`logical(1)`][logical]\cr whether or not matches are
+strict, i.e., there should be clear one-to-one relationships and no changes
+in broader concepts.}
 
 \item{verbose}{[`logical(1)`][logical]\cr whether or not to give detailed
 information on the process of this function.}

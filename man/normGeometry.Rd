@@ -12,6 +12,7 @@ normGeometry(
   beep = NULL,
   simplify = FALSE,
   stringdist = TRUE,
+  strictMatch = FALSE,
   verbose = FALSE
 )
 }
@@ -39,6 +40,10 @@ program, see \code{\link[beepr]{beep}}.}
 \item{stringdist}{[`logical(1)`][logical]\cr whether or not to use string
 distance to find matches (should not be used for large datasets/when a
 memory error is shown).}
+
+\item{strictMatch}{[`logical(1)`][logical]\cr whether or not matches are
+strict, i.e., there should be clear one-to-one relationships and no changes
+in broader concepts.}
 
 \item{verbose}{[\code{logical(1)}]\cr be verbose about what is happening
 (default \code{FALSE}). Furthermore, you can use
