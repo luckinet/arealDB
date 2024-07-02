@@ -103,6 +103,10 @@ normTable <- function(input = NULL, pattern = NULL, query = NULL, ontoMatch = NU
     file_name <- pathStr[length(pathStr)]
     fields <- str_split(file_name, "_")[[1]]
 
+    if(getOption("width")-(nchar(i)+nchar(length(input))+21+nchar(file_name)) <= 0){
+      stop("please increase the width of the console, or choose smaller file names.")
+    }
+
     if(!file_name %in% inv_tables$stage2_name){
       message("\n--- ", i, " / ", length(input), " skipping ", rep("-", times = getOption("width")-(nchar(i)+nchar(length(input))+21+nchar(file_name))), " ", file_name, " ---")
       next

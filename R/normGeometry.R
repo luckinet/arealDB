@@ -18,6 +18,9 @@
 #' @param stringdist [`logical(1)`][logical]\cr whether or not to use string
 #'   distance to find matches (should not be used for large datasets/when a
 #'   memory error is shown).
+#' @param strictMatch [`logical(1)`][logical]\cr whether or not matches are
+#'   strict, i.e., there should be clear one-to-one relationships and no changes
+#'   in broader concepts.
 #' @param verbose [\code{logical(1)}]\cr be verbose about what is happening
 #'   (default \code{FALSE}). Furthermore, you can use
 #'   \code{\link{suppressMessages}} to make this function completely silent.
@@ -98,7 +101,7 @@
 
 normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10,
                          beep = NULL, simplify = FALSE, stringdist = TRUE,
-                         verbose = FALSE){
+                         strictMatch = FALSE, verbose = FALSE){
 
   # input = NULL; pattern = NULL; query = NULL; thresh = 10; beep = NULL; simplify = FALSE; stringdist = TRUE; verbose = FALSE; i = 1; library(tidyverse); library(sf); library(stringr); library(progress)
 
@@ -273,6 +276,7 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
                                      dataseries = dName,
                                      ontology = gazPath,
                                      stringdist = stringdist,
+                                     strictMatch = strictMatch,
                                      verbose = verbose,
                                      beep = beep) %>%
       mutate(unitCol := !!sym(topClass))
