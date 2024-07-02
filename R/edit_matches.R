@@ -155,13 +155,14 @@ edit_matches <- function(new, topLevel, source = NULL, ontology = NULL,
   new <- new |>
     left_join(tempIgnore, by = c("label", "class")) |>
     filter(!harmLab %in% "ignore") |>
+    filter(label != "") |>
     distinct() |>
     select(-harmLab)
 
   # ... and return an empty object if everything is to ignore
   if(dim(new)[1] == 0){
-    out <- tibble(label = character(), class = character(), id = character(), has_new_broader = character(), description = character(),
-                  match = character(), external = character(), has_source = character(), has_broader = character())
+    out <- tibble(id = character(), has_broader = character(), label = character(), class = character(),
+                  description = character(), match = character(), external = character())
     return(out)
   }
 
@@ -169,7 +170,6 @@ edit_matches <- function(new, topLevel, source = NULL, ontology = NULL,
   # matching table and matches that may already be in the ontology) and join
   # with new concepts
   dsConcepts <- dsMatchesLong %>%
-    # bind_rows(ontoMatches) |>
     full_join(new |> select(all_of(joinCols)), by = joinCols) %>%
     mutate(harmLab = if_else(is.na(harmLab), label, harmLab),
            label = if_else(is.na(match), if_else(!is.na(id), label, NA_character_), label),
@@ -328,6 +328,7 @@ edit_matches <- function(new, topLevel, source = NULL, ontology = NULL,
     }
 
     sortIn <- stillMissing %>%
+      # could also include the class of the stillMissing concepts to clarify
       left_join(tibble(label = unique(new$label)), by = "label") %>%
       mutate(sort_in = label,
              label = NA_character_,
@@ -421,28 +422,23 @@ edit_matches <- function(new, topLevel, source = NULL, ontology = NULL,
       distinct(has_broader) |>
       pull(has_broader)
 
+    if(!all(is.na(new_parentFilter))){
+      related <- related %>%
+        filter(has_broader %in% new_parentFilter)
+    }
+
+    newGrep <- str_replace_all(new$label, c("\\(" = "\\\\(", "\\)" = "\\\\)", "\\*" = "\\\\*",
+                                            "\\[" = "\\\\[", "\\]" = "\\\\]"))
+
     out <- related %>%
       pivot_longer(cols = c(has_broader_match, has_close_match, has_exact_match, has_narrower_match),
                    names_to = "match", values_to = "external") %>%
       separate_longer_delim(cols = external, delim = " | ") %>%
       filter(!is.na(external)) |>
       distinct() |>
-      rename(has_new_broader = has_broader) |>
       mutate(match = str_replace(string = match, pattern = "has_", replacement = ""),
              match = str_replace(string = match, pattern = "_match", replacement = "")) |>
-      right_join(new |> select(external = label, class, has_source, has_broader), by = c("external", "class"))
-
-    # newGrep <- str_replace_all(new$label, c("\\(" = "\\\\(", "\\)" = "\\\\)", "\\*" = "\\\\*",
-    #                                         "\\[" = "\\\\[", "\\]" = "\\\\]"))
-    #
-    # out <- related %>%
-    #   mutate(has_new_broader = has_broader) |>
-    #   filter(has_broader %in% new_parentFilter) %>%
-    #   filter(str_detect(has_close_match, paste0(newGrep, collapse = "|")) |
-    #            str_detect(has_broader_match, paste0(newGrep, collapse = "|")) |
-    #            str_detect(has_narrower_match, paste0(newGrep, collapse = "|")) |
-    #            str_detect(has_exact_match, paste0(newGrep, collapse = "|"))) %>%
-    #   arrange(id)
+      filter(external %in% new$label)
 
   }
 
