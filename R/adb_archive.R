@@ -39,12 +39,10 @@ adb_archive <- function(pattern = NULL, variables = NULL, compress = FALSE, outP
   # derive path
   archivePath <- paste0(outPath, "arealDB_", version, "/")
   message("\n-> creating archive '", archivePath, "'")
-  if(!testDirectoryExists(x = archivePath, access = "rw")){
-    dir.create(path = paste0(archivePath, "geometries"))
-    dir.create(path = paste0(archivePath, "tables"))
-    dir.create(path = paste0(archivePath, "meta"))
-    dir.create(path = archivePath)
-  }
+  dir.create(path = archivePath)
+  dir.create(path = paste0(archivePath, "geometries"))
+  dir.create(path = paste0(archivePath, "tables"))
+  dir.create(path = paste0(archivePath, "meta"))
 
   message("-> archiving tables")
   stage3tables_full <- list.files(path = paste0(intPaths, "/tables/stage3"), full.names = TRUE)
@@ -102,7 +100,7 @@ adb_archive <- function(pattern = NULL, variables = NULL, compress = FALSE, outP
 
   if(compress){
     message("-> compressing database archive")
-    tar(tarfile = paste0(outPath, "areaDB_", version, ".tar.gz"), archivePath, compression = "gzip")
+    tar(tarfile = paste0(outPath, "arealDB_", version, ".tar.gz"), archivePath, compression = "gzip")
     unlink(archivePath, recursive = TRUE)
   }
 
