@@ -17,10 +17,10 @@ adb_backup <- function(){
   # set internal paths
   intPaths <- paste0(getOption(x = "adb_path"))
 
-  load(paste0(intPaths, "/adb_info.RData"))
+  load(paste0(intPaths, "/db_info.RData"))
 
   # derive current version
-  version <- paste0(adb_info$version, "_", format(Sys.Date(), "%Y%m%d"))
+  version <- paste0(db_info$version, "_", format(Sys.Date(), "%Y%m%d"))
 
   # create backup directory
   if(!testDirectoryExists(x = paste0(intPaths, "/backup"))){

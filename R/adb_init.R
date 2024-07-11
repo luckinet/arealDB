@@ -16,6 +16,9 @@
 #' @param top [\code{character(1)}]\cr the label of the class in the gazetteer
 #'   that represents the top-most unit (e.g. country) of the areal database that
 #'   shall be started.
+#' @param staged [\code{logical(1)}]\cr whether or not the file structure is
+#'   arranged according to stages (with geometries and tables separated), or
+#'   merely as input/output (of all types).
 #' @param ontology [\code{list(.)}]\cr named list with the path(s) of
 #'   ontologies, where the list name identifies the variable that shall be
 #'   matched with the ontology at the path.
@@ -39,9 +42,14 @@
 #'   assertList
 #' @importFrom stringr str_detect
 #' @importFrom readr write_csv write_lines
+#' @importFrom utils citation
 #' @export
 
-adb_init <- function(root, version, author, licence, gazetteer, top, ontology){
+adb_init <- function(root, version, author, licence, ontology,
+                     gazetteer = NULL, top = NULL, staged = TRUE){
+
+  oldOptions <- options()
+  on.exit(options(oldOptions))
 
   assertCharacter(x = root, len = 1)
   if(!getOption("adb_testing")){
@@ -67,51 +75,61 @@ adb_init <- function(root, version, author, licence, gazetteer, top, ontology){
     message("creating root directory ", root)
   }
 
-  if(!testDirectory(x = file.path(root, "tables"), access = "rw")){
-    message("creating ", paste0(".../tables"))
-    dir.create(file.path(root, "tables"))
-  }
-  if(!testDirectory(x = file.path(root, "tables", "stage1"), access = "rw")){
-    message("creating ", paste0(".../tables/stage1"))
-    dir.create(file.path(root, "tables", "stage1"))
-  }
-  if(!testDirectory(x = file.path(root, "tables", "stage2"), access = "rw")){
-    message("creating ", paste0(".../tables/stage2"))
-    dir.create(file.path(root, "tables", "stage2"))
-  }
-  if(!testDirectory(x = file.path(root, "tables", "stage2", "processed"), access = "rw")){
-    message("creating ", paste0(".../tables/stage2/processed"))
-    dir.create(file.path(root, "tables", "stage2", "processed"))
-  }
-  if(!testDirectory(x = file.path(root, "tables", "stage3"), access = "rw")){
-    message("creating ", paste0(".../tables/stage3"))
-    dir.create(file.path(root, "tables", "stage3"))
+  if(staged){
+
+    if(!testDirectory(x = file.path(root, "tables"), access = "rw")){
+      message("creating ", paste0(".../tables"))
+      dir.create(file.path(root, "tables"))
+    }
+    if(!testDirectory(x = file.path(root, "tables", "stage1"), access = "rw")){
+      message("creating ", paste0(".../tables/stage1"))
+      dir.create(file.path(root, "tables", "stage1"))
+    }
+    if(!testDirectory(x = file.path(root, "tables", "stage2"), access = "rw")){
+      message("creating ", paste0(".../tables/stage2"))
+      dir.create(file.path(root, "tables", "stage2"))
+    }
+    if(!testDirectory(x = file.path(root, "tables", "stage2", "processed"), access = "rw")){
+      message("creating ", paste0(".../tables/stage2/processed"))
+      dir.create(file.path(root, "tables", "stage2", "processed"))
+    }
+    if(!testDirectory(x = file.path(root, "tables", "stage3"), access = "rw")){
+      message("creating ", paste0(".../tables/stage3"))
+      dir.create(file.path(root, "tables", "stage3"))
+    }
+
+    if(!testDirectory(x = file.path(root, "geometries"), access = "rw")){
+      message("creating ", paste0(".../geometries"))
+      dir.create(file.path(root, "geometries"))
+    }
+
+    if(!testDirectory(x = file.path(root, "geometries", "stage1"), access = "rw")){
+      message("creating ", paste0(".../geometries/stage1"))
+      dir.create(file.path(root, "geometries", "stage1"))
+    }
+    if(!testDirectory(x = file.path(root, "geometries", "stage2"), access = "rw")){
+      message("creating ", paste0(".../geometries/stage2"))
+      dir.create(file.path(root, "geometries", "stage2"))
+    }
+    if(!testDirectory(x = file.path(root, "geometries", "stage2", "processed"), access = "rw")){
+      message("creating ", paste0(".../geometries/stage2/processed"))
+      dir.create(file.path(root, "geometries", "stage2", "processed"))
+    }
+    if(!testDirectory(x = file.path(root, "geometries", "stage3"), access = "rw")){
+      message("creating ", paste0(".../geometries/stage3"))
+      dir.create(file.path(root, "geometries", "stage3"))
+    }
+
+
+  } else {
+
+    if(!testDirectory(x = file.path(root, "data"), access = "rw")){
+      message("creating ", paste0(".../data"))
+      dir.create(file.path(root, "data"))
+    }
+
   }
 
-  if(!testDirectory(x = file.path(root, "geometries"), access = "rw")){
-    message("creating ", paste0(".../geometries"))
-    dir.create(file.path(root, "geometries"))
-  }
-
-  if(!testDirectory(x = file.path(root, "geometries", "stage1"), access = "rw")){
-    message("creating ", paste0(".../geometries/stage1"))
-    dir.create(file.path(root, "geometries", "stage1"))
-  }
-  if(!testDirectory(x = file.path(root, "geometries", "stage2"), access = "rw")){
-    message("creating ", paste0(".../geometries/stage2"))
-    dir.create(file.path(root, "geometries", "stage2"))
-  }
-  if(!testDirectory(x = file.path(root, "geometries", "stage2", "processed"), access = "rw")){
-    message("creating ", paste0(".../geometries/stage2/processed"))
-    dir.create(file.path(root, "geometries", "stage2", "processed"))
-  }
-  if(!testDirectory(x = file.path(root, "geometries", "stage3"), access = "rw")){
-    message("creating ", paste0(".../geometries/stage3"))
-    dir.create(file.path(root, "geometries", "stage3"))
-  }
-  # if(!testDirectory(x = file.path(root, "log"), access = "rw")){
-  #   dir.create(file.path(root, "log"))
-  # }
   if(!testDirectory(x = file.path(root, "meta"), access = "rw")){
     message("creating ", paste0(".../meta"))
     dir.create(file.path(root, "meta"))
@@ -124,16 +142,26 @@ adb_init <- function(root, version, author, licence, gazetteer, top, ontology){
     message("creating ", paste0(".../meta/documentation"))
     dir.create(file.path(root, "meta", "documentation"))
   }
-  gazName <- str_split(tail(str_split(string = gazetteer, pattern = "/")[[1]], 1), "[.]")[[1]][1]
-  if(!testDirectory(x = file.path(root, "meta", gazName), access = "rw")){
-    message("creating ", paste0(".../meta/", gazName))
-    dir.create(file.path(root, "meta", gazName))
+
+  # create the gazetteer directory and copy the new gazetteer into 'meta'
+  if(!is.null(gazetteer)){
+
+    gazName <- str_split(tail(str_split(string = gazetteer, pattern = "/")[[1]], 1), "[.]")[[1]][1]
+    if(!testDirectory(x = file.path(root, "meta", gazName), access = "rw")){
+      message("creating ", paste0(".../meta/", gazName))
+      dir.create(file.path(root, "meta", gazName))
+    }
+    if(!testFileExists(x = paste0(file.path(root, "meta", gazName), ".rds"))){
+      message("copying gazetteer to ", paste0(".../meta/", gazName, ".rds"))
+      file.copy(from = gazetteer, to = paste0(file.path(root, "meta", gazName), ".rds"))
+    }
+    gazetteer <- paste0(file.path(root, "meta", gazName), ".rds")
+
+    options(gazetteer_path = gazetteer)
+    options(gazetteer_top = top)
+
   }
-  if(!testFileExists(x = paste0(file.path(root, "meta", gazName), ".rds"))){
-    message("copying gazetteer to ", paste0(".../meta/", gazName, ".rds"))
-    file.copy(from = gazetteer, to = paste0(file.path(root, "meta", gazName), ".rds"))
-  }
-  gazetteer <- paste0(file.path(root, "meta", gazName), ".rds")
+
   for(i in seq_along(unique(ontology))){
     temp <- str_split(tail(str_split(string = unique(ontology)[i], pattern = "/")[[1]], 1), "[.]")[[1]][1]
     if(!testDirectory(x = file.path(root, "meta", temp), access = "rw")){
@@ -147,6 +175,8 @@ adb_init <- function(root, version, author, licence, gazetteer, top, ontology){
     ontology[which(ontology == unique(ontology)[[i]])] <- paste0(file.path(root, "meta", temp), ".rds")
   }
 
+  options(ontology_path = ontology)
+
   # create the empty inventory tables, if they don't exist yet
   if(!testFileExists(x = file.path(root, "meta", "inventory.rds"))){
     dataseries <- tibble(datID = integer(),
@@ -157,58 +187,61 @@ adb_init <- function(root, version, author, licence, gazetteer, top, ontology){
                          licence_link = character(),
                          notes = character())
 
-    tables <- tibble(tabID = integer(),
-                     geoID = integer(),
-                     datID = integer(),
-                     geography = character(),
-                     level = character(),
-                     start_period = numeric(),
-                     end_period = numeric(),
-                     stage2_name = character(),
-                     schema = character(),
-                     stage1_name = character(),
-                     stage1_url = character(),
-                     download_date = as.Date(NA),
-                     update_frequency = character(),
-                     metadata_url = character(),
-                     metadata_path = character(),
-                     notes = character())
+    references <- citation("arealDB")
 
-    geometries <- tibble(geoID = integer(),
-                         datID = integer(),
-                         stage2_name = character(),
-                         layer = character(),
-                         label = character(),
-                         ancillary = character(),
-                         stage1_name = character(),
-                         stage1_url = character(),
-                         download_date = as.Date(NA),
-                         update_frequency = character(),
-                         notes = character())
+    if(staged){
+      tables <- tibble(tabID = integer(),
+                       geoID = integer(),
+                       datID = integer(),
+                       geography = character(),
+                       level = character(),
+                       start_period = numeric(),
+                       end_period = numeric(),
+                       stage2_name = character(),
+                       schema = character(),
+                       stage1_name = character(),
+                       stage1_url = character(),
+                       download_date = as.Date(NA),
+                       update_frequency = character(),
+                       metadata_url = character(),
+                       metadata_path = character(),
+                       notes = character())
 
-    inventory <- list(dataseries = dataseries, tables = tables, geometries = geometries)
+      geometries <- tibble(geoID = integer(),
+                           datID = integer(),
+                           stage2_name = character(),
+                           layer = character(),
+                           label = character(),
+                           ancillary = character(),
+                           stage1_name = character(),
+                           stage1_url = character(),
+                           download_date = as.Date(NA),
+                           update_frequency = character(),
+                           notes = character())
+
+      inventory <- list(dataseries = dataseries, tables = tables, geometries = geometries,
+                        references = references)
+
+    } else {
+
+      inventory <- list(dataseries = dataseries, references = references)
+
+    }
 
     message("creating ", paste0(".../meta/inventory.rds"))
     saveRDS(object = inventory, file = paste0(root, "/meta/inventory.rds"))
   }
 
-  if(!testFileExists(x = file.path(root, "adb_info.RData"))){
-    adb_info <- list(version = version,
-                     author = author,
-                     licence = licence,
-                     gazetteer = gazetteer,
-                     ontology = unique(ontology))
-    # re-design this so it contains more official data that can be sensibly reused
+  if(!testFileExists(x = file.path(root, "db_info.RData"))){
+    db_info <- list(version = version,
+                    author = author,
+                    licence = licence,
+                    gazetteer = gazetteer,
+                    ontology = unique(ontology))
 
-    message("creating ", paste0(".../adb_info.RData"))
-    save(adb_info, file = paste0(root, "/adb_info.RData"))
+    message("creating ", paste0(".../db_info.RData"))
+    save(db_info, file = paste0(root, "/db_info.RData"))
   }
 
-  oldOptions <- options()
-  on.exit(options(oldOptions))
-
   options(adb_path = root)
-  options(gazetteer_path = gazetteer)
-  options(gazetteer_top = top)
-  options(ontology_path = ontology)
 }
