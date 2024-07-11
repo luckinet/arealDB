@@ -4,7 +4,16 @@
 \alias{adb_init}
 \title{Initiate an areal database}
 \usage{
-adb_init(root, version, author, licence, gazetteer, top, ontology)
+adb_init(
+  root,
+  version,
+  author,
+  licence,
+  ontology,
+  gazetteer = NULL,
+  top = NULL,
+  staged = TRUE
+)
 }
 \arguments{
 \item{root}{[\code{character(1)}]\cr path to the root directory that contains
@@ -20,6 +29,10 @@ this areal database. Should be a list with items \code{"cre"} (creator),
 \item{licence}{[\code{character(1)}]\cr licence (link) for this areal
 database.}
 
+\item{ontology}{[\code{list(.)}]\cr named list with the path(s) of
+ontologies, where the list name identifies the variable that shall be
+matched with the ontology at the path.}
+
 \item{gazetteer}{[\code{character(1)}]\cr path to the gazetteer that holds
 the (hierarchical) information of territorial units used in this database.}
 
@@ -27,9 +40,9 @@ the (hierarchical) information of territorial units used in this database.}
 that represents the top-most unit (e.g. country) of the areal database that
 shall be started.}
 
-\item{ontology}{[\code{list(.)}]\cr named list with the path(s) of
-ontologies, where the list name identifies the variable that shall be
-matched with the ontology at the path.}
+\item{staged}{[\code{logical(1)}]\cr whether or not the file structure is
+arranged according to stages (with geometries and tables separated), or
+merely as input/output (of all types).}
 }
 \value{
 No return value, called for the side effect of creating the

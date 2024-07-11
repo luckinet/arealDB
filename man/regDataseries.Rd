@@ -10,6 +10,7 @@ regDataseries(
   homepage = NULL,
   version = NULL,
   licence_link = NULL,
+  reference = NULL,
   notes = NULL,
   overwrite = FALSE
 )
@@ -28,6 +29,9 @@ data of the dataseries were recorded.}
 
 \item{licence_link}{[\code{character(1)}]\cr link to the licence or the
 webpage from which the licence was copied.}
+
+\item{reference}{[\code{bibentry(.)}]\cr in case the dataseries comes with a
+reference, provide this here as bibentry object.}
 
 \item{notes}{[\code{character(1)}]\cr optional notes.}
 
