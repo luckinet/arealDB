@@ -297,12 +297,19 @@ matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
       # concepts as well (except those that were to be ignored)
 
       if(i == 1){
+
         externalConcepts <- get_concept(label = tempConcepts$label, has_source = srcID,
-                                        external = TRUE, ontology = ontoPath) %>%
-          mutate(len = lengths(str_split(has_broader, "[.]"))) %>%
-          filter(len == parentLen) |>
-          left_join(tibble(label = tempConcepts$label), ., by = "label") %>%
-          mutate(class = allCols[i])
+                                        external = TRUE, ontology = ontoPath)
+
+        if(colsAsClass){
+
+          externalConcepts <- externalConcepts %>%
+            mutate(len = lengths(str_split(has_broader, "[.]"))) %>%
+            filter(len == parentLen) |>
+            left_join(tibble(label = tempConcepts$label), ., by = "label") %>%
+            mutate(class = allCols[i])
+
+        }
 
       } else {
         externalConcepts <- get_concept(label = tempConcepts$label, has_source = srcID,
