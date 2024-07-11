@@ -64,7 +64,7 @@ globalVariables(c(
   "dist_2",
   "has_0_differences",
   "has_new_close_match",
-  "adb_info",
+  "db_info",
   "id_new",
   "rest",
   "parentName",
