@@ -19,6 +19,7 @@
 #' @importFrom purrr map
 #' @importFrom stringr str_split
 #' @importFrom readr write_csv
+#' @importFrom archive archive_write_dir
 #' @importFrom utils capture.output sessionInfo tar
 #' @export
 
@@ -33,8 +34,8 @@ adb_archive <- function(pattern = NULL, variables = NULL, compress = FALSE, outP
   intPaths <- paste0(getOption(x = "adb_path"))
 
   # derive current version
-  load(paste0(intPaths, "/adb_info.RData"))
-  version <- paste0(adb_info$version, "_", format(Sys.Date(), "%Y%m%d"))
+  load(paste0(intPaths, "/db_info.RData"))
+  version <- paste0(db_info$version, "_", format(Sys.Date(), "%Y%m%d"))
 
   # derive path
   archivePath <- paste0(outPath, "arealDB_", version, "/")
@@ -89,18 +90,19 @@ adb_archive <- function(pattern = NULL, variables = NULL, compress = FALSE, outP
   sI <- sessionInfo()
   save(sI, file = paste0(archivePath, "R_sessionInfo.RData"))
   write_lines(x = capture.output(sI), file = paste0(archivePath, "R_sessionInfo.txt"))
-  save(adb_info, file = paste0(archivePath, "dbInfo.RData"))
-  db_desc_lines <- paste0("version:\n", adb_info$version, "\n\n",
-                          "authors:\n", paste0("creator: ", paste0(adb_info$author$cre, collapse = ", "), "\nauthor: ", paste0(adb_info$author$aut, collapse = ", "), "\ncontributor: ", paste0(adb_info$author$ctb, collapse = ", ")), "\n\n",
-                          "licence:\n", adb_info$licence, "\n\n",
-                          "gazetteer:\n", adb_info$gazetteer, "\n\n", # these two should presumably be replaced with a version label as well
-                          "ontology:\n", unique(adb_info$ontology), "\n\n", # these two should presumably be replaced with a version label as well
-                          "variables:\n", paste0(adb_info$variables, collapse = ", "), "\n\n")
+  save(db_info, file = paste0(archivePath, "dbInfo.RData"))
+  db_desc_lines <- paste0("version:\n", db_info$version, "\n\n",
+                          "authors:\n", paste0("creator: ", paste0(db_info$author$cre, collapse = ", "), "\nauthor: ", paste0(db_info$author$aut, collapse = ", "), "\ncontributor: ", paste0(db_info$author$ctb, collapse = ", ")), "\n\n",
+                          "licence:\n", db_info$licence, "\n\n",
+                          "gazetteer:\n", db_info$gazetteer, "\n\n", # these two should presumably be replaced with a version label as well
+                          "ontology:\n", unique(db_info$ontology), "\n\n", # these two should presumably be replaced with a version label as well
+                          "variables:\n", paste0(db_info$variables, collapse = ", "), "\n\n")
   write_lines(x = db_desc_lines, file = paste0(archivePath, "dbInfo.txt"))
 
   if(compress){
     message("-> compressing database archive")
-    tar(tarfile = paste0(outPath, "arealDB_", version, ".tar.gz"), archivePath, compression = "gzip")
+    archive_write_dir(archive = paste0(outPath, "arealDB_", version, ".7z"),
+                      dir = archivePath, format = "7zip")
     unlink(archivePath, recursive = TRUE)
   }
 
