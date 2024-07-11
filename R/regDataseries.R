@@ -12,6 +12,8 @@
 #'   data of the dataseries were recorded.
 #' @param licence_link [\code{character(1)}]\cr link to the licence or the
 #'   webpage from which the licence was copied.
+#' @param reference [\code{bibentry(.)}]\cr in case the dataseries comes with a
+#'   reference, provide this here as bibentry object.
 #' @param notes [\code{character(1)}]\cr optional notes.
 #' @param overwrite [\code{logical(1)}]\cr whether or not the dataseries to
 #'   register shall overwrite a potentially already existing older version.
@@ -36,8 +38,8 @@
 #' @export
 
 regDataseries <- function(name = NULL, description = NULL, homepage = NULL,
-                          version = NULL, licence_link = NULL, notes = NULL,
-                          overwrite = FALSE){
+                          version = NULL, licence_link = NULL, reference = NULL,
+                          notes = NULL, overwrite = FALSE){
 
   # set internal paths
   intPaths <- paste0(getOption(x = "adb_path"))
@@ -57,6 +59,7 @@ regDataseries <- function(name = NULL, description = NULL, homepage = NULL,
   assertCharacter(x = homepage, ignore.case = TRUE, any.missing = FALSE, len = 1, null.ok = TRUE)
   assertCharacter(x = version, ignore.case = TRUE, any.missing = FALSE, len = 1, null.ok = TRUE)
   assertCharacter(x = licence_link, ignore.case = TRUE, any.missing = FALSE, len = 1, null.ok = TRUE)
+  assertClass(x = reference, classes = "bibentry", null.ok = TRUE)
   assertCharacter(x = notes, ignore.case = TRUE, any.missing = FALSE, len = 1, null.ok = TRUE)
   assertLogical(x = overwrite, len = 1)
 
@@ -155,7 +158,13 @@ regDataseries <- function(name = NULL, description = NULL, homepage = NULL,
                  licence_link = theLicence_link,
                  notes = notes)
 
+  if(!is.null(reference)){
+    names(reference) <- name
+    reference$key <- name
+  }
+
   inventory$dataseries <- bind_rows(inv_dataseries, temp)
+  inventory$references <- c(inventory$references, reference)
   saveRDS(object = inventory, file = paste0(intPaths, "/meta/inventory.rds"))
 
 
