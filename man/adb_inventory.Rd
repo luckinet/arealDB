@@ -7,8 +7,9 @@
 adb_inventory(type = NULL)
 }
 \arguments{
-\item{type}{[\code{character(1)}]\cr the inventory sub-table to load,
-either \code{"dataseries"}, \code{"tables"} or \code{"geometries"}.}
+\item{type}{[\code{character(1)}]\cr the inventory sub-table to load, either
+\code{"dataseries"}, \code{"tables"}, \code{"geometries"} or
+\code{"references"}.}
 }
 \value{
 returns the table selected in \code{type}

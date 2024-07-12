@@ -188,6 +188,8 @@ adb_init <- function(root, version, author, licence, ontology,
                          notes = character())
 
     references <- citation("arealDB")
+    names(references) <- "ehrmann2024"
+    references$key <- "ehrmann2024"
 
     if(staged){
       tables <- tibble(tabID = integer(),
