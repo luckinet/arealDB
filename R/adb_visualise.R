@@ -4,6 +4,7 @@
 #'   that column by to build a tree of the concepts nested into it; see
 #'   \code{\link[ontologics]{make_tree}}.
 #' @param territory description
+#' @param concept description
 #' @param level description
 #' @param year description
 #' @param diagnose description
@@ -12,12 +13,15 @@
 #' @importFrom sf st_read
 #' @export
 
-adb_visualise <- function(..., territory = NULL, level = NULL, year = NULL,
+adb_visualise <- function(..., territory = NULL, concept = NULL,
+                          variable = NULL, level = NULL, year = NULL,
                           diagnose = FALSE){
 
   # territory <- list(al1 = "Brazil"); level = "al3"; year = 2010; diagnose = FALSE
 
   assertList(x = territory, types = "character", any.missing = FALSE, null.ok = TRUE)
+  assertList(x = concept, types = "character", any.missing = FALSE, null.ok = TRUE)
+  assertCharacter(x = variable, len = 1, any.missing = FALSE, null.ok = TRUE)
   assertCharacter(x = level, len = 1, any.missing = FALSE, null.ok = TRUE)
   assertIntegerish(x = year, min.len = 1, any.missing = FALSE, null.ok = TRUE)
   assertLogical(x = diagnose, len = 1, all.missing = FALSE)
@@ -79,6 +83,13 @@ adb_visualise <- function(..., territory = NULL, level = NULL, year = NULL,
     } else {
       assertSubset(x = level, choices = unique(temp_inv_tables$level))
       tempLvls <- level
+    }
+
+    if(is.null(year)){
+      # taregetYear <- get all years and provide a prompt to ask whether all should be printed or just a subset
+    } else {
+      assertSubset(x = year, choices = unique(table$year))
+      taregetYear <- year
     }
 
     geometry <- st_read(dsn = geometries[str_detect(string = geometries, pattern = paste0(nation, ".gpkg"))],
