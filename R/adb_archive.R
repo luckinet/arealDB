@@ -23,7 +23,8 @@
 #' @importFrom utils capture.output sessionInfo tar
 #' @export
 
-adb_archive <- function(pattern = NULL, variables = NULL, compress = FALSE, outPath = NULL){
+adb_archive <- function(pattern = NULL, variables = NULL, compress = FALSE,
+                        outPath = NULL){
 
   assertCharacter(x = pattern, len = 1, null.ok = TRUE)
   assertCharacter(x = variables, any.missing = FALSE, null.ok = TRUE)
