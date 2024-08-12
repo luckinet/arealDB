@@ -23,7 +23,7 @@
 adb_visualise <- function(territory = NULL, concept = NULL, variable = NULL,
                           level = NULL, year = NULL, animate = FALSE){
 
-  # territory <- list(al1 = "Brazil"); concept = list(animal = "cattle"); variable = "number_heads"; level = "al3"; year = c(2010, 2015, 2020)
+  # territory <- list(al1 = "Brazil"); concept = list(animal = "cattle"); variable = "number_heads"; level = "al3"; year = c(2010, 2015, 2020); animate = TRUE
 
   assertList(x = territory, types = "character", any.missing = FALSE, null.ok = TRUE)
   assertList(x = concept, types = "character", any.missing = FALSE, null.ok = TRUE)
@@ -109,8 +109,9 @@ adb_visualise <- function(territory = NULL, concept = NULL, variable = NULL,
       targetYear <- as.character(year)
     }
 
-    geometry <- st_read(dsn = geometries[str_detect(string = geometries, pattern = paste0(nation, ".gpkg"))],
-                        layer = max(tempLvls))
+    geometry <- suppressMessages(
+      read_sf(dsn = geometries[str_detect(string = geometries, pattern = paste0(nation, ".gpkg"))],
+              layer = max(tempLvls)))
 
     meta <- table |>
       group_by(gazID, geoID) |>
@@ -128,12 +129,8 @@ adb_visualise <- function(territory = NULL, concept = NULL, variable = NULL,
       filter(str_detect(ontoMatch, "close")) |>
       pivot_wider(id_cols = c(gazID, year), names_from = names(concept), values_from = all_of(variable), values_fn = mean)
 
-    temp_inv_geoms <- inv_geoms |>
-      filter(geoID %in% thisGeoID$geoID)
-    temp_inv_series <- inv_series |>
-      filter(datID %in% temp_inv_geoms$datID)
-
     plotSteps <- function(x){
+
       thisVar <- var |>
         filter(year == x)
 
@@ -147,6 +144,11 @@ adb_visualise <- function(territory = NULL, concept = NULL, variable = NULL,
         as_tibble() |>
         distinct(geoID)
 
+      temp_inv_geoms <- inv_geoms |>
+        filter(geoID %in% thisGeoID$geoID)
+      temp_inv_series <- inv_series |>
+        filter(datID %in% temp_inv_geoms$datID)
+
       if(theConcept %in% metaNames){
         titleString <- theConcept
       } else {
@@ -157,8 +159,9 @@ adb_visualise <- function(territory = NULL, concept = NULL, variable = NULL,
         geom_sf(aes(fill = !!sym(theConcept)), lwd = 0.05, color = "white") +
         scale_fill_gradientn(
           colours = c("#F1E4DBFF", "#D7C9BEFF", "#8B775FFF", "#9AA582FF", "#657359FF"),
+          limits = c(1, max(var[theConcept], na.rm = TRUE)),
           name = variable,
-          trans = "log10"
+          transform = "log10"
         ) +
         labs(
           title = titleString,
@@ -181,7 +184,7 @@ adb_visualise <- function(territory = NULL, concept = NULL, variable = NULL,
 
       saveGIF(for(j in seq_along(targetYear)){
         plotSteps(targetYear[j])
-      }, interval = .5, movie.name = paste0(adb_path, "/", nation, "_", theConcept, "_", min(year), "_", max(year), ".gif"))
+      }, interval = 1, movie.name = paste0(adb_path, "/", nation, "_", theConcept, "_", min(year), "_", max(year), ".gif"))
 
     } else {
 
@@ -192,7 +195,4 @@ adb_visualise <- function(territory = NULL, concept = NULL, variable = NULL,
     }
 
   }
-
-  return(diag)
-
-  }
+}
