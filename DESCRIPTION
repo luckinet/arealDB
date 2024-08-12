@@ -61,7 +61,10 @@ Imports:
     progress,
     beepr,
     fuzzyjoin,
-    archive
+    archive,
+    animation,
+    ggplot2,
+    ggthemes
 Suggests: 
     testthat,
     knitr,

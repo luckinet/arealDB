@@ -5,29 +5,28 @@
 \title{Visualise database contents}
 \usage{
 adb_visualise(
-  ...,
   territory = NULL,
   concept = NULL,
   variable = NULL,
   level = NULL,
   year = NULL,
-  diagnose = FALSE
+  animate = FALSE
 )
 }
 \arguments{
-\item{...}{combination of column name in the ontology and value to filter
-that column by to build a tree of the concepts nested into it; see
-\code{\link[ontologics]{make_tree}}.}
-
-\item{territory}{description}
+\item{territory}{combination of column name in the ontology and value to
+filter that column by to build a tree of the territories nested into it;
+see \code{\link[ontologics]{make_tree}}.}
 
 \item{concept}{description}
+
+\item{variable}{description}
 
 \item{level}{description}
 
 \item{year}{description}
 
-\item{diagnose}{description}
+\item{animate}{description}
 }
 \value{
 returns ...

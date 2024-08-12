@@ -74,7 +74,8 @@ globalVariables(c(
   "tabID",
   "ontoID",
   "ontoMatch",
-  "datID"
+  "datID",
+  "thisGeoID"
 ))
 
 .onAttach <- function(libname, pkgname){
