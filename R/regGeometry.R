@@ -103,7 +103,7 @@ regGeometry <- function(..., subset = NULL, gSeries = NULL, label = NULL,
   gazClasses <- get_class(ontology = gazPath)
 
   # get tables
-  inventory <- readRDS(paste0(getOption(x = "adb_path"), "/meta/inventory.rds"))
+  inventory <- readRDS(paste0(getOption(x = "adb_path"), "/_meta/inventory.rds"))
   inv_dataseries <- inventory$dataseries
   inv_geometries <- inventory$geometries
 
@@ -346,7 +346,7 @@ regGeometry <- function(..., subset = NULL, gSeries = NULL, label = NULL,
   } else {
     inventory$geometries <- doc
   }
-  saveRDS(object = inventory, file = paste0(intPaths, "/meta/inventory.rds"))
+  saveRDS(object = inventory, file = paste0(intPaths, "/_meta/inventory.rds"))
 
   return(doc)
 }

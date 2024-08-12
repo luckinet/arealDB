@@ -12,7 +12,7 @@ adb_schemas <- function(pattern = NULL){
   # set internal paths
   intPaths <- paste0(getOption(x = "adb_path"))
 
-  schemas <- list.files(path = paste0(intPaths, "/meta/schemas/"), pattern = pattern, full.names = TRUE)
+  schemas <- list.files(path = paste0(intPaths, "/_meta/schemas/"), pattern = pattern, full.names = TRUE)
 
   schemaNames <- map(.x = seq_along(schemas), .f = function(ix){
 

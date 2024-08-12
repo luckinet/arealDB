@@ -25,15 +25,15 @@ adb_backup <- function(){
   # create backup directory
   if(!testDirectoryExists(x = paste0(intPaths, "/backup"))){
     dir.create(path = paste0(intPaths, "/backup"))
-    dir.create(path = paste0(intPaths, "/backup/meta"))
+    dir.create(path = paste0(intPaths, "/backup/_meta"))
     dir.create(path = paste0(intPaths, "/backup/tables"))
     dir.create(path = paste0(intPaths, "/backup/geometries"))
   }
 
   # move inventory tables
   message(" -> backing up inventory")
-  file.copy(from = paste0(intPaths, "/meta/inventory.rds"),
-            to = paste0(intPaths, "/backup/meta/inventory_", version, ".rds"),
+  file.copy(from = paste0(intPaths, "/_meta/inventory.rds"),
+            to = paste0(intPaths, "/backup/_meta/inventory_", version, ".rds"),
             overwrite = TRUE)
 
   # move tables/stage3
@@ -75,46 +75,46 @@ adb_backup <- function(){
 
   # move gazetteer
   message(" -> backing up gazetteer")
-  file.copy(from = paste0(intPaths, "/meta/lucki_gazetteer.rds"),
-            to = paste0(intPaths, "/backup/meta/lucki_gazetteer_", version, ".rds"),
+  file.copy(from = paste0(intPaths, "/_meta/lucki_gazetteer.rds"),
+            to = paste0(intPaths, "/backup/_meta/lucki_gazetteer_", version, ".rds"),
             overwrite = TRUE)
 
   message(" -> backing up gazetteer matching tables")
   gazFolder <- str_split(tail(str_split(getOption(x = "gazetteer_path"), "\\/")[[1]], 1), "[.]")[[1]][1]
-  if(!testDirectoryExists(x = paste0(intPaths, "/backup/meta/", gazFolder))){
-    dir.create(path = paste0(intPaths, "/backup/meta/", gazFolder))
+  if(!testDirectoryExists(x = paste0(intPaths, "/backup/_meta/", gazFolder))){
+    dir.create(path = paste0(intPaths, "/backup/_meta/", gazFolder))
   }
-  gaz_full <- list.files(path = paste0(intPaths, "/meta/", gazFolder), full.names = TRUE)
-  gaz <- map(.x = list.files(path = paste0(intPaths, "/meta/", gazFolder)), .f = function(ix){
+  gaz_full <- list.files(path = paste0(intPaths, "/_meta/", gazFolder), full.names = TRUE)
+  gaz <- map(.x = list.files(path = paste0(intPaths, "/_meta/", gazFolder)), .f = function(ix){
     temp <- str_split(ix, "[.]")[[1]]
     paste0(temp[1], "_", version, ".", temp[2])
   }) |>
     unlist()
 
   file.copy(from = gaz_full,
-            to = paste0(intPaths, "/backup/meta/", gazFolder, "/", gaz),
+            to = paste0(intPaths, "/backup/_meta/", gazFolder, "/", gaz),
             overwrite = TRUE)
 
   # move ontology
   message(" -> backing up ontology")
-  file.copy(from = paste0(intPaths, "/meta/lucki_onto.rds"),
-            to = paste0(intPaths, "/backup/meta/lucki_onto_", version, ".rds"),
+  file.copy(from = paste0(intPaths, "/_meta/lucki_onto.rds"),
+            to = paste0(intPaths, "/backup/_meta/lucki_onto_", version, ".rds"),
             overwrite = TRUE)
 
   message(" -> backing up ontology matching tables")
   ontoFolder <- str_split(tail(str_split(getOption(x = "ontology_path"), "\\/")[[1]], 1), "[.]")[[1]][1]
-  if(!testDirectoryExists(x = paste0(intPaths, "/backup/meta/", ontoFolder))){
-    dir.create(path = paste0(intPaths, "/backup/meta/", ontoFolder))
+  if(!testDirectoryExists(x = paste0(intPaths, "/backup/_meta/", ontoFolder))){
+    dir.create(path = paste0(intPaths, "/backup/_meta/", ontoFolder))
   }
-  onto_full <- list.files(path = paste0(intPaths, "/meta/", ontoFolder), full.names = TRUE)
-  onto <- map(.x = list.files(path = paste0(intPaths, "/meta/", ontoFolder)), .f = function(ix){
+  onto_full <- list.files(path = paste0(intPaths, "/_meta/", ontoFolder), full.names = TRUE)
+  onto <- map(.x = list.files(path = paste0(intPaths, "/_meta/", ontoFolder)), .f = function(ix){
     temp <- str_split(ix, "[.]")[[1]]
     paste0(temp[1], "_", version, ".", temp[2])
   }) |>
     unlist()
 
   file.copy(from = onto_full,
-            to = paste0(intPaths, "/backup/meta/", ontoFolder, "/", onto),
+            to = paste0(intPaths, "/backup/_meta/", ontoFolder, "/", onto),
             overwrite = TRUE)
 
 }

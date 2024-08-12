@@ -51,8 +51,11 @@ adb_init <- function(root, version, author, licence, ontology,
   oldOptions <- options()
   on.exit(options(oldOptions))
 
+  # in testing mode?
+  testing <- getOption(x = "adb_testing")
+
   assertCharacter(x = root, len = 1)
-  if(!getOption("adb_testing")){
+  if(!testing){
     if(!testFileExists(x = gazetteer, access = "rw", extension = "rds")){
       warning("no gazetteer was found in the provided path!")
     }
@@ -130,32 +133,32 @@ adb_init <- function(root, version, author, licence, ontology,
 
   }
 
-  if(!testDirectory(x = file.path(root, "meta"), access = "rw")){
-    message("creating ", paste0(".../meta"))
-    dir.create(file.path(root, "meta"))
+  if(!testDirectory(x = file.path(root, "_meta"), access = "rw")){
+    message("creating ", paste0(".../_meta"))
+    dir.create(file.path(root, "_meta"))
   }
-  if(!testDirectory(x = file.path(root, "meta", "schemas"), access = "rw")){
-    message("creating ", paste0(".../meta/schemas"))
-    dir.create(file.path(root, "meta", "schemas"))
+  if(!testDirectory(x = file.path(root, "_meta", "schemas"), access = "rw")){
+    message("creating ", paste0(".../_meta/schemas"))
+    dir.create(file.path(root, "_meta", "schemas"))
   }
-  if(!testDirectory(x = file.path(root, "meta", "documentation"), access = "rw")){
-    message("creating ", paste0(".../meta/documentation"))
-    dir.create(file.path(root, "meta", "documentation"))
+  if(!testDirectory(x = file.path(root, "_meta", "documentation"), access = "rw")){
+    message("creating ", paste0(".../_meta/documentation"))
+    dir.create(file.path(root, "_meta", "documentation"))
   }
 
   # create the gazetteer directory and copy the new gazetteer into 'meta'
   if(!is.null(gazetteer)){
 
     gazName <- str_split(tail(str_split(string = gazetteer, pattern = "/")[[1]], 1), "[.]")[[1]][1]
-    if(!testDirectory(x = file.path(root, "meta", gazName), access = "rw")){
-      message("creating ", paste0(".../meta/", gazName))
-      dir.create(file.path(root, "meta", gazName))
+    if(!testDirectory(x = file.path(root, "_meta", gazName), access = "rw")){
+      message("creating ", paste0(".../_meta/", gazName))
+      dir.create(file.path(root, "_meta", gazName))
     }
-    if(!testFileExists(x = paste0(file.path(root, "meta", gazName), ".rds"))){
-      message("copying gazetteer to ", paste0(".../meta/", gazName, ".rds"))
-      file.copy(from = gazetteer, to = paste0(file.path(root, "meta", gazName), ".rds"))
+    if(!testFileExists(x = paste0(file.path(root, "_meta", gazName), ".rds"))){
+      message("copying gazetteer to ", paste0(".../_meta/", gazName, ".rds"))
+      file.copy(from = gazetteer, to = paste0(file.path(root, "_meta", gazName), ".rds"))
     }
-    gazetteer <- paste0(file.path(root, "meta", gazName), ".rds")
+    gazetteer <- paste0(file.path(root, "_meta", gazName), ".rds")
 
     options(gazetteer_path = gazetteer)
     options(gazetteer_top = top)
@@ -164,21 +167,21 @@ adb_init <- function(root, version, author, licence, ontology,
 
   for(i in seq_along(unique(ontology))){
     temp <- str_split(tail(str_split(string = unique(ontology)[i], pattern = "/")[[1]], 1), "[.]")[[1]][1]
-    if(!testDirectory(x = file.path(root, "meta", temp), access = "rw")){
-      message("creating ", paste0(".../meta/", temp))
-      dir.create(file.path(root, "meta", temp))
+    if(!testDirectory(x = file.path(root, "_meta", temp), access = "rw")){
+      message("creating ", paste0(".../_meta/", temp))
+      dir.create(file.path(root, "_meta", temp))
     }
-    if(!testFileExists(x = paste0(file.path(root, "meta", temp), ".rds"))){
-      message("copying ontology to ", paste0(".../meta/", temp, ".rds"))
-      file.copy(from = unique(ontology)[[i]], to = paste0(file.path(root, "meta", temp), ".rds"))
+    if(!testFileExists(x = paste0(file.path(root, "_meta", temp), ".rds"))){
+      message("copying ontology to ", paste0(".../_meta/", temp, ".rds"))
+      file.copy(from = unique(ontology)[[i]], to = paste0(file.path(root, "_meta", temp), ".rds"))
     }
-    ontology[which(ontology == unique(ontology)[[i]])] <- paste0(file.path(root, "meta", temp), ".rds")
+    ontology[which(ontology == unique(ontology)[[i]])] <- paste0(file.path(root, "_meta", temp), ".rds")
   }
 
   options(ontology_path = ontology)
 
   # create the empty inventory tables, if they don't exist yet
-  if(!testFileExists(x = file.path(root, "meta", "inventory.rds"))){
+  if(!testFileExists(x = file.path(root, "_meta", "inventory.rds"))){
     dataseries <- tibble(datID = integer(),
                          name = character(),
                          description = character(),
@@ -187,9 +190,13 @@ adb_init <- function(root, version, author, licence, ontology,
                          licence_link = character(),
                          notes = character())
 
-    references <- citation("arealDB")
-    names(references) <- "ehrmann2024"
-    references$key <- "ehrmann2024"
+    if(!testing){
+      references <- citation("arealDB")
+      names(references) <- "ehrmann2024"
+      references$key <- "ehrmann2024"
+    } else {
+      references <- citation(package = "checkmate")
+    }
 
     if(staged){
       tables <- tibble(tabID = integer(),
@@ -230,8 +237,8 @@ adb_init <- function(root, version, author, licence, ontology,
 
     }
 
-    message("creating ", paste0(".../meta/inventory.rds"))
-    saveRDS(object = inventory, file = paste0(root, "/meta/inventory.rds"))
+    message("creating ", paste0(".../_meta/inventory.rds"))
+    saveRDS(object = inventory, file = paste0(root, "/_meta/inventory.rds"))
   }
 
   if(!testFileExists(x = file.path(root, "db_info.RData"))){

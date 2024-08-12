@@ -44,7 +44,7 @@ adb_archive <- function(pattern = NULL, variables = NULL, compress = FALSE,
   dir.create(path = archivePath)
   dir.create(path = paste0(archivePath, "geometries"))
   dir.create(path = paste0(archivePath, "tables"))
-  dir.create(path = paste0(archivePath, "meta"))
+  dir.create(path = paste0(archivePath, "_meta"))
 
   message("-> archiving tables")
   stage3tables_full <- list.files(path = paste0(intPaths, "/tables/stage3"), full.names = TRUE)
@@ -77,15 +77,15 @@ adb_archive <- function(pattern = NULL, variables = NULL, compress = FALSE,
 
   message("-> archiving inventory tables")
   adb_inventory(type = "dataseries") |>
-    write_csv(file = paste0(archivePath, "meta/inv_dataseries.csv"), na = "")
+    write_csv(file = paste0(archivePath, "_meta/inv_dataseries.csv"), na = "")
   adb_inventory(type = "geometries") |>
-    write_csv(file = paste0(archivePath, "meta/inv_geometries.csv"), na = "")
+    write_csv(file = paste0(archivePath, "_meta/inv_geometries.csv"), na = "")
   adb_inventory(type = "tables") |>
-    write_csv(file = paste0(archivePath, "meta/inv_tables.csv"), na = "")
+    write_csv(file = paste0(archivePath, "_meta/inv_tables.csv"), na = "")
   adb_ontology(type = "ontology") |>
-    write_csv(file = paste0(archivePath, "meta/ontology.csv"), na = "")
+    write_csv(file = paste0(archivePath, "_meta/ontology.csv"), na = "")
   adb_ontology(type = "gazetteer") |>
-    write_csv(file = paste0(archivePath, "meta/gazetteer.csv"), na = "")
+    write_csv(file = paste0(archivePath, "_meta/gazetteer.csv"), na = "")
 
   message("-> archiving metadata")
   sI <- sessionInfo()

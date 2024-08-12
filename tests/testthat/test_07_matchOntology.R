@@ -16,7 +16,7 @@ test_that("ontology is correct after geometry normalisation", {
   output <- normGeometry(input = paste0(getOption("adb_path"), "/geometries/stage2/_al1__gadm.gpkg"))
 
   # use adb_ontology here instead
-  onto <- load_ontology(path = paste0(dbpath, "/meta/territories.rds"))
+  onto <- load_ontology(path = paste0(dbpath, "/_meta/territories.rds"))
   expect_set_equal(x = onto@concepts$harmonised$label,
                    y = c("a_nation", "county_1", "municipality1_1", "municipality1_2", "county_2", "municipality2_1", "county_3", "municipality3", "county_4", "municipality4_1", "municipality4_2"))
   expect_set_equal(x = onto@concepts$harmonised$has_close_match,
@@ -25,7 +25,7 @@ test_that("ontology is correct after geometry normalisation", {
   # normalise second level ----
   output <- normGeometry(input = paste0(getOption("adb_path"), "/geometries/stage2/_al2__gadm.gpkg"))
 
-  onto <- load_ontology(path = paste0(dbpath, "/meta/territories.rds"))
+  onto <- load_ontology(path = paste0(dbpath, "/_meta/territories.rds"))
   expect_set_equal(x = onto@concepts$harmonised$label,
                    y = c("a_nation", "county_1", "municipality1_1", "municipality1_2", "county_2", "municipality2_1", "county_3", "municipality3", "county_4", "municipality4_1", "municipality4_2"))
   expect_set_equal(x = onto@concepts$harmonised$has_close_match,
@@ -34,7 +34,7 @@ test_that("ontology is correct after geometry normalisation", {
   # normalise third level ----
   output <- normGeometry(input = paste0(getOption("adb_path"), "/geometries/stage2/_al3__gadm.gpkg"))
 
-  onto <- load_ontology(path = paste0(dbpath, "/meta/territories.rds"))
+  onto <- load_ontology(path = paste0(dbpath, "/_meta/territories.rds"))
   expect_set_equal(x = onto@concepts$harmonised$label,
                    y = c("a_nation", "county_1", "municipality1_1", "municipality1_2", "county_2", "municipality2_1", "county_3", "municipality3", "county_4", "municipality4_1", "municipality4_2"))
   expect_set_equal(x = onto@concepts$harmonised$has_close_match,
@@ -43,7 +43,7 @@ test_that("ontology is correct after geometry normalisation", {
   # normalise a non-gadm dataset that has been attached to the DB ----
   output <- normGeometry(input = paste0(getOption("adb_path"), "/geometries/stage2/_al3__madeUp.gpkg"))
 
-  onto <- load_ontology(path = paste0(dbpath, "/meta/territories.rds"))
+  onto <- load_ontology(path = paste0(dbpath, "/_meta/territories.rds"))
   expect_set_equal(x = onto@concepts$harmonised$label,
                    y = c("a_nation", "county_1", "municipality1_1", "municipality1_2", "Gemeinde 13", "Gemeinde 14", "county_2", "municipality2_1", "county_3", "municipality3", "county_4", "municipality4_1", "municipality4_2"))
   expect_set_equal(x = onto@concepts$harmonised$has_close_match,
@@ -63,7 +63,7 @@ test_that("ontology is correct after table normalisation", {
 
   output <- normTable()
 
-  onto <- load_ontology(path = paste0(dbpath, "/meta/territories.rds"))
+  onto <- load_ontology(path = paste0(dbpath, "/_meta/territories.rds"))
   expect_set_equal(x = onto@concepts$harmonised$label,
                    y = c("a_nation", "county_1", "municipality1_1", "municipality1_2", "Gemeinde 13", "Gemeinde 14", "county_2", "municipality2_1", "county_3", "municipality3", "county_4", "municipality4_1", "municipality4_2"))
   expect_set_equal(x = onto@concepts$harmonised$has_close_match,

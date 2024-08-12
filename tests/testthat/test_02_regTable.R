@@ -32,7 +32,7 @@ test_that("a table inventory entry is produced", {
 
   expect_tibble(x = output, nrows = 1, ncols = 16, col.names = "strict")
   expect_names(x = names(output), must.include = c("tabID", "datID", "geoID", "geography", "level", "start_period", "end_period", "stage2_name", "schema", "stage1_name", "stage1_url", "download_date", "update_frequency", "metadata_url", "metadata_path", "notes"))
-  expect_file_exists(x = paste0(getOption("adb_path"), "/meta/schemas/_al1_barleyMaize_1990_2017_madeUp_schema.rds"))
+  expect_file_exists(x = paste0(getOption("adb_path"), "/_meta/schemas/_al1_barleyMaize_1990_2017_madeUp_schema.rds"))
 
 })
 

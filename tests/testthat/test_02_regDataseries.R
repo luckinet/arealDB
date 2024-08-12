@@ -21,7 +21,7 @@ test_that("a dataseries inventory entry can be produced", {
   expect_names(x = names(output), must.include = c("datID", "name", "description", "homepage", "version", "licence_link", "notes"))
 
   # check also whether the entry is in inv_dataseries.csv
-  db <- readRDS(file = paste0(getOption("adb_path"), "/meta/inventory.rds"))
+  db <- readRDS(file = paste0(getOption("adb_path"), "/_meta/inventory.rds"))
 
   expect_equal(output[-7], db$dataseries[-7])
 })

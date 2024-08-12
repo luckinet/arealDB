@@ -24,7 +24,7 @@ adb_restore <- function(version = NULL, date = NULL){
   ontoFolder <- str_split(tail(str_split(getOption(x = "ontology_path"), "\\/")[[1]], 1), "[.]")[[1]][1]
 
   # restore inventory tables/gazetteer/ontology
-  inv_full <- list.files(path = paste0(intPaths, "/backup/meta/"), pattern = version, full.names = TRUE)
+  inv_full <- list.files(path = paste0(intPaths, "/backup/_meta/"), pattern = version, full.names = TRUE)
   if(length(inv_full) == 0){
     message("no metadata found")
   }
@@ -35,11 +35,11 @@ adb_restore <- function(version = NULL, date = NULL){
   }) %>% unlist()
 
   file.copy(from = inv_full,
-            to = paste0(intPaths, "/meta/", inv),
+            to = paste0(intPaths, "/_meta/", inv),
             overwrite = TRUE)
 
   # restore translation tables
-  gaz_full <- list.files(path = paste0(intPaths, "/backup/meta/", gazFolder), pattern = version, full.names = TRUE)
+  gaz_full <- list.files(path = paste0(intPaths, "/backup/_meta/", gazFolder), pattern = version, full.names = TRUE)
   if(length(gaz_full) == 0){
     message("no gazetteer found")
   }
@@ -50,10 +50,10 @@ adb_restore <- function(version = NULL, date = NULL){
   }) %>% unlist()
 
   file.copy(from = gaz_full,
-            to = paste0(intPaths, "/meta/", gazFolder, "/", gaz),
+            to = paste0(intPaths, "/_meta/", gazFolder, "/", gaz),
             overwrite = TRUE)
 
-  onto_full <- list.files(path = paste0(intPaths, "/backup/meta/", ontoFolder), pattern = version, full.names = TRUE)
+  onto_full <- list.files(path = paste0(intPaths, "/backup/_meta/", ontoFolder), pattern = version, full.names = TRUE)
   if(length(onto_full) == 0){
     message("no ontology found")
   }
@@ -64,7 +64,7 @@ adb_restore <- function(version = NULL, date = NULL){
   }) %>% unlist()
 
   file.copy(from = onto_full,
-            to = paste0(intPaths, "/meta/", ontoFolder, "/", onto),
+            to = paste0(intPaths, "/_meta/", ontoFolder, "/", onto),
             overwrite = TRUE)
 
   # restore tables/stage3

@@ -23,10 +23,10 @@ adb_reset <- function(what = "all"){
   }
 
   # remove metadata
-  if("inventory" %in% what) unlink(paste0(intPaths, "/meta/inventory.rds"))
-  if("gaz" %in% what) unlink(paste0(intPaths, "/meta/lucki_gazetteer.rds"))
-  if("onto" %in% what) unlink(paste0(intPaths, "/meta/lucki_onto.rds"))
-  if("schemas" %in% what) unlink(list.files(paste0(intPaths, "/meta/schemas/"), full.names = TRUE))
+  if("inventory" %in% what) unlink(paste0(intPaths, "/_meta/inventory.rds"))
+  if("gaz" %in% what) unlink(paste0(intPaths, "/_meta/lucki_gazetteer.rds"))
+  if("onto" %in% what) unlink(paste0(intPaths, "/_meta/lucki_onto.rds"))
+  if("schemas" %in% what) unlink(list.files(paste0(intPaths, "/_meta/schemas/"), full.names = TRUE))
 
   # move geometries from stage2/processed, to stage2
   if("geometries" %in% what){

@@ -86,7 +86,7 @@ adb_example <- function(path = NULL, until = NULL, verbose = FALSE){
 
   # load tables (and schema)
   file.copy(from = paste0(inPath, "/example_schema.rds"),
-            to = paste0(path, "/meta/schemas/example_schema.rds"))
+            to = paste0(path, "/_meta/schemas/example_schema.rds"))
   file.copy(from = paste0(inPath, "/example_table1.csv"),
             to = paste0(path, "/tables/stage2/_al1_barleyMaize_1990_2017_madeUp.csv"))
   file.copy(from = paste0(inPath, "/example_table2.csv"),
@@ -94,9 +94,9 @@ adb_example <- function(path = NULL, until = NULL, verbose = FALSE){
 
   # load gazetteer
   file.copy(from = paste0(inPath, "/match_madeUp.rds"),
-            to = paste0(path, "/meta/territories/match_madeUp.rds"))
+            to = paste0(path, "/_meta/territories/match_madeUp.rds"))
   file.copy(from = paste0(inPath, "/match_gadm.rds"),
-            to = paste0(path, "/meta/territories/match_gadm.rds"))
+            to = paste0(path, "/_meta/territories/match_gadm.rds"))
 
 
   if (any(theSteps %in% "regDataseries")) {

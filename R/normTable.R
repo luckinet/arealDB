@@ -81,7 +81,7 @@ normTable <- function(input = NULL, pattern = NULL, query = NULL, ontoMatch = NU
   moveFile <- TRUE
 
   # get tables
-  inventory <- readRDS(paste0(getOption(x = "adb_path"), "/meta/inventory.rds"))
+  inventory <- readRDS(paste0(getOption(x = "adb_path"), "/_meta/inventory.rds"))
   inv_dataseries <- inventory$dataseries
   inv_tables <- inventory$tables
 
@@ -128,7 +128,7 @@ normTable <- function(input = NULL, pattern = NULL, query = NULL, ontoMatch = NU
       stop(paste0("  ! the file '", file_name, "' has not been registered yet."))
     }
 
-    algorithm <- readRDS(file = paste0(intPaths, "/meta/schemas/", thisSchema, ".rds"))
+    algorithm <- readRDS(file = paste0(intPaths, "/_meta/schemas/", thisSchema, ".rds"))
     if(!exists(x = "algorithm")){
       stop(paste0("please create the schema desciption '", algorithm, "' for the file '", file_name, "'.\n  --> See '?meta_default' for details"))
     }

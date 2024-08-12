@@ -11,7 +11,7 @@ adb_inventory <- function(type = NULL){
 
   assertChoice(x = type, choices = c("dataseries", "tables", "geometries", "references"))
 
-  temp <- readRDS(paste0(getOption(x = "adb_path"), "/meta/inventory.rds"))
+  temp <- readRDS(paste0(getOption(x = "adb_path"), "/_meta/inventory.rds"))
 
   if(!is.null(type)){
     out <- temp[[type]]

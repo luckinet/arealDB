@@ -128,7 +128,7 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
   moveFile <- TRUE
 
   # get tables
-  inventory <- readRDS(paste0(getOption(x = "adb_path"), "/meta/inventory.rds"))
+  inventory <- readRDS(paste0(getOption(x = "adb_path"), "/_meta/inventory.rds"))
   inv_dataseries <- inventory$dataseries
   inv_geometries <- inventory$geometries
 

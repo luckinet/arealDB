@@ -7,6 +7,8 @@
 adb_visualise(
   ...,
   territory = NULL,
+  concept = NULL,
+  variable = NULL,
   level = NULL,
   year = NULL,
   diagnose = FALSE
@@ -18,6 +20,8 @@ that column by to build a tree of the concepts nested into it; see
 \code{\link[ontologics]{make_tree}}.}
 
 \item{territory}{description}
+
+\item{concept}{description}
 
 \item{level}{description}
 

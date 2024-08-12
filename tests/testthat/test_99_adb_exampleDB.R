@@ -10,14 +10,14 @@ test_that("make example DB until start_arealDB", {
   dbpath <- paste0(tempdir(), "/newDB")
   adb_example(until = "adb_init", path = dbpath)
 
-  expect_file_exists(x = paste0(dbpath, "/meta/inventory.rds"))
+  expect_file_exists(x = paste0(dbpath, "/_meta/inventory.rds"))
   assert_directory_exists(x = paste0(dbpath, "/geometries"))
   assert_directory_exists(x = paste0(dbpath, "/tables"))
-  assert_directory_exists(x = paste0(dbpath, "/meta/documentation"))
+  assert_directory_exists(x = paste0(dbpath, "/_meta/documentation"))
 
   assert_file_exists(x = paste0(dbpath, "/geometries/stage1/example_geom.7z"))
   assert_file_exists(x = paste0(dbpath, "/tables/stage1/madeUp/example_table.7z"))
-  assert_file_exists(x = paste0(dbpath, "/meta/schemas/example_schema.rds"))
+  assert_file_exists(x = paste0(dbpath, "/_meta/schemas/example_schema.rds"))
 
 })
 
@@ -27,7 +27,7 @@ test_that("make example DB until regDataseries", {
 
   adb_example(until = "regDataseries", path = dbpath)
 
-  datID <- readRDS(file = paste0(dbpath, "/meta/inventory.rds"))$dataseries
+  datID <- readRDS(file = paste0(dbpath, "/_meta/inventory.rds"))$dataseries
   expect_true(object = all(dim(datID) == c(2, 7)))
 
 })
@@ -38,7 +38,7 @@ test_that("make example DB until regGeometry", {
 
   adb_example(until = "regGeometry", path = dbpath)
 
-  geoID <- readRDS(file = paste0(dbpath, "/meta/inventory.rds"))$geometries
+  geoID <- readRDS(file = paste0(dbpath, "/_meta/inventory.rds"))$geometries
   expect_true(object = all(dim(geoID) == c(4, 11)))
 
   expect_file_exists(x = paste0(dbpath, "/geometries/stage2/_al1__gadm.gpkg"))
@@ -54,7 +54,7 @@ test_that("make example DB until regTable", {
 
   adb_example(until = "regTable", path = dbpath)
 
-  geoID <- readRDS(file = paste0(dbpath, "/meta/inventory.rds"))$tables
+  geoID <- readRDS(file = paste0(dbpath, "/_meta/inventory.rds"))$tables
   expect_true(object = all(dim(geoID) == c(2, 16)))
 
   expect_file_exists(x = paste0(dbpath, "/tables/stage2/_al1_barleyMaize_1990_2017_madeUp.csv"))

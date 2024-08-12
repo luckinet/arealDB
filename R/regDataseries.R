@@ -45,7 +45,7 @@ regDataseries <- function(name = NULL, description = NULL, homepage = NULL,
   intPaths <- paste0(getOption(x = "adb_path"))
 
   # get tables
-  inventory <- readRDS(paste0(getOption(x = "adb_path"), "/meta/inventory.rds"))
+  inventory <- readRDS(paste0(getOption(x = "adb_path"), "/_meta/inventory.rds"))
   inv_dataseries <- inventory$dataseries
 
   # in testing mode?
@@ -165,7 +165,7 @@ regDataseries <- function(name = NULL, description = NULL, homepage = NULL,
 
   inventory$dataseries <- bind_rows(inv_dataseries, temp)
   inventory$references <- c(inventory$references, reference)
-  saveRDS(object = inventory, file = paste0(intPaths, "/meta/inventory.rds"))
+  saveRDS(object = inventory, file = paste0(intPaths, "/_meta/inventory.rds"))
 
 
   return(temp)

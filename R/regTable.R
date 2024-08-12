@@ -123,7 +123,7 @@ regTable <- function(..., subset = NULL, dSeries = NULL, gSeries = NULL,
   gazClasses <- get_class(ontology = gazPath)
 
   # get tables
-  inventory <- readRDS(paste0(getOption(x = "adb_path"), "/meta/inventory.rds"))
+  inventory <- readRDS(paste0(getOption(x = "adb_path"), "/_meta/inventory.rds"))
   inv_tables <- inventory$tables
   inv_dataseries <- inventory$dataseries
   inv_geometries <- inventory$geometries
@@ -286,7 +286,7 @@ regTable <- function(..., subset = NULL, dSeries = NULL, gSeries = NULL,
     if(!testing){
       schema <- readline()
     } else {
-      schema <- readRDS(file = paste0(intPaths, "/meta/schemas/example_schema.rds"))
+      schema <- readRDS(file = paste0(intPaths, "/_meta/schemas/example_schema.rds"))
     }
     if(length(schema) < 1){
       schema = NA_character_
@@ -324,7 +324,7 @@ regTable <- function(..., subset = NULL, dSeries = NULL, gSeries = NULL,
   }
 
   # make a schema description
-  write_rds(x = schema, file = paste0(intPaths, "/meta/schemas/", theSchemaName, ".rds"))
+  write_rds(x = schema, file = paste0(intPaths, "/_meta/schemas/", theSchemaName, ".rds"))
 
   if(is.null(archiveLink)){
     message("please type in the weblink from which the archive was downloaded: ")
@@ -493,7 +493,7 @@ regTable <- function(..., subset = NULL, dSeries = NULL, gSeries = NULL,
   } else {
     inventory$tables <- doc
   }
-  saveRDS(object = inventory, file = paste0(intPaths, "/meta/inventory.rds"))
+  saveRDS(object = inventory, file = paste0(intPaths, "/_meta/inventory.rds"))
 
   return(doc)
 

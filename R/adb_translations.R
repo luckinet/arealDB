@@ -17,7 +17,7 @@ adb_translations <- function(type = NULL, dataseries = NULL){
   # set internal paths
   intPaths <- paste0(getOption(x = "adb_path"))
 
-  temp <- readRDS(paste0(intPaths, "/meta/inventory.rds"))
+  temp <- readRDS(paste0(intPaths, "/_meta/inventory.rds"))
   inv_dataseries <- temp$dataseries
 
   assertChoice(x = dataseries, choices = inv_dataseries$name)
