@@ -170,7 +170,7 @@ edit_matches <- function(new, topLevel, source = NULL, ontology = NULL,
   # matching table and matches that may already be in the ontology) and join
   # with new concepts
   dsConcepts <- dsMatchesLong %>%
-    full_join(new |> select(all_of(joinCols)), by = joinCols) %>%
+    left_join(new |> select(all_of(joinCols)), by = joinCols) %>%
     mutate(harmLab = if_else(is.na(harmLab), label, harmLab),
            label = if_else(is.na(match), if_else(!is.na(id), label, NA_character_), label),
            match = if_else(is.na(match), if_else(!is.na(id), "has_close_match", "sort_in"), match)) %>%
@@ -184,22 +184,24 @@ edit_matches <- function(new, topLevel, source = NULL, ontology = NULL,
     dsConcepts <- dsConcepts %>%
       select(-sort_in)
   }
-  if(!"has_close_match" %in% colnames(dsConcepts)){
-    dsConcepts <- dsConcepts %>%
-      add_column(has_close_match = NA_character_, .after = "description")
-  }
   if(!"has_broader_match" %in% colnames(dsConcepts)){
     dsConcepts <- dsConcepts %>%
-      add_column(has_broader_match = NA_character_, .after = "has_close_match")
+      add_column(has_broader_match = NA_character_, .after = "description")
+  }
+  if(!"has_close_match" %in% colnames(dsConcepts)){
+    dsConcepts <- dsConcepts %>%
+      add_column(has_close_match = NA_character_, .after = "has_broader_match")
   }
   if(!"has_exact_match" %in% colnames(dsConcepts)){
     dsConcepts <- dsConcepts %>%
-      add_column(has_exact_match = NA_character_, .after = "has_broader_match")
+      add_column(has_exact_match = NA_character_, .after = "has_close_match")
   }
   if(!"has_narrower_match" %in% colnames(dsConcepts)){
     dsConcepts <- dsConcepts %>%
       add_column(has_narrower_match = NA_character_, .after = "has_exact_match")
   }
+  dsConcepts <- dsConcepts |>
+    select(label, class, id, has_broader, description, has_broader_match, has_close_match, has_exact_match, has_narrower_match)
 
   # ... and determine which are already included concepts and which are still missing
   inclConcepts <- dsConcepts %>%
