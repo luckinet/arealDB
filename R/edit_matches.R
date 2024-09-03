@@ -170,7 +170,7 @@ edit_matches <- function(new, topLevel, source = NULL, ontology = NULL,
   # matching table and matches that may already be in the ontology) and join
   # with new concepts
   dsConcepts <- dsMatchesLong %>%
-    left_join(new |> select(all_of(joinCols)), by = joinCols) %>%
+    full_join(new |> select(all_of(joinCols)), by = joinCols) %>%
     mutate(harmLab = if_else(is.na(harmLab), label, harmLab),
            label = if_else(is.na(match), if_else(!is.na(id), label, NA_character_), label),
            match = if_else(is.na(match), if_else(!is.na(id), "has_close_match", "sort_in"), match)) %>%
