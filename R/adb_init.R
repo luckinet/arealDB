@@ -126,9 +126,9 @@ adb_init <- function(root, version, author, licence, ontology,
 
   } else {
 
-    if(!testDirectory(x = file.path(root, "data"), access = "rw")){
-      message("creating ", paste0(".../data"))
-      dir.create(file.path(root, "data"))
+    if(!testDirectory(x = file.path(root, "_data"), access = "rw")){
+      message("creating ", paste0(".../_data"))
+      dir.create(file.path(root, "_data"))
     }
 
   }

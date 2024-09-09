@@ -13,9 +13,9 @@
 #'   assertLogical assertSubset
 #' @importFrom dplyr mutate select
 #' @importFrom ontologics get_class make_tree get_concept
-#' @importFrom sf st_read geom_sf
+#' @importFrom sf st_read
 #' @importFrom ggplot2 ggplot aes element_text labs margin scale_fill_gradientn
-#'   theme unit
+#'   theme unit geom_sf
 #' @importFrom ggthemes theme_map
 #' @importFrom animation saveGIF
 #' @export
