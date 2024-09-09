@@ -163,11 +163,12 @@ matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
 
       } else {
 
-        # first, transform the parents into the column 'has_broader'
+        # first, transform the parents into the column 'has_broader' ...
         tempTab <- tempTab %>%
           left_join(newConcepts, by = allCols[1:(i-1)]) %>%
           select(label = allCols[i], has_broader = id)
 
+        # ... then search for the concepts
         externalConcepts <- get_concept(label = tempTab$label, has_source = srcID,
                                         has_broader = tempTab$has_broader,
                                         external = TRUE, ontology = ontoPath) %>%
@@ -201,6 +202,7 @@ matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
         diffParent <- NULL
       }
 
+      # set new matches manually, if there are any to match
       if(dim(toMatch)[1] != 0){
 
         newMatches <- edit_matches(new = toMatch,
@@ -211,13 +213,6 @@ matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
                                    stringdist = stringdist,
                                    verbose = verbose,
                                    beep = beep)
-
-        # if(!all(c("label", "class", "id", "description", "match", "external", "has_broader") %in% colnames(newMatches))){
-        #   stop("some columns are missing in 'newMatches'")
-        # }
-        # if(dim(newMatches)[1] > dim(toMatch)[1]){
-        #   stop("'newMatches' has not the number of elements as 'toMatch'")
-        # }
 
         # set the mappings to the newly identified concepts, but only if they are well known
         newMappings <- newMatches |>
@@ -260,15 +255,16 @@ matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
 
         if(!is.null(newMappings)){
 
+          if(any(is.na(newMappings$has_broader))) stop("NA in 'newMappings' needs a fix")
+
           parentMappings <- newMappings |>
             rename(has_new_broader = has_broader) |>
-            left_join(externalConcepts |> select(external = label, has_broader), by = c("external"))
+            left_join(externalConcepts |> select(external = label, has_broader), by = c("external")) |>
+            filter(!is.na(has_broader))
           # separate_wider_regex(id, c(id_new = ".*", "[.]", rest = ".*"), cols_remove = FALSE) |>
           #   filter(has_broader == id_new) |>
           # this becomes really problematic when there are external concepts where the name is
           # duplicated, but they are different territories, because it gives false joins
-
-          if(any(is.na(parentMappings$has_broader)) | any(is.na(parentMappings$has_new_broader))) stop("NA in 'parentMappings' needs a fix")
 
           if(any(parentMappings$has_new_broader != parentMappings$has_broader)){
             message("-------> new parents when matching <------- ")
@@ -295,7 +291,6 @@ matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
 
       # ... and query the ontology again, this should now include the newly created
       # concepts as well (except those that were to be ignored)
-
       if(i == 1){
 
         externalConcepts <- get_concept(label = tempConcepts$label, has_source = srcID,
@@ -321,6 +316,7 @@ matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
 
       if(dim(tempConcepts)[1] != 0){
 
+        # search where the external concepts have been matched to and pair them up
         tempConcepts <- get_concept(str_detect(has_close_match, paste0(externalConcepts$id, collapse = "|")) |
                                       str_detect(has_broader_match, paste0(externalConcepts$id, collapse = "|")) |
                                       str_detect(has_narrower_match, paste0(externalConcepts$id, collapse = "|")) |
