@@ -241,7 +241,7 @@ adb_init <- function(root, version, author, licence, ontology,
     saveRDS(object = inventory, file = paste0(root, "/_meta/inventory.rds"))
   }
 
-  if(!testFileExists(x = file.path(root, "db_info.RData"))){
+  # if(!testFileExists(x = file.path(root, "db_info.RData"))){
     db_info <- list(version = version,
                     author = author,
                     licence = licence,
@@ -250,7 +250,7 @@ adb_init <- function(root, version, author, licence, ontology,
 
     message("creating ", paste0(".../db_info.RData"))
     save(db_info, file = paste0(root, "/db_info.RData"))
-  }
+  # }
 
   options(adb_path = root)
 }
