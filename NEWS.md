@@ -1,3 +1,7 @@
+# arealDB 0.9.3
+
+- smaller fixes
+
 # arealDB 0.9.2
 
 - various fixes to the internal processing of matching tabular to geometric data.
