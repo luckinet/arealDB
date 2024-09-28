@@ -1,6 +1,6 @@
 #' Restore the database from a backup
 #'
-#' @param version [\code{character(1)}]\cr a version identifier for which to
+#' @param version [\code{character(1)}]\cr a version tag for which to
 #'   restore files.
 #' @param date [\code{character(1)}]\cr a date for which to restore files.
 #' @details This function searches for files that have the version and date tag,
@@ -79,7 +79,7 @@ adb_restore <- function(version = NULL, date = NULL){
   }) %>% unlist()
 
   file.copy(from = stage3tables_full,
-            to = paste0(intPaths, "/tables/", stage3tables),
+            to = paste0(intPaths, "/tables/stage3/", stage3tables),
             overwrite = TRUE)
 
   # restore geometries/stage3
@@ -94,7 +94,7 @@ adb_restore <- function(version = NULL, date = NULL){
   }) %>% unlist()
 
   file.copy(from = stage3geometries_full,
-            to = paste0(intPaths, "/geometries/", stage3geometries),
+            to = paste0(intPaths, "/geometries/stage3/", stage3geometries),
             overwrite = TRUE)
 
 }
