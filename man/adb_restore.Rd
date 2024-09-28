@@ -7,7 +7,7 @@
 adb_restore(version = NULL, date = NULL)
 }
 \arguments{
-\item{version}{[\code{character(1)}]\cr a version identifier for which to
+\item{version}{[\code{character(1)}]\cr a version tag for which to
 restore files.}
 
 \item{date}{[\code{character(1)}]\cr a date for which to restore files.}
