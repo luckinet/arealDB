@@ -43,7 +43,7 @@
 #'   assertFileExists testFileExists assertDirectoryExists
 #' @importFrom utils tail head
 #' @importFrom ontologics load_ontology get_concept
-#' @importFrom stringr str_split
+#' @importFrom stringr str_split str_extract
 #' @importFrom readr read_csv write_csv cols
 #' @importFrom dplyr filter rename full_join mutate if_else select left_join
 #'   bind_rows distinct arrange any_of if_any
@@ -107,13 +107,24 @@ edit_matches <- function(new, topLevel, source = NULL, ontology = NULL,
     new <- new %>%
       mutate(lvl = length(str_split(has_broader, "[.]")[[1]]))
 
-    # set a filter in case target concepts have broader concepts
-    if(all(new$lvl <= filterClassLevel-1)){
-      parentFilter <- unique(new$has_broader)
+    if(any(ontology@classes$harmonised$label %in% getOption("gazetteer_top"))){
+      topLength <- length(str_split(string = ontology@classes$harmonised |> filter(label %in% getOption("gazetteer_top")) |> pull(id), pattern = "[.]")[[1]])
+      new <- new %>%
+        mutate(top = str_extract(string = has_broader, pattern = paste0("(.[[:digit:]]+){", topLength-1, "}")))
+
+      parentFilter <- unique(new$top)
       withBroader <- NULL
     } else {
-      parentFilter <- NA
-      withBroader <- "has_broader"
+
+      # set a filter in case target concepts have broader concepts
+      if(all(new$lvl <= filterClassLevel-1)){
+        parentFilter <- unique(new$has_broader)
+        withBroader <- NULL
+      } else {
+        parentFilter <- NA
+        withBroader <- "has_broader"
+      }
+
     }
 
     ignoreClass <- tail(filterClasses, 1)
@@ -252,7 +263,7 @@ edit_matches <- function(new, topLevel, source = NULL, ontology = NULL,
       mutate(label = tolower(label_harm)) %>%
       filter(!is.na(label_harm)) %>%
       filter(class == tail(filterClasses, 1)) |>
-      filter(has_broader %in% parentFilter) |>
+      # filter(has_broader %in% parentFilter) |>
       select(-has_broader, -has_broader_match, -has_close_match, -has_exact_match, -has_narrower_match)
 
     tempJoin <- missingConcepts %>%
