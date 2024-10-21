@@ -123,14 +123,6 @@ adb_init <- function(root, version, author, licence, ontology,
       dir.create(file.path(root, "geometries", "stage3"))
     }
 
-
-  } else {
-
-    if(!testDirectory(x = file.path(root, "_data"), access = "rw")){
-      message("creating ", paste0(".../_data"))
-      dir.create(file.path(root, "_data"))
-    }
-
   }
 
   if(!testDirectory(x = file.path(root, "_meta"), access = "rw")){
@@ -249,7 +241,7 @@ adb_init <- function(root, version, author, licence, ontology,
                     ontology = unique(ontology))
 
     message("creating ", paste0(".../db_info_", version, ".RData"))
-    save(db_info, file = paste0(root, "db_info_", version, ".RData"))
+    save(db_info, file = paste0(root, "/db_info_", version, ".RData"))
   }
 
   options(adb_path = root)
