@@ -94,6 +94,12 @@ regGeometry <- function(..., subset = NULL, gSeries = NULL, label = NULL,
                         archiveLink = NULL, downloadDate = NULL, updateFrequency = NULL,
                         notes = NULL, overwrite = FALSE){
 
+  # set internal function
+  testCompressed <- function(x){
+    assertCharacter(x = x, any.missing = FALSE, len = 1)
+    return(grepl("^.*(.gz|.bz2|.tar|.zip|.tgz|.gzip|.7z)[[:space:]]*$", x))
+  }
+
   # set internal paths
   intPaths <- paste0(getOption(x = "adb_path"))
   gazPath <- paste0(getOption(x = "gazetteer_path"))
