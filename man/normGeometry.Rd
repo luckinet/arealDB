@@ -29,7 +29,10 @@ WHERE) used to subset the input geometries, for example \code{"where NAME_0
 = 'Estonia'"}. The first part of the query (where the layer is defined) is
 derived from the meta-data of the currently handled geometry.}
 
-\item{thresh}{[\code{integerish(1)}]\cr}
+\item{thresh}{[\code{integerish(1)}]\cr percent value of overlap below which
+two geometries (the input and the base) are considered to be the same. This
+is required, because often the polygons from different sources, albeit
+describing the same territorial unit, aren't completely the same.}
 
 \item{beep}{[\code{integerish(1)}]\cr Number specifying what sound to be
 played to signal the user that a point of interaction is reached by the

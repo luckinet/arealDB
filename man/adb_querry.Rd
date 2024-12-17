@@ -31,3 +31,12 @@ returns ...
 \description{
 Extract database contents
 }
+\examples{
+if(dev.interactive()){
+adb_example(path = paste0(tempdir(), "/newDB"))
+
+adb_querry(territory = list(al1 = "a_nation"),
+           concept = list(commodity = "barley"),
+           variable = "harvested")
+}
+}
