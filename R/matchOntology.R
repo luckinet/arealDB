@@ -48,7 +48,7 @@ matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
                           groupMatches = FALSE, stringdist = TRUE, strictMatch = FALSE,
                           verbose = FALSE){
 
-  # table = thisTable; columns = targetCols; dataseries = dSeries; ontology = gazPath; colsAsClass = TRUE; groupMatches = FALSE; stringdist = TRUE; strictMatch = FALSE
+  # table = input_geom; columns = tempCols; dataseries = dName; ontology = gazPath; colsAsClass = TRUE; groupMatches = FALSE; stringdist = TRUE; strictMatch = FALSE
 
   assertDataFrame(x = table, min.cols = length(columns))
   assertCharacter(x = columns, any.missing = FALSE)
@@ -261,10 +261,6 @@ matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
             rename(has_new_broader = has_broader) |>
             left_join(externalConcepts |> select(external = label, has_broader), by = c("external")) |>
             filter(!is.na(has_broader))
-          # separate_wider_regex(id, c(id_new = ".*", "[.]", rest = ".*"), cols_remove = FALSE) |>
-          #   filter(has_broader == id_new) |>
-          # this becomes really problematic when there are external concepts where the name is
-          # duplicated, but they are different territories, because it gives false joins
 
           if(any(parentMappings$has_new_broader != parentMappings$has_broader)){
             message("-------> new parents when matching <------- ")
