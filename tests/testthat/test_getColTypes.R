@@ -11,12 +11,12 @@ test_that("get column types", {
                 l = TRUE,
                 D = Sys.Date())
 
-  out <- getColTypes(input = input)
+  out <- .getColTypes(input = input)
   expect_true(out == "cinnlD")
 })
 
 test_that("Error if arguments have wrong value", {
 
-  expect_error(object = getColTypes(input = "bla"))
+  expect_error(object = .getColTypes(input = "bla"))
 
 })

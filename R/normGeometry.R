@@ -4,7 +4,10 @@
 #' @param input [\code{character(1)}]\cr path of the file to normalise. If this
 #'   is left empty, all files at stage two as subset by \code{pattern} are
 #'   chosen.
-#' @param thresh [\code{integerish(1)}]\cr
+#' @param thresh [\code{integerish(1)}]\cr percent value of overlap below which
+#'   two geometries (the input and the base) are considered to be the same. This
+#'   is required, because often the polygons from different sources, albeit
+#'   describing the same territorial unit, aren't completely the same.
 #' @param pattern [\code{character(1)}]\cr an optional regular expression. Only
 #'   dataset names which match the regular expression will be processed.
 #' @param query [\code{character(1)}]\cr part of the SQL query (starting from
@@ -102,8 +105,6 @@
 normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10,
                          beep = NULL, simplify = FALSE, stringdist = TRUE,
                          strictMatch = FALSE, verbose = FALSE){
-
-  # input = NULL; pattern = NULL; query = NULL; thresh = 10; beep = NULL; simplify = FALSE; stringdist = TRUE; verbose = FALSE; i = 1; library(tidyverse); library(sf); library(stringr); library(progress)
 
   # set internal paths
   intPaths <- paste0(getOption(x = "adb_path"))
@@ -271,14 +272,14 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
     }
 
     # construct the harmonised names and ID
-    harmonised_geom <- matchOntology(table = input_geom,
-                                     columns = tempCols,
-                                     dataseries = dName,
-                                     ontology = gazPath,
-                                     stringdist = stringdist,
-                                     strictMatch = strictMatch,
-                                     verbose = verbose,
-                                     beep = beep) %>%
+    harmonised_geom <- .matchOntology(table = input_geom,
+                                      columns = tempCols,
+                                      dataseries = dName,
+                                      ontology = gazPath,
+                                      stringdist = stringdist,
+                                      strictMatch = strictMatch,
+                                      verbose = verbose,
+                                      beep = beep) %>%
       mutate(unitCol := !!sym(topClass))
 
     if(spatMatch){
@@ -601,10 +602,10 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
           if(unique(output_geom$gazClass) != topClass){
 
             message("    -> Updating ontology")
-            updateOntology(table = output_geom %>% select(-geom),
-                           threshold = thresh,
-                           dataseries = dName,
-                           ontology = gazPath)
+            .updateOntology(table = output_geom %>% select(-geom),
+                            threshold = thresh,
+                            dataseries = dName,
+                            ontology = gazPath)
 
           }
 
@@ -671,10 +672,10 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
               arrange(gazID)
 
             message("    -> Updating ontology")
-            updateOntology(table = new_geom %>% st_drop_geometry() %>% select(-geom),
-                           threshold = thresh,
-                           dataseries = dName,
-                           ontology = gazPath)
+            .updateOntology(table = new_geom %>% st_drop_geometry() %>% select(-geom),
+                            threshold = thresh,
+                            dataseries = dName,
+                            ontology = gazPath)
 
             message("    Creating new basis dataset for class ", tail(targetClass$label, 1), ".")
             output_geom <- suppressMessages(

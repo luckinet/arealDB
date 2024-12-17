@@ -60,8 +60,6 @@
 normTable <- function(input = NULL, pattern = NULL, query = NULL, ontoMatch = NULL,
                       beep = NULL, verbose = FALSE){
 
-  # input = NULL; pattern = NULL; query = NULL; ontoMatch = NULL; beep = NULL; verbose = FALSE; i <- 1; colsAsClass = TRUE; groupMatches = FALSE
-
   # set internal paths
   intPaths <- getOption(x = "adb_path")
   gazPath <- getOption(x = "gazetteer_path")
@@ -166,12 +164,12 @@ normTable <- function(input = NULL, pattern = NULL, query = NULL, ontoMatch = NU
       targetCols <- c(topClass, targetCols)
     }
 
-    thatTable <- matchOntology(table = thisTable,
-                               columns = targetCols,
-                               dataseries = dSeries,
-                               ontology = gazPath,
-                               verbose = verbose,
-                               beep = beep) %>%
+    thatTable <- .matchOntology(table = thisTable,
+                                columns = targetCols,
+                                dataseries = dSeries,
+                                ontology = gazPath,
+                                verbose = verbose,
+                                beep = beep) %>%
       unite(col = "gazMatch", match, external, sep = "--", na.rm = TRUE) %>%
       rename(gazID = id) %>%
       select(-has_broader, -class, -description) %>%
@@ -181,12 +179,12 @@ normTable <- function(input = NULL, pattern = NULL, query = NULL, ontoMatch = NU
       message("    harmonizing thematic concepts ...")
       assertNames(x = ontoMatch, subset.of = names(thatTable))
       ontoPath <- getOption(x = "ontology_path")[[ontoMatch]]
-      thatTable <- matchOntology(table = thatTable,
-                                 columns = ontoMatch,
-                                 dataseries = dSeries,
-                                 ontology = ontoPath,
-                                 verbose = verbose,
-                                 beep = beep) %>%
+      thatTable <- .matchOntology(table = thatTable,
+                                  columns = ontoMatch,
+                                  dataseries = dSeries,
+                                  ontology = ontoPath,
+                                  verbose = verbose,
+                                  beep = beep) %>%
         unite(col = "ontoMatch", match, external, sep = "--", na.rm = TRUE) %>%
         rename(ontoID = id) %>%
         select(-has_broader, -class, -description)
