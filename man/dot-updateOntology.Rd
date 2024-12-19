@@ -12,16 +12,16 @@
 )
 }
 \arguments{
-\item{table}{[\code{character(1)}]\cr a table that contains a match column as
-the basis to update the gazetteer.}
+\item{table}{\code{\link[=character]{character(1)}}\cr a table that contains a match
+column as the basis to update the gazetteer.}
 
-\item{threshold}{[\code{numeric(1)}]\cr a threshol value above which matches
-are updated in the gazetteer.}
+\item{threshold}{\code{\link[=numeric]{numeric(1)}}\cr a threshold value above which
+matches are updated in the gazetteer.}
 
-\item{dataseries}{[\code{character(1)}]\cr the source dataseries of the
+\item{dataseries}{\code{\link[=character]{character(1)}}\cr the source dataseries of the
 external concepts for which the gazetteer shall be updated.}
 
-\item{ontology}{[\code{onto}]\cr path where the ontology/gazetteer is stored.}
+\item{ontology}{\link{onto}\cr path where the ontology/gazetteer is stored.}
 }
 \value{
 called for its side-effect of updating a gazetteer

@@ -1,7 +1,8 @@
 #' Extract database contents
 #'
-#' @param territory [`character(.)][character]\cr combination of column name in the ontology and value to
-#'   filter that column by to build a tree of the territories nested into it.
+#' @param territory [`character(.)][character]\cr combination of column name in
+#'   the ontology and value to filter that column by to build a tree of the
+#'   territories nested into it.
 #' @param concept description
 #' @param variable description
 #' @param level description

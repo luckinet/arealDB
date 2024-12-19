@@ -7,8 +7,8 @@
 adb_schemas(pattern = NULL)
 }
 \arguments{
-\item{pattern}{[\code{character(1)}]\cr an optional regular expression. Only
-schema names which match the regular expression will be processed.}
+\item{pattern}{\code{\link[=character]{character(1)}}\cr an optional regular expression.
+Only schema names which match the regular expression will be processed.}
 }
 \value{
 returns a list of schema descriptions

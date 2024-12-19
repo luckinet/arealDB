@@ -6,7 +6,7 @@
 \title{Example \code{gazetteer}}
 \format{
 object of class \code{onto} for the example territories used in
-  \code{\link{adb_example}}.
+\code{\link{adb_example}}.
 }
 \usage{
 territories

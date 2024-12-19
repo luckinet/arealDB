@@ -16,37 +16,37 @@
 )
 }
 \arguments{
-\item{new}{[`data.frame(.)`][data.frame]\cr the new concepts that shall be
+\item{new}{\code{\link[=data.frame]{data.frame(.)}}\cr the new concepts that shall be
 manually matched, includes "label", "class" and "has_broader" columns.}
 
-\item{topLevel}{[`logical(1)`][logical]\cr whether or not the new concepts
+\item{topLevel}{\code{\link[=logical]{logical(1)}}\cr whether or not the new concepts
 are at the highest level only, i.e., have to be matched without context, or
 whether they are contain columns that must be matched within parent
 columns.}
 
-\item{source}{[`character(1)`][character]\cr any character uniquely
+\item{source}{\code{\link[=character]{character(1)}}\cr any character uniquely
 identifying the source dataset of the new concepts.}
 
-\item{ontology}{[`ontology(1)`][list]\cr either a path where the ontology is
+\item{ontology}{\code{\link[=list]{ontology(1)}}\cr either a path where the ontology is
 stored, or an already loaded ontology.}
 
-\item{matchDir}{[`character(1)`][character]\cr the directory where to store
+\item{matchDir}{\code{\link[=character]{character(1)}}\cr the directory where to store
 source-specific matching tables.}
 
-\item{stringdist}{[`logical(1)`][logical]\cr whether or not to use string
+\item{stringdist}{\code{\link[=logical]{logical(1)}}\cr whether or not to use string
 distance to find matches (should not be used for large datasets/when a
 memory error is shown).}
 
-\item{verbose}{[`logical(1)`][logical]\cr whether or not to give detailed
+\item{verbose}{\code{\link[=logical]{logical(1)}}\cr whether or not to give detailed
 information on the process of this function.}
 
-\item{beep}{[`integerish(1)`][integer]\cr Number specifying what sound to be
+\item{beep}{\code{\link[=integer]{integerish(1)}}\cr Number specifying what sound to be
 played to signal the user that a point of interaction is reached by the
 program, see \code{\link[beepr]{beep}}.}
 }
 \value{
 A table that contains all new matches, or if none of the new concepts
-  weren't already in the ontology, a table of the already sucessful matches.
+weren't already in the ontology, a table of the already sucessful matches.
 }
 \description{
 Allows the user to match concepts with an already existing ontology, without
@@ -55,17 +55,17 @@ matching table as csv.
 }
 \details{
 In order to match new concepts into an already existing ontology, it
-  may become necessary to carry out manual matches of the new concepts with
-  already harmonised concepts, for example, when the new concepts are
-  described with terms that are not yet in the ontology. This function puts
-  together a table, in which the user would edit matches by hand. Whith the
-  argument \code{verbose = TRUE}, detailed information about the edit process
-  are shown to the user. After defining matches, and even if not all
-  necessary matches are finished, the function stores a specific "matching
-  table" with the name \emph{match_SOURCE.csv} in the respective directory
-  (\code{matchDir}), from where work can be picked up and continued at
-  another time.
+may become necessary to carry out manual matches of the new concepts with
+already harmonised concepts, for example, when the new concepts are
+described with terms that are not yet in the ontology. This function puts
+together a table, in which the user would edit matches by hand. Whith the
+argument \code{verbose = TRUE}, detailed information about the edit process
+are shown to the user. After defining matches, and even if not all
+necessary matches are finished, the function stores a specific "matching
+table" with the name \emph{match_SOURCE.csv} in the respective directory
+(\code{matchDir}), from where work can be picked up and continued at
+another time.
 
-  Fuzzy matching is carried out and matches with 0, 1 or 2 differing
-  charcters are presented in a respective column.
+Fuzzy matching is carried out and matches with 0, 1 or 2 differing
+charcters are presented in a respective column.
 }

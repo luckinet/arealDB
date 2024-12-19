@@ -1,21 +1,21 @@
 #' Normalise data tables
 #'
 #' Harmonise and integrate data tables into standardised format
-#' @param input [\code{character(1)}]\cr path of the file to normalise. If this
-#'   is left empty, all files at stage two as subset by \code{pattern} are
+#' @param input [`character(1)`][character]\cr path of the file to normalise. If
+#'   this is left empty, all files at stage two as subset by \code{pattern} are
 #'   chosen.
-#' @param pattern [\code{character(1)}]\cr an optional regular expression. Only
-#'   dataset names which match the regular expression will be processed.
-#' @param query [\code{character(1)}]\cr the expression that would be used in
-#'   \code{\link[dplyr]{filter}} to subset a tibble in terms of the columns
+#' @param pattern [`character(1)`][character]\cr an optional regular expression.
+#'   Only dataset names which match the regular expression will be processed.
+#' @param query [`character(1)`][character]\cr the expression that would be used
+#'   in \code{\link[dplyr]{filter}} to subset a tibble in terms of the columns
 #'   defined via the schema and given as a single character string, such as
 #'   \code{"al1 == 'Estonia'"}.
-#' @param ontoMatch [\code{character(.)}]\cr name of the column(s) that shall be
-#'   matched with an ontology (defined in \code{\link{adb_init}}).
-#' @param beep [\code{integerish(1)}]\cr Number specifying what sound to be
+#' @param ontoMatch [`character(.)`][character]\cr name of the column(s) that
+#'   shall be matched with an ontology (defined in \code{\link{adb_init}}).
+#' @param beep [`integerish(1)`][integer]\cr Number specifying what sound to be
 #'   played to signal the user that a point of interaction is reached by the
 #'   program, see \code{\link[beepr]{beep}}.
-#' @param verbose [\code{logical(1)}]\cr be verbose about translating terms
+#' @param verbose [`logical(1)`][logical]\cr be verbose about translating terms
 #'   (default \code{FALSE}). Furthermore, you can use
 #'   \code{\link{suppressMessages}} to make this function completely silent.
 #' @details To normalise data tables, this function proceeds as follows:

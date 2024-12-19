@@ -2,20 +2,20 @@
 #'
 #' This function registers a new geometry of territorial units into the
 #' geospatial database.
-#' @param ... [\code{character(1)}]\cr optional named argument selecting the
-#'   main territory into which this geometry is nested. The name of this must be
-#'   a class of the gazetteer and the value must be one of the territory names
-#'   of that class, e.g. \emph{nation = "Estonia"}.
-#' @param subset [\code{character(1)}]\cr optional argument to specify which
-#'   subset the file contains. This could be a subset of territorial units (e.g.
-#'   only one municipality) or of a target variable.
-#' @param gSeries [\code{character(1)}]\cr the name of the geometry dataseries
-#'   (see \code{\link{regDataseries}}).
-#' @param label [\code{list(.)}]\cr list of as many columns as there are in
+#' @param ... [`character(1)`][character]\cr optional named argument selecting
+#'   the main territory into which this geometry is nested. The name of this
+#'   must be a class of the gazetteer and the value must be one of the territory
+#'   names of that class, e.g. \emph{nation = "Estonia"}.
+#' @param subset [`character(1)`][character]\cr optional argument to specify
+#'   which subset the file contains. This could be a subset of territorial units
+#'   (e.g. only one municipality) or of a target variable.
+#' @param gSeries [`character(1)`][character]\cr the name of the geometry
+#'   dataseries (see \code{\link{regDataseries}}).
+#' @param label [`list(.)`][list]\cr list of as many columns as there are in
 #'   common in the ontology and this geometry. Must be of the form
 #'   \code{list(class = columnName)}, with 'class' as the class of the ontology
 #'   corresponding to the respective column name in the geometry.
-#' @param ancillary [\code{list(.)}]\cr optinal list of columns containing
+#' @param ancillary [`list(.)`][list]\cr optinal list of columns containing
 #'   ancillary information. Must be of the form \code{list(attribute =
 #'   columnName)}, where \code{attribute} can be one or
 #'   several of \itemize{
@@ -25,22 +25,23 @@
 #'     \item \code{"type"} (the type of territorial unit)
 #'     \item \code{"uri"} (the semantic web URI) or
 #'     \item \code{"flag"} (any flag attributed to the unit).}
-#' @param layer [\code{character}]\cr the name of the file's layer from which
-#'   the geometry should be created (if applicable).
-#' @param archive [\code{character(1)}]\cr the original file (perhaps a *.zip)
-#'   from which the geometry emerges.
-#' @param archiveLink [\code{character(1)}]\cr download-link of the archive.
-#' @param downloadDate [\code{character(1)}]\cr value describing the download
-#'   date of this dataset (in YYYY-MM-DD format).
-#' @param updateFrequency [\code{character(1)}]\cr value describing the
+#' @param layer [`character(1)`][character]\cr the name of the file's layer from
+#'   which the geometry should be created (if applicable).
+#' @param archive [`character(1)`][character]\cr the original file (perhaps a
+#'   *.zip) from which the geometry emerges.
+#' @param archiveLink [`character(1)`][character]\cr download-link of the
+#'   archive.
+#' @param downloadDate [`character(1)`][character]\cr value describing the
+#'   download date of this dataset (in YYYY-MM-DD format).
+#' @param updateFrequency [`character(1)`][character]\cr value describing the
 #'   frequency with which the dataset is updated, according to the ISO 19115
 #'   Codelist, MD_MaintenanceFrequencyCode. Possible values are: 'continual',
 #'   'daily', 'weekly', 'fortnightly', 'quarterly', 'biannually', 'annually',
 #'   'asNeeded', 'irregular', 'notPlanned', 'unknown', 'periodic',
 #'   'semimonthly', 'biennially'.
-#' @param notes [\code{character(1)}]\cr optional notes that are assigned to all
-#'   features of this geometry.
-#' @param overwrite [\code{logical(1)}]\cr whether or not the geometry to
+#' @param notes [`character(1)`][character]\cr optional notes that are assigned
+#'   to all features of this geometry.
+#' @param overwrite [`logical(1)`][logical]\cr whether or not the geometry to
 #'   register shall overwrite a potentially already existing older version.
 #' @details When processing geometries to which areal data shall be linked,
 #'   carry out the following steps: \enumerate{ \item Determine the main

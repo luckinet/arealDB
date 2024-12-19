@@ -1,14 +1,14 @@
 #' Archive the data from an areal database
 #'
-#' @param pattern [\code{character(1)}]\cr a regular expression used to filter
-#'   files to load.
-#' @param variables [\code{character(.)}]\cr columns, typically observed
+#' @param pattern [`character(1)`][character]\cr a regular expression used to
+#'   filter files to load.
+#' @param variables [`character(.)`][character]\cr columns, typically observed
 #'   variables, to select.
-#' @param compress [\code{logical(1)}]\cr whether or not the database should be
-#'   compressed into a \emph{tar.gz} archive. Will delete the database folder in
-#'   \code{outPath}.
-#' @param outPath [\code{character(1)}]\cr directory, where the archive should
-#'   be stored.
+#' @param compress [`logical(1)`][logical]\cr whether or not the database should
+#'   be compressed into a \emph{tar.gz} archive. Will delete the database folder
+#'   in \code{outPath}.
+#' @param outPath [`character(1)`][character]\cr directory, where the archive
+#'   should be stored.
 #' @details This function prepares and packages the data into an archiveable
 #'   form. This contains geopacakge files for geometries and csv files for all
 #'   tables, such as inventory, matching and thematic data tables.

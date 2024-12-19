@@ -1,7 +1,7 @@
 #' Load the inventory of the currently active areal database
 #'
-#' @param type [\code{character(1)}]\cr the inventory sub-table to load, either
-#'   \code{"dataseries"}, \code{"tables"}, \code{"geometries"} or
+#' @param type [`character(1)`][character]\cr the inventory sub-table to load,
+#'   either \code{"dataseries"}, \code{"tables"}, \code{"geometries"} or
 #'   \code{"references"}.
 #' @return returns the table selected in \code{type}
 #' @importFrom checkmate assertChoice

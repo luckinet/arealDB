@@ -7,7 +7,7 @@
 .getColTypes(input = NULL)
 }
 \arguments{
-\item{input}{[\code{tibble(1)}]\cr tibble from which to get column types.}
+\item{input}{\link{\code{tibble(1)}}\cr tibble from which to get column types.}
 }
 \description{
 (internal function not for user interaction)

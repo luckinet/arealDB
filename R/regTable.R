@@ -1,47 +1,49 @@
 #' Register a new areal data table
 #'
 #' This function registers a new areal data table into the geospatial database.
-#' @param ... [\code{character(1)}]\cr name and value of the topmost unit under
-#'   which the table shall be registered. The name of this must be a class of
-#'   the gazetteer and the value must be one of the territory names of that
+#' @param ... [`character(1)`][character]\cr name and value of the topmost unit
+#'   under which the table shall be registered. The name of this must be a class
+#'   of the gazetteer and the value must be one of the territory names of that
 #'   class, e.g. \emph{nation = "Estonia"}.
-#' @param subset [\code{character(1)}]\cr optional argument to specify which
-#'   subset the file contains. This could be a subset of territorial units (e.g.
-#'   only one municipality) or of a target variable.
-#' @param dSeries [\code{character(1)}]\cr the dataseries of the areal data (see
-#'   \code{\link{regDataseries}}).
-#' @param gSeries [\code{character(1)}]\cr optionally, the dataseries of the
-#'   geometries, if the geometry dataseries deviates from the dataseries of the
-#'   areal data (see \code{\link{regDataseries}}).
-#' @param label [\code{integerish(1)}]\cr the label in the onology this geometry
-#'   should correspond to.
-#' @param begin [\code{integerish(1)}]\cr the date from which on the data are
+#' @param subset [`character(1)`][character]\cr optional argument to specify
+#'   which subset the file contains. This could be a subset of territorial units
+#'   (e.g. only one municipality) or of a target variable.
+#' @param dSeries [`character(1)`][character]\cr the dataseries of the areal
+#'   data (see \code{\link{regDataseries}}).
+#' @param gSeries [`character(1)`][character]\cr optionally, the dataseries of
+#'   the geometries, if the geometry dataseries deviates from the dataseries of
+#'   the areal data (see \code{\link{regDataseries}}).
+#' @param label [`integerish(1)`][integer]\cr the label in the onology this
+#'   geometry should correspond to.
+#' @param begin [`integerish(1)`][integer]\cr the date from which on the data
+#'   are valid.
+#' @param end [`integerish(1)`][integer]\cr the date until which the data are
 #'   valid.
-#' @param end [\code{integerish(1)}]\cr the date until which the data are valid.
-#' @param schema [\code{list(1)}]\cr the schema description of the table to read
-#'   in (must have been placed in the global environment before calling it
+#' @param schema [`schema`][schema]\cr the schema description of the table to
+#'   read in (must have been placed in the global environment before calling it
 #'   here).
-#' @param archive [\code{character(1)}]\cr the original file from which the
-#'   boundaries emerge.
-#' @param archiveLink [\code{character(1)}]\cr download-link of the archive.
-#' @param downloadDate [\code{character(1)}]\cr value describing the download
-#'   date of this dataset (in YYYY-MM-DD format).
-#' @param updateFrequency [\code{character(1)}]\cr value describing the
+#' @param archive [`character(1)`][character]\cr the original file from which
+#'   the boundaries emerge.
+#' @param archiveLink [`character(1)`][character]\cr download-link of the
+#'   archive.
+#' @param downloadDate [`character(1)`][character]\cr value describing the
+#'   download date of this dataset (in YYYY-MM-DD format).
+#' @param updateFrequency [`character(1)`][character]\cr value describing the
 #'   frequency with which the dataset is updated, according to the ISO 19115
 #'   Codelist, MD_MaintenanceFrequencyCode. Possible values are: 'continual',
 #'   'daily', 'weekly', 'fortnightly', 'quarterly', 'biannually', 'annually',
 #'   'asNeeded', 'irregular', 'notPlanned', 'unknown', 'periodic',
 #'   'semimonthly', 'biennially'.
-#' @param metadataLink [\code{character(1)}]\cr if there is already metadata
-#'   existing: link to the meta dataset.
-#' @param metadataPath [\code{character(1)}]\cr if an existing meta dataset was
-#'   downloaded along the data: the path where it is stored locally.
-#' @param notes [\code{character(1)}]\cr optional notes.
-#' @param diagnose [\code{logical(1)}]\cr whether or not to try to reorganise
-#'   the table with the provided schema. note: this does not save the
+#' @param metadataLink [`character(1)`][character]\cr if there is already
+#'   metadata existing: link to the meta dataset.
+#' @param metadataPath [`character(1)`][character]\cr if an existing meta
+#'   dataset was downloaded along the data: the path where it is stored locally.
+#' @param notes [`character(1)`][character]\cr optional notes.
+#' @param diagnose [`logical(1)`][logical]\cr whether or not to try to
+#'   reorganise the table with the provided schema. note: this does not save the
 #'   reogranised table into the database yet, further steps of harmonisation are
 #'   carried out by \code{\link{normTable}} before that.
-#' @param overwrite [\code{logical(1)}]\cr whether or not the geometry to
+#' @param overwrite [`logical(1)`][logical]\cr whether or not the geometry to
 #'   register shall overwrite a potentially already existing older version.
 #' @details When processing areal data tables, carry out the following steps:
 #'   \enumerate{ \item Determine the main territory (such as a nation, or any

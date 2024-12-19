@@ -16,31 +16,32 @@ regDataseries(
 )
 }
 \arguments{
-\item{name}{[\code{character(1)}]\cr the dataseries abbreviation or name.}
+\item{name}{\code{\link[=character]{character(1)}}\cr the dataseries abbreviation or
+name.}
 
-\item{description}{[\code{character(1)}]\cr the "long name" or "brief
+\item{description}{\code{\link[=character]{character()}}\cr the "long name" or "brief
 description" of the dataseries.}
 
-\item{homepage}{[\code{character(1)}]\cr the homepage of the data provider
-where the dataseries or additional information can be found.}
+\item{homepage}{\code{\link[=character]{character(1)}}\cr the homepage of the data
+provider where the dataseries or additional information can be found.}
 
-\item{version}{[\code{character(1)}]\cr the version number or date when meta
-data of the dataseries were recorded.}
+\item{version}{\code{\link[=character]{character(1)}}\cr the version number or date when
+meta data of the dataseries were recorded.}
 
-\item{licence_link}{[\code{character(1)}]\cr link to the licence or the
+\item{licence_link}{\code{\link[=character]{character(1)}}\cr link to the licence or the
 webpage from which the licence was copied.}
 
-\item{reference}{[\code{bibentry(.)}]\cr in case the dataseries comes with a
-reference, provide this here as bibentry object.}
+\item{reference}{\code{\link[=bibentry]{bibentry(1)}}\cr in case the dataseries comes
+with a reference, provide this here as bibentry object.}
 
-\item{notes}{[\code{character(1)}]\cr optional notes.}
+\item{notes}{\code{\link[=character]{character(1)}}\cr optional notes.}
 
-\item{overwrite}{[\code{logical(1)}]\cr whether or not the dataseries to
+\item{overwrite}{\code{\link[=logical]{logical(1)}}\cr whether or not the dataseries to
 register shall overwrite a potentially already existing older version.}
 }
 \value{
 Returns a tibble of the new entry that is appended to
-  'inv_dataseries.csv'.
+'inv_dataseries.csv'.
 }
 \description{
 This function registers a new dataseries of both, geometries or areal data

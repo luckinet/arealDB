@@ -1,6 +1,6 @@
 #' Reset an areal database to its unfilled state
 #'
-#' @param what [\code{logical(1)}]\cr what to reset, either \code{"onto"},
+#' @param what [`logical(1)`][logical]\cr what to reset, either \code{"onto"},
 #'   \code{"gaz"}, \code{"schemas"}, \code{"tables"}, \code{"geometries"} or
 #'   \code{"all"}, the default.
 #' @return no return value, called for its side effect of reorganising an areal
