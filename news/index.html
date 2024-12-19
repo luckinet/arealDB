@@ -3,7 +3,7 @@
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]--></head><body data-spy="scroll" data-target="#toc">
-    
+
 
     <div class="container template-news">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">arealDB</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.9.1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.9.3</span>
       </span>
     </div>
 
@@ -34,31 +34,37 @@
       </ul><ul class="nav navbar-nav navbar-right"><li>
   <a href="http://www.twitter.com/DerEhrmann" class="external-link">
     <span class="fa fa-twitter fa-lg"></span>
-     
+
   </a>
 </li>
 <li>
   <a href="https://github.com/EhrmannS/arealDB" class="external-link">
     <span class="fa fa-github"></span>
-     
+
   </a>
 </li>
       </ul></div><!--/.nav-collapse -->
   </div><!--/.container -->
 </div><!--/.navbar -->
 
-      
+
 
       </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
       <h1 data-toc-skip>Changelog <small></small></h1>
-      <small>Source: <a href="https://github.com/luckinet/arealDB/blob/HEAD/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
+      <small>Source: <a href="https://github.com/luckinet/arealDB/blob/master/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
     <div class="section level2">
-<h2 class="page-header" data-toc-text="0.9.1" id="arealdb-091">arealDB 0.9.1<a class="anchor" aria-label="anchor" href="#arealdb-091"></a></h2>
-</div>
+<h2 class="page-header" data-toc-text="0.9.3" id="arealdb-093">arealDB 0.9.3<a class="anchor" aria-label="anchor" href="#arealdb-093"></a></h2>
+<ul><li>smaller fixes</li>
+</ul></div>
+    <div class="section level2">
+<h2 class="page-header" data-toc-text="0.9.2" id="arealdb-092">arealDB 0.9.2<a class="anchor" aria-label="anchor" href="#arealdb-092"></a></h2>
+<ul><li>various fixes to the internal processing of matching tabular to geometric data.</li>
+<li>various fixes to finding matches between harmonized and external geometries.</li>
+</ul></div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.9.0" id="arealdb-090---frontend-update">arealDB 0.9.0 - frontend update<a class="anchor" aria-label="anchor" href="#arealdb-090---frontend-update"></a></h2>
 <ul><li>new functions <code><a href="../reference/adb_archive.html">adb_archive()</a></code>, <code><a href="../reference/adb_backup.html">adb_backup()</a></code>, <code><a href="../reference/adb_inventory.html">adb_inventory()</a></code>, <code><a href="../reference/adb_metadata.html">adb_metadata()</a></code>, <code><a href="../reference/adb_ontology.html">adb_ontology()</a></code>, <code><a href="../reference/adb_reset.html">adb_reset()</a></code>, <code><a href="../reference/adb_restore.html">adb_restore()</a></code>, <code><a href="../reference/adb_schemas.html">adb_schemas()</a></code> and <code><a href="../reference/adb_translations.html">adb_translations()</a></code> to access the respective part of an areal database.</li>
@@ -66,7 +72,7 @@
 </li>
 <li>some fixes to the backend as well, where now <em>.csv tables are not used any more, but information are stored in </em>.rds files, as they are not meant to be interacted with. This is now done via the <code>adb_*()</code> functions, which ensure that nothing is modified to a degree that it breaks</li>
 <li>incl. a new feature, where a table that has a missing target column is fixed by matching the child items and then selecting the parent from that as the missing target column</li>
-<li>move the function <code><a href="../reference/edit_matches.html">edit_matches()</a></code>, that was so far located in the <code>ontologics</code> package to here, as it is primarily used in <code>arealDB</code> and not really a usecase for <code>ontologics</code>
+<li>move the function <code>edit_matches()</code>, that was so far located in the <code>ontologics</code> package to here, as it is primarily used in <code>arealDB</code> and not really a usecase for <code>ontologics</code>
 </li>
 </ul></div>
     <div class="section level2">
@@ -75,7 +81,7 @@
 </ul></div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.8.0" id="arealdb-080---better-gazetteer-matching">arealDB 0.8.0 - better gazetteer matching<a class="anchor" aria-label="anchor" href="#arealdb-080---better-gazetteer-matching"></a></h2>
-<ul><li>introduction of the function <code><a href="../reference/updateOntology.html">updateOntology()</a></code>. This updates the gazetteer after a full spatial match has been carried out, drastically taking complexity out of the functions and guaranteeing proper match between the spatial files and the gazetteer</li>
+<ul><li>introduction of the function <code>updateOntology()</code>. This updates the gazetteer after a full spatial match has been carried out, drastically taking complexity out of the functions and guaranteeing proper match between the spatial files and the gazetteer</li>
 </ul></div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.7.1" id="arealdb-071">arealDB 0.7.1<a class="anchor" aria-label="anchor" href="#arealdb-071"></a></h2>
@@ -107,8 +113,8 @@
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.6.0" id="arealdb-060---revise-harmonisation-with-gazetteerontology">arealDB 0.6.0 - revise harmonisation with gazetteer/ontology<a class="anchor" aria-label="anchor" href="#arealdb-060---revise-harmonisation-with-gazetteerontology"></a></h2>
 <ul><li>various fixes to enable full support for automatically matching territories with a gazetteer and concepts with an ontology</li>
-<li>complete overhaul of <code><a href="../reference/matchOntology.html">matchOntology()</a></code> making it vastly more efficient and easier to use/debug</li>
-<li>adapt <code><a href="../reference/normGeometry.html">normGeometry()</a></code> and <code><a href="../reference/normTable.html">normTable()</a></code> to the changes in <code><a href="../reference/matchOntology.html">matchOntology()</a></code>
+<li>complete overhaul of <code>matchOntology()</code> making it vastly more efficient and easier to use/debug</li>
+<li>adapt <code><a href="../reference/normGeometry.html">normGeometry()</a></code> and <code><a href="../reference/normTable.html">normTable()</a></code> to the changes in <code>matchOntology()</code>
 </li>
 <li>start making use of the spatial/topological information derived from normalizing new geometries (that were not part of the initial geometry data set) by updating the gazetteer accordingly. Only if a concept does not overlap with more than (100 - thresh), is it added as a new harmonized concept. In that case, the new geometry is one that is distinct from the harmonized geometry.</li>
 </ul></div>
@@ -134,9 +140,9 @@
 </ul></div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.4.3" id="arealdb-043">arealDB 0.4.3<a class="anchor" aria-label="anchor" href="#arealdb-043"></a></h2>
-<ul><li>rename <code>match_ontology()</code> to <code><a href="../reference/matchOntology.html">matchOntology()</a></code> and revise it so that it can handle several columns sequentially</li>
+<ul><li>rename <code>match_ontology()</code> to <code>matchOntology()</code> and revise it so that it can handle several columns sequentially</li>
 <li>make use of getters of the ontologics package so that (large) gazetteers are not loaded but only the required info are pulled from them</li>
-<li>remove functions <code>get_variable()</code> and <code>select_path()</code>, the former is integrated into <code><a href="../reference/matchOntology.html">matchOntology()</a></code> and the latter is not relevant anymore.</li>
+<li>remove functions <code>get_variable()</code> and <code>select_path()</code>, the former is integrated into <code>matchOntology()</code> and the latter is not relevant anymore.</li>
 </ul></div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.4.2" id="arealdb-042">arealDB 0.4.2<a class="anchor" aria-label="anchor" href="#arealdb-042"></a></h2>
@@ -209,15 +215,15 @@
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.0.9.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
 </div>
 
       </footer></div>
 
-  
 
 
-  
+
+
 
   </body></html>
 
