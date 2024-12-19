@@ -1,7 +1,8 @@
 #' Get the column types of a tibble
 #'
 #' (internal function not for user interaction)
-#' @param input [\code{tibble(1)}]\cr tibble from which to get column types.
+#' @param input [data.frame][data.frame]\cr table from which to get column
+#'   types.
 #' @importFrom checkmate assertDataFrame
 #' @importFrom tibble tibble
 #' @importFrom dplyr summarise_all left_join pull
