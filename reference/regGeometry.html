@@ -18,7 +18,7 @@ geospatial database."><!-- mathjax --><script src="https://cdnjs.cloudflare.com/
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">arealDB</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.9.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.9.4</span>
       </span>
     </div>
 
@@ -85,34 +85,34 @@ geospatial database.</p>
 
 
 <dl><dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
-<dd><p>[<code>character(1)</code>]<br> optional named argument selecting the
-main territory into which this geometry is nested. The name of this must be
-a class of the gazetteer and the value must be one of the territory names
-of that class, e.g. <em>nation = "Estonia"</em>.</p></dd>
+<dd><p><code><a href="https://rdrr.io/r/base/character.html" class="external-link">character(1)</a></code><br> optional named argument selecting
+the main territory into which this geometry is nested. The name of this
+must be a class of the gazetteer and the value must be one of the territory
+names of that class, e.g. <em>nation = "Estonia"</em>.</p></dd>
 
 
 <dt id="arg-subset">subset<a class="anchor" aria-label="anchor" href="#arg-subset"></a></dt>
-<dd><p>[<code>character(1)</code>]<br> optional argument to specify which
-subset the file contains. This could be a subset of territorial units (e.g.
-only one municipality) or of a target variable.</p></dd>
+<dd><p><code><a href="https://rdrr.io/r/base/character.html" class="external-link">character(1)</a></code><br> optional argument to specify
+which subset the file contains. This could be a subset of territorial units
+(e.g. only one municipality) or of a target variable.</p></dd>
 
 
 <dt id="arg-gseries">gSeries<a class="anchor" aria-label="anchor" href="#arg-gseries"></a></dt>
-<dd><p>[<code>character(1)</code>]<br> the name of the geometry dataseries
-(see <code><a href="regDataseries.html">regDataseries</a></code>).</p></dd>
+<dd><p><code><a href="https://rdrr.io/r/base/character.html" class="external-link">character(1)</a></code><br> the name of the geometry
+dataseries (see <code><a href="regDataseries.html">regDataseries</a></code>).</p></dd>
 
 
 <dt id="arg-label">label<a class="anchor" aria-label="anchor" href="#arg-label"></a></dt>
-<dd><p>[<code>list(.)</code>]<br> list of as many columns as there are in
+<dd><p><code><a href="https://rdrr.io/r/base/list.html" class="external-link">list(.)</a></code><br> list of as many columns as there are in
 common in the ontology and this geometry. Must be of the form
 <code>list(class = columnName)</code>, with 'class' as the class of the ontology
 corresponding to the respective column name in the geometry.</p></dd>
 
 
 <dt id="arg-ancillary">ancillary<a class="anchor" aria-label="anchor" href="#arg-ancillary"></a></dt>
-<dd><p>[<code>list(.)</code>]<br> optinal list of columns containing
+<dd><p><code><a href="https://rdrr.io/r/base/list.html" class="external-link">list(.)</a></code><br> optinal list of columns containing
 ancillary information. Must be of the form <code>list(attribute =
-columnName)</code>, where <code>attribute</code> can be one or
+  columnName)</code>, where <code>attribute</code> can be one or
 several of</p><ul><li><p><code>"name_ltn"</code> (the english name in latin letters)</p></li>
 <li><p><code>"name_lcl"</code> (the name in local language and letters)</p></li>
 <li><p><code>"code"</code> (any code describing the unit)</p></li>
@@ -123,26 +123,27 @@ several of</p><ul><li><p><code>"name_ltn"</code> (the english name in latin lett
 
 
 <dt id="arg-layer">layer<a class="anchor" aria-label="anchor" href="#arg-layer"></a></dt>
-<dd><p>[<code>character</code>]<br> the name of the file's layer from which
-the geometry should be created (if applicable).</p></dd>
+<dd><p><code><a href="https://rdrr.io/r/base/character.html" class="external-link">character(1)</a></code><br> the name of the file's layer from
+which the geometry should be created (if applicable).</p></dd>
 
 
 <dt id="arg-archive">archive<a class="anchor" aria-label="anchor" href="#arg-archive"></a></dt>
-<dd><p>[<code>character(1)</code>]<br> the original file (perhaps a *.zip)
-from which the geometry emerges.</p></dd>
+<dd><p><code><a href="https://rdrr.io/r/base/character.html" class="external-link">character(1)</a></code><br> the original file (perhaps a
+*.zip) from which the geometry emerges.</p></dd>
 
 
 <dt id="arg-archivelink">archiveLink<a class="anchor" aria-label="anchor" href="#arg-archivelink"></a></dt>
-<dd><p>[<code>character(1)</code>]<br> download-link of the archive.</p></dd>
+<dd><p><code><a href="https://rdrr.io/r/base/character.html" class="external-link">character(1)</a></code><br> download-link of the
+archive.</p></dd>
 
 
 <dt id="arg-downloaddate">downloadDate<a class="anchor" aria-label="anchor" href="#arg-downloaddate"></a></dt>
-<dd><p>[<code>character(1)</code>]<br> value describing the download
-date of this dataset (in YYYY-MM-DD format).</p></dd>
+<dd><p><code><a href="https://rdrr.io/r/base/character.html" class="external-link">character(1)</a></code><br> value describing the
+download date of this dataset (in YYYY-MM-DD format).</p></dd>
 
 
 <dt id="arg-updatefrequency">updateFrequency<a class="anchor" aria-label="anchor" href="#arg-updatefrequency"></a></dt>
-<dd><p>[<code>character(1)</code>]<br> value describing the
+<dd><p><code><a href="https://rdrr.io/r/base/character.html" class="external-link">character(1)</a></code><br> value describing the
 frequency with which the dataset is updated, according to the ISO 19115
 Codelist, MD_MaintenanceFrequencyCode. Possible values are: 'continual',
 'daily', 'weekly', 'fortnightly', 'quarterly', 'biannually', 'annually',
@@ -151,34 +152,34 @@ Codelist, MD_MaintenanceFrequencyCode. Possible values are: 'continual',
 
 
 <dt id="arg-notes">notes<a class="anchor" aria-label="anchor" href="#arg-notes"></a></dt>
-<dd><p>[<code>character(1)</code>]<br> optional notes that are assigned to all
-features of this geometry.</p></dd>
+<dd><p><code><a href="https://rdrr.io/r/base/character.html" class="external-link">character(1)</a></code><br> optional notes that are assigned
+to all features of this geometry.</p></dd>
 
 
 <dt id="arg-overwrite">overwrite<a class="anchor" aria-label="anchor" href="#arg-overwrite"></a></dt>
-<dd><p>[<code>logical(1)</code>]<br> whether or not the geometry to
+<dd><p><code><a href="https://rdrr.io/r/base/logical.html" class="external-link">logical(1)</a></code><br> whether or not the geometry to
 register shall overwrite a potentially already existing older version.</p></dd>
 
 </dl></div>
     <div id="value">
     <h2>Value</h2>
     <p>Returns a tibble of the entry that is appended to
-  'inv_geometries.csv'.</p>
+'inv_geometries.csv'.</p>
     </div>
     <div id="details">
     <h2>Details</h2>
     <p>When processing geometries to which areal data shall be linked,
-  carry out the following steps:</p><ol><li><p>Determine the main
-  territory (such as a nation, or any other polygon), a <code>subset</code> (if
-  applicable), the dataseries of the geometry and the ontology <code>label</code>,
-  and provide them as arguments to this function.</p></li>
+carry out the following steps:</p><ol><li><p>Determine the main
+territory (such as a nation, or any other polygon), a <code>subset</code> (if
+applicable), the dataseries of the geometry and the ontology <code>label</code>,
+and provide them as arguments to this function.</p></li>
 <li><p>Run the function.</p></li>
 <li><p>Export the shapefile with the following properties:</p><ul><li><p>Format: GeoPackage</p></li>
 <li><p>File name: What is provided as message by this
-  function</p></li>
+function</p></li>
 <li><p>CRS: EPSG:4326 - WGS 84</p></li>
 <li><p>make sure that 'all fields are
-  exported'</p></li>
+exported'</p></li>
 </ul></li>
 <li><p>Confirm that you have saved the file.</p></li>
 </ol></div>

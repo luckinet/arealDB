@@ -19,7 +19,7 @@ matching table as csv."><!-- mathjax --><script src="https://cdnjs.cloudflare.co
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">arealDB</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.9.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.9.4</span>
       </span>
     </div>
 
@@ -83,45 +83,45 @@ matching table as csv.</p>
 
 
 <dl><dt id="arg-new">new<a class="anchor" aria-label="anchor" href="#arg-new"></a></dt>
-<dd><p>[`data.frame(.)`][data.frame]<br> the new concepts that shall be
+<dd><p><code><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame(.)</a></code><br> the new concepts that shall be
 manually matched, includes "label", "class" and "has_broader" columns.</p></dd>
 
 
 <dt id="arg-toplevel">topLevel<a class="anchor" aria-label="anchor" href="#arg-toplevel"></a></dt>
-<dd><p>[`logical(1)`][logical]<br> whether or not the new concepts
+<dd><p><code><a href="https://rdrr.io/r/base/logical.html" class="external-link">logical(1)</a></code><br> whether or not the new concepts
 are at the highest level only, i.e., have to be matched without context, or
 whether they are contain columns that must be matched within parent
 columns.</p></dd>
 
 
 <dt id="arg-source">source<a class="anchor" aria-label="anchor" href="#arg-source"></a></dt>
-<dd><p>[`character(1)`][character]<br> any character uniquely
+<dd><p><code><a href="https://rdrr.io/r/base/character.html" class="external-link">character(1)</a></code><br> any character uniquely
 identifying the source dataset of the new concepts.</p></dd>
 
 
 <dt id="arg-ontology">ontology<a class="anchor" aria-label="anchor" href="#arg-ontology"></a></dt>
-<dd><p>[`ontology(1)`][list]<br> either a path where the ontology is
+<dd><p><code><a href="https://rdrr.io/r/base/list.html" class="external-link">ontology(1)</a></code><br> either a path where the ontology is
 stored, or an already loaded ontology.</p></dd>
 
 
 <dt id="arg-matchdir">matchDir<a class="anchor" aria-label="anchor" href="#arg-matchdir"></a></dt>
-<dd><p>[`character(1)`][character]<br> the directory where to store
+<dd><p><code><a href="https://rdrr.io/r/base/character.html" class="external-link">character(1)</a></code><br> the directory where to store
 source-specific matching tables.</p></dd>
 
 
 <dt id="arg-stringdist">stringdist<a class="anchor" aria-label="anchor" href="#arg-stringdist"></a></dt>
-<dd><p>[`logical(1)`][logical]<br> whether or not to use string
+<dd><p><code><a href="https://rdrr.io/r/base/logical.html" class="external-link">logical(1)</a></code><br> whether or not to use string
 distance to find matches (should not be used for large datasets/when a
 memory error is shown).</p></dd>
 
 
 <dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
-<dd><p>[`logical(1)`][logical]<br> whether or not to give detailed
+<dd><p><code><a href="https://rdrr.io/r/base/logical.html" class="external-link">logical(1)</a></code><br> whether or not to give detailed
 information on the process of this function.</p></dd>
 
 
 <dt id="arg-beep">beep<a class="anchor" aria-label="anchor" href="#arg-beep"></a></dt>
-<dd><p>[`integerish(1)`][integer]<br> Number specifying what sound to be
+<dd><p><code><a href="https://rdrr.io/r/base/integer.html" class="external-link">integerish(1)</a></code><br> Number specifying what sound to be
 played to signal the user that a point of interaction is reached by the
 program, see <code><a href="https://rdrr.io/pkg/beepr/man/beep.html" class="external-link">beep</a></code>.</p></dd>
 
@@ -129,23 +129,23 @@ program, see <code><a href="https://rdrr.io/pkg/beepr/man/beep.html" class="exte
     <div id="value">
     <h2>Value</h2>
     <p>A table that contains all new matches, or if none of the new concepts
-  weren't already in the ontology, a table of the already sucessful matches.</p>
+weren't already in the ontology, a table of the already sucessful matches.</p>
     </div>
     <div id="details">
     <h2>Details</h2>
     <p>In order to match new concepts into an already existing ontology, it
-  may become necessary to carry out manual matches of the new concepts with
-  already harmonised concepts, for example, when the new concepts are
-  described with terms that are not yet in the ontology. This function puts
-  together a table, in which the user would edit matches by hand. Whith the
-  argument <code>verbose = TRUE</code>, detailed information about the edit process
-  are shown to the user. After defining matches, and even if not all
-  necessary matches are finished, the function stores a specific "matching
-  table" with the name <em>match_SOURCE.csv</em> in the respective directory
-  (<code>matchDir</code>), from where work can be picked up and continued at
-  another time.</p>
+may become necessary to carry out manual matches of the new concepts with
+already harmonised concepts, for example, when the new concepts are
+described with terms that are not yet in the ontology. This function puts
+together a table, in which the user would edit matches by hand. Whith the
+argument <code>verbose = TRUE</code>, detailed information about the edit process
+are shown to the user. After defining matches, and even if not all
+necessary matches are finished, the function stores a specific "matching
+table" with the name <em>match_SOURCE.csv</em> in the respective directory
+(<code>matchDir</code>), from where work can be picked up and continued at
+another time.</p>
 <p>Fuzzy matching is carried out and matches with 0, 1 or 2 differing
-  charcters are presented in a respective column.</p>
+charcters are presented in a respective column.</p>
     </div>
 
   </div>

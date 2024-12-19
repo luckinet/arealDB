@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">arealDB</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.9.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.9.4</span>
       </span>
     </div>
 
@@ -70,37 +70,38 @@
 
 
 <dl><dt id="arg-path">path<a class="anchor" aria-label="anchor" href="#arg-path"></a></dt>
-<dd><p>[<code>character(1)</code>]<br> The database gets created by default in
-tempdir(), but if you want it in a particular location, specify that in
-this argument.</p></dd>
+<dd><p><code><a href="https://rdrr.io/r/base/character.html" class="external-link">character(1)</a></code><br> The database gets created by
+default in tempdir(), but if you want it in a particular location, specify
+that in this argument.</p></dd>
 
 
 <dt id="arg-until">until<a class="anchor" aria-label="anchor" href="#arg-until"></a></dt>
-<dd><p>[<code>character(1)</code>]<br> The database building step in terms of
-the function names until which the example database shall be built, one of
-<code>"start_arealDB"</code>, <code>"regDataseries"</code>, <code>"regGeometry"</code>,
-<code>"regTable"</code>, <code>"normGeometry"</code> or <code>"normTable"</code>.</p></dd>
+<dd><p><code><a href="https://rdrr.io/r/base/character.html" class="external-link">character(1)</a></code><br> The database building step in
+terms of the function names until which the example database shall be
+built, one of <code>"start_arealDB"</code>, <code>"regDataseries"</code>,
+<code>"regGeometry"</code>, <code>"regTable"</code>, <code>"normGeometry"</code> or
+<code>"normTable"</code>.</p></dd>
 
 
 <dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
-<dd><p>[<code>logical(1)</code>]<br> be verbose about building the example
-database (default <code>FALSE</code>).</p></dd>
+<dd><p><code><a href="https://rdrr.io/r/base/logical.html" class="external-link">logical(1)</a></code><br> be verbose about building the
+example database (default <code>FALSE</code>).</p></dd>
 
 </dl></div>
     <div id="value">
     <h2>Value</h2>
     <p>No return value, called for the side effect of creating an example
-  database at the specified <code>path</code>.</p>
+database at the specified <code>path</code>.</p>
     </div>
     <div id="details">
     <h2>Details</h2>
     <p>Setting up a database with an R-based tool can appear to be
-  cumbersome and too complex and thus intimidating. By creating an example
-  database, this functions allows interested users to learn step by step how
-  to build a database of areal data. Moreover, all functions in this package
-  contain verbose information and ask for information that would be missing
-  or lead to an inconsistent database, before a failure renders hours of work
-  useless.</p>
+cumbersome and too complex and thus intimidating. By creating an example
+database, this functions allows interested users to learn step by step how
+to build a database of areal data. Moreover, all functions in this package
+contain verbose information and ask for information that would be missing
+or lead to an inconsistent database, before a failure renders hours of work
+useless.</p>
     </div>
 
     <div id="ref-examples">

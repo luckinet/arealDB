@@ -17,7 +17,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">arealDB</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.9.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.9.4</span>
       </span>
     </div>
 
@@ -77,36 +77,36 @@
 
 
 <dl><dt id="arg-input">input<a class="anchor" aria-label="anchor" href="#arg-input"></a></dt>
-<dd><p>[<code>character(1)</code>]<br> path of the file to normalise. If this
-is left empty, all files at stage two as subset by <code>pattern</code> are
+<dd><p><code><a href="https://rdrr.io/r/base/character.html" class="external-link">character(1)</a></code><br> path of the file to normalise. If
+this is left empty, all files at stage two as subset by <code>pattern</code> are
 chosen.</p></dd>
 
 
 <dt id="arg-pattern">pattern<a class="anchor" aria-label="anchor" href="#arg-pattern"></a></dt>
-<dd><p>[<code>character(1)</code>]<br> an optional regular expression. Only
-dataset names which match the regular expression will be processed.</p></dd>
+<dd><p><code><a href="https://rdrr.io/r/base/character.html" class="external-link">character(1)</a></code><br> an optional regular expression.
+Only dataset names which match the regular expression will be processed.</p></dd>
 
 
 <dt id="arg-query">query<a class="anchor" aria-label="anchor" href="#arg-query"></a></dt>
-<dd><p>[<code>character(1)</code>]<br> the expression that would be used in
-<code><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></code> to subset a tibble in terms of the columns
+<dd><p><code><a href="https://rdrr.io/r/base/character.html" class="external-link">character(1)</a></code><br> the expression that would be used
+in <code><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></code> to subset a tibble in terms of the columns
 defined via the schema and given as a single character string, such as
 <code>"al1 == 'Estonia'"</code>.</p></dd>
 
 
 <dt id="arg-ontomatch">ontoMatch<a class="anchor" aria-label="anchor" href="#arg-ontomatch"></a></dt>
-<dd><p>[<code>character(.)</code>]<br> name of the column(s) that shall be
-matched with an ontology (defined in <code><a href="adb_init.html">adb_init</a></code>).</p></dd>
+<dd><p><code><a href="https://rdrr.io/r/base/character.html" class="external-link">character(.)</a></code><br> name of the column(s) that
+shall be matched with an ontology (defined in <code><a href="adb_init.html">adb_init</a></code>).</p></dd>
 
 
 <dt id="arg-beep">beep<a class="anchor" aria-label="anchor" href="#arg-beep"></a></dt>
-<dd><p>[<code>integerish(1)</code>]<br> Number specifying what sound to be
+<dd><p><code><a href="https://rdrr.io/r/base/integer.html" class="external-link">integerish(1)</a></code><br> Number specifying what sound to be
 played to signal the user that a point of interaction is reached by the
 program, see <code><a href="https://rdrr.io/pkg/beepr/man/beep.html" class="external-link">beep</a></code>.</p></dd>
 
 
 <dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
-<dd><p>[<code>logical(1)</code>]<br> be verbose about translating terms
+<dd><p><code><a href="https://rdrr.io/r/base/logical.html" class="external-link">logical(1)</a></code><br> be verbose about translating terms
 (default <code>FALSE</code>). Furthermore, you can use
 <code><a href="https://rdrr.io/r/base/message.html" class="external-link">suppressMessages</a></code> to make this function completely silent.</p></dd>
 
@@ -114,25 +114,25 @@ program, see <code><a href="https://rdrr.io/pkg/beepr/man/beep.html" class="exte
     <div id="value">
     <h2>Value</h2>
     <p>This function harmonises and integrates so far unprocessed data
-  tables at stage two into stage three of the areal database. It produces for
-  each main polygon (e.g. nation) in the registered data tables a file that
-  includes all thematic areal data.</p>
+tables at stage two into stage three of the areal database. It produces for
+each main polygon (e.g. nation) in the registered data tables a file that
+includes all thematic areal data.</p>
     </div>
     <div id="details">
     <h2>Details</h2>
     <p>To normalise data tables, this function proceeds as follows:</p><ol><li><p>Read in <code>input</code> and extract initial metadata from
-  the file name.</p></li>
+the file name.</p></li>
 <li><p>Employ the function
-  <code><a href="https://rdrr.io/pkg/tabshiftr/man/reorganise.html" class="external-link">tabshiftr::reorganise</a></code> to reshape <code>input</code> according to
-  the respective schema description.</p></li>
+<code><a href="https://rdrr.io/pkg/tabshiftr/man/reorganise.html" class="external-link">tabshiftr::reorganise</a></code> to reshape <code>input</code> according to
+the respective schema description.</p></li>
 <li><p>The territorial names are matched
-  with the gazetteer to harmonise new territorial names (at this step, the
-  function might ask the user to edit the file 'matching.csv' to align new
-  names with already harmonised names).</p></li>
+with the gazetteer to harmonise new territorial names (at this step, the
+function might ask the user to edit the file 'matching.csv' to align new
+names with already harmonised names).</p></li>
 <li><p>Harmonise territorial unit
-  names.</p></li>
+names.</p></li>
 <li><p>store the processed data table at
-  stage three.</p></li>
+stage three.</p></li>
 </ol></div>
     <div id="see-also">
     <h2>See also</h2>

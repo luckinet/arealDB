@@ -18,7 +18,7 @@ harmonised values listed in the project specific gazetteer."><!-- mathjax --><sc
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">arealDB</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.9.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.9.4</span>
       </span>
     </div>
 
@@ -83,62 +83,62 @@ harmonised values listed in the project specific gazetteer.</p>
 
 
 <dl><dt id="arg-table">table<a class="anchor" aria-label="anchor" href="#arg-table"></a></dt>
-<dd><p>[`data.frame(1)`][data.frame]<br> a table that contains columns
+<dd><p><code><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame(1)</a></code><br> a table that contains columns
 that should be harmonised by matching with the gazetteer.</p></dd>
 
 
 <dt id="arg-columns">columns<a class="anchor" aria-label="anchor" href="#arg-columns"></a></dt>
-<dd><p>[`character(1)`][character]<br> the columns containing the
+<dd><p><code><a href="https://rdrr.io/r/base/character.html" class="external-link">character(1)</a></code><br> the columns containing the
 concepts</p></dd>
 
 
 <dt id="arg-dataseries">dataseries<a class="anchor" aria-label="anchor" href="#arg-dataseries"></a></dt>
-<dd><p>[`character(1)`][character]<br> the source dataseries from
+<dd><p><code><a href="https://rdrr.io/r/base/character.html" class="external-link">character(1)</a></code><br> the source dataseries from
 which territories are sourced.</p></dd>
 
 
 <dt id="arg-ontology">ontology<a class="anchor" aria-label="anchor" href="#arg-ontology"></a></dt>
-<dd><p>[<code>onto</code>]<br> path where the ontology/gazetteer is stored.</p></dd>
+<dd><p><code>onto</code><br> path where the ontology/gazetteer is stored.</p></dd>
 
 
 <dt id="arg-beep">beep<a class="anchor" aria-label="anchor" href="#arg-beep"></a></dt>
-<dd><p>[`integerish(1)`][integer]<br> Number specifying what sound to be
+<dd><p><code><a href="https://rdrr.io/r/base/integer.html" class="external-link">integerish(1)</a></code><br> Number specifying what sound to be
 played to signal the user that a point of interaction is reached by the
 program, see <code><a href="https://rdrr.io/pkg/beepr/man/beep.html" class="external-link">beep</a></code>.</p></dd>
 
 
 <dt id="arg-colsasclass">colsAsClass<a class="anchor" aria-label="anchor" href="#arg-colsasclass"></a></dt>
-<dd><p>[`logical(1)`][logical]<br> whether to match <code>columns</code>
+<dd><p><code><a href="https://rdrr.io/r/base/logical.html" class="external-link">logical(1)</a></code><br> whether to match <code>columns</code>
 by their name with the respective classes, or with concepts of all classes.</p></dd>
 
 
 <dt id="arg-groupmatches">groupMatches<a class="anchor" aria-label="anchor" href="#arg-groupmatches"></a></dt>
-<dd><p>[`logical(1)`][logical]<br> whether or not to group
+<dd><p><code><a href="https://rdrr.io/r/base/logical.html" class="external-link">logical(1)</a></code><br> whether or not to group
 harmonized concepts when there are more than one match (for example for
 broader or narrower matches).</p></dd>
 
 
 <dt id="arg-stringdist">stringdist<a class="anchor" aria-label="anchor" href="#arg-stringdist"></a></dt>
-<dd><p>[`logical(1)`][logical]<br> whether or not to use string
+<dd><p><code><a href="https://rdrr.io/r/base/logical.html" class="external-link">logical(1)</a></code><br> whether or not to use string
 distance to find matches (should not be used for large datasets/when a
 memory error is shown).</p></dd>
 
 
 <dt id="arg-strictmatch">strictMatch<a class="anchor" aria-label="anchor" href="#arg-strictmatch"></a></dt>
-<dd><p>[`logical(1)`][logical]<br> whether or not matches are
+<dd><p><code><a href="https://rdrr.io/r/base/logical.html" class="external-link">logical(1)</a></code><br> whether or not matches are
 strict, i.e., there should be clear one-to-one relationships and no changes
 in broader concepts.</p></dd>
 
 
 <dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
-<dd><p>[`logical(1)`][logical]<br> whether or not to give detailed
+<dd><p><code><a href="https://rdrr.io/r/base/logical.html" class="external-link">logical(1)</a></code><br> whether or not to give detailed
 information on the process of this function.</p></dd>
 
 </dl></div>
     <div id="value">
     <h2>Value</h2>
     <p>Returns a table that resembles the input table where the target
-  columns were translated according to the provided ontology.</p>
+columns were translated according to the provided ontology.</p>
     </div>
 
   </div>
