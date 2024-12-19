@@ -62,7 +62,7 @@ adb_example <- function(path = NULL, until = NULL, verbose = FALSE){
   if (any(theSteps %in% "adb_init")) {
     adb_init(root = path,
              version = "some0.0.1", licence = "https://creativecommons.org/licenses/by-sa/4.0/",
-             author = "Steffen Ehrmann",
+             author = "Gordon Freeman",
              gazetteer = gazPath, top = "al1",
              ontology = ontoPath)
   }
