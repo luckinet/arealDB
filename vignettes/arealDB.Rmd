@@ -273,7 +273,7 @@ regTable(nation = "UnitedStatesOfAmerica",
 ```
 
 
-## Normalise the input (staeg 3)
+## Normalise the input (stage 3)
 
 Finally, we need to align all data so that they follow the same structure. This is called *normalization*,in `arealDB`, and is carried out with the functions `normGeometry()` and `normTable()`, for the respective input data. Geometries are normalized first, because the thematic data are associated to the standardized versions of them.
 
