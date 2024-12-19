@@ -184,8 +184,8 @@ adb_init <- function(root, version, author, licence, ontology,
 
     if(!testing){
       references <- citation("arealDB")
-      names(references) <- "ehrmann2024"
-      references$key <- "ehrmann2024"
+      names(references) <- paste0("ehrmann", format(Sys.Date(), "%Y"))
+      references$key <- paste0("ehrmann", format(Sys.Date(), "%Y"))
     } else {
       references <- citation(package = "checkmate")
     }
