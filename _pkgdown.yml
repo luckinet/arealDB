@@ -18,11 +18,13 @@ reference:
     contents:
       - adb_archive
       - adb_backup
+      - adb_diagnose
       - adb_example
       - adb_init
       - adb_inventory
       - adb_metadata
       - adb_ontology
+      - adb_querry
       - adb_reset
       - adb_restore
       - adb_schemas

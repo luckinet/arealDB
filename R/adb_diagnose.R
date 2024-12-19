@@ -1,5 +1,6 @@
 #' Diagnose databse contents
 #'
+#' work in progress, not yet useable
 #' @param territory description
 #' @param concept description
 #' @param variable description

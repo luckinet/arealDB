@@ -13,9 +13,8 @@ adb_querry(
 )
 }
 \arguments{
-\item{territory}{combination of column name in the ontology and value to
-filter that column by to build a tree of the territories nested into it;
-see \code{\link[ontologics]{make_tree}}.}
+\item{territory}{[`character(.)][character]\cr combination of column name in the ontology and value to
+filter that column by to build a tree of the territories nested into it.}
 
 \item{concept}{description}
 
