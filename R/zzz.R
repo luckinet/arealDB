@@ -78,6 +78,12 @@ globalVariables(c(
   "thisGeoID"
 ))
 
+.onLoad <- function(libname, pkgname) {
+  # CRAN OMP THREAD LIMIT
+  Sys.setenv("OMP_THREAD_LIMIT" = 1)
+
+}
+
 .onAttach <- function(libname, pkgname){
   options(adb_testing = FALSE)
 }
