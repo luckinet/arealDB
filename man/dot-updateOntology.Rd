@@ -21,7 +21,8 @@ matches are updated in the gazetteer.}
 \item{dataseries}{\code{\link[=character]{character(1)}}\cr the source dataseries of the
 external concepts for which the gazetteer shall be updated.}
 
-\item{ontology}{\link{onto}\cr path where the ontology/gazetteer is stored.}
+\item{ontology}{\link[ontologics:onto-class]{onto}\cr path where the ontology/gazetteer
+is stored.}
 }
 \value{
 called for its side-effect of updating a gazetteer

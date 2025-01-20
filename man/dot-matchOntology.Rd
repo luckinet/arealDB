@@ -27,7 +27,7 @@ concepts}
 \item{dataseries}{\code{\link[=character]{character(1)}}\cr the source dataseries from
 which territories are sourced.}
 
-\item{ontology}{\code{\link{onto}}\cr path where the ontology/gazetteer is stored.}
+\item{ontology}{\code{\link[ontologics:onto-class]{onto}}\cr path where the ontology/gazetteer is stored.}
 
 \item{beep}{\code{\link[=integer]{integerish(1)}}\cr Number specifying what sound to be
 played to signal the user that a point of interaction is reached by the

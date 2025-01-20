@@ -50,9 +50,9 @@ are valid.}
 \item{end}{\code{\link[=integer]{integerish(1)}}\cr the date until which the data are
 valid.}
 
-\item{schema}{\code{\link{schema}}\cr the schema description of the table to
-read in (must have been placed in the global environment before calling it
-here).}
+\item{schema}{\code{\link[tabshiftr:schema-class]{schema}}\cr the schema description of the
+table to read in (must have been placed in the global environment before
+calling it here).}
 
 \item{archive}{\code{\link[=character]{character(1)}}\cr the original file from which
 the boundaries emerge.}
