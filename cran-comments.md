@@ -1,3 +1,7 @@
+20.01.2025
+
+- does not yet compile without errors on macos-arm64, because the ontologics pacakges hasn't been updated there yet.
+
 03.07.2023
 
 - fixing linux-errors shown at https://cran.r-project.org/web/checks/check_results_arealDB.html
