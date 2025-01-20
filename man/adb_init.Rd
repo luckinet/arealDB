@@ -16,38 +16,39 @@ adb_init(
 )
 }
 \arguments{
-\item{root}{[\code{character(1)}]\cr path to the root directory that contains
-or shall contain an areal database.}
+\item{root}{\code{\link[=character]{character(1)}}\cr path to the root directory that
+contains or shall contain an areal database.}
 
-\item{version}{[\code{character(1)}]\cr version identifier for this areal
+\item{version}{\code{\link[=character]{character(1)}}\cr version identifier for this
+areal database.}
+
+\item{author}{\code{\link[=character]{character(1)}}\cr authors that contributed to
+building this areal database. Should be a list with items \code{"cre"}
+(creator), \code{"aut"} (authors) and \code{"ctb"} (contributors).}
+
+\item{licence}{\code{\link[=character]{character(1)}}\cr licence (link) for this areal
 database.}
 
-\item{author}{[\code{character(1)}]\cr authors that contributed to building
-this areal database. Should be a list with items \code{"cre"} (creator),
-\code{"aut"} (authors) and \code{"ctb"} (contributors).}
-
-\item{licence}{[\code{character(1)}]\cr licence (link) for this areal
-database.}
-
-\item{ontology}{[\code{list(.)}]\cr named list with the path(s) of
+\item{ontology}{\code{\link[=list]{list(.)}}\cr named list with the path(s) of
 ontologies, where the list name identifies the variable that shall be
 matched with the ontology at the path.}
 
-\item{gazetteer}{[\code{character(1)}]\cr path to the gazetteer that holds
-the (hierarchical) information of territorial units used in this database.}
+\item{gazetteer}{\code{\link[=character]{character(1)}}\cr path to the gazetteer that
+holds the (hierarchical) information of territorial units used in this
+database.}
 
-\item{top}{[\code{character(1)}]\cr the label of the class in the gazetteer
-that represents the top-most unit (e.g. country) of the areal database that
-shall be started.}
+\item{top}{\code{\link[=character]{character(1)}}\cr the label of the class in the
+gazetteer that represents the top-most unit (e.g. country) of the areal
+database that shall be started.}
 
-\item{staged}{[\code{logical(1)}]\cr whether or not the file structure is
+\item{staged}{\code{\link[=logical]{logical(1)}}\cr whether or not the file structure is
 arranged according to stages (with geometries and tables separated), or
 merely as input/output (of all types).}
 }
 \value{
 No return value, called for the side effect of creating the
-  directory structure of the new areal database and tables that contain the
-  database metadata.
+directory structure of the new areal database and tables that contain the
+database metadata.
 }
 \description{
 Initiate a geospatial database or register a database that exists at the root
@@ -55,9 +56,9 @@ path.
 }
 \details{
 This is the first function that is run in a project, as it initiates
-  the areal database by creating the default sub-directories and initial
-  inventory tables. When a database has already been set up, this function is
-  used to register that path in the options of the current R session.
+the areal database by creating the default sub-directories and initial
+inventory tables. When a database has already been set up, this function is
+used to register that path in the options of the current R session.
 }
 \examples{
 adb_init(root = paste0(tempdir(), "/newDB"),

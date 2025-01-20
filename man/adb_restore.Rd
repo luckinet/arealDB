@@ -7,21 +7,21 @@
 adb_restore(version = NULL, date = NULL)
 }
 \arguments{
-\item{version}{[\code{character(1)}]\cr a version tag for which to
+\item{version}{\link[=character]{`character(1)}\cr a version tag for which to
 restore files.}
 
-\item{date}{[\code{character(1)}]\cr a date for which to restore files.}
+\item{date}{\code{\link[=character]{character(1)}}\cr a date for which to restore files.}
 }
 \value{
 No return value, called for the side effect of restoring files that
-  were previously stored in a backup.
+were previously stored in a backup.
 }
 \description{
 Restore the database from a backup
 }
 \details{
 This function searches for files that have the version and date tag,
-  as it was defined in a previous run of \code{\link{adb_backup}}, to restore
-  them to their original folders. This function overwrites by default, so use
-  with care.
+as it was defined in a previous run of \code{\link{adb_backup}}, to restore
+them to their original folders. This function overwrites by default, so use
+with care.
 }

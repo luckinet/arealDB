@@ -1,9 +1,9 @@
 #' Load the translation tables of the currently active areal database
 #'
-#' @param type [\code{character(1)}]\cr the type of ontology for which to load
-#'   translation tables, either \code{"ontology"} to get the thematic concepts,
-#'   or \code{"gazetteer"} to get the territories.
-#' @param dataseries [\code{character(1)}]\cr the name of a dataseries as
+#' @param type [`character(1)`][character]\cr the type of ontology for which to
+#'   load translation tables, either \code{"ontology"} to get the thematic
+#'   concepts, or \code{"gazetteer"} to get the territories.
+#' @param dataseries [`character(1)`][character]\cr the name of a dataseries as
 #'   registered in \code{\link{regDataseries}}.
 #' @return returns the selected translation table
 #' @importFrom checkmate assertChoice

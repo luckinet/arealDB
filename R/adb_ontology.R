@@ -3,7 +3,7 @@
 #' @param ... combination of column name in the ontology and value to filter
 #'   that column by to build a tree of the concepts nested into it; see
 #'   \code{\link[ontologics]{make_tree}}.
-#' @param type [\code{character(1)}]\cr the type of ontology to load,
+#' @param type [`character(1)`][character]\cr the type of ontology to load,
 #'   either \code{"ontology"} to get the thematic concepts, or
 #'   \code{"gazetteer"} to get the territories.
 #' @return returns a tidy table of an ontology or gazetteer that is used in an

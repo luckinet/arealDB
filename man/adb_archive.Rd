@@ -7,28 +7,28 @@
 adb_archive(pattern = NULL, variables = NULL, compress = FALSE, outPath = NULL)
 }
 \arguments{
-\item{pattern}{[\code{character(1)}]\cr a regular expression used to filter
-files to load.}
+\item{pattern}{\code{\link[=character]{character(1)}}\cr a regular expression used to
+filter files to load.}
 
-\item{variables}{[\code{character(.)}]\cr columns, typically observed
+\item{variables}{\code{\link[=character]{character(.)}}\cr columns, typically observed
 variables, to select.}
 
-\item{compress}{[\code{logical(1)}]\cr whether or not the database should be
-compressed into a \emph{tar.gz} archive. Will delete the database folder in
-\code{outPath}.}
+\item{compress}{\code{\link[=logical]{logical(1)}}\cr whether or not the database should
+be compressed into a \emph{tar.gz} archive. Will delete the database folder
+in \code{outPath}.}
 
-\item{outPath}{[\code{character(1)}]\cr directory, where the archive should
-be stored.}
+\item{outPath}{\code{\link[=character]{character(1)}}\cr directory, where the archive
+should be stored.}
 }
 \value{
 no return value, called for the side-effect of creating a database
-  archive.
+archive.
 }
 \description{
 Archive the data from an areal database
 }
 \details{
 This function prepares and packages the data into an archiveable
-  form. This contains geopacakge files for geometries and csv files for all
-  tables, such as inventory, matching and thematic data tables.
+form. This contains geopacakge files for geometries and csv files for all
+tables, such as inventory, matching and thematic data tables.
 }

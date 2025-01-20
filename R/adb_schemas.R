@@ -1,7 +1,7 @@
 #' Load the schemas of the currently active areal database
 #'
-#' @param pattern [\code{character(1)}]\cr an optional regular expression. Only
-#'   schema names which match the regular expression will be processed.
+#' @param pattern [`character(1)`][character]\cr an optional regular expression.
+#'   Only schema names which match the regular expression will be processed.
 #' @return returns a list of schema descriptions
 #' @importFrom purrr map
 #' @importFrom stringr str_split

@@ -3,19 +3,20 @@
 #' This function registers a new dataseries of both, geometries or areal data
 #' into the geospatial database. This contains the name and relevant meta-data
 #' of a dataseries to enable provenance tracking and reproducability.
-#' @param name [\code{character(1)}]\cr the dataseries abbreviation or name.
-#' @param description [\code{character(1)}]\cr the "long name" or "brief
+#' @param name [`character(1)`][character]\cr the dataseries abbreviation or
+#'   name.
+#' @param description [`character()`][character]\cr the "long name" or "brief
 #'   description" of the dataseries.
-#' @param homepage [\code{character(1)}]\cr the homepage of the data provider
-#'   where the dataseries or additional information can be found.
-#' @param version [\code{character(1)}]\cr the version number or date when meta
-#'   data of the dataseries were recorded.
-#' @param licence_link [\code{character(1)}]\cr link to the licence or the
+#' @param homepage [`character(1)`][character]\cr the homepage of the data
+#'   provider where the dataseries or additional information can be found.
+#' @param version [`character(1)`][character]\cr the version number or date when
+#'   meta data of the dataseries were recorded.
+#' @param licence_link [`character(1)`][character]\cr link to the licence or the
 #'   webpage from which the licence was copied.
-#' @param reference [\code{bibentry(.)}]\cr in case the dataseries comes with a
-#'   reference, provide this here as bibentry object.
-#' @param notes [\code{character(1)}]\cr optional notes.
-#' @param overwrite [\code{logical(1)}]\cr whether or not the dataseries to
+#' @param reference [`bibentry(1)`][bibentry]\cr in case the dataseries comes
+#'   with a reference, provide this here as bibentry object.
+#' @param notes [`character(1)`][character]\cr optional notes.
+#' @param overwrite [`logical(1)`][logical]\cr whether or not the dataseries to
 #'   register shall overwrite a potentially already existing older version.
 #' @return Returns a tibble of the new entry that is appended to
 #'   'inv_dataseries.csv'.

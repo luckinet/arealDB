@@ -24,5 +24,5 @@ adb_diagnose(
 \item{year}{description}
 }
 \description{
-Diagnose databse contents
+work in progress, not yet useable
 }

@@ -7,13 +7,13 @@
 adb_reset(what = "all")
 }
 \arguments{
-\item{what}{[\code{logical(1)}]\cr what to reset, either \code{"onto"},
+\item{what}{\code{\link[=logical]{logical(1)}}\cr what to reset, either \code{"onto"},
 \code{"gaz"}, \code{"schemas"}, \code{"tables"}, \code{"geometries"} or
 \code{"all"}, the default.}
 }
 \value{
 no return value, called for its side effect of reorganising an areal
-  database into a state where no reg* or norm* functions have been run
+database into a state where no reg* or norm* functions have been run
 }
 \description{
 Reset an areal database to its unfilled state

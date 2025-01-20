@@ -1,13 +1,21 @@
 #' Extract database contents
 #'
-#' @param territory combination of column name in the ontology and value to
-#'   filter that column by to build a tree of the territories nested into it;
-#'   see \code{\link[ontologics]{make_tree}}.
+#' @param territory [`character(.)][character]\cr combination of column name in
+#'   the ontology and value to filter that column by to build a tree of the
+#'   territories nested into it.
 #' @param concept description
 #' @param variable description
 #' @param level description
 #' @param year description
 #' @return returns ...
+#' @examples
+#' if(dev.interactive()){
+#' adb_example(path = paste0(tempdir(), "/newDB"))
+#'
+#' adb_querry(territory = list(al1 = "a_nation"),
+#'            concept = list(commodity = "barley"),
+#'            variable = "harvested")
+#' }
 #' @importFrom checkmate assertList assertCharacter assertIntegerish
 #'   assertLogical assertSubset
 #' @importFrom dplyr mutate select
@@ -17,8 +25,6 @@
 
 adb_querry <- function(territory = NULL, concept = NULL, variable = NULL,
                        level = NULL, year = NULL){
-
-  # territory <- list(al1 = "Brazil"); concept = list(animal = "cattle"); variable = "number_heads"; level = "al3"; year = c(2010, 2015, 2020)
 
   assertList(x = territory, types = "character", any.missing = FALSE, null.ok = TRUE)
   assertList(x = concept, types = "character", any.missing = FALSE, null.ok = TRUE)
@@ -38,7 +44,7 @@ adb_querry <- function(territory = NULL, concept = NULL, variable = NULL,
   inv_series <- inv$dataseries
 
   tables <- list.files(path = paste0(adb_path, "/tables/stage3"), full.names = TRUE)
-  geometries <- list.files(path = paste0(adb_path, "/geometries/stage3"), full.names = TRUE)
+  geometries <- list.files(path = paste0(adb_path, "/geometries/stage3"), full.names = TRUE, pattern = "\\.gpkg$")
 
   # first, get all items down until the "topClass"
   allItems <- make_tree(class = topClass, reverse = TRUE, ontology = gazPath)
@@ -97,6 +103,9 @@ adb_querry <- function(territory = NULL, concept = NULL, variable = NULL,
     }
 
     if(is.null(year)){
+      targetYear <- table |>
+        distinct(year) |>
+        pull(year)
       # targetYear <- get all years and provide a prompt to ask whether all should be printed or just a subset
     } else {
       assertSubset(x = as.character(year), choices = unique(table$year))
@@ -106,14 +115,15 @@ adb_querry <- function(territory = NULL, concept = NULL, variable = NULL,
     # load geometries
     geometry <- suppressMessages(
       read_sf(dsn = geometries[str_detect(string = geometries, pattern = paste0(nation, ".gpkg"))],
-              layer = max(tempLvls)))
+              layer = max(tempLvls))) |>
+      filter(geoID %in% temp_inv_tables$geoID)
 
     # build some meta data
     meta <- table |>
       group_by(gazID, geoID) |>
-      summarise(sources = n_distinct(tabID),
-                !!names(concept) := n_distinct(!!sym(names(concept))),
-                years = n_distinct(year),
+      summarise(n_source = n_distinct(tabID),
+                !!paste0("n_", names(concept)) := n_distinct(!!sym(names(concept))),
+                n_year = n_distinct(year),
                 min_year = min(year),
                 max_year = max(year)) |>
       ungroup()
@@ -122,20 +132,26 @@ adb_querry <- function(territory = NULL, concept = NULL, variable = NULL,
     var <- table |>
       filter(!is.na(gazID)) |>
       filter(year %in% targetYear) |>
-      filter(str_detect(ontoMatch, "close")) |>
+      # filter(str_detect(ontoMatch, "close")) |>
       pivot_wider(id_cols = c(gazID, year), names_from = names(concept), values_from = all_of(variable), values_fn = mean)
+
+    out <- list(geom = geometry,
+                tab = var,
+                meta = meta)
+
+    return(out)
 
     # plotSteps <- function(x){
     #
-    #   thisVar <- var |>
-    #     filter(year == x)
+    #  thisVar <- var |>
+    #    filter(year == x)
     #
     #   # put it together
-    #   full <- geometry |>
-    #     filter(geoID %in% temp_inv_tables$geoID) |>
-    #     left_join(meta, by = c("gazID", "geoID")) |>
-    #     left_join(thisVar, by = "gazID")
-    #
+    #  full <- geometry |>
+        # filter(geoID %in% temp_inv_tables$geoID) |>
+        # left_join(meta, by = c("gazID", "geoID")) |>
+        # left_join(thisVar, by = "gazID")
+
     #   thisGeoID <- full |>
     #     as_tibble() |>
     #     distinct(geoID)

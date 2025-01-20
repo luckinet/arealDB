@@ -1,3 +1,9 @@
+# arealDB 0.9.4
+
+- fix example data so that github actions run properly.
+- fix documentation to markdown standard.
+- refine function `adb_querry()`.
+
 # arealDB 0.9.3
 
 - smaller fixes

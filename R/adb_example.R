@@ -1,15 +1,16 @@
 #' Build an example areal database
 #'
 #' This function helps setting up an example database up until a certain step.
-#' @param path [\code{character(1)}]\cr The database gets created by default in
-#'   tempdir(), but if you want it in a particular location, specify that in
-#'   this argument.
-#' @param until [\code{character(1)}]\cr The database building step in terms of
-#'   the function names until which the example database shall be built, one of
-#'   \code{"start_arealDB"}, \code{"regDataseries"}, \code{"regGeometry"},
-#'   \code{"regTable"}, \code{"normGeometry"} or \code{"normTable"}.
-#' @param verbose [\code{logical(1)}]\cr be verbose about building the example
-#'   database (default \code{FALSE}).
+#' @param path [`character(1)`][character]\cr The database gets created by
+#'   default in tempdir(), but if you want it in a particular location, specify
+#'   that in this argument.
+#' @param until [`character(1)`][character]\cr The database building step in
+#'   terms of the function names until which the example database shall be
+#'   built, one of \code{"start_arealDB"}, \code{"regDataseries"},
+#'   \code{"regGeometry"}, \code{"regTable"}, \code{"normGeometry"} or
+#'   \code{"normTable"}.
+#' @param verbose [`logical(1)`][logical]\cr be verbose about building the
+#'   example database (default \code{FALSE}).
 #' @details Setting up a database with an R-based tool can appear to be
 #'   cumbersome and too complex and thus intimidating. By creating an example
 #'   database, this functions allows interested users to learn step by step how
@@ -62,7 +63,7 @@ adb_example <- function(path = NULL, until = NULL, verbose = FALSE){
   if (any(theSteps %in% "adb_init")) {
     adb_init(root = path,
              version = "some0.0.1", licence = "https://creativecommons.org/licenses/by-sa/4.0/",
-             author = "Steffen Ehrmann",
+             author = "Gordon Freeman",
              gazetteer = gazPath, top = "al1",
              ontology = ontoPath)
   }

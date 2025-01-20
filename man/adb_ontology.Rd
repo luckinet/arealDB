@@ -11,13 +11,13 @@ adb_ontology(..., type = "ontology")
 that column by to build a tree of the concepts nested into it; see
 \code{\link[ontologics]{make_tree}}.}
 
-\item{type}{[\code{character(1)}]\cr the type of ontology to load,
+\item{type}{\code{\link[=character]{character(1)}}\cr the type of ontology to load,
 either \code{"ontology"} to get the thematic concepts, or
 \code{"gazetteer"} to get the territories.}
 }
 \value{
 returns a tidy table of an ontology or gazetteer that is used in an
-  areal database.
+areal database.
 }
 \description{
 Load the currently active ontology

@@ -1,27 +1,32 @@
 #' Normalise geometries
 #'
 #' Harmonise and integrate geometries into a standardised format
-#' @param input [\code{character(1)}]\cr path of the file to normalise. If this
-#'   is left empty, all files at stage two as subset by \code{pattern} are
+#' @param input [`character(1)`][character]\cr path of the file to normalise. If
+#'   this is left empty, all files at stage two as subset by \code{pattern} are
 #'   chosen.
-#' @param thresh [\code{integerish(1)}]\cr
-#' @param pattern [\code{character(1)}]\cr an optional regular expression. Only
-#'   dataset names which match the regular expression will be processed.
-#' @param query [\code{character(1)}]\cr part of the SQL query (starting from
+#' @param thresh [`integerish(1)`][integer]\cr percent value of overlap below
+#'   which two geometries (the input and the base) are considered to be the
+#'   same. This is required, because often the polygons from different sources,
+#'   albeit describing the same territorial unit, aren't completely the same.
+#' @param pattern [`character(1)`][character]\cr an optional regular expression.
+#'   Only dataset names which match the regular expression will be processed.
+#' @param query [`character(1)`][character]\cr part of the SQL query (starting
+#'   from
 #'   WHERE) used to subset the input geometries, for example \code{"where NAME_0
 #'   = 'Estonia'"}. The first part of the query (where the layer is defined) is
 #'   derived from the meta-data of the currently handled geometry.
-#' @param beep [\code{integerish(1)}]\cr Number specifying what sound to be
+#' @param beep [`integerish(1)`][integer]\cr Number specifying what sound to be
 #'   played to signal the user that a point of interaction is reached by the
 #'   program, see \code{\link[beepr]{beep}}.
-#' @param simplify [\code{logical(1)}]\cr whether or not to simplify geometries.
+#' @param simplify [`logical(1)`][logical]\cr whether or not to simplify
+#'   geometries.
 #' @param stringdist [`logical(1)`][logical]\cr whether or not to use string
 #'   distance to find matches (should not be used for large datasets/when a
 #'   memory error is shown).
 #' @param strictMatch [`logical(1)`][logical]\cr whether or not matches are
 #'   strict, i.e., there should be clear one-to-one relationships and no changes
 #'   in broader concepts.
-#' @param verbose [\code{logical(1)}]\cr be verbose about what is happening
+#' @param verbose [`logical(1)`][logical]\cr be verbose about what is happening
 #'   (default \code{FALSE}). Furthermore, you can use
 #'   \code{\link{suppressMessages}} to make this function completely silent.
 #' @details To normalise geometries, this function proceeds as follows:
@@ -102,8 +107,6 @@
 normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10,
                          beep = NULL, simplify = FALSE, stringdist = TRUE,
                          strictMatch = FALSE, verbose = FALSE){
-
-  # input = NULL; pattern = NULL; query = NULL; thresh = 10; beep = NULL; simplify = FALSE; stringdist = TRUE; verbose = FALSE; i = 1; library(tidyverse); library(sf); library(stringr); library(progress)
 
   # set internal paths
   intPaths <- paste0(getOption(x = "adb_path"))
@@ -271,14 +274,14 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
     }
 
     # construct the harmonised names and ID
-    harmonised_geom <- matchOntology(table = input_geom,
-                                     columns = tempCols,
-                                     dataseries = dName,
-                                     ontology = gazPath,
-                                     stringdist = stringdist,
-                                     strictMatch = strictMatch,
-                                     verbose = verbose,
-                                     beep = beep) %>%
+    harmonised_geom <- .matchOntology(table = input_geom,
+                                      columns = tempCols,
+                                      dataseries = dName,
+                                      ontology = gazPath,
+                                      stringdist = stringdist,
+                                      strictMatch = strictMatch,
+                                      verbose = verbose,
+                                      beep = beep) %>%
       mutate(unitCol := !!sym(topClass))
 
     if(spatMatch){
@@ -601,10 +604,10 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
           if(unique(output_geom$gazClass) != topClass){
 
             message("    -> Updating ontology")
-            updateOntology(table = output_geom %>% select(-geom),
-                           threshold = thresh,
-                           dataseries = dName,
-                           ontology = gazPath)
+            .updateOntology(table = output_geom %>% select(-geom),
+                            threshold = thresh,
+                            dataseries = dName,
+                            ontology = gazPath)
 
           }
 
@@ -671,10 +674,10 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
               arrange(gazID)
 
             message("    -> Updating ontology")
-            updateOntology(table = new_geom %>% st_drop_geometry() %>% select(-geom),
-                           threshold = thresh,
-                           dataseries = dName,
-                           ontology = gazPath)
+            .updateOntology(table = new_geom %>% st_drop_geometry() %>% select(-geom),
+                            threshold = thresh,
+                            dataseries = dName,
+                            ontology = gazPath)
 
             message("    Creating new basis dataset for class ", tail(targetClass$label, 1), ".")
             output_geom <- suppressMessages(

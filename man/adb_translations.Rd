@@ -7,11 +7,11 @@
 adb_translations(type = NULL, dataseries = NULL)
 }
 \arguments{
-\item{type}{[\code{character(1)}]\cr the type of ontology for which to load
-translation tables, either \code{"ontology"} to get the thematic concepts,
-or \code{"gazetteer"} to get the territories.}
+\item{type}{\code{\link[=character]{character(1)}}\cr the type of ontology for which to
+load translation tables, either \code{"ontology"} to get the thematic
+concepts, or \code{"gazetteer"} to get the territories.}
 
-\item{dataseries}{[\code{character(1)}]\cr the name of a dataseries as
+\item{dataseries}{\code{\link[=character]{character(1)}}\cr the name of a dataseries as
 registered in \code{\link{regDataseries}}.}
 }
 \value{

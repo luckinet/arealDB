@@ -1,21 +1,21 @@
 #' Normalise data tables
 #'
 #' Harmonise and integrate data tables into standardised format
-#' @param input [\code{character(1)}]\cr path of the file to normalise. If this
-#'   is left empty, all files at stage two as subset by \code{pattern} are
+#' @param input [`character(1)`][character]\cr path of the file to normalise. If
+#'   this is left empty, all files at stage two as subset by \code{pattern} are
 #'   chosen.
-#' @param pattern [\code{character(1)}]\cr an optional regular expression. Only
-#'   dataset names which match the regular expression will be processed.
-#' @param query [\code{character(1)}]\cr the expression that would be used in
-#'   \code{\link[dplyr]{filter}} to subset a tibble in terms of the columns
+#' @param pattern [`character(1)`][character]\cr an optional regular expression.
+#'   Only dataset names which match the regular expression will be processed.
+#' @param query [`character(1)`][character]\cr the expression that would be used
+#'   in \code{\link[dplyr]{filter}} to subset a tibble in terms of the columns
 #'   defined via the schema and given as a single character string, such as
 #'   \code{"al1 == 'Estonia'"}.
-#' @param ontoMatch [\code{character(.)}]\cr name of the column(s) that shall be
-#'   matched with an ontology (defined in \code{\link{adb_init}}).
-#' @param beep [\code{integerish(1)}]\cr Number specifying what sound to be
+#' @param ontoMatch [`character(.)`][character]\cr name of the column(s) that
+#'   shall be matched with an ontology (defined in \code{\link{adb_init}}).
+#' @param beep [`integerish(1)`][integer]\cr Number specifying what sound to be
 #'   played to signal the user that a point of interaction is reached by the
 #'   program, see \code{\link[beepr]{beep}}.
-#' @param verbose [\code{logical(1)}]\cr be verbose about translating terms
+#' @param verbose [`logical(1)`][logical]\cr be verbose about translating terms
 #'   (default \code{FALSE}). Furthermore, you can use
 #'   \code{\link{suppressMessages}} to make this function completely silent.
 #' @details To normalise data tables, this function proceeds as follows:
@@ -59,8 +59,6 @@
 
 normTable <- function(input = NULL, pattern = NULL, query = NULL, ontoMatch = NULL,
                       beep = NULL, verbose = FALSE){
-
-  # input = NULL; pattern = NULL; query = NULL; ontoMatch = NULL; beep = NULL; verbose = FALSE; i <- 1; colsAsClass = TRUE; groupMatches = FALSE
 
   # set internal paths
   intPaths <- getOption(x = "adb_path")
@@ -166,12 +164,12 @@ normTable <- function(input = NULL, pattern = NULL, query = NULL, ontoMatch = NU
       targetCols <- c(topClass, targetCols)
     }
 
-    thatTable <- matchOntology(table = thisTable,
-                               columns = targetCols,
-                               dataseries = dSeries,
-                               ontology = gazPath,
-                               verbose = verbose,
-                               beep = beep) %>%
+    thatTable <- .matchOntology(table = thisTable,
+                                columns = targetCols,
+                                dataseries = dSeries,
+                                ontology = gazPath,
+                                verbose = verbose,
+                                beep = beep) %>%
       unite(col = "gazMatch", match, external, sep = "--", na.rm = TRUE) %>%
       rename(gazID = id) %>%
       select(-has_broader, -class, -description) %>%
@@ -181,12 +179,12 @@ normTable <- function(input = NULL, pattern = NULL, query = NULL, ontoMatch = NU
       message("    harmonizing thematic concepts ...")
       assertNames(x = ontoMatch, subset.of = names(thatTable))
       ontoPath <- getOption(x = "ontology_path")[[ontoMatch]]
-      thatTable <- matchOntology(table = thatTable,
-                                 columns = ontoMatch,
-                                 dataseries = dSeries,
-                                 ontology = ontoPath,
-                                 verbose = verbose,
-                                 beep = beep) %>%
+      thatTable <- .matchOntology(table = thatTable,
+                                  columns = ontoMatch,
+                                  dataseries = dSeries,
+                                  ontology = ontoPath,
+                                  verbose = verbose,
+                                  beep = beep) %>%
         unite(col = "ontoMatch", match, external, sep = "--", na.rm = TRUE) %>%
         rename(ontoID = id) %>%
         select(-has_broader, -class, -description)

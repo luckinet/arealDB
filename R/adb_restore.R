@@ -1,8 +1,8 @@
 #' Restore the database from a backup
 #'
-#' @param version [\code{character(1)}]\cr a version tag for which to
+#' @param version [`character(1)][character]\cr a version tag for which to
 #'   restore files.
-#' @param date [\code{character(1)}]\cr a date for which to restore files.
+#' @param date [`character(1)`][character]\cr a date for which to restore files.
 #' @details This function searches for files that have the version and date tag,
 #'   as it was defined in a previous run of \code{\link{adb_backup}}, to restore
 #'   them to their original folders. This function overwrites by default, so use

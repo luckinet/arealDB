@@ -2,24 +2,25 @@
 #'
 #' Initiate a geospatial database or register a database that exists at the root
 #' path.
-#' @param root [\code{character(1)}]\cr path to the root directory that contains
-#'   or shall contain an areal database.
-#' @param version [\code{character(1)}]\cr version identifier for this areal
+#' @param root [`character(1)`][character]\cr path to the root directory that
+#'   contains or shall contain an areal database.
+#' @param version [`character(1)`][character]\cr version identifier for this
+#'   areal database.
+#' @param author [`character(1)`][character]\cr authors that contributed to
+#'   building this areal database. Should be a list with items \code{"cre"}
+#'   (creator), \code{"aut"} (authors) and \code{"ctb"} (contributors).
+#' @param licence [`character(1)`][character]\cr licence (link) for this areal
 #'   database.
-#' @param author [\code{character(1)}]\cr authors that contributed to building
-#'   this areal database. Should be a list with items \code{"cre"} (creator),
-#'   \code{"aut"} (authors) and \code{"ctb"} (contributors).
-#' @param licence [\code{character(1)}]\cr licence (link) for this areal
+#' @param gazetteer [`character(1)`][character]\cr path to the gazetteer that
+#'   holds the (hierarchical) information of territorial units used in this
 #'   database.
-#' @param gazetteer [\code{character(1)}]\cr path to the gazetteer that holds
-#'   the (hierarchical) information of territorial units used in this database.
-#' @param top [\code{character(1)}]\cr the label of the class in the gazetteer
-#'   that represents the top-most unit (e.g. country) of the areal database that
-#'   shall be started.
-#' @param staged [\code{logical(1)}]\cr whether or not the file structure is
+#' @param top [`character(1)`][character]\cr the label of the class in the
+#'   gazetteer that represents the top-most unit (e.g. country) of the areal
+#'   database that shall be started.
+#' @param staged [`logical(1)`][logical]\cr whether or not the file structure is
 #'   arranged according to stages (with geometries and tables separated), or
 #'   merely as input/output (of all types).
-#' @param ontology [\code{list(.)}]\cr named list with the path(s) of
+#' @param ontology [`list(.)`][list]\cr named list with the path(s) of
 #'   ontologies, where the list name identifies the variable that shall be
 #'   matched with the ontology at the path.
 #' @details This is the first function that is run in a project, as it initiates
@@ -184,8 +185,8 @@ adb_init <- function(root, version, author, licence, ontology,
 
     if(!testing){
       references <- citation("arealDB")
-      names(references) <- "ehrmann2024"
-      references$key <- "ehrmann2024"
+      names(references) <- paste0("ehrmann", format(Sys.Date(), "%Y"))
+      references$key <- paste0("ehrmann", format(Sys.Date(), "%Y"))
     } else {
       references <- citation(package = "checkmate")
     }

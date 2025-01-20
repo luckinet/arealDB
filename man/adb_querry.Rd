@@ -13,9 +13,9 @@ adb_querry(
 )
 }
 \arguments{
-\item{territory}{combination of column name in the ontology and value to
-filter that column by to build a tree of the territories nested into it;
-see \code{\link[ontologics]{make_tree}}.}
+\item{territory}{\link[=character]{`character(.)}\cr combination of column name in
+the ontology and value to filter that column by to build a tree of the
+territories nested into it.}
 
 \item{concept}{description}
 
@@ -30,4 +30,13 @@ returns ...
 }
 \description{
 Extract database contents
+}
+\examples{
+if(dev.interactive()){
+adb_example(path = paste0(tempdir(), "/newDB"))
+
+adb_querry(territory = list(al1 = "a_nation"),
+           concept = list(commodity = "barley"),
+           variable = "harvested")
+}
 }

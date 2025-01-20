@@ -18,11 +18,13 @@ reference:
     contents:
       - adb_archive
       - adb_backup
+      - adb_diagnose
       - adb_example
       - adb_init
       - adb_inventory
       - adb_metadata
       - adb_ontology
+      - adb_querry
       - adb_reset
       - adb_restore
       - adb_schemas
@@ -40,12 +42,10 @@ reference:
       - normTable
   - title: helpers
     contents:
-      - delayedRead
-      - edit_matches
-      - getColTypes
-      - matchOntology
-      - testCompressed
-      - updateOntology
+      - .editMatches
+      - .getColTypes
+      - .matchOntology
+      - .updateOntology
   - title: data
     contents:
       - territories
