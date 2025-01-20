@@ -19,9 +19,9 @@
 #'   are valid.
 #' @param end [`integerish(1)`][integer]\cr the date until which the data are
 #'   valid.
-#' @param schema [`schema`][schema]\cr the schema description of the table to
-#'   read in (must have been placed in the global environment before calling it
-#'   here).
+#' @param schema [`schema`][tabshiftr::schema]\cr the schema description of the
+#'   table to read in (must have been placed in the global environment before
+#'   calling it here).
 #' @param archive [`character(1)`][character]\cr the original file from which
 #'   the boundaries emerge.
 #' @param archiveLink [`character(1)`][character]\cr download-link of the

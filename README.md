@@ -47,10 +47,8 @@ or the latest development version from github:
 devtools::install_github("luckinet/arealDB")
 ```
 
-2)  Read the
-    [paper](https://www.sciencedirect.com/science/article/abs/pii/S1364815220307751)
-    for a more scientific background, or study the vignette on [the
-    arealDB
+2)  Read the [paper](https://doi.org/10.1016/j.envsoft.2020.104799) for
+    a more scientific background, or study the vignette on [the arealDB
     pipeline](https://luckinet.github.io/arealDB/articles/arealDB.html).
 
 ## Getting started

@@ -38,7 +38,7 @@
 #'   concepts
 #' @param dataseries [`character(1)`][character]\cr the source dataseries from
 #'   which territories are sourced.
-#' @param ontology [`onto`][onto]\cr path where the ontology/gazetteer is stored.
+#' @param ontology [`onto`][ontologics::onto]\cr path where the ontology/gazetteer is stored.
 #' @param beep [`integerish(1)`][integer]\cr Number specifying what sound to be
 #'   played to signal the user that a point of interaction is reached by the
 #'   program, see \code{\link[beepr]{beep}}.
@@ -880,7 +880,8 @@
 #'   matches are updated in the gazetteer.
 #' @param dataseries [`character(1)`][character]\cr the source dataseries of the
 #'   external concepts for which the gazetteer shall be updated.
-#' @param ontology [onto][onto]\cr path where the ontology/gazetteer is stored.
+#' @param ontology [onto][ontologics::onto]\cr path where the ontology/gazetteer
+#'   is stored.
 #' @return called for its side-effect of updating a gazetteer
 #' @importFrom checkmate assertNumeric assertCharacter
 #' @importFrom sf st_drop_geometry

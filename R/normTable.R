@@ -21,7 +21,7 @@
 #' @details To normalise data tables, this function proceeds as follows:
 #'   \enumerate{ \item Read in \code{input} and extract initial metadata from
 #'   the file name. \item Employ the function
-#'   \code{tabshiftr::\link{reorganise}} to reshape \code{input} according to
+#'   [tabshiftr::reorganise()] to reshape \code{input} according to
 #'   the respective schema description. \item The territorial names are matched
 #'   with the gazetteer to harmonise new territorial names (at this step, the
 #'   function might ask the user to edit the file 'matching.csv' to align new
