@@ -228,7 +228,7 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
     if(!is.null(query)){
       moveFile <- FALSE
       input_geom <- read_sf(dsn = thisInput,
-                            query = paste0("select * from ", gLayer, " ", query),
+                            query = query,
                             stringsAsFactors = FALSE)
     } else {
       input_geom <- read_sf(dsn = thisInput,

@@ -1,3 +1,7 @@
+# arealDB 0.9.5
+
+- fix `query = ...` in `normGeometry()` to allow full customization.
+
 # arealDB 0.9.4
 
 - fix example data so that github actions run properly.
