@@ -12,8 +12,8 @@
 #'   Only dataset names which match the regular expression will be processed.
 #' @param query [`character(1)`][character]\cr part of the SQL query (starting
 #'   from
-#'   WHERE) used to subset the input geometries, for example \code{"where NAME_0
-#'   = 'Estonia'"}. The first part of the query (where the layer is defined) is
+#'   WHERE) used to subset the input geometries, for example \code{"WHERE NAME_0
+#'   IN ('Estonia')"}. The first part of the query (where the layer is defined) is
 #'   derived from the meta-data of the currently handled geometry.
 #' @param beep [`integerish(1)`][integer]\cr Number specifying what sound to be
 #'   played to signal the user that a point of interaction is reached by the
@@ -228,7 +228,7 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
     if(!is.null(query)){
       moveFile <- FALSE
       input_geom <- read_sf(dsn = thisInput,
-                            query = query,
+                            query = paste0("SELECT * FROM ", gLayer, " ", query),
                             stringsAsFactors = FALSE)
     } else {
       input_geom <- read_sf(dsn = thisInput,
