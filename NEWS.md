@@ -1,6 +1,7 @@
 # arealDB 0.9.5
 
-- fix `query = ...` in `normGeometry()` to allow full customization.
+- fix `query = ...` in `normGeometry()` to allow full customization. <-> has been reverted as it makes sense to select layers automatically. -> improving documentation.
+- change `.matchOntology()` so that it's possible to match "gappy" hierarchies.
 
 # arealDB 0.9.4
 

@@ -26,8 +26,8 @@ Only dataset names which match the regular expression will be processed.}
 
 \item{query}{\code{\link[=character]{character(1)}}\cr part of the SQL query (starting
 from
-WHERE) used to subset the input geometries, for example \code{"where NAME_0
-  = 'Estonia'"}. The first part of the query (where the layer is defined) is
+WHERE) used to subset the input geometries, for example \code{"WHERE NAME_0
+  IN ('Estonia')"}. The first part of the query (where the layer is defined) is
 derived from the meta-data of the currently handled geometry.}
 
 \item{thresh}{\code{\link[=integer]{integerish(1)}}\cr percent value of overlap below
