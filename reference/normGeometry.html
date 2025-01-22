@@ -93,8 +93,8 @@ Only dataset names which match the regular expression will be processed.</p></dd
 <dt id="arg-query">query<a class="anchor" aria-label="anchor" href="#arg-query"></a></dt>
 <dd><p><code><a href="https://rdrr.io/r/base/character.html" class="external-link">character(1)</a></code><br> part of the SQL query (starting
 from
-WHERE) used to subset the input geometries, for example <code>"where NAME_0
-  = 'Estonia'"</code>. The first part of the query (where the layer is defined) is
+WHERE) used to subset the input geometries, for example <code>"WHERE NAME_0
+  IN ('Estonia')"</code>. The first part of the query (where the layer is defined) is
 derived from the meta-data of the currently handled geometry.</p></dd>
 
 
