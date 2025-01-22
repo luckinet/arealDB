@@ -85,6 +85,8 @@
   assertLogical(x = colsAsClass, len = 1, any.missing = FALSE)
   assertLogical(x = groupMatches, len = 1, any.missing = FALSE)
   assertLogical(x = verbose, len = 1, any.missing = FALSE)
+  assertLogical(x = stringdist, len = 1, any.missing = FALSE)
+  assertLogical(x = strictMatch, len = 1, any.missing = FALSE)
 
   # set internal paths
   ontoPath <- ontology
@@ -122,7 +124,7 @@
       fixParent <- c(fixParent, allCols[i])
     }
     table <- table %>%
-      mutate(!!allCols[i] := if_else(is.na(!!sym(allCols[i])), !!sym(allCols[i-1]), !!sym(allCols[i])))
+      mutate(!!allCols[i] := if_else(is.na(!!sym(allCols[i])), "___", !!sym(allCols[i])))
   }
   toOut <- table
 
@@ -272,47 +274,6 @@
 
       }
 
-      # in case concepts were matched in another parent, those parents need to be corrected in 'newConcepts'
-      if(i != 1 & !strictMatch){
-
-        if(!is.null(diffParent)){
-          newMappings <- diffParent |>
-            mutate(external = label) |>
-            bind_rows(newMappings)
-        }
-
-        if(!is.null(newMappings)){
-
-          if(any(is.na(newMappings$has_broader))) stop("NA in 'newMappings' needs a fix")
-
-          parentMappings <- newMappings |>
-            rename(has_new_broader = has_broader) |>
-            left_join(externalConcepts |> select(external = label, has_broader), by = c("external")) |>
-            filter(!is.na(has_broader))
-
-          if(any(parentMappings$has_new_broader != parentMappings$has_broader)){
-            message("-------> new parents when matching <------- ")
-
-            tempTab_broader <- make_tree(id = parentMappings$has_new_broader, ontology = ontoPath, reverse = TRUE) |>
-              filter(class %in% allCols) |>
-              pivot_wider(names_from = class, values_from = label) |>
-              fill(allCols[1:(i-1)]) |>
-              filter(if_any(allCols[i-1], ~ !is.na(.))) |>
-              unite(col = "new_label", any_of(allCols), sep = "][", remove = FALSE) |>
-              select(has_new_broader = id, new_label)
-
-            newConcepts <- parentMappings |>
-              left_join(tempTab_broader, by = "has_new_broader") |>
-              left_join(newConcepts |> select(has_broader = id, any_of(allCols)) |> distinct(), by = "has_broader") |>
-              select(id = has_new_broader, new_label, any_of(allCols)) |>
-              distinct() |>
-              bind_rows(newConcepts)
-
-          }
-
-        }
-      }
-
       # ... and query the ontology again, this should now include the newly created
       # concepts as well (except those that were to be ignored)
       if(i == 1){
@@ -367,6 +328,36 @@
 
       }
 
+      # in case concepts were matched in another parent, those parents need to be corrected in 'newConcepts'
+      if(i != 1 & !strictMatch){
+
+        if(!is.null(diffParent)){
+          newMappings <- diffParent |>
+            mutate(external = label) |>
+            bind_rows(newMappings) |>
+            rename(has_new_broader = has_broader)
+
+          if(any(is.na(newMappings$has_new_broader))) stop("NA in 'newMappings' needs a fix")
+
+          tempTab_broader <- make_tree(id = newMappings$has_new_broader, ontology = ontoPath, reverse = TRUE) |>
+            filter(class %in% allCols) |>
+            pivot_wider(names_from = class, values_from = label) |>
+            fill(allCols[1:(i-1)]) |>
+            filter(if_any(allCols[i-1], ~ !is.na(.))) |>
+            unite(col = "new_label", any_of(allCols[1:(i-1)]), sep = "][", remove = FALSE) |>
+            select(has_new_broader = id, allCols[i-1], new_label) |>
+            mutate(has_broader = str_extract(string = has_new_broader, pattern = paste0("(.[[:digit:]]+){", parentLen-2, "}")))
+
+          newConcepts <- newMappings |>
+            left_join(tempTab_broader, by = "has_new_broader") |>
+            left_join(newConcepts |> select(has_broader, any_of(allCols[1:(i-2)])) |> distinct(), by = "has_broader") |>
+            select(id = has_new_broader, has_broader, new_label, any_of(allCols)) |>
+            distinct() |>
+            bind_rows(newConcepts)
+
+        }
+      }
+
     }
 
     if(i == 1){
@@ -385,8 +376,9 @@
   toOut <- table %>%
     select(-any_of("id")) %>%
     unite(col = "external", all_of(allCols), sep = "][", remove = FALSE) %>%
-    left_join(newConcepts, by = allCols, relationship = "many-to-many") %>%
-    select(-all_of(allCols)) %>%
+    select(-allCols[!allCols %in% columns]) |>
+    left_join(newConcepts, by = columns, relationship = "many-to-many") %>%
+    select(-all_of(columns), -allCols[!allCols %in% columns]) %>%
     separate_wider_delim(cols = new_label, delim = "][", names = allCols)
 
   if(remakeSF){
