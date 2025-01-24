@@ -332,28 +332,32 @@
       if(i != 1 & !strictMatch){
 
         if(!is.null(diffParent)){
-          newMappings <- diffParent |>
-            mutate(external = label) |>
-            bind_rows(newMappings) |>
-            rename(has_new_broader = has_broader)
+          if(dim(diffParent)[1] != 0){
 
-          if(any(is.na(newMappings$has_new_broader))) stop("NA in 'newMappings' needs a fix")
+            newMappings <- diffParent |>
+              mutate(external = label) |>
+              bind_rows(newMappings) |>
+              rename(has_new_broader = has_broader)
 
-          tempTab_broader <- make_tree(id = newMappings$has_new_broader, ontology = ontoPath, reverse = TRUE) |>
-            filter(class %in% allCols) |>
-            pivot_wider(names_from = class, values_from = label) |>
-            fill(allCols[1:(i-1)]) |>
-            filter(if_any(allCols[i-1], ~ !is.na(.))) |>
-            unite(col = "new_label", any_of(allCols[1:(i-1)]), sep = "][", remove = FALSE) |>
-            select(has_new_broader = id, allCols[i-1], new_label) |>
-            mutate(has_broader = str_extract(string = has_new_broader, pattern = paste0("(.[[:digit:]]+){", parentLen-2, "}")))
+            if(any(is.na(newMappings$has_new_broader))) stop("NA in 'newMappings' needs a fix")
 
-          newConcepts <- newMappings |>
-            left_join(tempTab_broader, by = "has_new_broader") |>
-            left_join(newConcepts |> select(has_broader, any_of(allCols[1:(i-2)])) |> distinct(), by = "has_broader") |>
-            select(id = has_new_broader, has_broader, new_label, any_of(allCols)) |>
-            distinct() |>
-            bind_rows(newConcepts)
+            tempTab_broader <- make_tree(id = newMappings$has_new_broader, ontology = ontoPath, reverse = TRUE) |>
+              filter(class %in% allCols) |>
+              pivot_wider(names_from = class, values_from = label) |>
+              fill(allCols[1:(i-1)]) |>
+              filter(if_any(allCols[i-1], ~ !is.na(.))) |>
+              unite(col = "new_label", any_of(allCols[1:(i-1)]), sep = "][", remove = FALSE) |>
+              select(has_new_broader = id, allCols[i-1], new_label) |>
+              mutate(has_broader = str_extract(string = has_new_broader, pattern = paste0("(.[[:digit:]]+){", parentLen-2, "}")))
+
+            newConcepts <- newMappings |>
+              left_join(tempTab_broader, by = "has_new_broader") |>
+              left_join(newConcepts |> select(has_broader, any_of(allCols[1:(i-2)])) |> distinct(), by = "has_broader") |>
+              select(id = has_new_broader, has_broader, new_label, any_of(allCols)) |>
+              distinct() |>
+              bind_rows(newConcepts)
+
+          }
 
         }
       }
