@@ -787,6 +787,7 @@
 
       related <- read_csv(paste0(matchDir, "/matching_", source, ".csv"), col_types = cols(.default = "c"))
       assertNames(x = names(related), must.include = c("sort_in", "has_broader", "id", "label", "class", "description", "has_broader_match", "has_close_match", "has_exact_match", "has_narrower_match"))
+      unlink(x = paste0(matchDir, "/matching_", source, ".csv"))
       toIgnore <- related %>%
         filter(id == "ignore") %>%
         mutate(label = "ignore",
