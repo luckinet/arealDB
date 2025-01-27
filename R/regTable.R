@@ -259,9 +259,18 @@ regTable <- function(..., subset = NULL, dSeries = NULL, gSeries = NULL,
                       .f = function(x){
                         str_split(tail(str_split(x, "\\|")[[1]], 1), "=")[[1]][1]
                       })
-    geomSeries <- inv_geometries$geoID[inv_geometries$datID %in% tempDatID & tempLabels == label]
-    if(length(geomSeries) < 1){
+    geomSeries <- inv_geometries[inv_geometries$datID %in% tempDatID & tempLabels == label,]
+
+    if(length(geomSeries$geoID) < 1){
       stop(paste0("! please first register geometries of the series '", gSeries,"' via 'regGeometries()' !"))
+    } else if(length(geomSeries$geoID) > 1){
+      if(mainPoly == ""){
+        stop(paste0("! please define a value for the topmost polygon in '...' !"))
+      } else {
+        geomSeries <- geomSeries$geoID[str_detect(geomSeries$stage2_name, unlist(broadest, use.names = F))]
+      }
+    } else {
+      geomSeries <- geomSeries$geoID
     }
   }
 

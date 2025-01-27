@@ -760,13 +760,13 @@
 
       sortIn %>%
         bind_rows(relate) %>%
-        write_csv(file = paste0(matchDir, "/matching.csv"), quote = "all", na = "")
+        write_csv(file = paste0(matchDir, "/matching_", source, ".csv"), quote = "all", na = "")
 
       if(!is.null(beep)){
         beep(sound = beep)
       }
 
-      message("-> please edit the file '", paste0(matchDir, "/matching.csv"), "' (at class ", tail(filterClasses, 1), ") \n")
+      message("-> please edit the file '", paste0(matchDir, "/matching_", source, ".csv"), "' (at class ", tail(filterClasses, 1), ") \n")
       if(verbose){
         message("--- column description ---\n")
         message("sort_in             cut out these values and sort them either into 'has_broader_match', \n                    'has_exact_match', has_narrower_match or 'has_close_match'")
@@ -785,7 +785,7 @@
       }
       done <- readline(" -> press any key when done: ")
 
-      related <- read_csv(paste0(matchDir, "/matching.csv"), col_types = cols(.default = "c"))
+      related <- read_csv(paste0(matchDir, "/matching_", source, ".csv"), col_types = cols(.default = "c"))
       assertNames(x = names(related), must.include = c("sort_in", "has_broader", "id", "label", "class", "description", "has_broader_match", "has_close_match", "has_exact_match", "has_narrower_match"))
       toIgnore <- related %>%
         filter(id == "ignore") %>%
