@@ -148,9 +148,10 @@ normTable <- function(input = NULL, pattern = NULL, query = NULL, ontoMatch = NU
     }
 
     message("    harmonizing territory names ...")
-    targetCols <- get_class(ontology = gazPath) %>%
+    outCols <- get_class(ontology = gazPath) %>%
       pull(label)
-    targetCols <- targetCols[targetCols %in% colnames(thisTable)]
+    targetCols <- outCols[outCols %in% colnames(thisTable)]
+    outCols <- outCols[which(outCols %in% head(targetCols, 1)) : which(outCols %in% tail(targetCols, 1))]
 
     if(targetCols[1] != topClass){
       theUnits <- str_split(string = lut$stage2_name, pattern = "_")[[1]][1]
@@ -195,7 +196,7 @@ normTable <- function(input = NULL, pattern = NULL, query = NULL, ontoMatch = NU
              tabID = tabID,
              geoID = geoID)
 
-    # produce output
+    # derive output
     if(is.null(theUnits)){
       theUnits <- unique(eval(expr = parse(text = targetCols[1]), envir = thatTable)) %>%
         na.omit() %>%
@@ -211,13 +212,16 @@ normTable <- function(input = NULL, pattern = NULL, query = NULL, ontoMatch = NU
         tempOut <- thatTable
       }
       tempOut <- tempOut %>%
-        unite(col = "gazName", all_of(targetCols), sep = ".") %>%
+        unite(col = "gazName", all_of(outCols), sep = ".", na.rm = TRUE) %>%
+        mutate(gazName = if_else(gazName == "", NA, gazName)) %>%
         select(tabID, geoID, gazID, gazName, gazMatch, everything()) %>%
         distinct()
 
       # append output to previous file
-      # avail <- list.files(path = paste0(intPaths, "/tables/stage3/"), pattern = paste0("^", theUnits[j], ".", outType))
-      avail <- list.files(path = paste0(intPaths, "/tables/stage3/"), pattern = paste0("^", theUnits[j], ".rds"))
+      outFile <- theUnits[j] %>%
+        str_replace(pattern = "\\(", replacement = "\\\\(") %>%
+        str_replace(pattern = "\\)", replacement = "\\\\)")
+      avail <- list.files(path = paste0(intPaths, "/tables/stage3/"), pattern = paste0("^", outFile, ".rds"))
 
       if(length(avail) == 1){
 

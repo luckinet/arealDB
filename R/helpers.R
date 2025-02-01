@@ -208,7 +208,7 @@
 
       }
 
-      # if not all external concepts have an ID, edit those that don't have one
+      # if not all external concepts have an ID in the harmonised table, edit those
       toMatch <- externalConcepts %>%
         filter(is.na(id))
       matches <- externalConcepts %>%
@@ -328,7 +328,7 @@
 
       }
 
-      # in case concepts were matched in another parent, those parents need to be corrected in 'newConcepts'
+      # in case concepts were matched in another parent, or have a missing parent, those parents need to be corrected in 'newConcepts'
       if(i != 1 & !strictMatch){
 
         if(!is.null(diffParent)){
