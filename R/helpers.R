@@ -191,6 +191,8 @@
           mutate(class = allCols[i],
                  has_source = srcID)
 
+        isTop <- TRUE
+
       } else {
 
         # first, transform the parents into the column 'has_broader' ...
@@ -205,6 +207,13 @@
           left_join(tempTab |> select(label, has_broader), ., by = c("label", "has_broader")) %>%
           mutate(class = allCols[i],
                  has_source = srcID)
+
+        isTop <- FALSE
+        if(!is.null(fixParent)){
+          if(fixParent == allCols[i-1]){
+            isTop <- TRUE
+          }
+        }
 
       }
 
@@ -236,7 +245,7 @@
       if(dim(toMatch)[1] != 0){
 
         newMatches <- .editMatches(new = toMatch,
-                                   topLevel = if_else(i == 1, TRUE, FALSE),
+                                   topLevel = isTop,
                                    source = dataseries,
                                    ontology = ontology,
                                    matchDir = paste0(ontoMatching, "/"),
