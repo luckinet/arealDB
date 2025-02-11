@@ -69,11 +69,12 @@ harmonised values listed in the project specific gazetteer.</p>
 <span>  columns <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  dataseries <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  ontology <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  beep <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  colsAsClass <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  groupMatches <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  stringdist <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  strictMatch <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  parentClasses <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  beep <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -98,24 +99,20 @@ which territories are sourced.</p></dd>
 
 
 <dt id="arg-ontology">ontology<a class="anchor" aria-label="anchor" href="#arg-ontology"></a></dt>
-<dd><p><code><a href="https://rdrr.io/pkg/ontologics/man/onto-class.html" class="external-link">onto</a></code><br> path where the ontology/gazetteer is stored.</p></dd>
-
-
-<dt id="arg-beep">beep<a class="anchor" aria-label="anchor" href="#arg-beep"></a></dt>
-<dd><p><code><a href="https://rdrr.io/r/base/integer.html" class="external-link">integerish(1)</a></code><br> Number specifying what sound to be
-played to signal the user that a point of interaction is reached by the
-program, see <code><a href="https://rdrr.io/pkg/beepr/man/beep.html" class="external-link">beep</a></code>.</p></dd>
+<dd><p><code><a href="https://rdrr.io/pkg/ontologics/man/onto-class.html" class="external-link">onto</a></code><br> path where the
+ontology/gazetteer is stored.</p></dd>
 
 
 <dt id="arg-colsasclass">colsAsClass<a class="anchor" aria-label="anchor" href="#arg-colsasclass"></a></dt>
-<dd><p><code><a href="https://rdrr.io/r/base/logical.html" class="external-link">logical(1)</a></code><br> whether to match <code>columns</code>
-by their name with the respective classes, or with concepts of all classes.</p></dd>
+<dd><p><code><a href="https://rdrr.io/r/base/logical.html" class="external-link">logical(1)</a></code><br> whether or not to match
+<code>columns</code> by their name with the respective classes, or with concepts
+of all classes.</p></dd>
 
 
 <dt id="arg-groupmatches">groupMatches<a class="anchor" aria-label="anchor" href="#arg-groupmatches"></a></dt>
 <dd><p><code><a href="https://rdrr.io/r/base/logical.html" class="external-link">logical(1)</a></code><br> whether or not to group
-harmonized concepts when there are more than one match (for example for
-broader or narrower matches).</p></dd>
+harmonized concepts (in the output) when there are more than one match (for
+example for broader or narrower matches).</p></dd>
 
 
 <dt id="arg-stringdist">stringdist<a class="anchor" aria-label="anchor" href="#arg-stringdist"></a></dt>
@@ -128,6 +125,17 @@ memory error is shown).</p></dd>
 <dd><p><code><a href="https://rdrr.io/r/base/logical.html" class="external-link">logical(1)</a></code><br> whether or not matches are
 strict, i.e., there should be clear one-to-one relationships and no changes
 in broader concepts.</p></dd>
+
+
+<dt id="arg-parentclasses">parentClasses<a class="anchor" aria-label="anchor" href="#arg-parentclasses"></a></dt>
+<dd><p><code><a href="https://rdrr.io/r/base/logical.html" class="external-link">logical(1)</a></code><br> whether or not to search for
+matches in classes that are hierarchically higher than the target class.</p></dd>
+
+
+<dt id="arg-beep">beep<a class="anchor" aria-label="anchor" href="#arg-beep"></a></dt>
+<dd><p><code><a href="https://rdrr.io/r/base/integer.html" class="external-link">integerish(1)</a></code><br> Number specifying what sound to be
+played to signal the user that a point of interaction is reached by the
+program, see <code><a href="https://rdrr.io/pkg/beepr/man/beep.html" class="external-link">beep</a></code>.</p></dd>
 
 
 <dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>

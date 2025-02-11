@@ -73,8 +73,9 @@ matching table as csv.</p>
 <span>  ontology <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  matchDir <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  stringdist <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  verbose <span class="op">=</span> <span class="cn">TRUE</span>,</span>
-<span>  beep <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  parentClasses <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  beep <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  verbose <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -115,15 +116,20 @@ distance to find matches (should not be used for large datasets/when a
 memory error is shown).</p></dd>
 
 
-<dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
-<dd><p><code><a href="https://rdrr.io/r/base/logical.html" class="external-link">logical(1)</a></code><br> whether or not to give detailed
-information on the process of this function.</p></dd>
+<dt id="arg-parentclasses">parentClasses<a class="anchor" aria-label="anchor" href="#arg-parentclasses"></a></dt>
+<dd><p><code><a href="https://rdrr.io/r/base/logical.html" class="external-link">logical(1)</a></code><br> whether or not to search for
+matches in classes that are hierarchically higher than the target class.</p></dd>
 
 
 <dt id="arg-beep">beep<a class="anchor" aria-label="anchor" href="#arg-beep"></a></dt>
 <dd><p><code><a href="https://rdrr.io/r/base/integer.html" class="external-link">integerish(1)</a></code><br> Number specifying what sound to be
 played to signal the user that a point of interaction is reached by the
 program, see <code><a href="https://rdrr.io/pkg/beepr/man/beep.html" class="external-link">beep</a></code>.</p></dd>
+
+
+<dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
+<dd><p><code><a href="https://rdrr.io/r/base/logical.html" class="external-link">logical(1)</a></code><br> whether or not to give detailed
+information on the process of this function.</p></dd>
 
 </dl></div>
     <div id="value">
