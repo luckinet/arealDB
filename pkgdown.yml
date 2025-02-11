@@ -3,7 +3,7 @@ pkgdown: 2.1.1
 pkgdown_sha: ~
 articles:
   arealDB: arealDB.html
-last_built: 2025-02-11T18:15Z
+last_built: 2025-02-11T21:59Z
 urls:
   reference: http://EhrmannS.github.io/arealDB/reference
   article: http://EhrmannS.github.io/arealDB/articles
