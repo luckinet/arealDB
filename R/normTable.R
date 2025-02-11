@@ -189,8 +189,8 @@ normTable <- function(input = NULL, pattern = NULL, query = NULL, ontoMatch = NU
                                   beep = beep,
                                   verbose = verbose) %>%
         unite(col = "ontoMatch", match, external, sep = "--", na.rm = TRUE) %>%
-        rename(ontoID = id, ontoClass = class) %>%
-        select(-has_broader, -description)
+        rename(ontoID = id, ontoName = all_of(ontoMatch), ontoClass = class) %>%
+        select(ontoID, ontoID, ontoName, ontoMatch, ontoClass, everything(), -has_broader, -description)
     }
 
     thatTable <- thatTable %>%
@@ -216,7 +216,7 @@ normTable <- function(input = NULL, pattern = NULL, query = NULL, ontoMatch = NU
       tempOut <- tempOut %>%
         unite(col = "gazName", all_of(outCols), sep = ".", na.rm = TRUE) %>%
         mutate(gazName = if_else(gazName == "", NA, gazName)) %>%
-        select(tabID, geoID, gazID, gazName, gazMatch, everything()) %>%
+        select(tabID, geoID, gazID, gazName, gazMatch, gazClass, everything()) %>%
         distinct()
 
       # append output to previous file
