@@ -216,7 +216,7 @@ normTable <- function(input = NULL, pattern = NULL, query = NULL, ontoMatch = NU
       tempOut <- tempOut %>%
         unite(col = "gazName", all_of(outCols), sep = ".", na.rm = TRUE) %>%
         mutate(gazName = if_else(gazName == "", NA, gazName)) %>%
-        select(tabID, geoID, gazID, gazName, gazMatch, everything()) %>%
+        select(tabID, geoID, gazID, gazName, gazMatch, gazClass, everything()) %>%
         distinct()
 
       # append output to previous file
