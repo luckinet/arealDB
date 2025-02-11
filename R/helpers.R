@@ -38,21 +38,25 @@
 #'   concepts
 #' @param dataseries [`character(1)`][character]\cr the source dataseries from
 #'   which territories are sourced.
-#' @param ontology [`onto`][ontologics::onto]\cr path where the ontology/gazetteer is stored.
+#' @param ontology [`onto`][ontologics::onto]\cr path where the
+#'   ontology/gazetteer is stored.
 #' @param beep [`integerish(1)`][integer]\cr Number specifying what sound to be
 #'   played to signal the user that a point of interaction is reached by the
 #'   program, see \code{\link[beepr]{beep}}.
-#' @param colsAsClass [`logical(1)`][logical]\cr whether to match \code{columns}
-#'   by their name with the respective classes, or with concepts of all classes.
+#' @param colsAsClass [`logical(1)`][logical]\cr whether or not to match
+#'   \code{columns} by their name with the respective classes, or with concepts
+#'   of all classes.
 #' @param groupMatches [`logical(1)`][logical]\cr whether or not to group
-#'   harmonized concepts when there are more than one match (for example for
-#'   broader or narrower matches).
+#'   harmonized concepts (in the output) when there are more than one match (for
+#'   example for broader or narrower matches).
 #' @param stringdist [`logical(1)`][logical]\cr whether or not to use string
 #'   distance to find matches (should not be used for large datasets/when a
 #'   memory error is shown).
 #' @param strictMatch [`logical(1)`][logical]\cr whether or not matches are
 #'   strict, i.e., there should be clear one-to-one relationships and no changes
 #'   in broader concepts.
+#' @param parentClasses [`logical(1)`][logical]\cr whether or not to search for
+#'   matches in classes that are hierarchically higher than the target class.
 #' @param verbose [`logical(1)`][logical]\cr whether or not to give detailed
 #'   information on the process of this function.
 #' @return Returns a table that resembles the input table where the target
@@ -74,9 +78,10 @@
 #' @export
 
 .matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
-                           ontology = NULL, beep = NULL, colsAsClass = TRUE,
-                           groupMatches = FALSE, stringdist = TRUE, strictMatch = FALSE,
-                           verbose = FALSE){
+                           ontology = NULL, colsAsClass = TRUE,
+                           groupMatches = FALSE, stringdist = TRUE,
+                           strictMatch = FALSE, parentClasses = FALSE,
+                           beep = NULL, verbose = FALSE){
 
   assertDataFrame(x = table, min.cols = length(columns))
   assertCharacter(x = columns, any.missing = FALSE)
@@ -250,6 +255,7 @@
                                    ontology = ontology,
                                    matchDir = paste0(ontoMatching, "/"),
                                    stringdist = stringdist,
+                                   parentClasses = parentClasses,
                                    verbose = verbose,
                                    beep = beep)
 
@@ -434,11 +440,13 @@
 #' @param stringdist [`logical(1)`][logical]\cr whether or not to use string
 #'   distance to find matches (should not be used for large datasets/when a
 #'   memory error is shown).
-#' @param verbose [`logical(1)`][logical]\cr whether or not to give detailed
-#'   information on the process of this function.
+#' @param parentClasses [`logical(1)`][logical]\cr whether or not to search for
+#'   matches in classes that are hierarchically higher than the target class.
 #' @param beep [`integerish(1)`][integer]\cr Number specifying what sound to be
 #'   played to signal the user that a point of interaction is reached by the
 #'   program, see \code{\link[beepr]{beep}}.
+#' @param verbose [`logical(1)`][logical]\cr whether or not to give detailed
+#'   information on the process of this function.
 #' @details In order to match new concepts into an already existing ontology, it
 #'   may become necessary to carry out manual matches of the new concepts with
 #'   already harmonised concepts, for example, when the new concepts are
@@ -471,8 +479,8 @@
 #' @export
 
 .editMatches <- function(new, topLevel, source = NULL, ontology = NULL,
-                         matchDir = NULL, stringdist = TRUE, verbose = TRUE,
-                         beep = NULL){
+                         matchDir = NULL, stringdist = TRUE,
+                         parentClasses = FALSE, beep = NULL, verbose = TRUE){
 
   assertDataFrame(x = new)
   assertNames(x = names(new), must.include = c("label", "class", "has_broader"))
@@ -597,7 +605,19 @@
   # matching table and matches that may already be in the ontology) and join
   # with new concepts
   dsConcepts <- dsMatchesLong %>%
-    full_join(new |> select(all_of(joinCols)), by = joinCols) %>%
+    full_join(new |> select(all_of(joinCols)), by = joinCols)
+
+  if(parentClasses){
+    # identify entries that come in as target class, but have a match at another class and remove them
+    dsConcepts <- dsConcepts %>%
+      group_by(label) %>%
+      mutate(n = n()) |>
+      mutate(keep = if_else(n != 1, if_else(is.na(id) & !is.na(class), FALSE, TRUE), TRUE)) |>
+      filter(keep) |>
+      select(-n, -keep)
+  }
+
+  dsConcepts <- dsConcepts %>%
     mutate(harmLab = if_else(is.na(harmLab), label, harmLab),
            label = if_else(is.na(match), if_else(!is.na(id), label, NA_character_), label),
            match = if_else(is.na(match), if_else(!is.na(id), "has_close_match", "sort_in"), match)) %>%
@@ -845,16 +865,20 @@
 
     saveRDS(object = matchingTable, file = paste0(matchDir, sourceFile))
 
-    # only return objects that fall within those broader concepts that are in
-    # the final matching table at the current class
-    new_parentFilter <- matchingTable |>
-      filter(class == tail(filterClasses, 1)) |>
-      distinct(has_broader) |>
-      pull(has_broader)
+    if(!parentClasses){
 
-    if(!all(is.na(new_parentFilter))){
-      related <- related %>%
-        filter(has_broader %in% new_parentFilter)
+      # only return objects that fall within those broader concepts that are in
+      # the final matching table at the current class
+      new_parentFilter <- matchingTable |>
+        filter(class == tail(filterClasses, 1)) |>
+        distinct(has_broader) |>
+        pull(has_broader)
+
+      if(!all(is.na(new_parentFilter))){
+        related <- related %>%
+          filter(has_broader %in% new_parentFilter)
+      }
+
     }
 
     newGrep <- str_replace_all(new$label, c("\\(" = "\\\\(", "\\)" = "\\\\)", "\\*" = "\\\\*",

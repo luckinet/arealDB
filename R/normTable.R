@@ -184,8 +184,9 @@ normTable <- function(input = NULL, pattern = NULL, query = NULL, ontoMatch = NU
                                   columns = ontoMatch,
                                   dataseries = dSeries,
                                   ontology = ontoPath,
-                                  verbose = verbose,
-                                  beep = beep) %>%
+                                  parentClasses = TRUE,
+                                  beep = beep,
+                                  verbose = verbose) %>%
         unite(col = "ontoMatch", match, external, sep = "--", na.rm = TRUE) %>%
         rename(ontoID = id) %>%
         select(-has_broader, -class, -description)

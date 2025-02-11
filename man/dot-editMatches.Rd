@@ -11,8 +11,9 @@
   ontology = NULL,
   matchDir = NULL,
   stringdist = TRUE,
-  verbose = TRUE,
-  beep = NULL
+  parentClasses = FALSE,
+  beep = NULL,
+  verbose = TRUE
 )
 }
 \arguments{
@@ -37,12 +38,15 @@ source-specific matching tables.}
 distance to find matches (should not be used for large datasets/when a
 memory error is shown).}
 
-\item{verbose}{\code{\link[=logical]{logical(1)}}\cr whether or not to give detailed
-information on the process of this function.}
+\item{parentClasses}{\code{\link[=logical]{logical(1)}}\cr whether or not to search for
+matches in classes that are hierarchically higher than the target class.}
 
 \item{beep}{\code{\link[=integer]{integerish(1)}}\cr Number specifying what sound to be
 played to signal the user that a point of interaction is reached by the
 program, see \code{\link[beepr]{beep}}.}
+
+\item{verbose}{\code{\link[=logical]{logical(1)}}\cr whether or not to give detailed
+information on the process of this function.}
 }
 \value{
 A table that contains all new matches, or if none of the new concepts

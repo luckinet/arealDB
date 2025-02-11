@@ -9,11 +9,12 @@
   columns = NULL,
   dataseries = NULL,
   ontology = NULL,
-  beep = NULL,
   colsAsClass = TRUE,
   groupMatches = FALSE,
   stringdist = TRUE,
   strictMatch = FALSE,
+  parentClasses = FALSE,
+  beep = NULL,
   verbose = FALSE
 )
 }
@@ -27,18 +28,16 @@ concepts}
 \item{dataseries}{\code{\link[=character]{character(1)}}\cr the source dataseries from
 which territories are sourced.}
 
-\item{ontology}{\code{\link[ontologics:onto-class]{onto}}\cr path where the ontology/gazetteer is stored.}
+\item{ontology}{\code{\link[ontologics:onto-class]{onto}}\cr path where the
+ontology/gazetteer is stored.}
 
-\item{beep}{\code{\link[=integer]{integerish(1)}}\cr Number specifying what sound to be
-played to signal the user that a point of interaction is reached by the
-program, see \code{\link[beepr]{beep}}.}
-
-\item{colsAsClass}{\code{\link[=logical]{logical(1)}}\cr whether to match \code{columns}
-by their name with the respective classes, or with concepts of all classes.}
+\item{colsAsClass}{\code{\link[=logical]{logical(1)}}\cr whether or not to match
+\code{columns} by their name with the respective classes, or with concepts
+of all classes.}
 
 \item{groupMatches}{\code{\link[=logical]{logical(1)}}\cr whether or not to group
-harmonized concepts when there are more than one match (for example for
-broader or narrower matches).}
+harmonized concepts (in the output) when there are more than one match (for
+example for broader or narrower matches).}
 
 \item{stringdist}{\code{\link[=logical]{logical(1)}}\cr whether or not to use string
 distance to find matches (should not be used for large datasets/when a
@@ -47,6 +46,13 @@ memory error is shown).}
 \item{strictMatch}{\code{\link[=logical]{logical(1)}}\cr whether or not matches are
 strict, i.e., there should be clear one-to-one relationships and no changes
 in broader concepts.}
+
+\item{parentClasses}{\code{\link[=logical]{logical(1)}}\cr whether or not to search for
+matches in classes that are hierarchically higher than the target class.}
+
+\item{beep}{\code{\link[=integer]{integerish(1)}}\cr Number specifying what sound to be
+played to signal the user that a point of interaction is reached by the
+program, see \code{\link[beepr]{beep}}.}
 
 \item{verbose}{\code{\link[=logical]{logical(1)}}\cr whether or not to give detailed
 information on the process of this function.}

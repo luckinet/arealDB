@@ -75,7 +75,8 @@ globalVariables(c(
   "ontoID",
   "ontoMatch",
   "datID",
-  "thisGeoID"
+  "thisGeoID",
+  "keep"
 ))
 
 .onLoad <- function(libname, pkgname) {
