@@ -23,14 +23,26 @@ adb_reset <- function(what = "all"){
   }
 
   # remove metadata
-  if("inventory" %in% what) unlink(paste0(intPaths, "/_meta/inventory.rds"))
-  if("gaz" %in% what) unlink(paste0(intPaths, "/_meta/lucki_gazetteer.rds"))
-  if("onto" %in% what) unlink(paste0(intPaths, "/_meta/lucki_onto.rds"))
-  if("schemas" %in% what) unlink(list.files(paste0(intPaths, "/_meta/schemas/"), full.names = TRUE))
+  if("inventory" %in% what){
+    message(" -> removing inventory")
+    unlink(paste0(intPaths, "/_meta/inventory.rds"))
+  }
+  if("gaz" %in% what){
+    message(" -> removing gazetteer")
+    unlink(paste0(intPaths, "/_meta/lucki_gazetteer.rds"))
+  }
+  if("onto" %in% what){
+    message(" -> removing ontology")
+    unlink(paste0(intPaths, "/_meta/lucki_onto.rds"))
+  }
+  if("schemas" %in% what){
+    message(" -> removing schemas")
+    unlink(list.files(paste0(intPaths, "/_meta/schemas/"), full.names = TRUE))
+  }
 
   # move geometries from stage2/processed, to stage2
   if("geometries" %in% what){
-
+    message(" -> removing geometries")
     geom_stage2 <- list.files(path = paste0(intPaths, "/geometries/stage2/processed/"))
     geom_stage2_full <- list.files(path = paste0(intPaths, "/geometries/stage2/processed/"), full.names = TRUE)
     if(length(geom_stage2_full) != 0){
@@ -48,7 +60,7 @@ adb_reset <- function(what = "all"){
 
   # move tables from stage2/processed, to stage2
   if("tables" %in% what){
-
+    message(" -> removing tables")
     tab_stage2 <- list.files(path = paste0(intPaths, "/tables/stage2/processed/"))
     tab_stage2_full <- list.files(path = paste0(intPaths, "/tables/stage2/processed/"), full.names = TRUE)
     if(length(tab_stage2_full) != 0){
