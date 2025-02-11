@@ -172,8 +172,8 @@ normTable <- function(input = NULL, pattern = NULL, query = NULL, ontoMatch = NU
                                 verbose = verbose,
                                 beep = beep) %>%
       unite(col = "gazMatch", match, external, sep = "--", na.rm = TRUE) %>%
-      rename(gazID = id) %>%
-      select(-has_broader, -class, -description) %>%
+      rename(gazID = id, gazClass = class) %>%
+      select(-has_broader, -description) %>%
       mutate(gazID = str_replace_all(string = gazID, pattern = "[.]", replacement = "-"))
 
     if(!is.null(ontoMatch)){
@@ -185,11 +185,12 @@ normTable <- function(input = NULL, pattern = NULL, query = NULL, ontoMatch = NU
                                   dataseries = dSeries,
                                   ontology = ontoPath,
                                   parentClasses = TRUE,
+                                  colsAsClass = FALSE,
                                   beep = beep,
                                   verbose = verbose) %>%
         unite(col = "ontoMatch", match, external, sep = "--", na.rm = TRUE) %>%
-        rename(ontoID = id) %>%
-        select(-has_broader, -class, -description)
+        rename(ontoID = id, ontoClass = class) %>%
+        select(-has_broader, -description)
     }
 
     thatTable <- thatTable %>%
