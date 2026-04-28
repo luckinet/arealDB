@@ -17,3 +17,7 @@ replication_script
 ^cran-comments\.md$
 ^\.github$
 ^CRAN-SUBMISSION$
+_misc
+^\.positai$
+^\.claude$
+^_misc$
