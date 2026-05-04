@@ -4,7 +4,7 @@
 #' @param ... [`character(1)`][character]\cr name and value of the topmost unit
 #'   under which the table shall be registered. The name of this must be a class
 #'   of the gazetteer and the value must be one of the territory names of that
-#'   class, e.g. \emph{nation = "Estonia"}.
+#'   class, e.g. \emph{nation = "a_nation"}.
 #' @param subset [`character(1)`][character]\cr optional argument to specify
 #'   which subset the file contains. This could be a subset of territorial units
 #'   (e.g. only one municipality) or of a target variable.
@@ -84,9 +84,9 @@
 #'     setObsVar(name = "production",
 #'               factor = 1, columns = 5)
 #'
-#'   regTable(nation = "Estonia",
+#'   regTable(nation = "a_nation",
 #'            subset = "barleyMaize",
-#'            label = "al1",
+#'            label = "ADM0",
 #'            dSeries = "madeUp",
 #'            gSeries = "gadm",
 #'            begin = 1990,
@@ -123,16 +123,16 @@ regTable <- function(..., subset = NULL, dSeries = NULL, gSeries = NULL,
   }
 
   # set internal paths
-  intPaths <- paste0(getOption(x = "adb_path"))
-  gazPath <- paste0(getOption(x = "gazetteer_path"))
-  topClass <- paste0(getOption(x = "gazetteer_top"))
-
-  gaz <- load_ontology(gazPath)
-  gazClasses <- get_class(ontology = gazPath)
+  intPaths <- .adb_state$path
+  gazName <- "gazetteer"
 
   # get tables
-  inventory <- readRDS(paste0(getOption(x = "adb_path"), "/_meta/inventory.rds"))
+  inventory <- readRDS(paste0(intPaths, "/inventory.rds"))
   inv_tables <- inventory$tables
+  load(paste0(intPaths, "/db_info.RData"))
+  topClass <- db_info$level
+
+  gazClasses <- .read_levels(gazName)
   inv_dataseries <- inventory$dataseries
   inv_geometries <- inventory$geometries
 
@@ -146,15 +146,15 @@ regTable <- function(..., subset = NULL, dSeries = NULL, gSeries = NULL,
   newTID <- ifelse(length(inv_tables$tabID)==0, 1, as.integer(max(inv_tables$tabID)+1))
 
   # in testing mode?
-  testing <- getOption(x = "adb_testing")
+  testing <- .adb_state$testing
 
   # check validity of arguments
   assertNames(x = colnames(inv_tables),
-              permutation.of = c("tabID", "datID", "geoID", "geography", "level", "start_period", "end_period", "stage2_name", "schema", "stage1_name", "stage1_url", "download_date", "update_frequency", "metadata_url", "metadata_path", "notes"))
+              permutation.of = c("tabID", "datID", "geoID", "geography", "level", "start_period", "end_period", "stage2_name", "schema", "stage1_name", "stage1_url", "download_date", "update_frequency", "metadata_url", "metadata_path", "status", "notes"))
   assertNames(x = colnames(inv_dataseries),
               permutation.of = c("datID", "name", "description", "homepage", "version", "licence_link", "notes"))
   assertNames(x = colnames(inv_geometries),
-              permutation.of = c("geoID", "datID", "stage2_name", "layer", "label", "ancillary", "stage1_name", "stage1_url", "download_date", "update_frequency", "notes"))
+              permutation.of = c("geoID", "datID", "stage2_name", "layer", "label", "ancillary", "stage1_name", "stage1_url", "download_date", "update_frequency", "notes", "status"))
   assertCharacter(x = subset, any.missing = FALSE, null.ok = TRUE)
   assertCharacter(x = dSeries, ignore.case = TRUE, any.missing = FALSE, len = 1, null.ok = TRUE)
   assertCharacter(x = gSeries, ignore.case = TRUE, any.missing = FALSE, len = 1, null.ok = TRUE)
@@ -226,7 +226,7 @@ regTable <- function(..., subset = NULL, dSeries = NULL, gSeries = NULL,
     if(!testing){
       label <- readline()
     } else {
-      label <- "al1"
+      label <- "ADM0"
     }
     if(is.na(label)){
       label = NA_character_
@@ -303,7 +303,7 @@ regTable <- function(..., subset = NULL, dSeries = NULL, gSeries = NULL,
     if(!testing){
       schema <- readline()
     } else {
-      schema <- readRDS(file = paste0(intPaths, "/_meta/schemas/example_schema.rds"))
+      schema <- readRDS(file = paste0(intPaths, "/tables/schemas/example_schema.rds"))
     }
     if(length(schema) < 1){
       schema = NA_character_
@@ -341,7 +341,7 @@ regTable <- function(..., subset = NULL, dSeries = NULL, gSeries = NULL,
   }
 
   # make a schema description
-  write_rds(x = schema, file = paste0(intPaths, "/_meta/schemas/", theSchemaName, ".rds"))
+  write_rds(x = schema, file = paste0(intPaths, "/tables/schemas/", theSchemaName, ".rds"))
 
   if(is.null(archiveLink)){
     message("please type in the weblink from which the archive was downloaded: ")
@@ -451,7 +451,7 @@ regTable <- function(..., subset = NULL, dSeries = NULL, gSeries = NULL,
       return(temp)
     }
 
-    message(paste0("... please store the table as '", fileName, "' with utf-8 encoding in './tables/stage2'"))
+    message(paste0("... please store the table as '", fileName, "' in './tables/stage2'"))
     if(!testing){
       done <- readline(" -> press any key when done: ")
 
@@ -497,6 +497,7 @@ regTable <- function(..., subset = NULL, dSeries = NULL, gSeries = NULL,
                 update_frequency = updateFrequency,
                 metadata_url = metadataLink,
                 metadata_path = metadataPath,
+                status = "staged",
                 notes = notes)
 
   if(dim(inv_tables)[1] != 0){
@@ -510,7 +511,7 @@ regTable <- function(..., subset = NULL, dSeries = NULL, gSeries = NULL,
   } else {
     inventory$tables <- doc
   }
-  saveRDS(object = inventory, file = paste0(intPaths, "/_meta/inventory.rds"))
+  saveRDS(object = inventory, file = paste0(intPaths, "/inventory.rds"))
 
   return(doc)
 

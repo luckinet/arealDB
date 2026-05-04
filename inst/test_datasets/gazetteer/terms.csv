@@ -1,0 +1,12 @@
+"id","label","class","parent"
+".001","a_nation","ADM0",
+".001.001","county_1","ADM1","a_nation"
+".001.002","county_2","ADM1","a_nation"
+".001.003","county_3","ADM1","a_nation"
+".001.004","county_4","ADM1","a_nation"
+".001.001.001","municipality1_1","ADM2","county_1"
+".001.001.002","municipality1_2","ADM2","county_1"
+".001.002.001","municipality2_1","ADM2","county_2"
+".001.003.001","municipality3","ADM2","county_3"
+".001.004.001","municipality4_1","ADM2","county_4"
+".001.004.002","municipality4_2","ADM2","county_4"

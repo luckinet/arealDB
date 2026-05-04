@@ -13,9 +13,9 @@ that in this argument.}
 
 \item{until}{\code{\link[=character]{character(1)}}\cr The database building step in
 terms of the function names until which the example database shall be
-built, one of \code{"start_arealDB"}, \code{"regDataseries"},
-\code{"regGeometry"}, \code{"regTable"}, \code{"normGeometry"} or
-\code{"normTable"}.}
+built, one of \code{"adb_init"}, \code{"regDataseries"},
+\code{"regVocabulary"}, \code{"regGeometry"}, \code{"regTable"},
+\code{"normVocabulary"}, \code{"normGeometry"} or \code{"normTable"}.}
 
 \item{verbose}{\code{\link[=logical]{logical(1)}}\cr be verbose about building the
 example database (default \code{FALSE}).}
@@ -41,7 +41,7 @@ if(dev.interactive()){
 # to build the full example database
 adb_example(path = paste0(tempdir(), "/newDB"))
 
-# to make the example database until a certain step
+# to build the example database until a certain step
 adb_example(path = paste0(tempdir(), "/newDB"), until = "regDataseries")
 
 }

@@ -5,7 +5,7 @@
 #' @param ... [`character(1)`][character]\cr optional named argument selecting
 #'   the main territory into which this geometry is nested. The name of this
 #'   must be a class of the gazetteer and the value must be one of the territory
-#'   names of that class, e.g. \emph{nation = "Estonia"}.
+#'   names of that class, e.g. \emph{nation = "a_nation"}.
 #' @param subset [`character(1)`][character]\cr optional argument to specify
 #'   which subset the file contains. This could be a subset of territorial units
 #'   (e.g. only one municipality) or of a target variable.
@@ -66,7 +66,7 @@
 #'               layer = "example_geom1",
 #'               archive = "example_geom.7z|example_geom1.gpkg",
 #'               archiveLink = "https://gadm.org/",
-#'               nextUpdate = "2019-10-01",
+#'               downloadDate = as.Date("2019-10-01"),
 #'               updateFrequency = "quarterly")
 #'
 #'   # The second administrative level in GADM contains names in the columns
@@ -77,12 +77,12 @@
 #'               layer = "example_geom2",
 #'               archive = "example_geom.7z|example_geom2.gpkg",
 #'               archiveLink = "https://gadm.org/",
-#'               nextUpdate = "2019-10-01",
+#'               downloadDate = as.Date("2019-10-01"),
 #'               updateFrequency = "quarterly")
 #' }
 #' @importFrom checkmate assertNames assertCharacter assertIntegerish
 #'   assertFileExists testChoice assertLogical testSubset assertDate
-#' @importFrom ontologics load_ontology
+#' @importFrom readr read_csv
 #' @importFrom readr read_csv
 #' @importFrom dplyr filter distinct pull
 #' @importFrom stringr str_split
@@ -102,24 +102,24 @@ regGeometry <- function(..., subset = NULL, gSeries = NULL, label = NULL,
   }
 
   # set internal paths
-  intPaths <- paste0(getOption(x = "adb_path"))
-  gazPath <- paste0(getOption(x = "gazetteer_path"))
-  topClass <- paste0(getOption(x = "gazetteer_top"))
-
-  gaz <- load_ontology(gazPath)
-  gazClasses <- get_class(ontology = gazPath)
+  intPaths <- .adb_state$path
+  gazName <- "gazetteer"
 
   # get tables
-  inventory <- readRDS(paste0(getOption(x = "adb_path"), "/_meta/inventory.rds"))
+  inventory <- readRDS(paste0(intPaths, "/inventory.rds"))
   inv_dataseries <- inventory$dataseries
   inv_geometries <- inventory$geometries
+  load(paste0(intPaths, "/db_info.RData"))
+  topClass <- db_info$level
+
+  gazClasses <- .read_levels(vName = gazName)
 
   if(dim(inv_dataseries)[1] == 0){
     stop("'inv_dataseries.csv' does not contain any entries!")
   }
 
   # in testing mode?
-  testing <- getOption(x = "adb_testing")
+  testing <- .adb_state$testing
 
   # check validity of arguments
   assertList(x = label, any.missing = FALSE)
@@ -136,7 +136,7 @@ regGeometry <- function(..., subset = NULL, gSeries = NULL, label = NULL,
   assertNames(x = colnames(inv_dataseries),
               permutation.of = c("datID", "name", "description", "homepage", "version", "licence_link", "notes"))
   assertNames(x = colnames(inv_geometries),
-              permutation.of = c("geoID", "datID", "stage2_name", "layer", "label", "ancillary", "stage1_name", "stage1_url", "download_date", "update_frequency", "notes"))
+              permutation.of = c("geoID", "datID", "stage2_name", "layer", "label", "ancillary", "stage1_name", "stage1_url", "download_date", "update_frequency", "status", "notes"))
   if(!is.null(ancillary)) assertNames(x = names(ancillary), subset.of = c("name_ltn", "name_lcl", "code", "type", "uri", "flag"))
 
   broadest <- exprs(..., .named = TRUE)
@@ -340,6 +340,7 @@ regGeometry <- function(..., subset = NULL, gSeries = NULL, label = NULL,
                 stage1_url = archiveLink,
                 download_date = downloadDate,
                 update_frequency = updateFrequency,
+                status = "staged",
                 notes = notes)
 
   if(dim(inv_geometries)[1] != 0){
@@ -353,7 +354,7 @@ regGeometry <- function(..., subset = NULL, gSeries = NULL, label = NULL,
   } else {
     inventory$geometries <- doc
   }
-  saveRDS(object = inventory, file = paste0(intPaths, "/_meta/inventory.rds"))
+  saveRDS(object = inventory, file = paste0(intPaths, "/inventory.rds"))
 
   return(doc)
 }

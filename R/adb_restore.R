@@ -1,6 +1,6 @@
 #' Restore the database from a backup
 #'
-#' @param version [`character(1)][character]\cr a version tag for which to
+#' @param version [`character(1)`][character]\cr a version tag for which to
 #'   restore files.
 #' @param date [`character(1)`][character]\cr a date for which to restore files.
 #' @details This function searches for files that have the version and date tag,
@@ -9,92 +9,47 @@
 #'   with care.
 #' @return No return value, called for the side effect of restoring files that
 #'   were previously stored in a backup.
-#' @importFrom stringr str_split str_replace
-#' @importFrom purrr map
+#' @importFrom stringr str_replace
 #' @export
 
 adb_restore <- function(version = NULL, date = NULL){
 
-  # set internal paths
-  intPaths <- paste0(getOption(x = "adb_path"))
+  intPaths <- .adb_state$path
 
-  # derive current version
-  version <- paste0(version, "_", date)
-  gazFolder <- str_split(tail(str_split(getOption(x = "gazetteer_path"), "\\/")[[1]], 1), "[.]")[[1]][1]
-  ontoFolder <- str_split(tail(str_split(getOption(x = "ontology_path"), "\\/")[[1]], 1), "[.]")[[1]][1]
+  versionTag <- paste0(version, "_", date)
 
-  # restore inventory tables/gazetteer/ontology
-  inv_full <- list.files(path = paste0(intPaths, "/backup/_meta/"), pattern = version, full.names = TRUE)
-  if(length(inv_full) == 0){
-    message("no metadata found")
+  restore_dir <- function(backup_dir, target_dir, label){
+    if(!dir.exists(backup_dir)){
+      message("no ", label, " backup directory")
+      return(invisible())
+    }
+    src <- list.files(path = backup_dir, pattern = versionTag, full.names = TRUE)
+    if(length(src) == 0){
+      message("no ", label, " found for tag '", versionTag, "'")
+      return(invisible())
+    }
+    dst <- file.path(target_dir,
+                     str_replace(basename(src),
+                                 pattern = paste0("_", versionTag),
+                                 replacement = ""))
+    file.copy(from = src, to = dst, overwrite = TRUE)
   }
 
-  inv <- map(.x = inv_full, .f = function(ix){
-    temp <- tail(str_split(string = ix, pattern = "/")[[1]], 1)
-    str_replace(string = temp, pattern = paste0("_", version), replacement = "")
-  }) %>% unlist()
+  restore_dir(file.path(intPaths, "backup", "_meta"),
+              file.path(intPaths, "_meta"),
+              "inventory")
+  restore_dir(file.path(intPaths, "backup", "tables"),
+              file.path(intPaths, "tables", "stage3"),
+              "tables")
+  restore_dir(file.path(intPaths, "backup", "geometries"),
+              file.path(intPaths, "geometries", "stage3"),
+              "geometries")
+  restore_dir(file.path(intPaths, "backup", "vocabularies", "stage3"),
+              file.path(intPaths, "vocabularies", "stage3"),
+              "vocabulary terms/levels")
+  restore_dir(file.path(intPaths, "backup", "vocabularies", "mappings"),
+              file.path(intPaths, "vocabularies", "mappings"),
+              "vocabulary mappings")
 
-  file.copy(from = inv_full,
-            to = paste0(intPaths, "/_meta/", inv),
-            overwrite = TRUE)
-
-  # restore translation tables
-  gaz_full <- list.files(path = paste0(intPaths, "/backup/_meta/", gazFolder), pattern = version, full.names = TRUE)
-  if(length(gaz_full) == 0){
-    message("no gazetteer found")
-  }
-
-  gaz <- map(.x = gaz_full, .f = function(ix){
-    temp <- tail(str_split(string = ix, pattern = "/")[[1]], 1)
-    str_replace(string = temp, pattern = paste0("_", version), replacement = "")
-  }) %>% unlist()
-
-  file.copy(from = gaz_full,
-            to = paste0(intPaths, "/_meta/", gazFolder, "/", gaz),
-            overwrite = TRUE)
-
-  onto_full <- list.files(path = paste0(intPaths, "/backup/_meta/", ontoFolder), pattern = version, full.names = TRUE)
-  if(length(onto_full) == 0){
-    message("no ontology found")
-  }
-
-  onto <- map(.x = onto_full, .f = function(ix){
-    temp <- tail(str_split(string = ix, pattern = "/")[[1]], 1)
-    str_replace(string = temp, pattern = paste0("_", version), replacement = "")
-  }) %>% unlist()
-
-  file.copy(from = onto_full,
-            to = paste0(intPaths, "/_meta/", ontoFolder, "/", onto),
-            overwrite = TRUE)
-
-  # restore tables/stage3
-  stage3tables_full <- list.files(path = paste0(intPaths, "/backup/tables/"), pattern = version, full.names = TRUE)
-  if(length(stage3tables_full) == 0){
-    message("no tables found")
-  }
-
-  stage3tables <- map(.x = stage3tables_full, .f = function(ix){
-    temp <- tail(str_split(string = ix, pattern = "/")[[1]], 1)
-    str_replace(string = temp, pattern = paste0("_", version), replacement = "")
-  }) %>% unlist()
-
-  file.copy(from = stage3tables_full,
-            to = paste0(intPaths, "/tables/stage3/", stage3tables),
-            overwrite = TRUE)
-
-  # restore geometries/stage3
-  stage3geometries_full <- list.files(path = paste0(intPaths, "/backup/geometries/"), pattern = version, full.names = TRUE)
-  if(length(stage3geometries_full) == 0){
-    message("no geometries found")
-  }
-
-  stage3geometries <- map(.x = stage3geometries_full, .f = function(ix){
-    temp <- tail(str_split(string = ix, pattern = "/")[[1]], 1)
-    str_replace(string = temp, pattern = paste0("_", version), replacement = "")
-  }) %>% unlist()
-
-  file.copy(from = stage3geometries_full,
-            to = paste0(intPaths, "/geometries/stage3/", stage3geometries),
-            overwrite = TRUE)
-
+  invisible()
 }

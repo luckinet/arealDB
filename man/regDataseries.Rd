@@ -63,6 +63,7 @@ if(dev.interactive()){
 \seealso{
 Other register functions: 
 \code{\link{regGeometry}()},
-\code{\link{regTable}()}
+\code{\link{regTable}()},
+\code{\link{regVocabulary}()}
 }
 \concept{register functions}

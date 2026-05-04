@@ -2,7 +2,7 @@
 % Please edit documentation in R/helpers.R
 \name{.matchOntology}
 \alias{.matchOntology}
-\title{Match target terms with an ontology}
+\title{Match target terms with a vocabulary}
 \usage{
 .matchOntology(
   table = NULL,
@@ -13,55 +13,53 @@
   groupMatches = FALSE,
   stringdist = TRUE,
   strictMatch = FALSE,
-  parentClasses = FALSE,
+  simplify = NULL,
   beep = NULL,
   verbose = FALSE
 )
 }
 \arguments{
-\item{table}{\code{\link[=data.frame]{data.frame(1)}}\cr a table that contains columns
-that should be harmonised by matching with the gazetteer.}
+\item{table}{\code{\link[=data.frame]{data.frame(1)}}\cr a table with columns to
+harmonise.}
 
-\item{columns}{\code{\link[=character]{character(1)}}\cr the columns containing the
-concepts}
+\item{columns}{\code{\link[=character]{character(.)}}\cr the columns containing the
+terms to match; must appear left-to-right from broadest to most specific
+level.}
 
-\item{dataseries}{\code{\link[=character]{character(1)}}\cr the source dataseries from
-which territories are sourced.}
+\item{dataseries}{\code{\link[=character]{character(1)}}\cr the source dataseries name.}
 
-\item{ontology}{\code{\link[ontologics:onto-class]{onto}}\cr path where the
-ontology/gazetteer is stored.}
+\item{ontology}{\code{\link[=character]{character(1)}}\cr name of the vocabulary
+to match against (e.g. \code{"gazetteer"}, \code{"commodity"}).}
 
-\item{colsAsClass}{\code{\link[=logical]{logical(1)}}\cr whether or not to match
-\code{columns} by their name with the respective classes, or with concepts
-of all classes.}
+\item{colsAsClass}{\code{\link[=logical]{logical(1)}}\cr if TRUE, column names are
+matched against level labels in levels.csv to determine the hierarchy
+position. If FALSE, all columns are treated as a flat list.}
 
-\item{groupMatches}{\code{\link[=logical]{logical(1)}}\cr whether or not to group
-harmonized concepts (in the output) when there are more than one match (for
-example for broader or narrower matches).}
+\item{groupMatches}{\code{\link[=logical]{logical(1)}}\cr whether to collapse multiple
+matches per row with " | ".}
 
-\item{stringdist}{\code{\link[=logical]{logical(1)}}\cr whether or not to use string
-distance to find matches (should not be used for large datasets/when a
-memory error is shown).}
+\item{stringdist}{\code{\link[=logical]{logical(1)}}\cr whether to use string distance
+for fuzzy suggestions (passed to match_builder).}
 
-\item{strictMatch}{\code{\link[=logical]{logical(1)}}\cr whether or not matches are
-strict, i.e., there should be clear one-to-one relationships and no changes
-in broader concepts.}
+\item{strictMatch}{\code{\link[=logical]{logical(1)}}\cr if TRUE, disable the
+different-parent recovery logic.}
 
-\item{parentClasses}{\code{\link[=logical]{logical(1)}}\cr whether or not to search for
-matches in classes that are hierarchically higher than the target class.}
+\item{simplify}{\code{\link[=list]{list(.)}}\cr normalisation steps applied to the
+first column before matching. Named list; valid names: "squish",
+"lowercase", "dashes", "duplpunct", "remove", "replace", "chartr".}
 
-\item{beep}{\code{\link[=integer]{integerish(1)}}\cr Number specifying what sound to be
-played to signal the user that a point of interaction is reached by the
-program, see \code{\link[beepr]{beep}}.}
+\item{beep}{\code{\link[=integer]{integerish(1)}}\cr sound to play when interactive
+input is needed (passed to beepr::beep).}
 
-\item{verbose}{\code{\link[=logical]{logical(1)}}\cr whether or not to give detailed
-information on the process of this function.}
+\item{verbose}{\code{\link[=logical]{logical(1)}}\cr print matching details.}
 }
 \value{
-Returns a table that resembles the input table where the target
-columns were translated according to the provided ontology.
+The input table with additional columns: \code{id} (canonical ID),
+\code{match} (dataseries label that was matched), \code{external}
+(original source label).
 }
 \description{
-This function takes a table to replace the values of various columns with
-harmonised values listed in the project specific gazetteer.
+This function takes a table and replaces the values of target columns with
+harmonised values from the project vocabulary (ontology or gazetteer).
+Unmatched terms are queued for interactive assignment via match_builder.
 }

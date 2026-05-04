@@ -9,6 +9,7 @@ normTable(
   pattern = NULL,
   query = NULL,
   ontoMatch = NULL,
+  simplify = NULL,
   beep = NULL,
   verbose = FALSE
 )
@@ -24,10 +25,26 @@ Only dataset names which match the regular expression will be processed.}
 \item{query}{\code{\link[=character]{character(1)}}\cr the expression that would be used
 in \code{\link[dplyr]{filter}} to subset a tibble in terms of the columns
 defined via the schema and given as a single character string, such as
-\code{"al1 == 'Estonia'"}.}
+\code{"ADM0 == 'a_nation'"}.}
 
 \item{ontoMatch}{\code{\link[=character]{character(.)}}\cr name of the column(s) that
 shall be matched with an ontology (defined in \code{\link{adb_init}}).}
+
+\item{simplify}{\code{\link[=list]{list(.)}}\cr list of modules to simplify character
+strings before matching with the ontology. Possible modules are: \itemize{
+\item \code{"squish"}: logical of whether or not to replace duplicate whitespaces with single whitespaces,
+\item \code{"lowercase"}: logical of whether or not to set all strings to lower case,
+\item \code{"dashes"}: logical of whether or not to set all \href{https://en.wikipedia.org/wiki/Dash#Unicode}{dashes} and hyphens to \code{-} (unicode symbol U+002D),
+\item \code{"duplpunct"}: logical of whether or not to remove duplicated punctation symbols (such as "- -" or \verb{//}),
+\item \code{"remove"}: vector of symbols or regular expressions to remove,
+\item \code{"replace"}: vector of two elements, the first contains a string to match, the second a string to replace the former with,
+\item \code{"chartr"}: vector of two elements, the first contains n symbols to match, the second n symbols to replace the former with (see \link{chartr}).
+}
+These simplifications are aimed at reducing the need for manual
+translations, for example, when it's known that the tables of a dataseries
+have a lot of very similar symbols confused (for example en dash –, em
+dash — or minus sign −) or systematic deviations (for example " - "
+instead of merely "-") that could be rectified that way.}
 
 \item{beep}{\code{\link[=integer]{integerish(1)}}\cr Number specifying what sound to be
 played to signal the user that a point of interaction is reached by the
@@ -48,15 +65,12 @@ Harmonise and integrate data tables into standardised format
 }
 \details{
 To normalise data tables, this function proceeds as follows:
-\enumerate{ \item Read in \code{input} and extract initial metadata from
-the file name. \item Employ the function
-\code{\link[tabshiftr:reorganise]{tabshiftr::reorganise()}} to reshape \code{input} according to
-the respective schema description. \item The territorial names are matched
-with the gazetteer to harmonise new territorial names (at this step, the
-function might ask the user to edit the file 'matching.csv' to align new
-names with already harmonised names). \item Harmonise territorial unit
-names. \item store the processed data table at
-stage three.}
+\enumerate{
+\item Read in \code{input} and extract initial metadata from the file name.
+\item Employ the function \code{\link[tabshiftr:reorganise]{tabshiftr::reorganise()}} to reshape \code{input} according to the respective schema description.
+\item The territorial names are matched with the gazetteer to harmonise new territorial names (at this step, the function might ask the user to edit the file 'matching.csv' to align new names with already harmonised names). \item Harmonise territorial unit names.
+\item store the processed data table at stage three.
+}
 }
 \examples{
 if(dev.interactive()){
@@ -66,12 +80,18 @@ if(dev.interactive()){
   # normalise all available data tables ...
   normTable()
 
+  # provide some options to simplify
+  normTable(simplify = list(whitespace = TRUE,
+                            replace = c("--", "-"),
+                            chartr = c("æÜé", "aUe")))
+
   # ... and check the result
-  output <- readRDS(paste0(tempdir(), "/tables/stage3/Estonia.rds"))
+  output <- read_parquet(paste0(tempdir(), "/tables/stage3/a_nation.parquet"))
 }
 }
 \seealso{
 Other normalise functions: 
-\code{\link{normGeometry}()}
+\code{\link{normGeometry}()},
+\code{\link{normVocabulary}()}
 }
 \concept{normalise functions}

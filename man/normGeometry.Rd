@@ -27,7 +27,7 @@ Only dataset names which match the regular expression will be processed.}
 \item{query}{\code{\link[=character]{character(1)}}\cr part of the SQL query (starting
 from
 WHERE) used to subset the input geometries, for example \code{"WHERE NAME_0
-  IN ('Estonia')"}. The first part of the query (where the layer is defined) is
+  IN ('a_nation')"}. The first part of the query (where the layer is defined) is
 derived from the meta-data of the currently handled geometry.}
 
 \item{thresh}{\code{\link[=integer]{integerish(1)}}\cr percent value of overlap below
@@ -102,15 +102,16 @@ if(dev.interactive()){
   adb_example(until = "regGeometry", path = tempdir())
 
   # normalise all geometries ...
-  normGeometry(pattern = "estonia")
+  normGeometry(pattern = "a_nation")
 
   # ... and check the result
-  st_layers(paste0(tempdir(), "/geometries/stage3/Estonia.gpkg"))
-  output <- st_read(paste0(tempdir(), "/geometries/stage3/Estonia.gpkg"))
+  st_layers(paste0(tempdir(), "/geometries/stage3/a_nation.gpkg"))
+  output <- st_read(paste0(tempdir(), "/geometries/stage3/a_nation.gpkg"))
 }
 }
 \seealso{
 Other normalise functions: 
-\code{\link{normTable}()}
+\code{\link{normTable}()},
+\code{\link{normVocabulary}()}
 }
 \concept{normalise functions}

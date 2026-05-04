@@ -2,10 +2,15 @@
 % Please edit documentation in R/adb_metadata.R
 \name{adb_metadata}
 \alias{adb_metadata}
-\title{Load the metadata from an areal database}
+\title{Summarise database metadata}
 \usage{
 adb_metadata()
 }
+\value{
+a list with elements \code{$nations}, \code{$variables},
+\code{$concepts}, \code{$years}.
+}
 \description{
-Load the metadata from an areal database
+Returns a summary of what is currently in the database: nations covered,
+variables available, thematic concepts, and time range.
 }

@@ -28,7 +28,7 @@ regTable(
 \item{...}{\code{\link[=character]{character(1)}}\cr name and value of the topmost unit
 under which the table shall be registered. The name of this must be a class
 of the gazetteer and the value must be one of the territory names of that
-class, e.g. \emph{nation = "Estonia"}.}
+class, e.g. \emph{nation = "a_nation"}.}
 
 \item{subset}{\code{\link[=character]{character(1)}}\cr optional argument to specify
 which subset the file contains. This could be a subset of territorial units
@@ -131,9 +131,9 @@ if(dev.interactive()){
     setObsVar(name = "production",
               factor = 1, columns = 5)
 
-  regTable(nation = "Estonia",
+  regTable(nation = "a_nation",
            subset = "barleyMaize",
-           label = "al1",
+           label = "ADM0",
            dSeries = "madeUp",
            gSeries = "gadm",
            begin = 1990,
@@ -150,6 +150,7 @@ if(dev.interactive()){
 \seealso{
 Other register functions: 
 \code{\link{regDataseries}()},
-\code{\link{regGeometry}()}
+\code{\link{regGeometry}()},
+\code{\link{regVocabulary}()}
 }
 \concept{register functions}

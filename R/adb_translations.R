@@ -1,37 +1,25 @@
-#' Load the translation tables of the currently active areal database
+#' Load the mapping table for a dataseries against a vocabulary
 #'
-#' @param type [`character(1)`][character]\cr the type of ontology for which to
-#'   load translation tables, either \code{"ontology"} to get the thematic
-#'   concepts, or \code{"gazetteer"} to get the territories.
-#' @param dataseries [`character(1)`][character]\cr the name of a dataseries as
-#'   registered in \code{\link{regDataseries}}.
-#' @return returns the selected translation table
+#' Returns the mappings table that records how external source labels are
+#' mapped to canonical IDs of the requested vocabulary.
+#'
+#' @param vocabulary character; name of a registered vocabulary
+#'   (e.g. \code{"gazetteer"}, \code{"commodity"}).
+#' @param dataseries character; name of a registered dataseries.
+#' @return tibble with columns \code{source_label}, \code{source},
+#'   \code{canonical_id}, \code{parent_id}, \code{note}.
 #' @importFrom checkmate assertChoice
-#' @importFrom stringr str_split
 #' @export
 
-adb_translations <- function(type = NULL, dataseries = NULL){
+adb_translations <- function(vocabulary = NULL, dataseries = NULL){
 
-  assertChoice(x = type, choices = c("gazetteer", "ontology"))
-
-  # set internal paths
-  intPaths <- paste0(getOption(x = "adb_path"))
-
-  temp <- readRDS(paste0(intPaths, "/_meta/inventory.rds"))
+  intPaths <- paste0(.adb_state$path)
+  temp <- readRDS(paste0(intPaths, "/inventory.rds"))
   inv_dataseries <- temp$dataseries
+  inv_vocabulary <- temp$vocabularies
 
+  assertChoice(x = vocabulary, choices = inv_vocabulary$name)
   assertChoice(x = dataseries, choices = inv_dataseries$name)
 
-  if(type == "gazetteer"){
-    tabType <- getOption("gazetteer_path")
-  } else {
-    tabType <- getOption("ontology_path")
-  }
-  tabType <- str_split(tabType, "[.]")[[1]][1]
-
-  tables <- list.files(path = tabType, pattern = paste0(dataseries, "*.rds"), full.names = TRUE)
-  out <- readRDS(file = tables)
-
-  return(out)
-
+  .read_mappings(vocabulary, dataseries)
 }

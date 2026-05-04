@@ -13,6 +13,6 @@ test_that("", {
   schemas <- adb_schemas(pattern = "madeUp")
 
   expect_list(x = schemas, len = 2, types = "schema")
-  expect_names(x = names(schemas), identical.to = c("_al1_barleyMaize_1990_2017_madeUp_schema", "aNation_al2_barleyMaize_1990_2017_madeUp_schema"))
+  expect_names(x = names(schemas), identical.to = c("_ADM0_barleyMaize_1990_2017_madeUp_schema", "aNation_ADM1_barleyMaize_1990_2017_madeUp_schema"))
 
 })

@@ -4,16 +4,7 @@
 \alias{adb_init}
 \title{Initiate an areal database}
 \usage{
-adb_init(
-  root,
-  version,
-  author,
-  licence,
-  ontology,
-  gazetteer = NULL,
-  top = NULL,
-  staged = TRUE
-)
+adb_init(root, version, author, licence, level)
 }
 \arguments{
 \item{root}{\code{\link[=character]{character(1)}}\cr path to the root directory that
@@ -29,21 +20,9 @@ building this areal database. Should be a list with items \code{"cre"}
 \item{licence}{\code{\link[=character]{character(1)}}\cr licence (link) for this areal
 database.}
 
-\item{ontology}{\code{\link[=list]{list(.)}}\cr named list with the path(s) of
-ontologies, where the list name identifies the variable that shall be
-matched with the ontology at the path.}
-
-\item{gazetteer}{\code{\link[=character]{character(1)}}\cr path to the gazetteer that
-holds the (hierarchical) information of territorial units used in this
-database.}
-
-\item{top}{\code{\link[=character]{character(1)}}\cr the label of the class in the
-gazetteer that represents the top-most unit (e.g. country) of the areal
-database that shall be started.}
-
-\item{staged}{\code{\link[=logical]{logical(1)}}\cr whether or not the file structure is
-arranged according to stages (with geometries and tables separated), or
-merely as input/output (of all types).}
+\item{level}{\code{\link[=character]{character(1)}}\cr the label of the class in the
+gazetteer at which this database operates (e.g. \code{"ADM0"} for a
+national database). Stage 3 outputs are split by units of this class.}
 }
 \value{
 No return value, called for the side effect of creating the
@@ -57,16 +36,12 @@ path.
 \details{
 This is the first function that is run in a project, as it initiates
 the areal database by creating the default sub-directories and initial
-inventory tables. When a database has already been set up, this function is
-used to register that path in the options of the current R session.
+inventory tables. Vocabularies (gazetteer, ontologies) are added later via
+\code{\link{regVocabulary}} and \code{\link{normVocabulary}}.
 }
 \examples{
 adb_init(root = paste0(tempdir(), "/newDB"),
          version = "1.0.0", licence = "CC-BY-0.4",
-         author = list(cre = "Gordon Freeman", aut = "Alyx Vance", ctb = "The G-Man"),
-         gazetteer = paste0(tempdir(), "/newDB/territories.rds"),
-         top = "al1",
-         ontology = list(var = paste0(tempdir(), "/newDB/ontology.rds")))
-
-getOption("adb_path"); getOption("gazetteer_path")
+         author = list(cre = "Jane Doe", aut = "John Doe", ctb = "Jamie Roe"),
+         level = "ADM0")
 }

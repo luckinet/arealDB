@@ -9,9 +9,24 @@
 #' @param query [`character(1)`][character]\cr the expression that would be used
 #'   in \code{\link[dplyr]{filter}} to subset a tibble in terms of the columns
 #'   defined via the schema and given as a single character string, such as
-#'   \code{"al1 == 'Estonia'"}.
+#'   \code{"ADM0 == 'a_nation'"}.
 #' @param ontoMatch [`character(.)`][character]\cr name of the column(s) that
 #'   shall be matched with an ontology (defined in \code{\link{adb_init}}).
+#' @param simplify [`list(.)`][list]\cr list of modules to simplify character
+#'   strings before matching with the ontology. Possible modules are: \itemize{
+#'      \item \code{"squish"}: logical of whether or not to replace duplicate whitespaces with single whitespaces,
+#'      \item \code{"lowercase"}: logical of whether or not to set all strings to lower case,
+#'      \item \code{"dashes"}: logical of whether or not to set all [dashes](https://en.wikipedia.org/wiki/Dash#Unicode) and hyphens to \code{-} (unicode symbol U+002D),
+#'      \item \code{"duplpunct"}: logical of whether or not to remove duplicated punctation symbols (such as "- -" or `//`),
+#'      \item \code{"remove"}: vector of symbols or regular expressions to remove,
+#'      \item \code{"replace"}: vector of two elements, the first contains a string to match, the second a string to replace the former with,
+#'      \item \code{"chartr"}: vector of two elements, the first contains n symbols to match, the second n symbols to replace the former with (see [chartr]).
+#'   }
+#'   These simplifications are aimed at reducing the need for manual
+#'   translations, for example, when it's known that the tables of a dataseries
+#'   have a lot of very similar symbols confused (for example en dash –, em
+#'   dash — or minus sign −) or systematic deviations (for example " - "
+#'   instead of merely "-") that could be rectified that way.
 #' @param beep [`integerish(1)`][integer]\cr Number specifying what sound to be
 #'   played to signal the user that a point of interaction is reached by the
 #'   program, see \code{\link[beepr]{beep}}.
@@ -19,15 +34,12 @@
 #'   (default \code{FALSE}). Furthermore, you can use
 #'   \code{\link{suppressMessages}} to make this function completely silent.
 #' @details To normalise data tables, this function proceeds as follows:
-#'   \enumerate{ \item Read in \code{input} and extract initial metadata from
-#'   the file name. \item Employ the function
-#'   [tabshiftr::reorganise()] to reshape \code{input} according to
-#'   the respective schema description. \item The territorial names are matched
-#'   with the gazetteer to harmonise new territorial names (at this step, the
-#'   function might ask the user to edit the file 'matching.csv' to align new
-#'   names with already harmonised names). \item Harmonise territorial unit
-#'   names. \item store the processed data table at
-#'   stage three.}
+#'   \enumerate{
+#'      \item Read in \code{input} and extract initial metadata from the file name.
+#'      \item Employ the function [tabshiftr::reorganise()] to reshape \code{input} according to the respective schema description.
+#'      \item The territorial names are matched with the gazetteer to harmonise new territorial names (at this step, the function might ask the user to edit the file 'matching.csv' to align new names with already harmonised names). \item Harmonise territorial unit names.
+#'      \item store the processed data table at stage three.
+#'   }
 #' @family normalise functions
 #' @return This function harmonises and integrates so far unprocessed data
 #'   tables at stage two into stage three of the areal database. It produces for
@@ -41,32 +53,40 @@
 #'   # normalise all available data tables ...
 #'   normTable()
 #'
+#'   # provide some options to simplify
+#'   normTable(simplify = list(whitespace = TRUE,
+#'                             replace = c("--", "-"),
+#'                             chartr = c("æÜé", "aUe")))
+#'
 #'   # ... and check the result
-#'   output <- readRDS(paste0(tempdir(), "/tables/stage3/Estonia.rds"))
+#'   output <- read_parquet(paste0(tempdir(), "/tables/stage3/a_nation.parquet"))
 #' }
-#' @importFrom checkmate assertNames assertFileExists assertLogical
-#' @importFrom ontologics load_ontology
+#' @importFrom checkmate assertNames assertFileExists assertLogical assertList
+#' @importFrom readr read_csv
 #' @importFrom rlang exprs :=
 #' @importFrom tabshiftr reorganise
-#' @importFrom dplyr mutate select pull full_join bind_rows
+#' @importFrom dplyr mutate select pull full_join bind_rows filter left_join distinct arrange na_if
 #' @importFrom magrittr %>%
 #' @importFrom readr read_csv cols
-#' @importFrom stringr str_split str_detect
+#' @importFrom stringr str_split str_detect str_replace_all
 #' @importFrom tidyselect everything
 #' @importFrom utils read.csv
+#' @importFrom arrow read_parquet write_parquet
 #' @importFrom beepr beep
 #' @export
 
 normTable <- function(input = NULL, pattern = NULL, query = NULL, ontoMatch = NULL,
-                      beep = NULL, verbose = FALSE){
+                      simplify = NULL, beep = NULL, verbose = FALSE){
 
   # set internal paths
-  intPaths <- getOption(x = "adb_path")
-  gazPath <- getOption(x = "gazetteer_path")
+  intPaths <- .adb_state$path
+  gazName <- "gazetteer"
 
   # get territorial context
-  topClass <- paste0(getOption(x = "gazetteer_top"))
-  topUnits <- get_concept(class = topClass, ontology = gazPath) %>%
+  load(paste0(intPaths, "/db_info.RData"))
+  topClass <- db_info$level
+  topUnits <- .read_terms(gazName) %>%
+    filter(class == topClass) %>%
     arrange(label)
 
   if(is.null(input)){
@@ -79,17 +99,21 @@ normTable <- function(input = NULL, pattern = NULL, query = NULL, ontoMatch = NU
   moveFile <- TRUE
 
   # get tables
-  inventory <- readRDS(paste0(getOption(x = "adb_path"), "/_meta/inventory.rds"))
+  inventory <- readRDS(paste0(intPaths, "/inventory.rds"))
   inv_dataseries <- inventory$dataseries
   inv_tables <- inventory$tables
 
   # check validity of arguments
   assertCharacter(x = query, len = 1, null.ok = TRUE)
   assertNames(x = colnames(inv_tables),
-              permutation.of = c("tabID", "datID", "geoID", "geography", "level", "start_period", "end_period", "stage2_name", "schema", "stage1_name", "stage1_url", "download_date", "update_frequency", "metadata_url", "metadata_path", "notes"))
+              permutation.of = c("tabID", "datID", "geoID", "geography", "level", "start_period", "end_period", "stage2_name", "schema", "stage1_name", "stage1_url", "download_date", "update_frequency", "metadata_url", "metadata_path", "status", "notes"))
   assertNames(x = colnames(inv_dataseries),
               permutation.of = c("datID", "name", "description", "homepage", "version", "licence_link", "notes"))
   assertCharacter(x = ontoMatch, min.len = 1, any.missing = FALSE, null.ok = TRUE)
+  assertList(x = simplify, any.missing = FALSE, min.len = 1, null.ok = TRUE)
+  if(!is.null(simplify)){
+    assertNames(x = names(simplify), subset.of = c("squish", "lowercase", "dashes", "duplpunct", "remove", "replace", "chartr"))
+  }
 
   ret <- NULL
   for(i in seq_along(input)){
@@ -126,7 +150,7 @@ normTable <- function(input = NULL, pattern = NULL, query = NULL, ontoMatch = NU
       stop(paste0("  ! the file '", file_name, "' has not been registered yet."))
     }
 
-    algorithm <- readRDS(file = paste0(intPaths, "/_meta/schemas/", thisSchema, ".rds"))
+    algorithm <- readRDS(file = paste0(intPaths, "/tables/schemas/", thisSchema, ".rds"))
     if(!exists(x = "algorithm")){
       stop(paste0("please create the schema desciption '", algorithm, "' for the file '", file_name, "'.\n  --> See '?meta_default' for details"))
     }
@@ -148,13 +172,27 @@ normTable <- function(input = NULL, pattern = NULL, query = NULL, ontoMatch = NU
     }
 
     message("    harmonizing territory names ...")
-    outCols <- get_class(ontology = gazPath) %>%
+    outCols <- .read_levels(gazName) %>%
       pull(label)
     targetCols <- outCols[outCols %in% colnames(thisTable)]
     outCols <- outCols[which(outCols %in% head(targetCols, 1)) : which(outCols %in% tail(targetCols, 1))]
 
     if(targetCols[1] != topClass){
       theUnits <- str_split(string = lut$stage2_name, pattern = "_")[[1]][1]
+      # resolve raw source label to canonical gazetteer label
+      unitMappings <- .read_mappings(gazName, gSeries) %>%
+        filter(source == gSeries, !grepl("class_label", note) | is.na(note))
+      topTerms <- .read_terms(gazName) %>% filter(class == topClass)
+      unitMap <- unitMappings %>%
+        filter(canonical_id %in% topTerms$id) %>%
+        left_join(topTerms %>% select(id, label), by = c("canonical_id" = "id")) %>%
+        select(source_label, canonical_label = label) %>%
+        distinct()
+      raw_stripped <- str_replace_all(trimws(theUnits), "[.]", "")
+      match_row <- unitMap %>% filter(source_label == raw_stripped)
+      if(nrow(match_row) == 1){
+        theUnits <- match_row$canonical_label
+      }
     } else {
       theUnits <- NULL
     }
@@ -168,29 +206,28 @@ normTable <- function(input = NULL, pattern = NULL, query = NULL, ontoMatch = NU
     thatTable <- .matchOntology(table = thisTable,
                                 columns = targetCols,
                                 dataseries = dSeries,
-                                ontology = gazPath,
+                                ontology = gazName,
                                 verbose = verbose,
                                 beep = beep) %>%
       unite(col = "gazMatch", match, external, sep = "--", na.rm = TRUE) %>%
       rename(gazID = id, gazClass = class) %>%
-      select(-has_broader, -description) %>%
+      select(-any_of(c("has_broader", "description"))) %>%
       mutate(gazID = str_replace_all(string = gazID, pattern = "[.]", replacement = "-"))
 
     if(!is.null(ontoMatch)){
       message("    harmonizing thematic concepts ...")
       assertNames(x = ontoMatch, subset.of = names(thatTable))
-      ontoPath <- getOption(x = "ontology_path")[[ontoMatch]]
       thatTable <- .matchOntology(table = thatTable,
                                   columns = ontoMatch,
                                   dataseries = dSeries,
-                                  ontology = ontoPath,
-                                  parentClasses = TRUE,
+                                  ontology = ontoMatch,
                                   colsAsClass = FALSE,
+                                  simplify = simplify,
                                   beep = beep,
                                   verbose = verbose) %>%
         unite(col = "ontoMatch", match, external, sep = "--", na.rm = TRUE) %>%
         rename(ontoID = id, ontoName = all_of(ontoMatch), ontoClass = class) %>%
-        select(ontoID, ontoID, ontoName, ontoMatch, ontoClass, everything(), -has_broader, -description)
+        select(ontoID, ontoID, ontoName, ontoMatch, ontoClass, everything(), -any_of(c("has_broader", "description")))
     }
 
     thatTable <- thatTable %>%
@@ -214,7 +251,7 @@ normTable <- function(input = NULL, pattern = NULL, query = NULL, ontoMatch = NU
         tempOut <- thatTable
       }
       tempOut <- tempOut %>%
-        unite(col = "gazName", all_of(outCols), sep = ".", na.rm = TRUE) %>%
+        unite(col = "gazName", all_of(sort(unique(c(targetCols, outCols)))), sep = ".", na.rm = TRUE) %>%
         mutate(gazName = if_else(gazName == "", NA, gazName)) %>%
         select(tabID, geoID, gazID, gazName, gazMatch, gazClass, everything()) %>%
         distinct()
@@ -223,11 +260,11 @@ normTable <- function(input = NULL, pattern = NULL, query = NULL, ontoMatch = NU
       outFile <- theUnits[j] %>%
         str_replace(pattern = "\\(", replacement = "\\\\(") %>%
         str_replace(pattern = "\\)", replacement = "\\\\)")
-      avail <- list.files(path = paste0(intPaths, "/tables/stage3/"), pattern = paste0("^", outFile, ".rds"))
+      avail <- list.files(path = paste0(intPaths, "/tables/stage3/"), pattern = paste0("^", outFile, ".parquet"))
 
       if(length(avail) == 1){
 
-        prevData <- readRDS(file = paste0(intPaths, "/tables/stage3/", theUnits[j], ".rds"))
+        prevData <- as_tibble(read_parquet(file = paste0(intPaths, "/tables/stage3/", theUnits[j], ".parquet"), mmap = FALSE))
 
 
         out <- tempOut %>%
@@ -240,14 +277,14 @@ normTable <- function(input = NULL, pattern = NULL, query = NULL, ontoMatch = NU
         out <- tempOut
       }
 
-      saveRDS(object = out, file = paste0(intPaths, "/tables/stage3/", theUnits[j], ".rds"))
+      write_parquet(x = out, sink = paste0(intPaths, "/tables/stage3/", theUnits[j], ".parquet"))
 
       ret <- bind_rows(ret, out)
     }
 
     if(moveFile){
-      file.copy(from = thisInput, to = paste0(intPaths, "/tables/stage2/processed"))
-      file.remove(thisInput)
+      inventory$tables$status[inventory$tables$stage2_name == file_name] <- "normalised"
+      saveRDS(object = inventory, file = paste0(intPaths, "/inventory.rds"))
     }
 
     gc()

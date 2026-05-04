@@ -7,9 +7,9 @@
 adb_reset(what = "all")
 }
 \arguments{
-\item{what}{\code{\link[=logical]{logical(1)}}\cr what to reset, either \code{"onto"},
-\code{"gaz"}, \code{"schemas"}, \code{"tables"}, \code{"geometries"} or
-\code{"all"}, the default.}
+\item{what}{\code{\link[=character]{character(.)}}\cr what to reset; one or more of
+\code{"vocabularies"}, \code{"schemas"}, \code{"tables"},
+\code{"geometries"}, \code{"inventory"}, or \code{"all"} (the default).}
 }
 \value{
 no return value, called for its side effect of reorganising an areal

@@ -1,59 +1,48 @@
-#' Load the currently active ontology
+#' Load a registered vocabulary
 #'
-#' @param ... combination of column name in the ontology and value to filter
-#'   that column by to build a tree of the concepts nested into it; see
-#'   \code{\link[ontologics]{make_tree}}.
-#' @param type [`character(1)`][character]\cr the type of ontology to load,
-#'   either \code{"ontology"} to get the thematic concepts, or
-#'   \code{"gazetteer"} to get the territories.
-#' @return returns a tidy table of an ontology or gazetteer that is used in an
-#'   areal database.
-#' @importFrom ontologics load_ontology make_tree
-#' @importFrom rlang list2
-#' @importFrom tidyr pivot_longer separate_rows separate_wider_delim pivot_wider
-#' @importFrom dplyr rowwise mutate select left_join group_by across ungroup
-#'   na_if summarise
-#' @importFrom tidyselect all_of
+#' @param ... optional filter expressions passed to \code{\link[dplyr]{filter}}
+#'   to subset the returned terms (e.g. \code{class == "ADM0"}).
+#' @param vocabulary character; name of the vocabulary to load (e.g.
+#'   \code{"gazetteer"}, \code{"commodity"}). Defaults to the first ontology
+#'   registered (i.e. anything other than \code{"gazetteer"}).
+#' @return a tibble with columns \code{id}, \code{label}, \code{class},
+#'   \code{parent_id}, and all mapped external labels from the
+#'   \code{vocabularies/mappings/} files as additional columns.
+#' @importFrom dplyr filter left_join bind_rows group_by summarise ungroup
+#' @importFrom tidyr pivot_wider
+#' @importFrom rlang quos
 #' @export
 
-adb_ontology <- function(..., type = "ontology"){
+adb_ontology <- function(..., vocabulary = NULL){
 
-  assertChoice(x = type, choices = c("ontology", "gazetteer"))
+  intPaths <- .adb_state$path
+  inv_vocabulary <- readRDS(paste0(intPaths, "/inventory.rds"))$vocabularies
 
-  # set internal paths
-  intPaths <- paste0(getOption(x = "adb_path"))
-  if(type == "ontology"){
-    thePath <- paste0(unique(getOption(x = "ontology_path")))
-  } else {
-    thePath <- paste0(getOption(x = "gazetteer_path"))
+  if(is.null(vocabulary)){
+    nonGaz <- setdiff(inv_vocabulary$name, "gazetteer")
+    if(length(nonGaz) == 0) stop("no non-gazetteer vocabulary registered.")
+    vocabulary <- nonGaz[1]
+  }
+  assertChoice(x = vocabulary, choices = inv_vocabulary$name)
+
+  terms <- .read_terms(vocabulary)
+
+  dots <- quos(...)
+  if(length(dots) > 0){
+    terms <- filter(terms, !!!dots)
   }
 
-  sbst <- list2(...)
+  # attach all external mappings as a single pipe-collapsed column per dataseries
+  all_mappings <- .read_all_mappings(vocabulary)
+  if(length(all_mappings) > 0){
+    combined <- bind_rows(all_mappings) %>%
+      group_by(canonical_id, source) %>%
+      summarise(labels = paste0(source_label, collapse = " | "), .groups = "drop") %>%
+      pivot_wider(id_cols = canonical_id, names_from = source, values_from = labels)
 
-  if(length(sbst) == 0){
-    target <- load_ontology(thePath)@concepts$harmonised
-  } else {
-    target <- make_tree(!!names(sbst) := sbst[[1]], ontology = thePath)
+    terms <- terms %>%
+      left_join(combined, by = c("id" = "canonical_id"))
   }
 
-  extConcepts <- load_ontology(thePath)@concepts$external %>%
-    separate_wider_delim(cols = id, names = c("dataseries", "nr"), delim = "_", cols_remove = FALSE) %>%
-    rowwise() %>%
-    mutate(label = paste0(label, " [", dataseries, "]")) %>%
-    select(external = label, temp = id)
-
-  out <- target %>%
-    pivot_longer(cols = c(has_broader_match, has_close_match, has_exact_match, has_narrower_match),
-                 names_to = "match", values_to = "external") %>%
-    separate_rows(external, sep = " \\| ") %>%
-    separate_wider_delim(cols = external, names = c("temp"), delim = ".", too_many = "drop") %>%
-    left_join(extConcepts, by = "temp") %>%
-    group_by(across(all_of(c("id", "label", "class", "has_broader", "description", "match")))) %>%
-    summarise(external = paste0(na.omit(external), collapse = " | ")) %>%
-    ungroup() %>%
-    mutate(external = na_if(external, "")) %>%
-    pivot_wider(id_cols = c("id", "label", "class", "has_broader", "description"), names_from = match, values_from = external)
-
-  return(out)
-
+  terms
 }

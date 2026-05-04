@@ -12,19 +12,19 @@
 #' if(dev.interactive()){
 #' adb_example(path = paste0(tempdir(), "/newDB"))
 #'
-#' adb_querry(territory = list(al1 = "a_nation"),
-#'            concept = list(commodity = "barley"),
-#'            variable = "harvested")
+#' adb_query(territory = list(ADM0 = "a_nation"),
+#'           concept = list(commodity = "barley"),
+#'           variable = "harvested")
 #' }
 #' @importFrom checkmate assertList assertCharacter assertIntegerish
 #'   assertLogical assertSubset
 #' @importFrom dplyr mutate select
-#' @importFrom ontologics get_class make_tree get_concept
+#' @importFrom readr read_csv
 #' @importFrom sf st_read
 #' @export
 
-adb_querry <- function(territory = NULL, concept = NULL, variable = NULL,
-                       level = NULL, year = NULL){
+adb_query <- function(territory = NULL, concept = NULL, variable = NULL,
+                      level = NULL, year = NULL){
 
   assertList(x = territory, types = "character", any.missing = FALSE, null.ok = TRUE)
   assertList(x = concept, types = "character", any.missing = FALSE, null.ok = TRUE)
@@ -32,23 +32,24 @@ adb_querry <- function(territory = NULL, concept = NULL, variable = NULL,
   assertCharacter(x = level, len = 1, any.missing = FALSE, null.ok = TRUE)
   assertIntegerish(x = year, min.len = 1, any.missing = FALSE, null.ok = TRUE)
 
-  adb_path <- getOption(x = "adb_path")
-  inv <- readRDS(paste0(adb_path, "/_meta/inventory.rds"))
+  intPaths <- .adb_state$path
+  inv <- readRDS(paste0(intPaths, "/inventory.rds"))
 
-  gazPath <- paste0(getOption(x = "gazetteer_path"))
-  gazClasses <- get_class(ontology = gazPath)
-  topClass <- paste0(getOption(x = "gazetteer_top"))
+  gazName <- "gazetteer"
+  load(paste0(intPaths, "/db_info.RData"))
+  topClass <- db_info$level
 
   inv_tables <- inv$tables
   inv_geoms <- inv$geometries
   inv_series <- inv$dataseries
 
-  tables <- list.files(path = paste0(adb_path, "/tables/stage3"), full.names = TRUE)
-  geometries <- list.files(path = paste0(adb_path, "/geometries/stage3"), full.names = TRUE, pattern = "\\.gpkg$")
+  tables <- list.files(path = paste0(intPaths, "/tables/stage3"), full.names = TRUE)
+  geometries <- list.files(path = paste0(intPaths, "/geometries/stage3"), full.names = TRUE, pattern = "\\.gpkg$")
 
-  # first, get all items down until the "topClass"
-  allItems <- make_tree(class = topClass, reverse = TRUE, ontology = gazPath)
-  top <- get_concept(class = names(territory), label = territory[[1]], ontology = gazPath) %>%
+  # get all canonical terms and find the requested territory root
+  allItems <- .read_terms(gazName)
+  top <- allItems %>%
+    filter(class == names(territory), label == territory[[1]]) %>%
     pull(id)
 
   # then select those that are determined by "broadest"
@@ -56,7 +57,7 @@ adb_querry <- function(territory = NULL, concept = NULL, variable = NULL,
   outIDs <- top
   while(is.null(fin)){
     childID <- allItems %>%
-      filter(has_broader %in% top) %>%
+      filter(parent_id %in% top) %>%
       pull(id)
     if(length(childID) != 0){
       top <- childID
@@ -67,7 +68,7 @@ adb_querry <- function(territory = NULL, concept = NULL, variable = NULL,
   }
 
   tableNames <- allItems |>
-    filter(id %in% outIDs & class == "al1")
+    filter(id %in% outIDs & class == topClass)
 
   metaNames <- c("sources", "years", "min_year", "max_year")
 
@@ -196,7 +197,7 @@ adb_querry <- function(territory = NULL, concept = NULL, variable = NULL,
     #
     #   saveGIF(for(j in seq_along(targetYear)){
     #     plotSteps(targetYear[j])
-    #   }, interval = 1, movie.name = paste0(adb_path, "/", nation, "_", theConcept, "_", min(year), "_", max(year), ".gif"))
+    #   }, interval = 1, movie.name = paste0(intPaths, "/", nation, "_", theConcept, "_", min(year), "_", max(year), ".gif"))
     #
     # } else {
     #

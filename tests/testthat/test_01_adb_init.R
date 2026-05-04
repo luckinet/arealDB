@@ -4,19 +4,22 @@ context("adb_init")
 
 test_that("path has been added to the global options", {
 
-  inPath <- system.file("test_datasets", package = "arealDB", mustWork = TRUE)
   dbpath <- paste0(tempdir(), "/newDB")
-  gazPath <- paste0(dbpath, "/territories.rds")
+  if(dir.exists(dbpath)) unlink(dbpath, recursive = TRUE)
 
-  dir.create(file.path(dbpath))
-  saveRDS(object = arealDB::territories, file = gazPath)
   adb_init(root = dbpath,
            version = "some0.0.1", licence = "https://creativecommons.org/licenses/by-sa/4.0/",
-           author = list(cre = "Gordon Freeman", aut = "Alyx Vance", ctb = "The G-Man"),
-           gazetteer = gazPath, top = "al1",
-           ontology = list(commodity = paste0(inPath, "/ontology.rds")))
+           author = list(cre = "Jane Doe", aut = "John Doe", ctb = "Jamie Roe"),
+           level = "ADM0")
 
-  out <- getOption("adb_path")
+  expect_true(dir.exists(file.path(dbpath, "vocabularies", "stage1")))
+  expect_true(dir.exists(file.path(dbpath, "vocabularies", "stage2")))
+  expect_true(dir.exists(file.path(dbpath, "vocabularies", "stage3")))
+  expect_true(dir.exists(file.path(dbpath, "vocabularies", "mappings")))
+  expect_true(dir.exists(file.path(dbpath, "vocabularies", "schemas")))
+  expect_true(dir.exists(file.path(dbpath, "tables", "schemas")))
+
+  out <- .adb_state$path
   expect_character(x = out)
   expect_true(out == dbpath)
 })

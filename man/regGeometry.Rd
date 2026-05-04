@@ -23,7 +23,7 @@ regGeometry(
 \item{...}{\code{\link[=character]{character(1)}}\cr optional named argument selecting
 the main territory into which this geometry is nested. The name of this
 must be a class of the gazetteer and the value must be one of the territory
-names of that class, e.g. \emph{nation = "Estonia"}.}
+names of that class, e.g. \emph{nation = "a_nation"}.}
 
 \item{subset}{\code{\link[=character]{character(1)}}\cr optional argument to specify
 which subset the file contains. This could be a subset of territorial units
@@ -103,7 +103,7 @@ if(dev.interactive()){
               layer = "example_geom1",
               archive = "example_geom.7z|example_geom1.gpkg",
               archiveLink = "https://gadm.org/",
-              nextUpdate = "2019-10-01",
+              downloadDate = as.Date("2019-10-01"),
               updateFrequency = "quarterly")
 
   # The second administrative level in GADM contains names in the columns
@@ -114,13 +114,14 @@ if(dev.interactive()){
               layer = "example_geom2",
               archive = "example_geom.7z|example_geom2.gpkg",
               archiveLink = "https://gadm.org/",
-              nextUpdate = "2019-10-01",
+              downloadDate = as.Date("2019-10-01"),
               updateFrequency = "quarterly")
 }
 }
 \seealso{
 Other register functions: 
 \code{\link{regDataseries}()},
-\code{\link{regTable}()}
+\code{\link{regTable}()},
+\code{\link{regVocabulary}()}
 }
 \concept{register functions}

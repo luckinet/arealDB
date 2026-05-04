@@ -2,27 +2,22 @@
 % Please edit documentation in R/adb_diagnose.R
 \name{adb_diagnose}
 \alias{adb_diagnose}
-\title{Diagnose databse contents}
+\title{Diagnose database contents}
 \usage{
-adb_diagnose(
-  territory = NULL,
-  concept = NULL,
-  variable = NULL,
-  level = NULL,
-  year = NULL
-)
+adb_diagnose(verbose = FALSE)
 }
 \arguments{
-\item{territory}{description}
-
-\item{concept}{description}
-
-\item{variable}{description}
-
-\item{level}{description}
-
-\item{year}{description}
+\item{verbose}{logical; if \code{TRUE}, print a full per-nation summary
+(default \code{FALSE}).}
+}
+\value{
+invisibly returns a list with elements \code{$status} (a tibble of
+registered vs normalised counts per dataseries) and \code{$unmatched} (a
+tibble of nations with NA gazID proportion above 0).
 }
 \description{
-work in progress, not yet useable
+Compares the stage2 and stage3 directories to report which dataseries have
+been registered, which have been normalised, and which are still pending.
+Also reports any stage3 files that contain a high proportion of unmatched
+territories (\code{NA} in \code{gazID}).
 }

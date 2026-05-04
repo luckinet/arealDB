@@ -1,6 +1,2 @@
-#' Example \code{gazetteer}
-#'
-#' An ontology of territory names (gazetteer)
-#' @format object of class \code{onto} for the example territories used in
-#'   \code{\link{adb_example}}.
-"territories"
+# placeholder — example datasets will be added when adb_example() is rebuilt
+# for the flat CSV gazetteer format

@@ -11,7 +11,7 @@ test_that("a table inventory entry is produced", {
   adb_example(until = "regGeometry", path = dbpath)
 
   meta_maia_1 <-
-    setIDVar(name = "al1", columns = 1) %>%
+    setIDVar(name = "ADM0", columns = 1) %>%
     setIDVar(name = "year", columns = 2) %>%
     setIDVar(name = "commodities", columns = 3) %>%
     setObsVar(name = "harvested", columns = 4) %>%
@@ -20,7 +20,7 @@ test_that("a table inventory entry is produced", {
   output <- regTable(subset = "barleyMaize",
                      dSeries = "madeUp",
                      gSeries = "gadm",
-                     label = "al1",
+                     label = "ADM0",
                      schema = meta_maia_1,
                      begin = 1990,
                      end = 2017,
@@ -30,9 +30,9 @@ test_that("a table inventory entry is produced", {
                      updateFrequency = "quarterly",
                      metadataLink = "https://ec.europa.eu/eurostat/de/table1/metadata")
 
-  expect_tibble(x = output, nrows = 1, ncols = 16, col.names = "strict")
+  expect_tibble(x = output, nrows = 1, ncols = 17, col.names = "strict")
   expect_names(x = names(output), must.include = c("tabID", "datID", "geoID", "geography", "level", "start_period", "end_period", "stage2_name", "schema", "stage1_name", "stage1_url", "download_date", "update_frequency", "metadata_url", "metadata_path", "notes"))
-  expect_file_exists(x = paste0(getOption("adb_path"), "/_meta/schemas/_al1_barleyMaize_1990_2017_madeUp_schema.rds"))
+  expect_file_exists(x = paste0(.adb_state$path, "/tables/schemas/_ADM0_barleyMaize_1990_2017_madeUp_schema.rds"))
 
 })
 
@@ -40,10 +40,10 @@ test_that("function asks for details, if not provided", {
 
   dbpath <- paste0(tempdir(), "/newDB")
   adb_example(until = "regGeometry", path = dbpath)
-  options(adb_testing = TRUE)
+  .adb_state$testing <- TRUE
 
   meta_maia_1 <-
-    setIDVar(name = "al1", columns = 1) %>%
+    setIDVar(name = "ADM0", columns = 1) %>%
     setIDVar(name = "year", columns = 2) %>%
     setIDVar(name = "commodities", columns = 3) %>%
     setObsVar(name = "harvested", columns = 4) %>%
@@ -64,6 +64,6 @@ test_that("function asks for details, if not provided", {
   expect_equal(object = output[10], expected = "please type in when the table was downloaded (YYYY-MM-DD): \n")
   expect_equal(object = output[11], expected = "if there is already metadata available:\n -> type in the weblink to the metadataset: \n")
   expect_equal(object = output[12], expected = "if there was an existing metadataset downloaded:\n -> type in the local path to the metadataset: \n")
-  expect_equal(object = output[13], expected = "... please store the table as '_al1__1990_2017_madeUp.csv' with utf-8 encoding in './tables/stage2'\n")
+  expect_equal(object = output[13], expected = "... please store the table as '_ADM0__1990_2017_madeUp.csv' in './tables/stage2'\n")
 
 })

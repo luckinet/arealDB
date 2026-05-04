@@ -13,7 +13,7 @@
 #' @param query [`character(1)`][character]\cr part of the SQL query (starting
 #'   from
 #'   WHERE) used to subset the input geometries, for example \code{"WHERE NAME_0
-#'   IN ('Estonia')"}. The first part of the query (where the layer is defined) is
+#'   IN ('a_nation')"}. The first part of the query (where the layer is defined) is
 #'   derived from the meta-data of the currently handled geometry.
 #' @param beep [`integerish(1)`][integer]\cr Number specifying what sound to be
 #'   played to signal the user that a point of interaction is reached by the
@@ -71,21 +71,21 @@
 #'   adb_example(until = "regGeometry", path = tempdir())
 #'
 #'   # normalise all geometries ...
-#'   normGeometry(pattern = "estonia")
+#'   normGeometry(pattern = "a_nation")
 #'
 #'   # ... and check the result
-#'   st_layers(paste0(tempdir(), "/geometries/stage3/Estonia.gpkg"))
-#'   output <- st_read(paste0(tempdir(), "/geometries/stage3/Estonia.gpkg"))
+#'   st_layers(paste0(tempdir(), "/geometries/stage3/a_nation.gpkg"))
+#'   output <- st_read(paste0(tempdir(), "/geometries/stage3/a_nation.gpkg"))
 #' }
 #' @importFrom checkmate assertFileExists assertIntegerish assertLogical
 #'   assertCharacter assertChoice testFileExists
-#' @importFrom ontologics new_source new_mapping get_class get_source
+#' @importFrom readr read_csv write_csv
 #' @importFrom dplyr filter distinct select mutate rowwise filter_at vars
 #'   all_vars pull group_by arrange summarise mutate_if rename n if_else ungroup
-#'   across
+#'   across bind_cols transmute
 #' @importFrom rlang sym exprs
 #' @importFrom readr read_csv read_rds
-#' @importFrom purrr map
+#' @importFrom purrr map map_dfr
 #' @importFrom tools file_ext
 #' @importFrom sf st_layers read_sf st_write st_join st_buffer st_equals st_sf
 #'   st_transform st_crs st_crs<- st_geometry_type st_area st_intersection
@@ -96,29 +96,32 @@
 #' @importFrom tibble as_tibble add_column
 #' @importFrom dplyr bind_rows slice lag desc n_distinct left_join right_join
 #'   first row_number
-#' @importFrom tidyr unite
+#' @importFrom tidyr unite separate_rows
 #' @importFrom tidyselect starts_with all_of
 #' @importFrom progress progress_bar
 #' @importFrom utils tail head
 #' @importFrom stats na.omit
 #' @importFrom beepr beep
+#' @importFrom arrow write_parquet
 #' @export
 
 normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10,
                          beep = NULL, simplify = FALSE, stringdist = TRUE,
                          strictMatch = FALSE, verbose = FALSE){
 
-  # set internal paths
-  intPaths <- paste0(getOption(x = "adb_path"))
-  gazPath <- paste0(getOption(x = "gazetteer_path"))
+  # library(progress); library(rmapshaper); library(purrr); library(sf); library(tidyr); intPaths <- arealDB:::.adb_state$path; input = NULL; pattern = NULL; query = NULL; thresh = 10; beep = NULL; simplify = FALSE; stringdist = TRUE; strictMatch = FALSE; verbose = FALSE
 
-  type <- str_split(tail(str_split(string = gazPath, pattern = "/")[[1]], 1), "[.]")[[1]][1]
+  # set internal paths
+  intPaths <- .adb_state$path
+  gazName <- "gazetteer"
 
   # get territorial context
-  topClass <- paste0(getOption(x = "gazetteer_top"))
-  topUnits <- get_concept(class = topClass, ontology = gazPath) %>%
+  load(paste0(intPaths, "/db_info.RData"))
+  topClass <- db_info$level
+  topUnits <- .read_terms(gazName) |>
+    filter(class == topClass) |>
     arrange(label)
-  allClasses <- get_class(ontology = gazPath) %>%
+  allClasses <- .read_levels(gazName) |>
     pull(label)
 
   if(is.null(input)){
@@ -131,7 +134,7 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
   moveFile <- TRUE
 
   # get tables
-  inventory <- readRDS(paste0(getOption(x = "adb_path"), "/_meta/inventory.rds"))
+  inventory <- readRDS(paste0(intPaths, "/inventory.rds"))
   inv_dataseries <- inventory$dataseries
   inv_geometries <- inventory$geometries
 
@@ -140,7 +143,7 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
   assertIntegerish(x = thresh, any.missing = FALSE)
   assertLogical(x = simplify, len = 1)
   assertNames(x = colnames(inv_geometries),
-              permutation.of = c("geoID", "datID", "stage2_name", "layer", "label", "ancillary", "stage1_name", "stage1_url", "download_date", "update_frequency", "notes"))
+              permutation.of = c("geoID", "datID", "stage2_name", "layer", "label", "ancillary", "stage1_name", "stage1_url", "download_date", "update_frequency", "status", "notes"))
   assertNames(x = colnames(inv_dataseries),
               permutation.of = c("datID", "name", "description", "homepage", "version", "licence_link", "notes"))
 
@@ -173,24 +176,24 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
       # manage dataseries
       dSeries <- inv_dataseries[inv_dataseries$datID == gSeries$datID,]
       dName <- dSeries$name
-      if(!dName %in% get_source(ontology = gazPath)$label){
-        new_source(name = dName,
-                   version = dSeries$version,
-                   date = Sys.Date(),
-                   description = dSeries$description,
-                   homepage = dSeries$homepage,
-                   license = dSeries$licence_link,
-                   ontology = gazPath)
+      # ensure mappings file exists for this dataseries
+      mappingsFile <- file.path(intPaths, "vocabularies", "mappings",
+                                paste0(gazName, "_", dName, ".csv"))
+      if(!file.exists(mappingsFile)){
+        write_csv(tibble(source_label = character(), source = character(),
+                         canonical_id = character(), note = character()),
+                  mappingsFile)
       }
 
       # extract class and label ...
-      targetClass <- map(.x = gLabel,
+      classLabels <- map(.x = gLabel,
                          .f = function(x){
                            temp <- str_split(x, "\\|")[[1]]
                            map(str_split(temp, "="), head, 1)
                          }) %>%
-        unlist() %>%
-        get_class(label = ., ontology = gazPath)
+        unlist()
+      targetClass <- .read_levels(gazName) %>%
+        filter(label %in% classLabels)
       parentClass <- allClasses[which(allClasses %in% tail(targetClass$label, 1)) - 1]
 
       targetLabel <- map(.x = gLabel,
@@ -200,10 +203,13 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
                         }) %>%
         unlist()
 
-      # ... and add them to the ontology
-      new_mapping(new = targetLabel, target = targetClass, source = dName,
-                  match = "exact", certainty = 3, type = "class",
-                  ontology = gazPath)
+      # record the class-label mappings for this dataseries
+      .write_mappings(gazName, tibble(
+        source_label = targetLabel,
+        source       = dName,
+        canonical_id = targetClass$label,
+        note         = "class_label"
+      ))
 
       territoryCols <- targetClass$label
       filledClasses <- allClasses[which(allClasses %in% head(territoryCols, 1)) : which(allClasses %in% tail(territoryCols, 1))]
@@ -256,16 +262,19 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
     }
 
     # identify whether the new geometry is first and therefore the geometric
-    # basis, or whether something has already been defined at that level
-    gazClasses <- get_class(external = TRUE, ontology = gazPath)
-    newParent <- gazClasses %>%
-      filter(label %in% tail(targetLabel, 1)) %>%
-      pull(has_broader)
-    testBasis <- gazClasses %>%
-      filter(has_broader %in% newParent) %>%
-      filter(row_number() == 1)
+    # basis, or whether something has already been defined at that level.
+    # Check if non-class_label mappings exist for the deepest target class.
+    deepClass <- tail(targetClass$label, 1)
+    deepTermIDs <- .read_terms(gazName) %>%
+      filter(class == deepClass) %>%
+      pull(id)
+    allMappings <- .read_mappings(gazName, dName)
+    existingMaps <- allMappings %>%
+      filter(source == dName,
+             note != "class_label" | is.na(note),
+             canonical_id %in% deepTermIDs)
 
-    if(tail(targetLabel, 1) == testBasis$label & str_detect(testBasis$id, dName)){
+    if(nrow(existingMaps) > 0){
       tempCols <- territoryCols
       spatMatch <- FALSE
     } else {
@@ -274,35 +283,37 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
     }
 
     # construct the harmonised names and ID
-    harmonised_geom <- .matchOntology(table = input_geom,
-                                      columns = tempCols,
-                                      dataseries = dName,
-                                      ontology = gazPath,
-                                      stringdist = stringdist,
-                                      strictMatch = strictMatch,
-                                      verbose = verbose,
-                                      beep = beep) %>%
-      mutate(unitCol := !!sym(topClass))
+    matched_geom <- .matchOntology(table = input_geom, # ToDo: here, somehow Gemeinde 13 and Gemeinde 14 are matched to municipality1_1 and municipality1_2. This is probably because that's the canonical_id listed in mappings_madeUp.csv. However, since the spatial matches are not "close" but "broader" or "narrower", they are not those municipalities and thus need to retain their original names
+                                   columns = tempCols,
+                                   dataseries = dName,
+                                   ontology = gazName,
+                                   stringdist = stringdist,
+                                   strictMatch = strictMatch,
+                                   verbose = verbose,
+                                   beep = beep)
 
     if(spatMatch){
-
-      if(tail(targetClass$label, 1) != topClass){
-        harmonised_geom <- harmonised_geom %>%
-          mutate(id = NA_character_) %>%
-          mutate(external = paste0(!!sym(tail(territoryCols, 1)), "_-_-", row_number()))
-      } else {
-        harmonised_geom <- harmonised_geom %>%
-          mutate(external = paste0(external, "_-_-", row_number()))
-      }
-
+      top_match_ext <- matched_geom %>%
+        st_drop_geometry() %>%
+        select(src_raw = external, canonical_label = !!sym(topClass)) %>%
+        distinct()
+      harmonised_geom <- input_geom %>%
+        mutate(src_raw = str_replace_all(trimws(!!sym(topClass)), "[.]", "")) %>%
+        left_join(top_match_ext, by = "src_raw") %>%
+        mutate(unitCol = if_else(!is.na(canonical_label), canonical_label, !!sym(topClass)),
+               id = NA_character_,
+               match = "close",
+               external = paste0(!!sym(tail(territoryCols, 1)), "_-_-", row_number())) %>%
+        select(-src_raw, -canonical_label)
     } else {
-      # if geometries are not matched spatially, just ignore all territories that have no match in the ontology
-      harmonised_geom <- harmonised_geom %>%
-        filter(!is.na(id))
+      # label path: matched rows plus new-territory rows (match == "new")
+      harmonised_geom <- matched_geom %>%
+        mutate(unitCol := !!sym(topClass)) %>%
+        filter(!is.na(id) | match == "new")
     }
 
     harmonised_geom <- harmonised_geom %>%
-      select(all_of(territoryCols), id, match, external, everything())
+      select(any_of(territoryCols), id, match, external, everything())
 
     if(is.null(theUnits)){
       theUnits <- unique(eval(expr = parse(text = "unitCol"), envir = harmonised_geom)) %>%
@@ -339,7 +350,7 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
         if(unique(st_geometry_type(new_geom)) == "POLYGON"){
           uniqueUnits <- new_geom %>%
             as_tibble() %>%
-            select(!!territoryCols) %>%
+            select(any_of(territoryCols)) %>%
             unique()
 
           if(all(!is.na(uniqueUnits))){
@@ -591,7 +602,10 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
             ungroup() %>%
             mutate(base_siblings = if_else(is.na(base_siblings) | gazID != parentID, 0, base_siblings),
                    tempID = str_pad(string = rn + base_siblings, width = 3, pad = 0),
-                   thisName = external,
+                   thisName = if_else(grepl("][", external, fixed = TRUE),
+                                      sub(".*\\]\\[", "", external),
+                                      external),
+                   # thisName = external,
                    gazID = if_else(!new_name, gazID, paste0(parentID, ".", tempID)),
                    gazName = if_else(!new_name, gazName, paste0(parentName, ".", thisName)),
                    geoID = newGID,
@@ -603,11 +617,35 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
           # already
           if(unique(output_geom$gazClass) != topClass){
 
-            message("    -> Updating ontology")
-            .updateOntology(table = output_geom %>% select(-geom),
-                            threshold = thresh,
-                            dataseries = dName,
-                            ontology = gazPath)
+            new_map_rows <- output_geom %>%
+              st_drop_geometry() %>%
+              filter(!is.na(external), !is.na(gazID)) %>%
+              transmute(source_label = sub(".*\\]\\[", "", external), source = dName,
+                        canonical_id = gazID, note = NA_character_) %>%
+              distinct()
+
+            message("    -> Writing mappings")
+            .write_mappings(gazName, new_map_rows)
+
+            # for newly minted IDs (new_name == TRUE), write the term to terms.parquet
+            new_term_rows <- output_geom %>%
+              st_drop_geometry() %>%
+              filter(new_name, !is.na(gazID), nchar(trimws(gazID)) > 0) %>%
+              mutate(parent_id = vapply(gazID, function(gid) {
+                parts <- head(strsplit(gid, ".", fixed = TRUE)[[1]], -1)
+                if (length(parts) == 0) NA_character_ else paste0(parts, collapse = ".")
+              }, character(1)),
+                     label = sub(".*\\]\\[", "", external)) %>%
+              transmute(id = gazID,
+                        label = label,
+                        class = gazClass,
+                        parent_id = parent_id) %>%
+              distinct()
+
+            if (nrow(new_term_rows) > 0) {
+              message("    -> Writing new terms to gazetteer")
+              .write_terms(gazName, new_term_rows)
+            }
 
           }
 
@@ -621,7 +659,7 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
           # if it has been identified that the new geometries need to be matched spatially in the
           # absence of a file/layer, it means that it must be intersected with the parent layer,
           # to derive the correct IDs
-          if(spatMatch){
+          if(spatMatch & !tail(targetClass$label, 1) == topClass){
             new_geom <- new_geom %>%
               rename(new_label = !!sym(tail(territoryCols, 1))) %>%
               select(-external, -match, -id, -all_of(head(territoryCols, -1))) %>%
@@ -673,11 +711,33 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
               select(all_of(filledClasses), gazID, match, external, geom, new_name, gazClass) %>%
               arrange(gazID)
 
-            message("    -> Updating ontology")
-            .updateOntology(table = new_geom %>% st_drop_geometry() %>% select(-geom),
-                            threshold = thresh,
-                            dataseries = dName,
-                            ontology = gazPath)
+            new_map_rows2 <- new_geom %>%
+              st_drop_geometry() %>%
+              filter(!is.na(external), !is.na(gazID)) %>%
+              transmute(source_label = external, source = dName,
+                        canonical_id = gazID, note = NA_character_) %>%
+              distinct()
+
+            message("    -> Writing mappings")
+            .write_mappings(gazName, new_map_rows2)
+
+            new_term_rows2 <- new_geom %>%
+              st_drop_geometry() %>%
+              filter(!is.na(gazID), nchar(trimws(gazID)) > 0) %>%
+              mutate(parent_id = vapply(gazID, function(gid) {
+                parts <- head(strsplit(gid, ".", fixed = TRUE)[[1]], -1)
+                if (length(parts) == 0) NA_character_ else paste0(parts, collapse = ".")
+              }, character(1))) %>%
+              transmute(id = gazID,
+                        label = external,
+                        class = gazClass,
+                        parent_id = parent_id) %>%
+              distinct()
+
+            if (nrow(new_term_rows2) > 0) {
+              message("    -> Writing new terms to gazetteer")
+              .write_terms(gazName, new_term_rows2)
+            }
 
             message("    Creating new basis dataset for class ", tail(targetClass$label, 1), ".")
             output_geom <- suppressMessages(
@@ -713,10 +773,8 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
 
 
     if(moveFile){
-      message(paste0("    Moving '", file_name, "' to './stage2/processed'"))
-      firstStage <- paste0(intPaths, "/geometries/stage2")
-      file.copy(from = paste0(firstStage, "/", file_name), to = paste0(firstStage, "/processed/", file_name))
-      file.remove(paste0(firstStage, "/", file_name))
+      inventory$geometries$status[inventory$geometries$stage2_name == file_name] <- "normalised"
+      saveRDS(object = inventory, file = paste0(intPaths, "/inventory.rds"))
     }
 
     outgSeries <- bind_rows(outgSeries, gSeries)

@@ -2,21 +2,21 @@
 % Please edit documentation in R/adb_translations.R
 \name{adb_translations}
 \alias{adb_translations}
-\title{Load the translation tables of the currently active areal database}
+\title{Load the mapping table for a dataseries against a vocabulary}
 \usage{
-adb_translations(type = NULL, dataseries = NULL)
+adb_translations(vocabulary = NULL, dataseries = NULL)
 }
 \arguments{
-\item{type}{\code{\link[=character]{character(1)}}\cr the type of ontology for which to
-load translation tables, either \code{"ontology"} to get the thematic
-concepts, or \code{"gazetteer"} to get the territories.}
+\item{vocabulary}{character; name of a registered vocabulary
+(e.g. \code{"gazetteer"}, \code{"commodity"}).}
 
-\item{dataseries}{\code{\link[=character]{character(1)}}\cr the name of a dataseries as
-registered in \code{\link{regDataseries}}.}
+\item{dataseries}{character; name of a registered dataseries.}
 }
 \value{
-returns the selected translation table
+tibble with columns \code{source_label}, \code{source},
+\code{canonical_id}, \code{parent_id}, \code{note}.
 }
 \description{
-Load the translation tables of the currently active areal database
+Returns the mappings table that records how external source labels are
+mapped to canonical IDs of the requested vocabulary.
 }

@@ -4,15 +4,29 @@ library(checkmate)
 context("adb_ontology")
 
 
-test_that("", {
+test_that("adb_ontology returns gazetteer with mapping columns after normGeometry", {
 
   dbpath <- paste0(tempdir(), "/newDB")
+  adb_example(until = "normGeometry", path = dbpath)
 
-  adb_example(until = "normTable", path = dbpath)
+  onto <- adb_ontology(vocabulary = "gazetteer")
 
-  onto <- adb_ontology(type = "gazetteer")
+  # base terms columns plus gadm and madeUp mapping columns
+  expect_data_frame(x = onto)
+  expect_names(x = names(onto), must.include = c("id", "label", "class", "parent_id", "gadm", "madeUp"))
 
-  expect_data_frame(x = onto, nrows = 13, ncols = 9)
-  expect_names(x = names(onto), identical.to = c("id", "label", "class", "has_broader", "description", "has_broader_match", "has_close_match", "has_exact_match", "has_narrower_match"))
+  # all canonical terms are present
+  expect_true("a_nation" %in% onto$label)
+  expect_true(all(c("ADM0", "ADM1", "ADM2") %in% onto$class))
+
+})
+
+test_that("adb_ontology filter argument works", {
+
+  dbpath <- paste0(tempdir(), "/newDB")
+  adb_example(until = "normGeometry", path = dbpath)
+
+  onto_adm0 <- adb_ontology(class == "ADM0", vocabulary = "gazetteer")
+  expect_true(all(onto_adm0$class == "ADM0"))
 
 })

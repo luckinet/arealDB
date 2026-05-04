@@ -74,17 +74,59 @@ globalVariables(c(
   "tabID",
   "ontoID",
   "ontoMatch",
+  "ontoName",
+  "ontoClass",
   "datID",
   "thisGeoID",
-  "keep"
+  "keep",
+  "simple",
+  "orig",
+  "source_label",
+  "canonical_id",
+  "note",
+  "term_parent",
+  "parent_id",
+  "class",
+  "orig_",
+  "term_level",
+  "parent_id.y",
+  "source",
+  "simplified",
+  "match",
+  "canonical_id_resolved",
+  "suffix",
+  "parent_class",
+  "parent_label",
+  "src_raw",
+  "canonical_label",
+  "pct_unmatched",
+  "is_new",
+  "is_new.x",
+  "is_new.y",
+  "canonical_id_na",
+  "note_na",
+  "parent_id.x",
+  "col_character"
 ))
+
+#' Package-private state for the active areal database.
+#'
+#' Slots:
+#' \itemize{
+#'   \item \code{path} — root directory of the active areal database, set by
+#'     \code{\link{adb_init}}.
+#'   \item \code{testing} — TRUE while \code{\link{adb_example}} runs, so
+#'     interactive prompts in reg* functions are skipped.
+#' }
+.adb_state <- new.env(parent = emptyenv())
+.adb_state$path    <- NULL
+.adb_state$testing <- FALSE
 
 .onLoad <- function(libname, pkgname) {
   # CRAN OMP THREAD LIMIT
   Sys.setenv("OMP_THREAD_LIMIT" = 1)
-
 }
 
 .onAttach <- function(libname, pkgname){
-  options(adb_testing = FALSE)
+  .adb_state$testing <- FALSE
 }

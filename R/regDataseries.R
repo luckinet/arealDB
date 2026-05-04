@@ -43,14 +43,14 @@ regDataseries <- function(name = NULL, description = NULL, homepage = NULL,
                           notes = NULL, overwrite = FALSE){
 
   # set internal paths
-  intPaths <- paste0(getOption(x = "adb_path"))
+  intPaths <- .adb_state$path
 
   # get tables
-  inventory <- readRDS(paste0(getOption(x = "adb_path"), "/_meta/inventory.rds"))
+  inventory <- readRDS(paste0(intPaths, "/inventory.rds"))
   inv_dataseries <- inventory$dataseries
 
   # in testing mode?
-  testing <- getOption(x = "adb_testing")
+  testing <- .adb_state$testing
 
   # check validity of arguments
   assertNames(x = colnames(inv_dataseries),
@@ -166,7 +166,7 @@ regDataseries <- function(name = NULL, description = NULL, homepage = NULL,
 
   inventory$dataseries <- bind_rows(inv_dataseries, temp)
   inventory$references <- c(inventory$references, reference)
-  saveRDS(object = inventory, file = paste0(intPaths, "/_meta/inventory.rds"))
+  saveRDS(object = inventory, file = paste0(intPaths, "/inventory.rds"))
 
 
   return(temp)

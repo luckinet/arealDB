@@ -8,14 +8,14 @@ adb_backup()
 }
 \value{
 No return value, called for the side effect of saving the inventory,
-the stage3 files and modified ontology/gazetteer into the backup directory.
+the stage 3 files and the vocabulary files into the backup directory.
 }
 \description{
 Backup the current state of an areal database
 }
 \details{
-This function creates a tag that is composed of the version and the
-date, appends it to all stage3 files (tables and geometries), the inventory
-and the ontology/gazetteer files and stores them in the backup folder of
-the current areal database.
+This function creates a tag composed of the version and the
+current date and appends it to all stage 3 files (tables and geometries),
+the inventory and every registered vocabulary's parquet files. The tagged
+copies are written to the backup folder of the current areal database.
 }
