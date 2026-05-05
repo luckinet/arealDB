@@ -106,7 +106,8 @@ globalVariables(c(
   "canonical_id_na",
   "note_na",
   "parent_id.x",
-  "col_character"
+  "col_character",
+  "matched_id"
 ))
 
 #' Package-private state for the active areal database.

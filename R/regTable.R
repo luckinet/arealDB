@@ -124,15 +124,12 @@ regTable <- function(..., subset = NULL, dSeries = NULL, gSeries = NULL,
 
   # set internal paths
   intPaths <- .adb_state$path
-  gazName <- "gazetteer"
 
   # get tables
   inventory <- readRDS(paste0(intPaths, "/inventory.rds"))
   inv_tables <- inventory$tables
   load(paste0(intPaths, "/db_info.RData"))
-  topClass <- db_info$level
-
-  gazClasses <- .read_levels(gazName)
+  topClass <- db_info$level[1]
   inv_dataseries <- inventory$dataseries
   inv_geometries <- inventory$geometries
 
@@ -177,8 +174,7 @@ regTable <- function(..., subset = NULL, dSeries = NULL, gSeries = NULL,
   if(length(broadest) > 0){
     mainPoly <- eval_tidy(broadest[[1]])
 
-    # test whether broadest exists in the gazetteer
-    assertSubset(x = names(broadest), choices = gazClasses$label)
+    assertSubset(x = names(broadest), choices = db_info$level)
   } else {
     mainPoly <- ""
   }

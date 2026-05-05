@@ -196,7 +196,7 @@
         left_join(newConcepts, by = allCols[1:(i - 1)]) |>
         select(label = allCols[i], external = allCols[i],
                parent_id = id) |>
-        mutate(id = NA_character_)
+        mutate(id = NA_character_, has_broader = NA_character_, is_new = FALSE)
 
     } else {
 

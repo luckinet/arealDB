@@ -117,7 +117,7 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
 
   # get territorial context
   load(paste0(intPaths, "/db_info.RData"))
-  topClass <- db_info$level
+  topClass <- db_info$level[1]
   topUnits <- .read_terms(gazName) |>
     filter(class == topClass) |>
     arrange(label)
@@ -295,16 +295,16 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
     if(spatMatch){
       top_match_ext <- matched_geom %>%
         st_drop_geometry() %>%
-        select(src_raw = external, canonical_label = !!sym(topClass)) %>%
+        select(src_raw = external, canonical_label = !!sym(topClass), matched_id = id) %>%
         distinct()
       harmonised_geom <- input_geom %>%
         mutate(src_raw = str_replace_all(trimws(!!sym(topClass)), "[.]", "")) %>%
         left_join(top_match_ext, by = "src_raw") %>%
         mutate(unitCol = if_else(!is.na(canonical_label), canonical_label, !!sym(topClass)),
-               id = NA_character_,
+               id = matched_id,
                match = "close",
                external = paste0(!!sym(tail(territoryCols, 1)), "_-_-", row_number())) %>%
-        select(-src_raw, -canonical_label)
+        select(-src_raw, -canonical_label, -matched_id)
     } else {
       # label path: matched rows plus new-territory rows (match == "new")
       harmonised_geom <- matched_geom %>%

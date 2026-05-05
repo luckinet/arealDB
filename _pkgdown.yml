@@ -24,31 +24,28 @@ reference:
       - adb_inventory
       - adb_metadata
       - adb_ontology
-      - adb_querry
+      - adb_query
       - adb_reset
       - adb_restore
       - adb_schemas
       - adb_translations
+      - match_builder
   - title: register data
     desc: functions that register data and metadata (stage two)
     contents:
       - regDataseries
       - regGeometry
       - regTable
+      - regVocabulary
   - title: normalise data
     desc: functions that harmonise and integrate data into the database (stage three)
     contents:
       - normGeometry
       - normTable
+      - normVocabulary
   - title: helpers
     contents:
-      - .editMatches
-      - .getColTypes
       - .matchOntology
-      - .updateOntology
-  - title: data
-    contents:
-      - territories
 
 navbar:
   left:

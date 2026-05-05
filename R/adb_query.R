@@ -37,7 +37,7 @@ adb_query <- function(territory = NULL, concept = NULL, variable = NULL,
 
   gazName <- "gazetteer"
   load(paste0(intPaths, "/db_info.RData"))
-  topClass <- db_info$level
+  topClass <- db_info$level[1]
 
   inv_tables <- inv$tables
   inv_geoms <- inv$geometries

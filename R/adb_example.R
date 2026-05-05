@@ -39,7 +39,7 @@
 
 adb_example <- function(path = NULL, until = NULL, verbose = FALSE){
 
-  # library(arealDB); library(checkmate); library(tabshiftr); library(tibble); library(arrow); library(stringr); library(dplyr); library(readr); path = paste0(tempdir(), "/newDB"); until = "regTable"; verbose = FALSE
+  # library(arealDB); library(checkmate); library(tabshiftr); library(tibble); library(arrow); library(stringr); library(dplyr); library(readr); path = paste0(tempdir(), "/newDB"); until = "regGeometry"; verbose = FALSE;
 
   # set internal paths
   inPath <- system.file("test_datasets", package = "arealDB", mustWork = TRUE)
@@ -67,7 +67,7 @@ adb_example <- function(path = NULL, until = NULL, verbose = FALSE){
     adb_init(root = path,
              version = "0.0.1", licence = "https://creativecommons.org/licenses/by-sa/4.0/",
              author = "Jane Doe",
-             level = "ADM0")
+             level = c("ADM0", "ADM1", "ADM2"))
   }
 
   # 2. copy files ----
@@ -79,7 +79,7 @@ adb_example <- function(path = NULL, until = NULL, verbose = FALSE){
 
   dir.create(file.path(path, "/vocabularies/stage1/icc/"), recursive = TRUE)
   file.copy(from = paste0(inPath, "/ontology/base_ontology.csv"),
-            to = paste0(path, "/vocabularies/stage1/icc/terms.csv"))
+            to = paste0(path, "/vocabularies/stage1/icc/base_ontology.csv"))
 
   ### stage 2
   file.copy(from = paste0(inPath, "/gazetteer/terms.csv"),

@@ -20,9 +20,12 @@ building this areal database. Should be a list with items \code{"cre"}
 \item{licence}{\code{\link[=character]{character(1)}}\cr licence (link) for this areal
 database.}
 
-\item{level}{\code{\link[=character]{character(1)}}\cr the label of the class in the
-gazetteer at which this database operates (e.g. \code{"ADM0"} for a
-national database). Stage 3 outputs are split by units of this class.}
+\item{level}{\code{\link[=character]{character()}}\cr the labels of all administrative
+classes this database will handle, ordered from broadest to finest
+(e.g. \code{c("ADM0", "ADM1", "ADM2")} for a database going down to the
+second sub-national level). The first entry defines the class at which
+stage 3 outputs are split; all entries define the valid set of level names
+accepted by \code{\link{regGeometry}} and \code{\link{regTable}}.}
 }
 \value{
 No return value, called for the side effect of creating the
@@ -43,5 +46,5 @@ inventory tables. Vocabularies (gazetteer, ontologies) are added later via
 adb_init(root = paste0(tempdir(), "/newDB"),
          version = "1.0.0", licence = "CC-BY-0.4",
          author = list(cre = "Jane Doe", aut = "John Doe", ctb = "Jamie Roe"),
-         level = "ADM0")
+         level = c("ADM0", "ADM1", "ADM2"))
 }

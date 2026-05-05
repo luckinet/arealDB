@@ -67,13 +67,20 @@ match_builder <- function(new, topLevel = FALSE, source = NULL,
     e <- new.env(); load(paste0(.adb_state$path, "/db_info.RData"), envir = e); e$db_info
   }, error = function(e) NULL)
   db_version <- if (!is.null(db_meta)) db_meta$version else "unknown"
-  db_level   <- if (!is.null(db_meta)) db_meta$level   else "unknown"
+  db_level   <- if (!is.null(db_meta)) paste(db_meta$level, collapse = ", ") else "unknown"
 
   # --- build candidate set --------------------------------------------------
   if (topLevel || all(is.na(new$parent_id))) {
-    candidates <- terms |>
-      filter(is.na(parent_id)) |>
-      select(id, label, class, parent_id)
+    target_class <- if ("class" %in% names(new)) unique(na.omit(new$class)) else character(0)
+    if (length(target_class) > 0) {
+      candidates <- terms |>
+        filter(class %in% target_class) |>
+        select(id, label, class, parent_id)
+    } else {
+      candidates <- terms |>
+        filter(is.na(parent_id)) |>
+        select(id, label, class, parent_id)
+    }
   } else {
     parent_ids <- unique(na.omit(new$parent_id))
     candidates <- terms |>
@@ -559,11 +566,22 @@ match_builder <- function(new, topLevel = FALSE, source = NULL,
       })
 
       output$candidates_table <- DT::renderDataTable({
-        DT::datatable(
-          terms |> select(id, label, class, parent_id),
+        assigned_ids <- rv$decisions[nzchar(rv$decisions) &
+                                     !rv$decisions %in% c("ignore","new","new?","skip")]
+        tbl <- candidates |> select(id, label, class, parent_id)
+        tbl$assigned <- tbl$id %in% assigned_ids
+        # assigned column is hidden (index 5, 0-based = 4); used only for row styling
+        dt <- DT::datatable(
+          tbl,
           selection = "none", rownames = FALSE, filter = "top",
           options   = list(pageLength = 25, scrollX = TRUE,
+                           columnDefs = list(list(visible = FALSE, targets = 4)),
                            order = list(list(2, "asc"), list(3, "asc")))
+        )
+        DT::formatStyle(dt, "assigned",
+          target = "row",
+          backgroundColor = DT::styleEqual(c(TRUE, FALSE), c("#eafaf1", "")),
+          fontWeight      = DT::styleEqual(c(TRUE, FALSE), c("600", "normal"))
         )
       })
 

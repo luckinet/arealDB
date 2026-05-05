@@ -103,16 +103,13 @@ regGeometry <- function(..., subset = NULL, gSeries = NULL, label = NULL,
 
   # set internal paths
   intPaths <- .adb_state$path
-  gazName <- "gazetteer"
 
   # get tables
   inventory <- readRDS(paste0(intPaths, "/inventory.rds"))
   inv_dataseries <- inventory$dataseries
   inv_geometries <- inventory$geometries
   load(paste0(intPaths, "/db_info.RData"))
-  topClass <- db_info$level
-
-  gazClasses <- .read_levels(vName = gazName)
+  topClass <- db_info$level[1]
 
   if(dim(inv_dataseries)[1] == 0){
     stop("'inv_dataseries.csv' does not contain any entries!")
@@ -143,8 +140,7 @@ regGeometry <- function(..., subset = NULL, gSeries = NULL, label = NULL,
   if(length(broadest) > 0){
     mainPoly <- broadest[[1]]
 
-    # test whether broadest exists in the gazetteer
-    assertSubset(x = names(broadest), choices = gazClasses$label)
+    assertSubset(x = names(broadest), choices = db_info$level)
   } else {
     mainPoly <- ""
   }
@@ -182,7 +178,7 @@ regGeometry <- function(..., subset = NULL, gSeries = NULL, label = NULL,
   }
 
 
-  assertSubset(x = names(label), choices = gazClasses$label)
+  assertSubset(x = names(label), choices = db_info$level)
   theLabel <- tail(names(label), 1)
   labelString <- paste0(paste0(names(label), "=", label), collapse = "|")
 

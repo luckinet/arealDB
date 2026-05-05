@@ -189,10 +189,10 @@ regVocabulary <- function(name, dSeries, description, schema = NULL,
 
   # test whether the stage1 file is available
   if(!is.null(archive) && !is.na(archive)){
-    stage1Dir  <- paste0(intPaths, "/vocabularies/stage1/")
+    stage1Dir  <- paste0(intPaths, "/vocabularies/stage1/", dSeries, "/")
     stage1Path <- paste0(stage1Dir, archive)
     if(!testFileExists(x = stage1Path)){
-      message(paste0("... please store the file '", archive, "' in './vocabularies/stage1/'"))
+      message(paste0("... please store the file '", archive, "' in './vocabularies/stage1/", dSeries, "/'"))
       if(!testDirectoryExists(x = stage1Dir)){
         dir.create(path = stage1Dir, recursive = TRUE)
       }

@@ -10,7 +10,7 @@ test_that("path has been added to the global options", {
   adb_init(root = dbpath,
            version = "some0.0.1", licence = "https://creativecommons.org/licenses/by-sa/4.0/",
            author = list(cre = "Jane Doe", aut = "John Doe", ctb = "Jamie Roe"),
-           level = "ADM0")
+           level = c("ADM0", "ADM1", "ADM2"))
 
   expect_true(dir.exists(file.path(dbpath, "vocabularies", "stage1")))
   expect_true(dir.exists(file.path(dbpath, "vocabularies", "stage2")))

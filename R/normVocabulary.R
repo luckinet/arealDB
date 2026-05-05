@@ -100,6 +100,21 @@ normVocabulary <- function(input = NULL, pattern = NULL,
               " skipping (not registered) ", file_name, " ---")
       next
     }
+
+    termsExists   <- file.exists(file.path(intPaths, "vocabularies", "stage3",
+                                           paste0(vName, "_terms.parquet")))
+    mappingExists <- file.exists(file.path(intPaths, "vocabularies", "mappings",
+                                           paste0(vName, "_", dName, ".parquet"))) ||
+                     file.exists(file.path(intPaths, "vocabularies", "mappings",
+                                           paste0(vName, "_", dName, ".csv")))
+    alreadyDone <- inv_vocabularies$status[inv_vocabularies$stage2_name == file_name] == "normalised" ||
+                   (termsExists && mappingExists)
+    if(alreadyDone){
+      message("\n--- ", i, " / ", length(input),
+              " skipping (already normalised) ", file_name, " ---")
+      next
+    }
+
     message("\n--- ", i, " / ", length(input), " ", file_name, " ---")
 
     # resolve schema
@@ -205,6 +220,28 @@ normVocabulary <- function(input = NULL, pattern = NULL,
           pc <- levels$parent_class[levels$class == cl]
           if(length(pc) == 0 || is.na(pc)) NA_character_ else pc
         }, character(1)))
+
+      # append any sub-national levels declared in db_info$level that the
+      # backbone vocabulary doesn't define (e.g. ADM1, ADM2 are country-specific
+      # and will never appear in a global gazetteer backbone)
+      db_meta <- tryCatch({
+        e <- new.env(); load(file.path(intPaths, "db_info.RData"), envir = e); e$db_info
+      }, error = function(e) NULL)
+      if (!is.null(db_meta) && length(db_meta$level) > 1) {
+        extra_levels <- db_meta$level[!db_meta$level %in% levels_out$label]
+        if (length(extra_levels) > 0) {
+          all_levels <- c(levels_out$label, extra_levels)
+          extra_rows <- tibble(
+            level_id    = seq(nrow(levels_out) + 1, nrow(levels_out) + length(extra_levels)),
+            label       = extra_levels,
+            parent_level = vapply(extra_levels, function(lv) {
+              pos <- match(lv, all_levels)
+              if (pos > 1) all_levels[pos - 1] else NA_character_
+            }, character(1))
+          )
+          levels_out <- bind_rows(levels_out, extra_rows)
+        }
+      }
 
       write_parquet(levels_out, levelsFile)
 

@@ -11,9 +11,12 @@
 #'   (creator), \code{"aut"} (authors) and \code{"ctb"} (contributors).
 #' @param licence [`character(1)`][character]\cr licence (link) for this areal
 #'   database.
-#' @param level [`character(1)`][character]\cr the label of the class in the
-#'   gazetteer at which this database operates (e.g. \code{"ADM0"} for a
-#'   national database). Stage 3 outputs are split by units of this class.
+#' @param level [`character()`][character]\cr the labels of all administrative
+#'   classes this database will handle, ordered from broadest to finest
+#'   (e.g. \code{c("ADM0", "ADM1", "ADM2")} for a database going down to the
+#'   second sub-national level). The first entry defines the class at which
+#'   stage 3 outputs are split; all entries define the valid set of level names
+#'   accepted by \code{\link{regGeometry}} and \code{\link{regTable}}.
 #' @details This is the first function that is run in a project, as it initiates
 #'   the areal database by creating the default sub-directories and initial
 #'   inventory tables. Vocabularies (gazetteer, ontologies) are added later via
@@ -25,7 +28,7 @@
 #' adb_init(root = paste0(tempdir(), "/newDB"),
 #'          version = "1.0.0", licence = "CC-BY-0.4",
 #'          author = list(cre = "Jane Doe", aut = "John Doe", ctb = "Jamie Roe"),
-#'          level = "ADM0")
+#'          level = c("ADM0", "ADM1", "ADM2"))
 #' @importFrom checkmate testDirectory testFileExists assertCharacter
 #' @importFrom stringr str_detect
 #' @importFrom tibble tibble
@@ -38,7 +41,7 @@ adb_init <- function(root, version, author, licence, level){
   testing <- .adb_state$testing
 
   assertCharacter(x = root, len = 1)
-  assertCharacter(x = level, len = 1, any.missing = FALSE)
+  assertCharacter(x = level, min.len = 1, any.missing = FALSE)
   if(str_detect(string = version, pattern = "_")){
     stop("please chose a version name that does not contain the symbol '_'")
   }

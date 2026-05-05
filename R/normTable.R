@@ -84,7 +84,7 @@ normTable <- function(input = NULL, pattern = NULL, query = NULL, ontoMatch = NU
 
   # get territorial context
   load(paste0(intPaths, "/db_info.RData"))
-  topClass <- db_info$level
+  topClass <- db_info$level[1]
   topUnits <- .read_terms(gazName) %>%
     filter(class == topClass) %>%
     arrange(label)
@@ -157,7 +157,7 @@ normTable <- function(input = NULL, pattern = NULL, query = NULL, ontoMatch = NU
 
     # reorganise data
     message("\n--> reading new data table ...")
-    thisTable <- read.csv(file = thisInput, header = FALSE, strip.white = TRUE, as.is = TRUE, colClasses = "character", na.strings = algorithm@format$na, encoding = "UTF-8") %>%
+    thisTable <- read.csv(file = thisInput, header = FALSE, strip.white = FALSE, as.is = TRUE, colClasses = "character", na.strings = algorithm@format$na, encoding = "UTF-8") %>%
       as_tibble() %>%
       mutate(across(where(is.character), ~na_if(x = ., y = "")))
 

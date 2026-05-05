@@ -2,6 +2,13 @@
 
 - fix `query = ...` in `normGeometry()` to allow full customization. <-> has been reverted as it makes sense to select layers automatically. -> improving documentation.
 - change `.matchOntology()` so that it's possible to match "gappy" hierarchies.
+- `adb_init()` now accepts a vector for `level =` (e.g. `c("ADM0", "ADM1", "ADM2")`), describing every administrative class the database will handle. The first entry is the splitting class for stage 3; all entries form the valid set checked by `regGeometry()` and `regTable()`.
+- `regVocabulary()` now stores stage 1 vocabulary files under `vocabularies/stage1/<dSeries>/` so multiple data series can keep namespaced inputs.
+- `normTable()` now reads stage 2 CSVs with `strip.white = FALSE`, preserving leading whitespace that encodes hierarchy in source tables (e.g. indented sub-national names).
+- `normGeometry()` carries the matched gazetteer `id` through the spatial-match branch, so harmonised geometries are no longer left with `id = NA` after a successful match.
+- `match_builder()` highlights candidates that have already been assigned a match in the current session.
+- fix `fixParent` branch in `.matchOntology()` where missing `has_broader` / `is_new` columns crashed the downstream join.
+- fix typo `adb_querry` → `adb_query` in the pkgdown reference index, and update CI to checkout@v4 / upload-artifact@v4 plus install `libarchive-dev` for the `archive` package on Linux.
 
 # arealDB 0.9.4
 
