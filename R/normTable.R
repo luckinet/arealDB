@@ -132,6 +132,9 @@ normTable <- function(input = NULL, pattern = NULL, query = NULL, ontoMatch = NU
     if(!file_name %in% inv_tables$stage2_name){
       message("\n--- ", i, " / ", length(input), " skipping ", rep("-", times = getOption("width")-(nchar(i)+nchar(length(input))+21+nchar(file_name))), " ", file_name, " ---")
       next
+    } else if(any(inv_tables$status[inv_tables$stage2_name == file_name] == "normalised")){
+      message("\n--- ", i, " / ", length(input), " skipping (already normalised) ", rep("-", times = max(0, getOption("width")-(nchar(i)+nchar(length(input))+38+nchar(file_name)))), " ", file_name, " ---")
+      next
     } else {
       message("\n--- ", i, " / ", length(input), " ", rep("-", times = getOption("width")-(nchar(i)+nchar(length(input))+13+nchar(file_name))), " ", file_name, " ---")
     }
