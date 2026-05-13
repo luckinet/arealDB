@@ -43,9 +43,6 @@ reference:
       - normGeometry
       - normTable
       - normVocabulary
-  - title: helpers
-    contents:
-      - .matchOntology
 
 navbar:
   left:

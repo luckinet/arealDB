@@ -8,6 +8,7 @@
 #' @importFrom dplyr summarise_all left_join pull
 #' @importFrom tidyr gather
 #' @importFrom stringr str_c
+#' @noRd
 
 .getColTypes <- function(input = NULL){
 
@@ -69,7 +70,7 @@
 #'   str_extract
 #' @importFrom tidyr unite separate_wider_delim fill pivot_wider
 #' @importFrom sf st_drop_geometry st_sf
-#' @export
+#' @noRd
 
 .matchOntology <- function(table = NULL, columns = NULL, dataseries = NULL,
                            ontology = NULL, colsAsClass = TRUE,
@@ -423,6 +424,7 @@
 #' @return tibble with columns: level_id, label, parent_level
 #' @importFrom arrow read_parquet
 #' @importFrom tibble as_tibble
+#' @noRd
 
 .read_levels <- function(vName) {
   as_tibble(read_parquet(
@@ -438,6 +440,7 @@
 #'   valid_from, valid_until, successor_id
 #' @importFrom arrow read_parquet
 #' @importFrom tibble as_tibble
+#' @noRd
 
 .read_terms <- function(vName) {
   read_parquet(
@@ -455,6 +458,7 @@
 #' @importFrom arrow read_parquet
 #' @importFrom tibble tibble as_tibble
 #' @importFrom readr col_character
+#' @noRd
 
 .read_mappings <- function(vName, dataseries) {
   f <- file.path(.adb_state$path, "vocabularies", "mappings",
@@ -479,6 +483,7 @@
 #' @importFrom arrow read_parquet
 #' @importFrom tibble as_tibble
 #' @importFrom stats setNames
+#' @noRd
 
 .read_all_mappings <- function(vName) {
   dir <- file.path(.adb_state$path, "vocabularies", "mappings")
@@ -503,6 +508,7 @@
 #' @param new_rows tibble; see Description for required columns
 #' @importFrom arrow write_parquet
 #' @importFrom dplyr bind_rows distinct arrange
+#' @noRd
 
 .write_mappings <- function(vName, new_rows) {
   dataseries <- unique(new_rows$source)
@@ -531,6 +537,7 @@
 #' @param new_rows tibble with columns matching the terms schema
 #' @importFrom arrow write_parquet
 #' @importFrom dplyr bind_rows distinct arrange
+#' @noRd
 
 .write_terms <- function(vName, new_rows) {
   existing <- .read_terms(vName)
@@ -557,6 +564,7 @@
 #' @return tibble with columns: source_label, canonical_id, note
 #' @importFrom dplyr left_join select filter
 #' @importFrom tibble tibble
+#' @noRd
 
 .lookup_mappings <- function(labels, vName, dataseries, parent_id = NULL) {
   mappings <- .read_mappings(vName, dataseries)
@@ -603,6 +611,7 @@
 #' @param vName [`character(1)`][character]\cr vocabulary name
 #' @return tibble with columns: id, label, class
 #' @importFrom dplyr filter select
+#' @noRd
 
 .get_children <- function(parent_id, vName) {
   terms <- .read_terms(vName)
@@ -620,6 +629,7 @@
 #' @param vName [`character(1)`][character]\cr vocabulary name
 #' @return character vector of labels from root to parent (not including id itself)
 #' @importFrom dplyr filter pull
+#' @noRd
 
 .get_ancestors <- function(id, vName) {
   terms <- .read_terms(vName)
