@@ -610,6 +610,15 @@ match_builder <- function(new, topLevel = FALSE, source = NULL,
 
       shiny::observeEvent(input$save_close, {
         result_env$mappings <- rv$decisions
+        result_env$saved <- TRUE
+        shiny::stopApp()
+      })
+
+      # if the user closes the browser tab/window without clicking Save & Close,
+      # the Shiny session ends and would otherwise leave runApp blocking. Treat
+      # that as a cancel: don't commit decisions, unblock the R side.
+      session$onSessionEnded(function() {
+        if (isTRUE(result_env$saved)) return(invisible())
         shiny::stopApp()
       })
     }
