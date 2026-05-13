@@ -109,7 +109,7 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
                          beep = NULL, simplify = FALSE, stringdist = TRUE,
                          strictMatch = FALSE, verbose = FALSE){
 
-  # library(progress); library(rmapshaper); library(purrr); library(sf); library(tidyr); intPaths <- arealDB:::.adb_state$path; input = NULL; pattern = NULL; query = NULL; thresh = 10; beep = NULL; simplify = FALSE; stringdist = TRUE; strictMatch = FALSE; verbose = FALSE
+  #  library(checkmate); library(arrow); library(progress); library(rmapshaper); library(purrr); library(sf); library(tidyr); intPaths = "./gld-1km/workflow/01-build_census_database/_censusDB"; input = NULL; pattern = paste0("Guatemala.*", gs[1]); query = NULL; thresh = 10; beep = NULL; simplify = FALSE; stringdist = TRUE; strictMatch = FALSE; verbose = FALSE
 
   # set internal paths
   intPaths <- .adb_state$path
@@ -159,6 +159,9 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
 
     if(!file_name %in% inv_geometries$stage2_name){
       message("\n--- ", i, " / ", length(input), " skipping ", rep("-", times = getOption("width")-(nchar(i)+nchar(length(input))+21+nchar(file_name))), " ", file_name, " ---")
+      next
+    } else if(any(inv_geometries$status[inv_geometries$stage2_name == file_name] == "normalised")){
+      message("\n--- ", i, " / ", length(input), " skipping (already normalised) ", rep("-", times = max(0, getOption("width")-(nchar(i)+nchar(length(input))+38+nchar(file_name)))), " ", file_name, " ---")
       next
     } else {
       message("\n--- ", i, " / ", length(input), " ", rep("-", times = getOption("width")-(nchar(i)+nchar(length(input))+13+nchar(file_name))), " ", file_name, " ---")
@@ -212,7 +215,6 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
       ))
 
       territoryCols <- targetClass$label
-      filledClasses <- allClasses[which(allClasses %in% head(territoryCols, 1)) : which(allClasses %in% tail(territoryCols, 1))]
 
       if(territoryCols[1] != topClass){
         theUnits <- str_split(string = gSeries$stage2_name, pattern = "_")[[1]][1]
@@ -256,18 +258,47 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
       input_geom <- input_geom %>%
         add_column(tibble(!!topClass := theUnits), .before = territoryCols[1])
       territoryCols <- c(topClass, territoryCols)
-      allCols <- filledClasses
-    } else {
-      allCols <- territoryCols
     }
+    filledClasses <- allClasses[which(allClasses == territoryCols[1]) : which(allClasses == tail(territoryCols, 1))]
+    allCols <- filledClasses
 
     # identify whether the new geometry is first and therefore the geometric
-    # basis, or whether something has already been defined at that level.
-    # Check if non-class_label mappings exist for the deepest target class.
+    # basis, or whether something has already been defined at that level for
+    # the top-level units present in this file. The check must be scoped per
+    # top-unit (e.g. country) - a backbone for Mongolia must not imply a
+    # backbone for Guatemala.
     deepClass <- tail(targetClass$label, 1)
-    deepTermIDs <- .read_terms(gazName) %>%
-      filter(class == deepClass) %>%
-      pull(id)
+    allTerms <- .read_terms(gazName)
+    topUnitLabels <- unique(na.omit(input_geom[[topClass]]))
+    topUnitLabels <- str_replace_all(trimws(topUnitLabels), "[.]", "")
+    topUnitIDs <- .lookup_mappings(labels = topUnitLabels,
+                                   vName = gazName,
+                                   dataseries = dName) %>%
+      filter(!is.na(canonical_id)) %>%
+      pull(canonical_id)
+
+    if(deepClass == topClass){
+      # at the top class, mappings for this top-unit (if any) are the relevant
+      # set; cross-country ADM0 mappings must not bleed in
+      deepTermIDs <- topUnitIDs
+    } else if(length(topUnitIDs) > 0){
+      deepTermIDs <- allTerms %>%
+        filter(class == deepClass,
+               vapply(id, function(tid){
+                 cur <- allTerms$parent_id[allTerms$id == tid]
+                 while(length(cur) == 1 && !is.na(cur)){
+                   if(cur %in% topUnitIDs) return(TRUE)
+                   cur <- allTerms$parent_id[allTerms$id == cur]
+                 }
+                 FALSE
+               }, logical(1))) %>%
+        pull(id)
+    } else {
+      # top-unit not yet in mappings - no children can be scoped to it,
+      # so no existing mappings can apply
+      deepTermIDs <- character(0)
+    }
+
     allMappings <- .read_mappings(gazName, dName)
     existingMaps <- allMappings %>%
       filter(source == dName,
@@ -319,6 +350,18 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
       theUnits <- unique(eval(expr = parse(text = "unitCol"), envir = harmonised_geom)) %>%
         na.omit() %>%
         as.character()
+    }
+
+    # guard: the top-unit parsed from the filename must appear in the matched
+    # units. Catches cases where the file on disk doesn't match what its
+    # inventory entry claims (e.g. wrong file copied to stage2).
+    fileTopUnit <- str_split(file_name, "_")[[1]][1]
+    if(fileTopUnit %in% topUnits$label && length(theUnits) > 0 &&
+       !fileTopUnit %in% theUnits){
+      stop("  ! file '", file_name, "' is registered for top-unit '",
+           fileTopUnit, "' but its geometry resolves to '",
+           paste(theUnits, collapse = "', '"),
+           "' - check that the correct file is at stage2.")
     }
 
     if(length(theUnits) == 0){
