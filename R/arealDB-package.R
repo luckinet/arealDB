@@ -1,0 +1,32 @@
+#' arealDB: Harmonise and Integrate Heterogeneous Areal Data
+#'
+#' Many relevant applications in the environmental and socioeconomic sciences
+#' use areal data, such as biodiversity checklists, agricultural statistics, or
+#' socioeconomic surveys. For applications that surpass the spatial, temporal
+#' or thematic scope of any single data source, data must be integrated from
+#' several heterogeneous sources. Inconsistent concepts, definitions, or messy
+#' data tables make this a tedious and error-prone process. The arealDB
+#' package tackles those problems and helps the user to build a harmonised
+#' database of areal data by providing tools to
+#' \itemize{
+#'   \item register and normalise heterogeneous geometry and table sources
+#'         into a single, well-structured database,
+#'   \item harmonise vocabularies and ontologies across data sources, and
+#'   \item query the integrated database in a consistent way.
+#' }
+#'
+#' Read the paper at Ehrmann, Seppelt & Meyer (2020)
+#' \doi{10.1016/j.envsoft.2020.104799}.
+#'
+#' @author \strong{Maintainer, Author}: Steffen Ehrmann
+#'   \email{steffen.ehrmann@posteo.de}
+#'
+#' @seealso \itemize{
+#'   \item Github project:
+#'         \href{https://github.com/luckinet/arealDB}{https://github.com/luckinet/arealDB}
+#'   \item Report bugs:
+#'         \href{https://github.com/luckinet/arealDB/issues}{https://github.com/luckinet/arealDB/issues}
+#' }
+#' @docType package
+#' @name arealDB
+'_PACKAGE'
