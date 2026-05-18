@@ -13,30 +13,58 @@ adb_query(
 )
 }
 \arguments{
-\item{territory}{\link[=character]{`character(.)}\cr combination of column name in
-the ontology and value to filter that column by to build a tree of the
-territories nested into it.}
+\item{territory}{\code{\link[=list]{list(1)}}\cr the territory to extract, given as a
+single named list element where the name is a gazetteer class and the
+value is a canonical territory label, e.g.
+\code{list(ADM0 = "a_nation")}. All descendants of that territory are
+included.}
 
-\item{concept}{description}
+\item{concept}{\code{\link[=list]{list(1)}}\cr optional concept filter. Either
+\code{NULL} (default; all values of the table's concept column are
+returned), or a single named list element where the name is a concept
+column and the value(s) are labels to keep, e.g.
+\code{list(commodity = "barley")}. Required if the table contains more
+than one concept column, so the function can pick the right one.}
 
-\item{variable}{description}
+\item{variable}{\code{\link[=character]{character(1)}}\cr name of the observed
+variable to extract (e.g. \code{"harvested"}).}
 
-\item{level}{description}
+\item{level}{\code{\link[=character]{character(1)}}\cr optional gazetteer class to
+restrict the result to (e.g. \code{"ADM1"}). Defaults to all levels
+present for the matching tables.}
 
-\item{year}{description}
+\item{year}{\code{\link[=integer]{integerish(.)}}\cr optional vector of years to
+include. Defaults to all years present in the table.}
 }
 \value{
-returns ...
+A list with three elements:
+\describe{
+\item{\code{geom}}{the sf geometry of the territory at the deepest
+requested level.}
+\item{\code{tab}}{the variable extracted from the table. Long form
+(\code{gazID, year, <variable>}) when no concept column is present;
+otherwise wide on the concept values.}
+\item{\code{meta}}{per-territory metadata: number of source tables,
+number of distinct concept values (if applicable), year range.}
+}
 }
 \description{
-Extract database contents
+Retrieve a thematic variable for a territory together with the matching
+geometry. If the underlying table has one concept column (i.e. a vocabulary
+was used to harmonise an ID-variable), the result is pivoted on that
+column's values; otherwise it is returned in long form.
 }
 \examples{
 if(dev.interactive()){
 adb_example(path = paste0(tempdir(), "/newDB"))
 
+# filter to one concept value
 adb_query(territory = list(ADM0 = "a_nation"),
           concept = list(commodity = "barley"),
+          variable = "harvested")
+
+# all commodities (no concept filter)
+adb_query(territory = list(ADM0 = "a_nation"),
           variable = "harvested")
 }
 }

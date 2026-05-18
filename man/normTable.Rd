@@ -8,7 +8,6 @@ normTable(
   input = NULL,
   pattern = NULL,
   query = NULL,
-  ontoMatch = NULL,
   simplify = NULL,
   beep = NULL,
   verbose = FALSE
@@ -26,9 +25,6 @@ Only dataset names which match the regular expression will be processed.}
 in \code{\link[dplyr]{filter}} to subset a tibble in terms of the columns
 defined via the schema and given as a single character string, such as
 \code{"ADM0 == 'a_nation'"}.}
-
-\item{ontoMatch}{\code{\link[=character]{character(.)}}\cr name of the column(s) that
-shall be matched with an ontology (defined in \code{\link{adb_init}}).}
 
 \item{simplify}{\code{\link[=list]{list(.)}}\cr list of modules to simplify character
 strings before matching with the ontology. Possible modules are: \itemize{

@@ -6,7 +6,7 @@
 \usage{
 regVocabulary(
   name,
-  dSeries,
+  vSeries,
   description,
   schema = NULL,
   archive = NULL,
@@ -23,7 +23,7 @@ regVocabulary(
 \item{name}{\code{\link[=character]{character(1)}}\cr name of the target vocabulary
 (e.g. \code{"gazetteer"}, \code{"commodity"}).}
 
-\item{dSeries}{\code{\link[=character]{character(1)}}\cr name of the contributing
+\item{vSeries}{\code{\link[=character]{character(1)}}\cr name of the contributing
 dataseries (must already exist in \code{inv_dataseries}; see
 \code{\link{regDataseries}}).}
 

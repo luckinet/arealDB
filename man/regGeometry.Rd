@@ -8,7 +8,7 @@ regGeometry(
   ...,
   subset = NULL,
   gSeries = NULL,
-  label = NULL,
+  match = NULL,
   ancillary = NULL,
   layer = NULL,
   archive = NULL,
@@ -32,7 +32,7 @@ which subset the file contains. This could be a subset of territorial units
 \item{gSeries}{\code{\link[=character]{character(1)}}\cr the name of the geometry
 dataseries (see \code{\link{regDataseries}}).}
 
-\item{label}{\code{\link[=list]{list(.)}}\cr list of as many columns as there are in
+\item{match}{\code{\link[=list]{list(.)}}\cr list of as many columns as there are in
 common in the ontology and this geometry. Must be of the form
 \code{list(class = columnName)}, with 'class' as the class of the ontology
 corresponding to the respective column name in the geometry.}
@@ -99,7 +99,7 @@ if(dev.interactive()){
 
   # The GADM dataset comes as *.7z archive
   regGeometry(gSeries = "gadm",
-              label = list(al1 = "NAME_0"),
+              match = list(al1 = "NAME_0"),
               layer = "example_geom1",
               archive = "example_geom.7z|example_geom1.gpkg",
               archiveLink = "https://gadm.org/",
@@ -109,7 +109,7 @@ if(dev.interactive()){
   # The second administrative level in GADM contains names in the columns
   # NAME_0 and NAME_1
   regGeometry(gSeries = "gadm",
-              label = list(al1 = "NAME_0", al2 = "NAME_1"),
+              match = list(al1 = "NAME_0", al2 = "NAME_1"),
               ancillary = list(name_lcl = "VARNAME_1", code = "GID_1", type = "TYPE_1"),
               layer = "example_geom2",
               archive = "example_geom.7z|example_geom2.gpkg",

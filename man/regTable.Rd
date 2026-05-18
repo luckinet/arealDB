@@ -9,7 +9,7 @@ regTable(
   subset = NULL,
   dSeries = NULL,
   gSeries = NULL,
-  label = NULL,
+  match = NULL,
   begin = NULL,
   end = NULL,
   schema = NULL,
@@ -41,8 +41,8 @@ data (see \code{\link{regDataseries}}).}
 the geometries, if the geometry dataseries deviates from the dataseries of
 the areal data (see \code{\link{regDataseries}}).}
 
-\item{label}{\code{\link[=integer]{integerish(1)}}\cr the label in the onology this
-geometry should correspond to.}
+\item{match}{\code{\link[=character]{character(1)}}\cr the class in the gazetteer that
+the table's territories correspond to (e.g. \code{"ADM0"}).}
 
 \item{begin}{\code{\link[=integer]{integerish(1)}}\cr the date from which on the data
 are valid.}
@@ -97,7 +97,7 @@ This function registers a new areal data table into the geospatial database.
 When processing areal data tables, carry out the following steps:
 \enumerate{ \item Determine the main territory (such as a nation, or any
 other polygon), a \code{subset} (if applicable), the ontology
-\code{label} and the dataseries of the areal data and of the geometry, and
+\code{match} and the dataseries of the areal data and of the geometry, and
 provide them as arguments to this function. \item Provide a \code{begin}
 and \code{end} date for the areal data. \item Run the function. \item
 (Re)Save the table with the following properties: \itemize{\item Format:
@@ -133,7 +133,7 @@ if(dev.interactive()){
 
   regTable(nation = "a_nation",
            subset = "barleyMaize",
-           label = "ADM0",
+           match = "ADM0",
            dSeries = "madeUp",
            gSeries = "gadm",
            begin = 1990,
