@@ -126,7 +126,7 @@ adb_init <- function(root, version, author, licence, level){
                          datID = integer(),
                          stage2_name = character(),
                          layer = character(),
-                         label = character(),
+                         match = character(),
                          ancillary = character(),
                          stage1_name = character(),
                          stage1_url = character(),

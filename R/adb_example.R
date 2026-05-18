@@ -163,7 +163,7 @@ adb_example <- function(path = NULL, until = NULL, verbose = FALSE){
       setObsVar(name = "parent_label", columns = 4, type = "c")
 
     regVocabulary(name = "commodity",
-                  dSeries = "icc",
+                  vSeries = "icc",
                   description = "Backbone ontology of agricultural commodities.",
                   schema = schema_voc,
                   archive = "base_ontology.csv",
@@ -173,7 +173,7 @@ adb_example <- function(path = NULL, until = NULL, verbose = FALSE){
                   licence_link = "https://www.fao.org/contact-us/terms")
 
     regVocabulary(name = "gazetteer",
-                  dSeries = "unsd",
+                  vSeries = "unsd",
                   description = "Backbone gazetteer of territorial concepts.",
                   schema = schema_voc,
                   archive = "terms.csv",
@@ -192,7 +192,7 @@ adb_example <- function(path = NULL, until = NULL, verbose = FALSE){
   if(any(theSteps %in% "regGeometry")){
 
     regGeometry(gSeries = "gadm",
-                label = list(ADM0 = "NAME_0"),
+                match = list(ADM0 = "NAME_0"),
                 layer = "example_geom1",
                 archive = "example_geom.7z|example_geom1.gpkg",
                 archiveLink = "https://gadm.org/",
@@ -200,7 +200,7 @@ adb_example <- function(path = NULL, until = NULL, verbose = FALSE){
                 updateFrequency = "quarterly")
 
     regGeometry(gSeries = "gadm",
-                label = list(ADM0 = "NAME_0", ADM1 = "NAME_1"),
+                match = list(ADM0 = "NAME_0", ADM1 = "NAME_1"),
                 layer = "example_geom2",
                 archive = "example_geom.7z|example_geom2.gpkg",
                 archiveLink = "https://gadm.org/",
@@ -208,7 +208,7 @@ adb_example <- function(path = NULL, until = NULL, verbose = FALSE){
                 updateFrequency = "quarterly")
 
     regGeometry(gSeries = "gadm",
-                label = list(ADM0 = "NAME_0", ADM1 = "NAME_1", ADM2 = "NAME_2"),
+                match = list(ADM0 = "NAME_0", ADM1 = "NAME_1", ADM2 = "NAME_2"),
                 layer = "example_geom3",
                 archive = "example_geom.7z|example_geom3.gpkg",
                 archiveLink = "https://gadm.org/",
@@ -216,7 +216,7 @@ adb_example <- function(path = NULL, until = NULL, verbose = FALSE){
                 updateFrequency = "quarterly")
 
     regGeometry(gSeries = "madeUp",
-                label = list(ADM0 = "NAME_0", ADM1 = "NAME_1", ADM2 = "NAME_2"),
+                match = list(ADM0 = "NAME_0", ADM1 = "NAME_1", ADM2 = "NAME_2"),
                 layer = "example_geom4",
                 archive = "example_geom.7z|example_geom4.gpkg",
                 archiveLink = "https://gadm.org/",
@@ -247,7 +247,7 @@ adb_example <- function(path = NULL, until = NULL, verbose = FALSE){
     regTable(subset = "barleyMaize",
              dSeries = "madeUp",
              gSeries = "gadm",
-             label = "ADM0",
+             match = "ADM0",
              begin = 1990,
              end = 2017,
              schema = meta_madeUp_1,
@@ -262,7 +262,7 @@ adb_example <- function(path = NULL, until = NULL, verbose = FALSE){
              subset = "barleyMaize",
              dSeries = "madeUp",
              gSeries = "gadm",
-             label = "ADM1",
+             match = "ADM1",
              begin = 1990,
              end = 2017,
              schema = meta_madeUp_2,
