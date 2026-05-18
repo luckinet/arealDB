@@ -143,7 +143,7 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
   assertIntegerish(x = thresh, any.missing = FALSE)
   assertLogical(x = simplify, len = 1)
   assertNames(x = colnames(inv_geometries),
-              permutation.of = c("geoID", "datID", "stage2_name", "layer", "label", "ancillary", "stage1_name", "stage1_url", "download_date", "update_frequency", "status", "notes"))
+              permutation.of = c("geoID", "datID", "stage2_name", "layer", "match", "ancillary", "stage1_name", "stage1_url", "download_date", "update_frequency", "status", "notes"))
   assertNames(x = colnames(inv_dataseries),
               permutation.of = c("datID", "name", "description", "homepage", "version", "licence_link", "notes"))
 
@@ -172,7 +172,7 @@ normGeometry <- function(input = NULL, pattern = NULL, query = NULL, thresh = 10
     if(file_name %in% gSeries$stage2_name){
       newGID <- gSeries$geoID
       gLayer <- gSeries$layer
-      gLabel <- gSeries$label
+      gLabel <- gSeries$match
       gAncill <- gSeries$ancillary
       gIDs <- inv_geometries$geoID[inv_geometries$datID == gSeries$datID]
 
