@@ -29,7 +29,7 @@ test_that("regVocabulary registers a backbone contributor", {
     setIDVar(name = "parent_label", columns = 3)
 
   doc <- regVocabulary(name = "gazetteer",
-                       dSeries = "gadm",
+                       vSeries = "gadm",
                        description = "GADM-derived test gazetteer",
                        schema = schema,
                        archive = "test.csv",
@@ -62,7 +62,7 @@ test_that("regVocabulary rejects schema missing required backbone columns", {
 
   expect_error(
     regVocabulary(name = "gazetteer",
-                  dSeries = "gadm",
+                  vSeries = "gadm",
                   description = "incomplete schema",
                   schema = bad_schema),
     regexp = "missing required column")
@@ -76,7 +76,7 @@ test_that("regVocabulary errors when dataseries is unknown", {
 
   expect_error(
     regVocabulary(name = "gazetteer",
-                  dSeries = "nonexistent",
+                  vSeries = "nonexistent",
                   description = "x"),
     regexp = "is not registered")
 })

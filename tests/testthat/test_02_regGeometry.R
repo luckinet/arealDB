@@ -11,7 +11,7 @@ test_that("a geometry inventory entry is produced", {
   adb_example(until = "normVocabulary", path = dbpath)
 
   output <- regGeometry(gSeries = "gadm",
-                        label = list(ADM0 = "NAME_0"),
+                        match = list(ADM0 = "NAME_0"),
                         layer = "example_geom1",
                         archive = "example_geom.7z|example_geom1.gpkg",
                         archiveLink = "https://gadm.org/downloads/example_geom.7z.html",
@@ -19,7 +19,7 @@ test_that("a geometry inventory entry is produced", {
                         updateFrequency = "quarterly")
 
   expect_tibble(x = output, nrows = 1, ncols = 12, col.names = "strict")
-  expect_names(x = names(output), must.include = c("geoID", "datID", "stage2_name", "layer", "label", "ancillary", "stage1_name", "stage1_url", "download_date", "update_frequency", "notes"))
+  expect_names(x = names(output), must.include = c("geoID", "datID", "stage2_name", "layer", "match", "ancillary", "stage1_name", "stage1_url", "download_date", "update_frequency", "notes"))
 
 })
 
@@ -29,8 +29,8 @@ test_that("function asks for details, if not provided", {
   adb_example(until = "normVocabulary", path = dbpath)
   .adb_state$testing <- TRUE
 
-  expect_message(object = regGeometry(label = list(ADM0 = "NAME_0"), overwrite = TRUE))
-  output <- capture_messages(code = regGeometry(label = list(ADM0 = "NAME_0"), overwrite = TRUE))
+  expect_message(object = regGeometry(match = list(ADM0 = "NAME_0"), overwrite = TRUE))
+  output <- capture_messages(code = regGeometry(match = list(ADM0 = "NAME_0"), overwrite = TRUE))
   expect_character(x = output, len = 5, any.missing = FALSE, unique = TRUE)
   expect_equal(object = output[1], expected = "please type in to which series the geometry belongs: \n")
   expect_equal(object = output[2], expected = "please type in the archives' file name: \n")
