@@ -9,7 +9,7 @@
 #'
 #' @param name [`character(1)`][character]\cr name of the target vocabulary
 #'   (e.g. \code{"gazetteer"}, \code{"commodity"}).
-#' @param dSeries [`character(1)`][character]\cr name of the contributing
+#' @param vSeries [`character(1)`][character]\cr name of the contributing
 #'   dataseries (must already exist in \code{inv_dataseries}; see
 #'   \code{\link{regDataseries}}).
 #' @param description [`character(1)`][character]\cr free-text description of
@@ -57,7 +57,7 @@
 #' @importFrom arrow read_parquet
 #' @export
 
-regVocabulary <- function(name, dSeries, description, schema = NULL,
+regVocabulary <- function(name, vSeries, description, schema = NULL,
                           archive = NULL, archiveLink = NULL,
                           downloadDate = NULL, version = NULL,
                           licence_link = NULL, notes = NULL,
@@ -91,7 +91,7 @@ regVocabulary <- function(name, dSeries, description, schema = NULL,
   assertNames(x = colnames(inv_dataseries),
               permutation.of = c("datID", "name", "description", "homepage", "version", "licence_link", "notes"))
   assertCharacter(x = name, len = 1, any.missing = FALSE)
-  assertCharacter(x = dSeries, len = 1, any.missing = FALSE)
+  assertCharacter(x = vSeries, len = 1, any.missing = FALSE)
   assertCharacter(x = description, len = 1, any.missing = FALSE)
   assertCharacter(x = archive, len = 1, any.missing = FALSE, null.ok = TRUE)
   assertCharacter(x = archiveLink, len = 1, any.missing = FALSE, null.ok = TRUE)
@@ -104,13 +104,13 @@ regVocabulary <- function(name, dSeries, description, schema = NULL,
   assertClass(x = schema, classes = "schema", null.ok = TRUE)
 
   # the contributing dataseries must already be registered
-  if(!dSeries %in% inv_dataseries$name){
-    stop("the dataseries '", dSeries, "' is not registered. Use regDataseries() first.")
+  if(!vSeries %in% inv_dataseries$name){
+    stop("the dataseries '", vSeries, "' is not registered. Use regDataseries() first.")
   }
-  datID <- inv_dataseries$datID[inv_dataseries$name == dSeries]
+  datID <- inv_dataseries$datID[inv_dataseries$name == vSeries]
 
   # filename + duplicate-registration check
-  tempName <- paste0(name, "__", dSeries)
+  tempName <- paste0(name, "__", vSeries)
   fileName <- paste0(tempName, ".csv")
   filePath <- paste0(intPaths, "/vocabularies/stage2/", fileName)
 
@@ -189,10 +189,10 @@ regVocabulary <- function(name, dSeries, description, schema = NULL,
 
   # test whether the stage1 file is available
   if(!is.null(archive) && !is.na(archive)){
-    stage1Dir  <- paste0(intPaths, "/vocabularies/stage1/", dSeries, "/")
+    stage1Dir  <- paste0(intPaths, "/vocabularies/stage1/", vSeries, "/")
     stage1Path <- paste0(stage1Dir, archive)
     if(!testFileExists(x = stage1Path)){
-      message(paste0("... please store the file '", archive, "' in './vocabularies/stage1/", dSeries, "/'"))
+      message(paste0("... please store the file '", archive, "' in './vocabularies/stage1/", vSeries, "/'"))
       if(!testDirectoryExists(x = stage1Dir)){
         dir.create(path = stage1Dir, recursive = TRUE)
       }
@@ -207,7 +207,7 @@ regVocabulary <- function(name, dSeries, description, schema = NULL,
   # already be present as resolved stage 3 outputs in vocabularies/mappings/;
   # backbones must be staged in vocabularies/stage2/.
   mappingsPath <- file.path(intPaths, "vocabularies", "mappings",
-                            paste0(name, "_", dSeries, ".csv"))
+                            paste0(name, "_", vSeries, ".csv"))
   if(!isBackbone && testFileExists(x = mappingsPath, extension = "csv")){
     message("  -> using existing mapping file at ./vocabularies/mappings/",
             basename(mappingsPath))
