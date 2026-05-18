@@ -13,8 +13,8 @@
 #' @param gSeries [`character(1)`][character]\cr optionally, the dataseries of
 #'   the geometries, if the geometry dataseries deviates from the dataseries of
 #'   the areal data (see \code{\link{regDataseries}}).
-#' @param label [`integerish(1)`][integer]\cr the label in the onology this
-#'   geometry should correspond to.
+#' @param match [`character(1)`][character]\cr the class in the gazetteer that
+#'   the table's territories correspond to (e.g. \code{"ADM0"}).
 #' @param begin [`integerish(1)`][integer]\cr the date from which on the data
 #'   are valid.
 #' @param end [`integerish(1)`][integer]\cr the date until which the data are
@@ -48,7 +48,7 @@
 #' @details When processing areal data tables, carry out the following steps:
 #'   \enumerate{ \item Determine the main territory (such as a nation, or any
 #'   other polygon), a \code{subset} (if applicable), the ontology
-#'   \code{label} and the dataseries of the areal data and of the geometry, and
+#'   \code{match} and the dataseries of the areal data and of the geometry, and
 #'   provide them as arguments to this function. \item Provide a \code{begin}
 #'   and \code{end} date for the areal data. \item Run the function. \item
 #'   (Re)Save the table with the following properties: \itemize{\item Format:
@@ -86,7 +86,7 @@
 #'
 #'   regTable(nation = "a_nation",
 #'            subset = "barleyMaize",
-#'            label = "ADM0",
+#'            match = "ADM0",
 #'            dSeries = "madeUp",
 #'            gSeries = "gadm",
 #'            begin = 1990,
@@ -111,7 +111,7 @@
 #' @export
 
 regTable <- function(..., subset = NULL, dSeries = NULL, gSeries = NULL,
-                     label = NULL, begin = NULL, end = NULL, schema = NULL,
+                     match = NULL, begin = NULL, end = NULL, schema = NULL,
                      archive = NULL, archiveLink = NULL, downloadDate = NULL,
                      updateFrequency = NULL, metadataLink = NULL, metadataPath = NULL,
                      notes = NULL, diagnose = FALSE, overwrite = FALSE){
@@ -151,11 +151,11 @@ regTable <- function(..., subset = NULL, dSeries = NULL, gSeries = NULL,
   assertNames(x = colnames(inv_dataseries),
               permutation.of = c("datID", "name", "description", "homepage", "version", "licence_link", "notes"))
   assertNames(x = colnames(inv_geometries),
-              permutation.of = c("geoID", "datID", "stage2_name", "layer", "label", "ancillary", "stage1_name", "stage1_url", "download_date", "update_frequency", "notes", "status"))
+              permutation.of = c("geoID", "datID", "stage2_name", "layer", "match", "ancillary", "stage1_name", "stage1_url", "download_date", "update_frequency", "notes", "status"))
   assertCharacter(x = subset, any.missing = FALSE, null.ok = TRUE)
   assertCharacter(x = dSeries, ignore.case = TRUE, any.missing = FALSE, len = 1, null.ok = TRUE)
   assertCharacter(x = gSeries, ignore.case = TRUE, any.missing = FALSE, len = 1, null.ok = TRUE)
-  assertCharacter(x = label, any.missing = FALSE, len = 1, null.ok = TRUE)
+  assertCharacter(x = match, any.missing = FALSE, len = 1, null.ok = TRUE)
   assertIntegerish(x = begin, any.missing = FALSE, len = 1, lower = 1800, null.ok = TRUE)
   assertIntegerish(x = end, any.missing = FALSE, len = 1, upper = as.integer(format(Sys.Date(), "%Y")), null.ok = TRUE)
   assertClass(x = schema, classes = "schema", null.ok = TRUE)
@@ -217,15 +217,15 @@ regTable <- function(..., subset = NULL, dSeries = NULL, gSeries = NULL,
     dataSeries <- inv_dataseries$datID[inv_dataseries$name %in% dSeries]
   }
 
-  if(is.null(label)){
-    message("please type in the ontology label of the units: ")
+  if(is.null(match)){
+    message("please type in the gazetteer class the table's territories match: ")
     if(!testing){
-      label <- readline()
+      match <- readline()
     } else {
-      label <- "ADM0"
+      match <- "ADM0"
     }
-    if(is.na(label)){
-      label = NA_character_
+    if(is.na(match)){
+      match = NA_character_
     }
   }
 
@@ -251,11 +251,11 @@ regTable <- function(..., subset = NULL, dSeries = NULL, gSeries = NULL,
 
   } else{
     tempDatID <- inv_dataseries$datID[inv_dataseries$name %in% gSeries]
-    tempLabels <- map_chr(.x = inv_geometries$label,
+    tempLabels <- map_chr(.x = inv_geometries$match,
                       .f = function(x){
                         str_split(tail(str_split(x, "\\|")[[1]], 1), "=")[[1]][1]
                       })
-    geomSeries <- inv_geometries[inv_geometries$datID %in% tempDatID & tempLabels == label,]
+    geomSeries <- inv_geometries[inv_geometries$datID %in% tempDatID & tempLabels == match,]
 
     if(length(geomSeries$geoID) < 1){
       stop(paste0("! please first register geometries of the series '", gSeries,"' via 'regGeometries()' !"))
@@ -306,7 +306,6 @@ regTable <- function(..., subset = NULL, dSeries = NULL, gSeries = NULL,
     }
   }
 
-
   if(is.null(archive)){
     message("please type in the archives' file name: ")
     if(!testing){
@@ -320,7 +319,7 @@ regTable <- function(..., subset = NULL, dSeries = NULL, gSeries = NULL,
   }
 
   # put together file name and get confirmation that file should exist now
-  tempName <- paste0(mainPoly, "_", label, "_", subset, "_", begin, "_", end, "_", dSeries)
+  tempName <- paste0(mainPoly, "_", match, "_", subset, "_", begin, "_", end, "_", dSeries)
   fileName <- paste0(tempName, ".csv")
   filePath <- paste0(intPaths, "/tables/stage2/", fileName)
   fileArchive <- str_split(archive, "\\|")[[1]]
@@ -482,7 +481,7 @@ regTable <- function(..., subset = NULL, dSeries = NULL, gSeries = NULL,
                 geoID = geomSeries,
                 datID = dataSeries,
                 geography = mainPoly,
-                level = label,
+                level = match,
                 start_period = begin,
                 end_period = end,
                 stage2_name = fileName,

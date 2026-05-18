@@ -11,7 +11,7 @@
 #'   (e.g. only one municipality) or of a target variable.
 #' @param gSeries [`character(1)`][character]\cr the name of the geometry
 #'   dataseries (see \code{\link{regDataseries}}).
-#' @param label [`list(.)`][list]\cr list of as many columns as there are in
+#' @param match [`list(.)`][list]\cr list of as many columns as there are in
 #'   common in the ontology and this geometry. Must be of the form
 #'   \code{list(class = columnName)}, with 'class' as the class of the ontology
 #'   corresponding to the respective column name in the geometry.
@@ -62,7 +62,7 @@
 #'
 #'   # The GADM dataset comes as *.7z archive
 #'   regGeometry(gSeries = "gadm",
-#'               label = list(al1 = "NAME_0"),
+#'               match = list(al1 = "NAME_0"),
 #'               layer = "example_geom1",
 #'               archive = "example_geom.7z|example_geom1.gpkg",
 #'               archiveLink = "https://gadm.org/",
@@ -72,7 +72,7 @@
 #'   # The second administrative level in GADM contains names in the columns
 #'   # NAME_0 and NAME_1
 #'   regGeometry(gSeries = "gadm",
-#'               label = list(al1 = "NAME_0", al2 = "NAME_1"),
+#'               match = list(al1 = "NAME_0", al2 = "NAME_1"),
 #'               ancillary = list(name_lcl = "VARNAME_1", code = "GID_1", type = "TYPE_1"),
 #'               layer = "example_geom2",
 #'               archive = "example_geom.7z|example_geom2.gpkg",
@@ -90,7 +90,7 @@
 #' @importFrom tibble tibble
 #' @export
 
-regGeometry <- function(..., subset = NULL, gSeries = NULL, label = NULL,
+regGeometry <- function(..., subset = NULL, gSeries = NULL, match = NULL,
                         ancillary = NULL, layer = NULL, archive = NULL,
                         archiveLink = NULL, downloadDate = NULL, updateFrequency = NULL,
                         notes = NULL, overwrite = FALSE){
@@ -108,18 +108,22 @@ regGeometry <- function(..., subset = NULL, gSeries = NULL, label = NULL,
   inventory <- readRDS(paste0(intPaths, "/inventory.rds"))
   inv_dataseries <- inventory$dataseries
   inv_geometries <- inventory$geometries
+  inv_vocabularies <- inventory$vocabularies
   load(paste0(intPaths, "/db_info.RData"))
   topClass <- db_info$level[1]
 
   if(dim(inv_dataseries)[1] == 0){
     stop("'inv_dataseries.csv' does not contain any entries!")
   }
+  if(!"gazetteer" %in% inv_vocabularies$name){
+    stop("no 'gazetteer' vocabulary is registered. Use regVocabulary(name = \"gazetteer\", ...) first.")
+  }
 
   # in testing mode?
   testing <- .adb_state$testing
 
   # check validity of arguments
-  assertList(x = label, any.missing = FALSE)
+  assertList(x = match, any.missing = FALSE)
   assertCharacter(x = subset, any.missing = FALSE, null.ok = TRUE)
   assertCharacter(x = gSeries, ignore.case = TRUE, any.missing = FALSE, len = 1, null.ok = TRUE)
   assertList(x = ancillary, max.len = 6, null.ok = TRUE)
@@ -133,7 +137,7 @@ regGeometry <- function(..., subset = NULL, gSeries = NULL, label = NULL,
   assertNames(x = colnames(inv_dataseries),
               permutation.of = c("datID", "name", "description", "homepage", "version", "licence_link", "notes"))
   assertNames(x = colnames(inv_geometries),
-              permutation.of = c("geoID", "datID", "stage2_name", "layer", "label", "ancillary", "stage1_name", "stage1_url", "download_date", "update_frequency", "status", "notes"))
+              permutation.of = c("geoID", "datID", "stage2_name", "layer", "match", "ancillary", "stage1_name", "stage1_url", "download_date", "update_frequency", "status", "notes"))
   if(!is.null(ancillary)) assertNames(x = names(ancillary), subset.of = c("name_ltn", "name_lcl", "code", "type", "uri", "flag"))
 
   broadest <- exprs(..., .named = TRUE)
@@ -178,9 +182,9 @@ regGeometry <- function(..., subset = NULL, gSeries = NULL, label = NULL,
   }
 
 
-  assertSubset(x = names(label), choices = db_info$level)
-  theLabel <- tail(names(label), 1)
-  labelString <- paste0(paste0(names(label), "=", label), collapse = "|")
+  assertSubset(x = names(match), choices = db_info$level)
+  theLabel <- tail(names(match), 1)
+  matchString <- paste0(paste0(names(match), "=", match), collapse = "|")
 
   if(!is.null(ancillary)){
     ancillaryString <- paste0(paste0(names(ancillary), "=", ancillary), collapse = "|")
@@ -306,7 +310,7 @@ regGeometry <- function(..., subset = NULL, gSeries = NULL, label = NULL,
     theGeometry <- read_sf(dsn = filePath, stringsAsFactors = FALSE)
   }
 
-  nameCols <- unlist(label, use.names = FALSE)
+  nameCols <- unlist(match, use.names = FALSE)
 
   # determine which layers exist and ask the user which to chose, if none is
   # given
@@ -330,7 +334,7 @@ regGeometry <- function(..., subset = NULL, gSeries = NULL, label = NULL,
                 datID = dataSeries,
                 stage2_name = fileName,
                 layer = layer,
-                label = labelString,
+                match = matchString,
                 ancillary = ancillaryString,
                 stage1_name = archive,
                 stage1_url = archiveLink,
