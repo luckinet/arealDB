@@ -10,8 +10,6 @@
 #'   in \code{\link[dplyr]{filter}} to subset a tibble in terms of the columns
 #'   defined via the schema and given as a single character string, such as
 #'   \code{"ADM0 == 'a_nation'"}.
-#' @param ontoMatch [`character(.)`][character]\cr name of the column(s) that
-#'   shall be matched with an ontology (defined in \code{\link{adb_init}}).
 #' @param simplify [`list(.)`][list]\cr list of modules to simplify character
 #'   strings before matching with the ontology. Possible modules are: \itemize{
 #'      \item \code{"squish"}: logical of whether or not to replace duplicate whitespaces with single whitespaces,
@@ -75,7 +73,7 @@
 #' @importFrom beepr beep
 #' @export
 
-normTable <- function(input = NULL, pattern = NULL, query = NULL, ontoMatch = NULL,
+normTable <- function(input = NULL, pattern = NULL, query = NULL,
                       simplify = NULL, beep = NULL, verbose = FALSE){
 
   # set internal paths
@@ -102,6 +100,7 @@ normTable <- function(input = NULL, pattern = NULL, query = NULL, ontoMatch = NU
   inventory <- readRDS(paste0(intPaths, "/inventory.rds"))
   inv_dataseries <- inventory$dataseries
   inv_tables <- inventory$tables
+  inv_vocabularies <- inventory$vocabularies
 
   # check validity of arguments
   assertCharacter(x = query, len = 1, null.ok = TRUE)
@@ -109,7 +108,6 @@ normTable <- function(input = NULL, pattern = NULL, query = NULL, ontoMatch = NU
               permutation.of = c("tabID", "datID", "geoID", "geography", "level", "start_period", "end_period", "stage2_name", "schema", "stage1_name", "stage1_url", "download_date", "update_frequency", "metadata_url", "metadata_path", "status", "notes"))
   assertNames(x = colnames(inv_dataseries),
               permutation.of = c("datID", "name", "description", "homepage", "version", "licence_link", "notes"))
-  assertCharacter(x = ontoMatch, min.len = 1, any.missing = FALSE, null.ok = TRUE)
   assertList(x = simplify, any.missing = FALSE, min.len = 1, null.ok = TRUE)
   if(!is.null(simplify)){
     assertNames(x = names(simplify), subset.of = c("squish", "lowercase", "dashes", "duplpunct", "remove", "replace", "chartr"))
@@ -217,20 +215,28 @@ normTable <- function(input = NULL, pattern = NULL, query = NULL, ontoMatch = NU
       select(-any_of(c("has_broader", "description"))) %>%
       mutate(gazID = str_replace_all(string = gazID, pattern = "[.]", replacement = "-"))
 
-    if(!is.null(ontoMatch)){
+    # match thematic IDvars against vocabularies registered under the same name
+    schemaCols <- names(algorithm@variables)
+    thematicVocs <- intersect(schemaCols, inv_vocabularies$name)
+    thematicVocs <- setdiff(thematicVocs, gazName)
+    thematicVocs <- intersect(thematicVocs, names(thatTable))
+    if(length(thematicVocs) > 0){
       message("    harmonizing thematic concepts ...")
-      assertNames(x = ontoMatch, subset.of = names(thatTable))
-      thatTable <- .matchOntology(table = thatTable,
-                                  columns = ontoMatch,
-                                  dataseries = dSeries,
-                                  ontology = ontoMatch,
-                                  colsAsClass = FALSE,
-                                  simplify = simplify,
-                                  beep = beep,
-                                  verbose = verbose) %>%
-        unite(col = "ontoMatch", match, external, sep = "--", na.rm = TRUE) %>%
-        rename(ontoID = id, ontoName = all_of(ontoMatch), ontoClass = class) %>%
-        select(ontoID, ontoID, ontoName, ontoMatch, ontoClass, everything(), -any_of(c("has_broader", "description")))
+      for(thisVoc in thematicVocs){
+        thatTable <- .matchOntology(table = thatTable,
+                                    columns = thisVoc,
+                                    dataseries = dSeries,
+                                    ontology = thisVoc,
+                                    colsAsClass = FALSE,
+                                    simplify = simplify,
+                                    beep = beep,
+                                    verbose = verbose) %>%
+          unite(col = !!paste0(thisVoc, "Match"), match, external, sep = "--", na.rm = TRUE) %>%
+          rename(!!paste0(thisVoc, "ID") := id,
+                 !!paste0(thisVoc, "Name") := all_of(thisVoc),
+                 !!paste0(thisVoc, "Class") := class) %>%
+          select(-any_of(c("has_broader", "description")))
+      }
     }
 
     thatTable <- thatTable %>%
@@ -256,7 +262,7 @@ normTable <- function(input = NULL, pattern = NULL, query = NULL, ontoMatch = NU
       tempOut <- tempOut %>%
         unite(col = "gazName", all_of(sort(unique(c(targetCols, outCols)))), sep = ".", na.rm = TRUE) %>%
         mutate(gazName = if_else(gazName == "", NA, gazName)) %>%
-        select(tabID, geoID, gazID, gazName, gazMatch, gazClass, everything()) %>%
+        select(tabID, geoID, gazName, gazID, gazMatch, gazClass, everything()) %>%
         distinct()
 
       # append output to previous file
@@ -267,7 +273,9 @@ normTable <- function(input = NULL, pattern = NULL, query = NULL, ontoMatch = NU
 
       if(length(avail) == 1){
 
-        prevData <- as_tibble(read_parquet(file = paste0(intPaths, "/tables/stage3/", theUnits[j], ".parquet"), mmap = FALSE))
+        prevData <- as_tibble(read_parquet(file = paste0(intPaths, "/tables/stage3/", theUnits[j], ".parquet"), mmap = FALSE)) %>%
+          rename(any_of(c(gazID = "gazetteerID", gazName = "gazetteerName",
+                          gazMatch = "gazetteerMatch", gazClass = "gazetteerClass")))
 
 
         out <- tempOut %>%
@@ -280,6 +288,9 @@ normTable <- function(input = NULL, pattern = NULL, query = NULL, ontoMatch = NU
         out <- tempOut
       }
 
+      out <- out %>%
+        rename(any_of(c(gazetteerID = "gazID", gazetteerName = "gazName",
+                        gazetteerMatch = "gazMatch", gazetteerClass = "gazClass")))
       write_parquet(x = out, sink = paste0(intPaths, "/tables/stage3/", theUnits[j], ".parquet"))
 
       ret <- bind_rows(ret, out)
