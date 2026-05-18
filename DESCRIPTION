@@ -37,7 +37,8 @@ Authors@R: c(
 URL: https://github.com/luckinet/arealDB
 BugReports: https://github.com/luckinet/arealDB/issues
 Depends:
-    R (>= 4.1.0)
+    R (>= 4.1.0),
+    tabshiftr
 Imports:
     archive,
     arrow,
@@ -53,7 +54,6 @@ Imports:
     stringdist,
     stringr,
     sf,
-    tabshiftr,
     tibble,
     tidyr,
     tidyselect,
